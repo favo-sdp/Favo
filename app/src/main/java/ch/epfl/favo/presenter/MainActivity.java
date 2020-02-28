@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.presenter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+
+import ch.epfl.favo.R;
 
 public class MainActivity extends AppCompatActivity {
 

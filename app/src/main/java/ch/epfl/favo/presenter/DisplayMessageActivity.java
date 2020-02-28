@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.presenter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,6 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import ch.epfl.favo.R;
+import ch.epfl.favo.presenter.MainActivity;
+
+/**
+ * Example presenter class from Bootcamp
+ */
 public class DisplayMessageActivity extends AppCompatActivity {
 
     @Override
