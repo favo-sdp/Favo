@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
+import ch.epfl.favo.exceptions.NotImplementedException;
 import ch.epfl.favo.models.FavorUtil;
 import ch.epfl.favo.models.UserUtil;
 
@@ -20,14 +21,14 @@ public class DBTests {
     public void userNameIsValid(){
         String username = "as;dfjlasdfkja;skldfm";
         String pw = "valid_pw";
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotImplementedException.class,
                 ()->{UserUtil.getSingleInstance().createAccount(username,pw);});
     }
     @Test
     public void userShouldNotLoginWithInvalidPassword(){
         String username = "valid_user";
         String pw = generateRandomString(10);
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotImplementedException.class,
                 ()->{UserUtil.getSingleInstance().logInAccount(username,pw);});
     }
 
@@ -37,19 +38,19 @@ public class DBTests {
         String title = "Sample Favor";
         String description = generateRandomString(305);
         String location = "valid location"; //replace by valid location
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotImplementedException.class,
                 ()->{FavorUtil.getSingleInstance().postFavor(title,description,location);});
     }
     @Test
     public void userCanLogOutOnlyIfLoggedIn(){
 
-        assertThrows(IllegalAccessError.class,
+        assertThrows(NotImplementedException.class,
                 ()->{UserUtil.getSingleInstance().logOutAccount();});
     }
     @Test
     public void userCanDeleteAccountOnlyIfAccountExists(){
 
-        assertThrows(IllegalAccessError.class,
+        assertThrows(NotImplementedException.class,
                 ()->{UserUtil.getSingleInstance().deleteAccount();});
     }
 
