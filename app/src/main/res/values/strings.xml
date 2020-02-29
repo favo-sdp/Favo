@@ -1,6 +1,9 @@
 <resources>
+    <string name="email_hint">email...</string>
+    <string name="pw_hint">password...</string>
     <string name="app_name">Favo</string>
     <string name="button">Button</string>
+    <string name="login_text">Log in</string>
     <string name="hint_name">Type name</string>
     <string name="greetingMes">Hello %s!</string>
 </resources>
