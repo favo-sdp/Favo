@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_login); //TODO: Find a way to access login activity only the first time app is launched
-        setContentView(R.layout.activity_main);//Then we want to access the main activity
+        setContentView(R.layout.activity_login);//Then we want to access the main activity
     }
 
 
