@@ -1,6 +1,23 @@
 <resources>
     <string name="app_name">Favo</string>
-    <string name="button">Button</string>
-    <string name="hint_name">Type name</string>
-    <string name="greetingMes">Hello %s!</string>
+
+    <!-- Auth UI - Signed in -->
+    <string name="signed_in_header">You are signed in!</string>
+    <string name="sign_out">Sign out</string>
+    <string name="delete_account_label">Delete account</string>
+
+    <string name="sign_in_failed">Sign in failed</string>
+    <string name="sign_out_failed">Sign out failed</string>
+    <string name="delete_account_failed">Delete account failed</string>
+
+    <string name="user_profile_header">User profile:</string>
+    <string name="profile_picture_content_desc">Profile picture</string>
+    <string name="used_providers">Providers used: %s</string>
+    <string name="idp_token">IDP Token</string>
+    <string name="idp_secret">IDP Secret</string>
+    <string name="sign_in_cancelled">Sign in cancelled</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="account_disabled">The account is disabled</string>
+    <string name="unknown_error">An unknown error occurred</string>
+
 </resources>
