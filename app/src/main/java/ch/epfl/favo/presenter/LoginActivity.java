@@ -1,72 +1,69 @@
 package ch.epfl.favo.presenter;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.snackbar.Snackbar;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.content.Intent;
+import android.widget.Toast;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.exceptions.NotImplementedException;
-
+import ch.epfl.favo.models.UserUtil;
 
 public class LoginActivity extends AppCompatActivity {
-    private String userEmail;
-    private String userPw;
+    TextView userEmail;
+    TextView userPw;
+
+
     Button loginButton;
-    TextView emailInput;
-    TextView pw;
+
     // Callbacks
     View.OnClickListener onLoginButtonPressed = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            userEmail = findViewById(R.id.user_email).toString();
-            userPw = findViewById(R.id.user_password).toString();
-            login();
+            userEmail = (EditText) findViewById(R.id.user_email);
+            userPw = (EditText) findViewById(R.id.user_password);
+            login(userEmail.getText().toString(),userPw.getText().toString());
+            finish();
+            return;
         }
     };
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // find UI elements
         loginButton = (Button) findViewById(R.id.login_button);
         loginButton.setOnClickListener(onLoginButtonPressed);
-        //Set up
-        //displayToast();
-
-        //throw new NotImplementedException();
-
     }
 
-    /**
-     * Will show pop up message if login fails
-     */
-    //public void displayToast(){
-    //    LayoutInflater inflater = getLayoutInflater();
-    //    View layout = inflater.inflate(R.layout.custom_toast,
-    //            (ViewGroup) findViewById(R.id.custom_toast_container));
-    //    TextView text = (TextView) layout.findViewById(R.id.text_invalid_input);
-    //    text.setText("Login Failed");
-//
-    //    Toast toast = new Toast(getApplicationContext());
-    //    toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-    //    toast.setDuration(Toast.LENGTH_SHORT);
-    //    toast.setView(layout);
-    //    toast.show();
-    //}
-    public void login(){
-        //TODO: Login Logic Andrea
-        throw new NotImplementedException();
+    public void login(String userEmail,String userPw) {
+
+
+        /**
+         * TODO: Implement Login Logic
+         * UserUtil.getSingleInstance().logInAccount(userEmail,userPw);
+         */
+
+        Toast.makeText(getBaseContext(), "Signed in!", Toast.LENGTH_SHORT).show();
+
+
+        //set activity_executed so that the app doesn't show the login page anymore
+        setActivityExecuted();
+        //if login successful go into main activity class
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        return;
+    }
+    public void setActivityExecuted(){
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putBoolean("activity_executed", true);
+        edt.apply();
     }
 }

@@ -9,20 +9,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenter.DisplayMessageActivity"
-            android:parentActivityName=".presenter.MainActivity">
-            <!-- The meta-data tag is required if you support API level 15 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".presenter.MainActivity" />
-        </activity>
         <activity android:name=".presenter.MainActivity">
+        </activity>
+        <activity android:name=".presenter.LoginActivity">
+
+        </activity>
+        <activity android:name=".presenter.StartupActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

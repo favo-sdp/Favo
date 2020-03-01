@@ -18,23 +18,6 @@ import ch.epfl.favo.models.UserUtil;
  * it will contain account information. These tabs will be implemented in more detail in the other presenter classes
  */
 public class MainActivity extends AppCompatActivity {
-    //user in the example
-    static String EXTRA_MESSAGE;
-    //Sample CODE:
-    ///** Called when the user taps the Send button */
-    public void sendMessage(View view) {
-        // Do something in response to button
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = findViewById(R.id.mainName);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
-    }
-
-    // UI references
-    Button loginButton;
-
-
     // Model references
     private UserUtil userUtility = UserUtil.getSingleInstance();
     private FavorUtil favorUtility = FavorUtil.getSingleInstance();
@@ -44,9 +27,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_login); //TODO: Find a way to access login activity only the first time app is launched
-        setContentView(R.layout.activity_login);//Then we want to access the main activity
+        setContentView(R.layout.activity_main);
     }
+
+
 
 
 }
