@@ -22,10 +22,7 @@ public class MainActivityTest {
     @Rule
     public final ActivityTestRule<MainActivity> mActivityRule =
             new ActivityTestRule<>(MainActivity.class);
-    @Test
-    public void sampleTest(){
-        onView(withId(R.id.mainGoButton)).perform(click());
-    }
+
     //@Test
     //public void sampleTest(){
     //    onView(withId(R.id.mainGoButton)).perform(click());

@@ -1,5 +1,6 @@
 package ch.epfl.favo;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -24,4 +25,5 @@ public class ExampleInstrumentedTest {
 
         assertEquals("ch.epfl.favo", appContext.getPackageName());
     }
+
 }

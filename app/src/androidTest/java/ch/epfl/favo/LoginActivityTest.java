@@ -4,12 +4,14 @@ package ch.epfl.favo;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.presenter.LoginActivity;
 import ch.epfl.favo.presenter.MainActivity;
+import ch.epfl.favo.presenter.StartupActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -25,10 +27,11 @@ public class LoginActivityTest {
     public final ActivityTestRule<LoginActivity> mActivityRule =
             new ActivityTestRule<>(LoginActivity.class);
     @Test
-    public void testValidUserEmail() {
+    public void appShouldNotShowLoginViewAfterLoggedIn() {
         onView(withId(R.id.user_email)).perform(typeText("blabla@epfl.ch")).perform(closeSoftKeyboard());
         onView(withId(R.id.user_password)).perform(typeText("valid_pw")).perform(closeSoftKeyboard());
         onView(withId(R.id.login_button)).perform(click());
+
 
         /**
          * TODO: implement test

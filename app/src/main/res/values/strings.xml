@@ -7,4 +7,7 @@
     <string name="login_text">Log in</string>
     <string name="hint_name">Type name</string>
     <string name="greetingMes">Hello %s!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
