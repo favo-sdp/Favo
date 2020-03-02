@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presenter.FavorListFragment">
+    tools:context=".presenter.tabs.Tab1">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/text1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:text="1" />
 
 </FrameLayout>

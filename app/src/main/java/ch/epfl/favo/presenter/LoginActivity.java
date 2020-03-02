@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginButton = (Button) findViewById(R.id.login_button);
+        loginButton = findViewById(R.id.login_button);
         loginButton.setOnClickListener(onLoginButtonPressed);
     }
 
