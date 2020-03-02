@@ -1,7 +1,7 @@
 package ch.epfl.favo.presenter;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
+import ch.epfl.favo.R;
+import ch.epfl.favo.models.UserUtil;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -13,8 +13,10 @@ import android.widget.TextView;
 import android.content.Intent;
 import android.widget.Toast;
 
-import ch.epfl.favo.R;
-import ch.epfl.favo.models.UserUtil;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+
+
 
 public class LoginActivity extends AppCompatActivity {
     TextView userEmail;
@@ -26,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     // Callbacks
     View.OnClickListener onLoginButtonPressed = new View.OnClickListener() {
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
             userEmail = (EditText) findViewById(R.id.user_email);
             userPw = (EditText) findViewById(R.id.user_password);
             login(userEmail.getText().toString(),userPw.getText().toString());
@@ -45,21 +47,20 @@ public class LoginActivity extends AppCompatActivity {
     public void login(String userEmail,String userPw) {
 
 
-        /**
-         * TODO: Implement Login Logic
-         * UserUtil.getSingleInstance().logInAccount(userEmail,userPw);
-         */
+        //TODO: Implement Login Logic
 
         Toast.makeText(getBaseContext(), "Signed in!", Toast.LENGTH_SHORT).show();
 
-
-        //set activity_executed so that the app doesn't show the login page anymore
+        //Set activity_executed so that the app doesn't show the login page anymore.
         setActivityExecuted();
-        //if login successful go into main activity class
+        //If login successful go into main activity class.
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         return;
     }
+
+
+    // Will store the login status to jump directly to main activity.
     public void setActivityExecuted(){
         SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
         SharedPreferences.Editor edt = pref.edit();

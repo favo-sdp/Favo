@@ -11,7 +11,10 @@ import android.view.ViewGroup;
 import ch.epfl.favo.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * View will contain list of favors requested in the past.
+ * The list will contain clickable items that will expand
+ * to give more information about them.
+ * This object is a simple {@link Fragment} subclass.
  */
 public class Tab2 extends Fragment {
 
@@ -23,7 +26,9 @@ public class Tab2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab2, container, false);
+        return inflater.inflate(R.layout.fragment_tab2,
+                container, false);
     }
 }

@@ -11,7 +11,14 @@ import android.view.ViewGroup;
 import ch.epfl.favo.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * This view will contain account information of the user.
+ * It will contain a user information where the user can
+ * modify his/her age, main address, profile photo, etc.
+ * It will also contain settings such as the radius of
+ * favor request.
+ * It might in the future also allow the user to add a list
+ * of skills that they can provide.
+ * This object is a simple {@link Fragment} subclass.
  */
 public class Tab3 extends Fragment {
 
