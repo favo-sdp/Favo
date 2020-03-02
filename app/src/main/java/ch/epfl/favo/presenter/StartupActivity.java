@@ -16,16 +16,12 @@ public class StartupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
-        // decide here whether to navigate to Login or Main Activity
-
+        // decide here whether to navigate to Login or Main Activity.
         SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
 
-        /**
-         * Use block if we want to always open the login view.
-         * SharedPreferences.Editor edt = pref.edit();
-         * edt.putBoolean("activity_executed", false);
-         * edt.apply();
-         */
+        //Comment this line to prevent login screen from reappearing.
+        resetLoginState(pref);
+
 
         if (appIsLoggedIn(pref)) {
             //Go to the main activity if already logged in
@@ -44,5 +40,10 @@ public class StartupActivity extends AppCompatActivity {
     }
     public boolean appIsLoggedIn(SharedPreferences pref){
         return pref.getBoolean("activity_executed", false);
+    }
+    public void resetLoginState(SharedPreferences pref){
+        SharedPreferences.Editor edt = pref.edit();
+        edt.putBoolean("activity_executed", false);
+        edt.apply();
     }
 }

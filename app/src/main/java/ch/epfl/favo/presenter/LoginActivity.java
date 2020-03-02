@@ -67,4 +67,5 @@ public class LoginActivity extends AppCompatActivity {
         edt.putBoolean("activity_executed", true);
         edt.apply();
     }
+
 }

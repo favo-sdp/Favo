@@ -5,6 +5,7 @@ import ch.epfl.favo.models.FavorUtil;
 import ch.epfl.favo.models.UserUtil;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         //hook adapter to view pager
         viewPager.setAdapter(myAdapter);
-        viewPager.setPageTransformer(new MarginPageTransformer(1500));
+        //viewPager.setPageTransformer(new MarginPageTransformer(1500));
 
         //Create mediator
         new TabLayoutMediator(tabLayout, viewPager,
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }).attach();
     }
+
 
 
 }

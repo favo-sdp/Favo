@@ -26,4 +26,5 @@ public class ExampleInstrumentedTest {
         assertEquals("ch.epfl.favo", appContext.getPackageName());
     }
 
+
 }
