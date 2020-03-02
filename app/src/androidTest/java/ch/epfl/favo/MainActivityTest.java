@@ -32,17 +32,5 @@ public class MainActivityTest {
         //TODO: Implement test
     }
 
-    //@Test
-    //public void sampleTest(){
-    //    onView(withId(R.id.mainGoButton)).perform(click());
-    //}
-    /**
-     * Sample Test function underneath
-     */
-   // @Test
-   // public void testCanGreetUsers() {
-   //     onView(withId(R.id.mainName)).perform(typeText("from my unit test")).perform(closeSoftKeyboard());
-   //     onView(withId(R.id.mainGoButton)).perform(click());
-   //     onView(withId(R.id.greetingMessage)).check(matches(withText("Hello from my unit test!")));
-   // }
+
 }
