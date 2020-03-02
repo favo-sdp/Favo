@@ -9,12 +9,15 @@
     tools:context=".presenter.MainActivity">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
+            android:layout_alignParentBottom="true"
+            app:tabMode="fixed"
+            >
             <com.google.android.material.tabs.TabItem
                 android:id="@+id/tab1"
                 android:layout_width="wrap_content"
@@ -32,7 +35,8 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
+            android:layout_above="@id/tab_layout"
              />
     </RelativeLayout>
 
