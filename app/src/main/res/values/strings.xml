@@ -3,4 +3,5 @@
     <string name="button">Button</string>
     <string name="hint_name">Type name</string>
     <string name="greetingMes">Hello %s!</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
