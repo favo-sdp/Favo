@@ -23,21 +23,21 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 @RunWith(AndroidJUnit4.class)
 public class LoginActivityTest {
     //Should be login activity but app doesn't launch if that's the case
-    @Rule
-    public final ActivityTestRule<LoginActivity> mActivityRule =
-            new ActivityTestRule<>(LoginActivity.class);
-    @Test
-    public void appShouldNotShowLoginViewAfterLoggedIn() {
-        onView(withId(R.id.user_email)).perform(typeText("blabla@epfl.ch")).perform(closeSoftKeyboard());
-        onView(withId(R.id.user_password)).perform(typeText("valid_pw")).perform(closeSoftKeyboard());
-        onView(withId(R.id.login_button)).perform(click());
-
-
-        /**
-         * TODO: implement test
-         */
-        //onView(withId(R.id.text_invalid_input)).check(matches(withText("Login Failed")));
-        //onView(withId(R.id.custom_toast_container)).check(matches(withText("Hello from my unit test!")));
-    }
+    //@Rule
+    //public final ActivityTestRule<LoginActivity> mActivityRule =
+    //        new ActivityTestRule<>(LoginActivity.class);
+    //@Test
+    //public void appShouldNotShowLoginViewAfterLoggedIn() {
+    //    onView(withId(R.id.user_email)).perform(typeText("blabla@epfl.ch")).perform(closeSoftKeyboard());
+    //    onView(withId(R.id.user_password)).perform(typeText("valid_pw")).perform(closeSoftKeyboard());
+    //    onView(withId(R.id.login_button)).perform(click());
+//
+//
+    //    /**
+    //     * TODO: implement test
+    //     */
+    //    //onView(withId(R.id.text_invalid_input)).check(matches(withText("Login Failed")));
+    //    //onView(withId(R.id.custom_toast_container)).check(matches(withText("Hello from my unit test!")));
+    //}
 
 }

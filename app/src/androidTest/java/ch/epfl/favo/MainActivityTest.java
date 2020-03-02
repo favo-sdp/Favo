@@ -22,15 +22,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-    @Rule
-    public final ActivityTestRule<MainActivity> mActivityRule =
-            new ActivityTestRule<>(MainActivity.class);
-
-    @Test
-    public void Tab1isCorrectlySelected() {
-        onView(withId(R.id.tab_layout)).perform(click());
-        //TODO: Implement test
-    }
+    //@Rule
+    //public final ActivityTestRule<MainActivity> mActivityRule =
+    //        new ActivityTestRule<>(MainActivity.class);
+//
+    //@Test
+    //public void Tab1isCorrectlySelected() {
+    //    onView(withId(R.id.tab_layout)).perform(click());
+    //    //TODO: Implement test
+    //}
 
 
 }
