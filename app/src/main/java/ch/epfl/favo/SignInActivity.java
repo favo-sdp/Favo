@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.util.ExtraConstants;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,22 +29,81 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Already signed-in
+            startActivity(new Intent(this, UserAccountActivity.class));
+            finish();
+            return;
+        }
+
+        if (AuthUI.canHandleIntent(getIntent())) {
+            catchEmailLinkSignIn();
+        } else {
+            signIn();
+        }
+
         setContentView(R.layout.activity_sign_in);
-
-        List<AuthUI.IdpConfig> providers = Collections.singletonList(new AuthUI.IdpConfig.GoogleBuilder().build());
-
-        // Create and launch sign-in intent
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setAvailableProviders(providers)
-                        .setLogo(R.drawable.logo)      // Set logo drawable
-                        .setTheme(R.style.FirebaseUI)      // Set theme
-                        .build(),
-                RC_SIGN_IN);
     }
 
-    // [START auth_fui_result]
+    public void catchEmailLinkSignIn() {
+        if (AuthUI.canHandleIntent(getIntent())) {
+            if (getIntent().getData() == null) {
+                return;
+            }
+            String link = getIntent().getData().toString();
+            signInWithEmailLink(link);
+        }
+    }
+
+    public void signIn() {
+        startActivityForResult(createSignInIntent(null), RC_SIGN_IN);
+    }
+
+    public void signInWithEmailLink(@Nullable String link) {
+        startActivityForResult(createSignInIntent(link), RC_SIGN_IN);
+    }
+
+    @NonNull
+    public Intent createSignInIntent(@Nullable String link) {
+
+        ActionCodeSettings actionCodeSettings = ActionCodeSettings.newBuilder()
+                .setAndroidPackageName("ch.epfl.favo", true, null)
+                .setHandleCodeInApp(true)
+                .setUrl("https://google.com") // This URL needs to be whitelisted
+                .build();
+
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.FacebookBuilder().build(),
+                new AuthUI.IdpConfig.EmailBuilder().enableEmailLinkSignIn().setActionCodeSettings(actionCodeSettings).build());
+
+        // Create sign-in intent
+        AuthUI.SignInIntentBuilder builder = AuthUI.getInstance().createSignInIntentBuilder()
+                .setIsSmartLockEnabled(!BuildConfig.DEBUG, true)
+                .setAvailableProviders(providers)
+                .setLogo(R.drawable.logo2)
+                .setTheme(R.style.GreenTheme);
+
+        if (link != null) {
+            builder.setEmailLink(link);
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
+            startActivity(new Intent().setClass(this, UserAccountActivity.class));
+            finish();
+        }
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -50,7 +113,7 @@ public class SignInActivity extends AppCompatActivity {
 
             if (resultCode == RESULT_OK) {
                 // Successfully signed in
-                startActivity(new Intent().setClass(this, UserAccountActivity.class).putExtra(ExtraConstants.IDP_RESPONSE, response));
+                startActivity(new Intent().setClass(this, UserAccountActivity.class));
                 finish();
             } else {
 
@@ -80,143 +143,5 @@ public class SignInActivity extends AppCompatActivity {
     private void showSnackbar(@StringRes int errorMessageRes) {
         Snackbar.make(findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
     }
-
-//    public void getUserProfile() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        if (user != null) {
-//            // Name, email address, and profile photo Url
-//            String name = user.getDisplayName();
-//            String email = user.getEmail();
-//            Uri photoUrl = user.getPhotoUrl();
-//
-//            // Check if user's email is verified
-//            boolean emailVerified = user.isEmailVerified();
-//
-//            // The user's ID, unique to the Firebase project. Do NOT use this value to
-//            // authenticate with your backend server, if you have one. Use
-//            // FirebaseUser.getIdToken() instead.
-//            String uid = user.getUid();
-//        }
-//    }
-//
-//    public void getProviderData() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        if (user != null) {
-//            for (UserInfo profile : user.getProviderData()) {
-//                // Id of the provider (ex: google.com)
-//                String providerId = profile.getProviderId();
-//
-//                // UID specific to the provider
-//                String uid = profile.getUid();
-//
-//                // Name, email address, and profile photo Url
-//                String name = profile.getDisplayName();
-//                String email = profile.getEmail();
-//                Uri photoUrl = profile.getPhotoUrl();
-//            }
-//        }
-//    }
-//
-//    public void updateProfile() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-//                .setDisplayName("Jane Q. User")
-//                .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
-//                .build();
-//
-//        assert user != null;
-//        user.updateProfile(profileUpdates)
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d(TAG, "User profile updated.");
-//                        }
-//                    }
-//                });
-//        // [END update_profile]
-//    }
-//
-//    public void updateEmail() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        user.updateEmail("user@example.com")
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d(TAG, "User email address updated.");
-//                        }
-//                    }
-//                });
-//    }
-//
-//    public void updatePassword() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        String newPassword = "SOME-SECURE-PASSWORD";
-//
-//        user.updatePassword(newPassword)
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d(TAG, "User password updated.");
-//                        }
-//                    }
-//                });
-//    }
-//
-//    public void deleteUser() {
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        user.delete()
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        if (task.isSuccessful()) {
-//                            Log.d(TAG, "User account deleted.");
-//                        }
-//                    }
-//                });
-//    }
-//
-//    public void reauthenticate() {
-//        // [START reauthenticate]
-//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        // Get auth credentials from the user for re-authentication. The example below shows
-//        // email and password credentials but there are multiple possible providers,
-//        // such as GoogleAuthProvider or FacebookAuthProvider.
-//        AuthCredential credential = EmailAuthProvider
-//                .getCredential("user@example.com", "password1234");
-//
-//        // Prompt the user to re-provide their sign-in credentials
-//        user.reauthenticate(credential)
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        Log.d(TAG, "User re-authenticated.");
-//                    }
-//                });
-//        // [END reauthenticate]
-//    }
-//
-//    public void getGoogleCredentials() {
-//        String googleIdToken = "";
-//        AuthCredential credential = GoogleAuthProvider.getCredential(googleIdToken, null);
-//    }
-
-//    public void signOut() {
-//        FirebaseAuth.getInstance().signOut();
-//    }
-//
-//    private void enableUserManuallyInputCode() {
-//        // No-op
-//    }
-//
-//    private void updateUI(@Nullable FirebaseUser user) {
-//        // No-op
-//    }
 
 }

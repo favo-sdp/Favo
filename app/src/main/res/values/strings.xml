@@ -10,14 +10,18 @@
     <string name="sign_out_failed">Sign out failed</string>
     <string name="delete_account_failed">Delete account failed</string>
 
-    <string name="user_profile_header">User profile:</string>
     <string name="profile_picture_content_desc">Profile picture</string>
     <string name="used_providers">Providers used: %s</string>
-    <string name="idp_token">IDP Token</string>
-    <string name="idp_secret">IDP Secret</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="account_disabled">The account is disabled</string>
     <string name="unknown_error">An unknown error occurred</string>
+
+    <string name="providers_google">Google</string>
+    <string name="providers_facebook">Facebook</string>
+
+    <string name="facebook_application_id" translatable="false">616130435602635</string>
+    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fb616130435602635</string>
 
 </resources>

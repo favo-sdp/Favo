@@ -42,8 +42,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.3'
 
     // Add the SDKs for any other Firebase products you want to use in your app
-    implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
+
+    // Providers
+    implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
