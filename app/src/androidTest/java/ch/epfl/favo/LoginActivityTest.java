@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import ch.epfl.favo.presenter.LoginActivity;
 import ch.epfl.favo.presenter.MainActivity;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -36,6 +37,7 @@ public class LoginActivityTest {
     public void logInLeadsToMainActivity(){
         activityRule.launchActivity(new Intent());
         //login successfully
+        closeSoftKeyboard();
         onView(withId(R.id.login_button)).perform(click());
         //check we are in main activity
         intended(hasComponent(MainActivity.class.getName()));
