@@ -16,13 +16,12 @@ public class StartupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
-        // decide here whether to navigate to Login or Main Activity.
-        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
 
+        SharedPreferences pref = getSharedPreferences("ActivityPREF", Context.MODE_PRIVATE);
         //Comment this line to prevent login screen from reappearing.
         resetLoginState(pref);
 
-
+        //Decide whether to go to login or main
         if (appIsLoggedIn(pref)) {
             //Go to the main activity if already logged in
             Intent intent = new Intent(this, MainActivity.class);
