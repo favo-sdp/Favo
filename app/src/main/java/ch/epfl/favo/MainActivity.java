@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    /** Called when the user taps the Send button */
+    /** Called when the user taps the button */
     public void openMap(View view) {
         // Do something in response to button
         Intent intent = new Intent(this, MapsActivity.class);
