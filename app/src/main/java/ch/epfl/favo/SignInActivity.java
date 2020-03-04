@@ -23,24 +23,12 @@ public class SignInActivity extends AppCompatActivity {
 
   private static final int RC_SIGN_IN = 123;
 
-  //    public static FirebaseUser currentFirebaseUser =
-  // FirebaseAuth.getInstance().getCurrentUser();
-  //
-  //    @VisibleForTesting
-  //    public void setCurrentFirebaseUser(FirebaseUser u) {
-  //        currentFirebaseUser = u;
-  //    }
-
-  public FirebaseUser getCurrentFirebaseUser() {
-    return FirebaseAuth.getInstance().getCurrentUser();
-  }
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_sign_in);
 
-    FirebaseUser user = getCurrentFirebaseUser();
+    FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
       // Already signed-in
       startActivity(new Intent(this, UserAccountActivity.class));
@@ -78,16 +66,12 @@ public class SignInActivity extends AppCompatActivity {
             .setLogo(R.drawable.logo)
             .setTheme(R.style.AppTheme);
 
-    if (isIntentLinkValid() && getIntent().getData() != null) {
+    if (AuthUI.canHandleIntent(getIntent()) && getIntent().getData() != null) {
       String link = getIntent().getData().toString();
       builder.setEmailLink(link);
     }
 
     return builder.build();
-  }
-
-  public boolean isIntentLinkValid() {
-    return AuthUI.canHandleIntent(getIntent());
   }
 
   @Override
@@ -100,16 +84,12 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
-  public IdpResponse getIdpResponseFromIntent(Intent intent) {
-    return IdpResponse.fromResultIntent(intent);
-  }
-
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == RC_SIGN_IN) {
-      IdpResponse response = getIdpResponseFromIntent(data);
+      IdpResponse response = IdpResponse.fromResultIntent(data);
 
       if (resultCode == RESULT_OK) {
         // Successfully signed in

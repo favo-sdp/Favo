@@ -14,23 +14,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
 public class UserAccountActivity extends AppCompatActivity {
-
-  // public FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-  //    @VisibleForTesting
-  //    public void setCurrentFirebaseUser(FirebaseUser u) {
-  //        this.currentFirebaseUser = u;
-  //    }
-
-  public FirebaseUser getCurrentFirebaseUser() {
-    return FirebaseAuth.getInstance().getCurrentUser();
-  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +26,7 @@ public class UserAccountActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
 
     setContentView(R.layout.activity_user_account);
-    displayUserData(Objects.requireNonNull(getCurrentFirebaseUser()));
-    // createUser(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()));
+    displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
   }
 
   public void displayUserData(FirebaseUser user) {
@@ -56,34 +43,16 @@ public class UserAccountActivity extends AppCompatActivity {
             TextUtils.isEmpty(user.getDisplayName())
                 ? Objects.requireNonNull(user.getEmail()).split("@")[0]
                 : user.getDisplayName());
+
     ((TextView) findViewById(R.id.user_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "No email" : user.getEmail());
 
-    //        List<String> providers = new ArrayList<>();
-    //        if (!user.getProviderData().isEmpty()) {
-    //            for (UserInfo info : user.getProviderData()) {
-    //                switch (info.getProviderId()) {
-    //                    case GoogleAuthProvider.PROVIDER_ID:
-    //                        providers.add(getString(R.string.providers_google));
-    //                        break;
-    //                    case FacebookAuthProvider.PROVIDER_ID:
-    //                        providers.add(getString(R.string.providers_facebook));
-    //                        break;
-    //                    default:
-    //                        providers.add(info.getProviderId());
-    //                }
-    //            }
-    //        }
     ((TextView) findViewById(R.id.user_providers))
         .setText(getString(R.string.used_providers, user.getProviderId()));
   }
 
-  public AuthUI getCurrentAuthUIInstance() {
-    return AuthUI.getInstance();
-  }
-
   public void signOut(View view) {
-    getCurrentAuthUIInstance()
+    AuthUI.getInstance()
         .signOut(this)
         .addOnCompleteListener(
             task -> {
@@ -106,7 +75,7 @@ public class UserAccountActivity extends AppCompatActivity {
   }
 
   private void deleteAccount() {
-    getCurrentAuthUIInstance()
+    AuthUI.getInstance()
         .delete(this)
         .addOnCompleteListener(
             task -> {

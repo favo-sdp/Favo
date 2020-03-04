@@ -19,13 +19,13 @@ import static org.mockito.Mockito.when;
 
 public class TestHelper {
 
-  public static final String EMAIL = "test@example.com";
-  public static final String NAME = "Test Testerson";
-  public static final String UID = "uid";
-  public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
+  private static final String EMAIL = "test@example.com";
+  private static final String NAME = "Test Testerson";
+  private static final String UID = "uid";
+  private static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
-  public static final FirebaseApp MOCK_APP;
-  public static Context CONTEXT = ApplicationProvider.getApplicationContext();
+  private static final FirebaseApp MOCK_APP;
+  private static Context CONTEXT = ApplicationProvider.getApplicationContext();
 
   static {
     FirebaseApp app = mock(FirebaseApp.class);
