@@ -15,6 +15,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Setup DB library
+        new DatabaseWrapper();
+        System.out.println("setup wrapper");
     }
 
     /** Called when the user taps the Send button */

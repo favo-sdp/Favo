@@ -1,60 +1,23 @@
 package ch.epfl.favo;
 
-public class UserUtil {
+import java.util.ArrayList;
 
-    public class User {
+public final class UserUtil {
 
-        private String name;
-        private String email;
-        private String deviceId;
-        private int age;
-        private int activeAcceptingFavors;
-        private int activeRequestingFavors;
+    public UserUtil() {}
 
-        public User() {}
+    public static ArrayList initalizeUser(String name, String email, String device_id) {
 
-        public User(
-            String name,
-            String email,
-            String deviceId,
-            int age,
-            int activeAcceptingFavors,
-            int activeRequestingFavors
-        ) {
-            this.name = name;
-            this.email = email;
-            this.deviceId = deviceId;
-            this.age = age;
-            this.activeAcceptingFavors = activeAcceptingFavors;
-            this.activeRequestingFavors = activeRequestingFavors;
-        }
-
-        public String getName() { return name; }
-
-        public String getEmail() { return email; }
-
-        public String getDeviceId() { return deviceId; }
-
-        public int getAge() { return age; }
-
-        public int getActiveAcceptingFavors() { return activeAcceptingFavors; }
-
-        public int getActiveRequestingFavors() { return activeRequestingFavors; }
-
-        void setActiveAcceptingFavors(int activeAcceptingFavors) {
-            this.activeAcceptingFavors = activeAcceptingFavors;
-        }
-
-        void setActiveRequestingFavors(int activeRequestingFavors) {
-            this.activeRequestingFavors = activeRequestingFavors;
-        }
-
-        boolean canAccept() {
-            return activeAcceptingFavors + activeRequestingFavors <= 1;
-        }
-
-        boolean canRequest() {
-            return activeAcceptingFavors + activeRequestingFavors <= 1;
-        }
+        ArrayList userDetails = new ArrayList<>();
+        // # make call to DB library
+        return userDetails;
     }
+
+    public static boolean deleteUser(String userId) {
+
+        boolean success = false;
+        // # make call to DB library
+        return success;
+    }
+
 }
