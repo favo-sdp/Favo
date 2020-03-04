@@ -4,7 +4,7 @@ import android.location.Location;
 
 import java.util.ArrayList;
 
-public class FavorUtil {
+public final class FavorUtil {
 
     public FavorUtil() {}
 

@@ -2,7 +2,7 @@ package ch.epfl.favo;
 
 import java.util.ArrayList;
 
-public class UserDatabase {
+public final class UserDatabase {
 
     public UserDatabase() {}
 

@@ -22,10 +22,4 @@ public final class DatabaseWrapper {
     public static FirebaseFirestore getDatabaseInstance() {
         return mFirestore;
     }
-
-    public static void testDatabaseConnection() {
-
-        // Connection test logic
-        return;
-    }
 }
