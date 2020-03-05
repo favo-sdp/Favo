@@ -1,25 +1,14 @@
 package ch.epfl.favo;
 
-import ch.epfl.favo.R;
-import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
-import ch.epfl.favo.view.TabAdapter;
-
-
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabItem;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.ListFragment;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
-import androidx.appcompat.app.AppCompatActivity;
+import ch.epfl.favo.view.TabAdapter;
 
 
 /**
@@ -37,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -64,24 +54,21 @@ public class MainActivity extends AppCompatActivity {
         //viewPager.setPageTransformer(new MarginPageTransformer(1500));
 
         //Create mediator
+        //Assign icons to tabs
         new TabLayoutMediator(tabLayout, viewPager,
-                new TabLayoutMediator.TabConfigurationStrategy() {
-
-                    //Assign icons to tabs
-                    @Override public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                        switch (position){
-                            case 0: {
-                                tab.setIcon(R.drawable.ic_group_work_24px);
-                                break;
-                            }
-                            case 1: {
-                                tab.setIcon(R.drawable.ic_list_24px);
-                                break;
-                            }
-                            case 2: {
-                                tab.setIcon(R.drawable.ic_face_24px);
-                                break;
-                            }
+                (tab, position) -> {
+                    switch (position){
+                        case 0: {
+                            tab.setIcon(R.drawable.ic_group_work_24px);
+                            break;
+                        }
+                        case 1: {
+                            tab.setIcon(R.drawable.ic_list_24px);
+                            break;
+                        }
+                        case 2: {
+                            tab.setIcon(R.drawable.ic_face_24px);
+                            break;
                         }
                     }
                 }).attach();

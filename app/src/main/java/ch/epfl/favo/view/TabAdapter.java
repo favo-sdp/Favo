@@ -2,7 +2,7 @@ package ch.epfl.favo.view;
 
 import ch.epfl.favo.view.tabs.Tab1;
 import ch.epfl.favo.view.tabs.Tab2;
-import ch.epfl.favo.view.tabs.Tab3;
+import ch.epfl.favo.view.tabs.UserAccountPage;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -34,7 +34,7 @@ public class TabAdapter extends FragmentStateAdapter {
         switch (position){
             case 0: return new Tab1();
             case 1: return new Tab2();
-            case 2: return new Tab3();
+            case 2: return new UserAccountPage();
             default: return null;
         }
     }

@@ -5,7 +5,6 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 
-import ch.epfl.favo.TestUtil;
 import ch.epfl.favo.common.NotImplementedException;
 
 
@@ -22,36 +21,13 @@ public class UserUnitTests {
     public void setup(){
         user= new User();
     }
-    @Test
-    public void userCannotBeCreatedIfAlreadyExists(){
-        assertThrows(NotImplementedException.class,
-                ()->{UserUtil.getSingleInstance().createAccount(user);});
-    }
-    @Test
-    public void userCannotLoginIfAccountDoesNotExist(){
-        User newUser = new User();
-        assertThrows(NotImplementedException.class,
-                ()->{UserUtil.getSingleInstance().logInAccount(user);});
-    }
-    @Test
-    public void userCanLogOutOnlyIfLoggedIn(){
-
-        assertThrows(NotImplementedException.class,
-                ()->{UserUtil.getSingleInstance().logOutAccount();});
-    }
-    @Test
-    public void userCanDeleteAccountOnlyIfAccountExists(){
-
-        assertThrows(NotImplementedException.class,
-                ()->{UserUtil.getSingleInstance().deleteAccount();});
-    }
 
     @Test
     public void userCanRetrieveDetailsFromDatabase(){
 
         String userId = "2negoinr3";
         assertThrows(NotImplementedException.class,
-                ()->{UserDatabase.getSingleInstance().getUserFromDB(userId);});
+                ()-> UserDatabase.getSingleInstance().getUserFromDB(userId));
     }
 
     @Test
@@ -59,7 +35,7 @@ public class UserUnitTests {
 
         String userId = "2negoinr3";
         assertThrows(NotImplementedException.class,
-                ()->{UserDatabase.getSingleInstance().removeUserFromDB(userId);});
+                ()-> UserDatabase.getSingleInstance().removeUserFromDB(userId));
     }
     @Test
     public void userGettersReturnCorrectValues(){
