@@ -36,6 +36,15 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- TAB 2 (David) -->
+    <string name="favor_greeting_str">Hello!</string>
+    <string name="favor_title_hint">What\'s up?</string>
+    <string name="favor_img_content_desc">Descriptive image</string>
+    <string name="favor_location_hint">Where?</string>
+    <string name="favor_datetime_hint">Now</string>
+    <string name="favor_details_hint">Add more details?</string>
+    <string name="favor_confirm_button">Confirm Adding Favor</string>
     <string name="tab1_description">1</string>
     <string name="tab2_description">2</string>
 </resources>
