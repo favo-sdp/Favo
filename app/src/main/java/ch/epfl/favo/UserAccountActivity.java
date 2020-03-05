@@ -7,11 +7,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -50,19 +52,7 @@ public class UserAccountActivity extends AppCompatActivity {
   }
 
   public void signOut(View view) {
-    AuthUI.getInstance()
-        .signOut(this)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                startActivity(new Intent(UserAccountActivity.this, SignInActivity.class));
-                finish();
-              } else {
-                // commenting snackbar for testing purposes, need to comment out after finding
-                // solution
-                // showSnackbar(R.string.sign_out_failed);
-              }
-            });
+    AuthUI.getInstance().signOut(this).addOnCompleteListener(this::onComplete);
   }
 
   public void deleteAccountClicked(View view) {
@@ -74,22 +64,11 @@ public class UserAccountActivity extends AppCompatActivity {
   }
 
   private void deleteAccount() {
-    AuthUI.getInstance()
-        .delete(this)
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                startActivity(new Intent(UserAccountActivity.this, SignInActivity.class));
-                finish();
-              } else {
-                // commenting snackbar for testing purposes, need to comment out after finding
-                // solution
-                // showSnackbar(R.string.delete_account_failed);
-              }
-            });
+    AuthUI.getInstance().delete(this).addOnCompleteListener(this::onComplete);
   }
 
-  //  public void showSnackbar(@StringRes int errorMessageRes) {
-  //    Snackbar.make(findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
-  //  }
+  public void onComplete(@NonNull Task<Void> task) {
+    startActivity(new Intent(UserAccountActivity.this, SignInActivity.class));
+    finish();
+  }
 }

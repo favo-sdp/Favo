@@ -38,21 +38,9 @@ public class SignInActivity extends AppCompatActivity {
 
   @NonNull
   public Intent createSignInIntent() {
-    ActionCodeSettings actionCodeSettings =
-        ActionCodeSettings.newBuilder()
-            .setAndroidPackageName("ch.epfl.favo", true, null)
-            .setHandleCodeInApp(true)
-            .setUrl("https://google.com")
-            .build();
+    ActionCodeSettings actionCodeSettings = getActionCodeSettings();
 
-    List<AuthUI.IdpConfig> providers =
-        Arrays.asList(
-            new AuthUI.IdpConfig.GoogleBuilder().build(),
-            new AuthUI.IdpConfig.FacebookBuilder().build(),
-            new AuthUI.IdpConfig.EmailBuilder()
-                .enableEmailLinkSignIn()
-                .setActionCodeSettings(actionCodeSettings)
-                .build());
+    List<AuthUI.IdpConfig> providers = getProviders(actionCodeSettings);
 
     // Create sign-in intent
     AuthUI.SignInIntentBuilder builder =
@@ -71,22 +59,30 @@ public class SignInActivity extends AppCompatActivity {
     return builder.build();
   }
 
-  //  @Override
-  //  protected void onResume() {
-  //    super.onResume();
-  //    FirebaseAuth auth = FirebaseAuth.getInstance();
-  //    if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
-  //      startActivity(new Intent().setClass(this, UserAccountActivity.class));
-  //      finish();
-  //    }
-  //  }
+  private List<AuthUI.IdpConfig> getProviders(ActionCodeSettings actionCodeSettings) {
+    return Arrays.asList(
+        new AuthUI.IdpConfig.GoogleBuilder().build(),
+        new AuthUI.IdpConfig.FacebookBuilder().build(),
+        new AuthUI.IdpConfig.EmailBuilder()
+            .enableEmailLinkSignIn()
+            .setActionCodeSettings(actionCodeSettings)
+            .build());
+  }
+
+  private ActionCodeSettings getActionCodeSettings() {
+    return ActionCodeSettings.newBuilder()
+        .setAndroidPackageName("ch.epfl.favo", true, null)
+        .setHandleCodeInApp(true)
+        .setUrl("https://google.com")
+        .build();
+  }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
+  protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    super.onActivityResult(requestCode, resultCode, intent);
 
     if (requestCode == RC_SIGN_IN) {
-      IdpResponse response = IdpResponse.fromResultIntent(data);
+      IdpResponse idpResponse = IdpResponse.fromResultIntent(intent);
 
       if (resultCode == RESULT_OK) {
         // Successfully signed in
@@ -94,7 +90,7 @@ public class SignInActivity extends AppCompatActivity {
         finish();
       } else {
 
-        if (response == null) {
+        if (idpResponse == null) {
           showSnackbar(R.string.sign_in_cancelled);
           return;
         }
@@ -104,7 +100,7 @@ public class SignInActivity extends AppCompatActivity {
         //          showSnackbar(R.string.no_internet_connection);
         //          return;
         //        }
-        //
+
         showSnackbar(R.string.unknown_error);
       }
     }
