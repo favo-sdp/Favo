@@ -2,10 +2,6 @@ package ch.epfl.favo.user;
 
 import org.junit.Test;
 
-import java.util.Random;
-
-import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.TestUtil;
 import ch.epfl.favo.common.NotImplementedException;
 
@@ -43,5 +39,21 @@ public class UserUnitTests {
 
         assertThrows(NotImplementedException.class,
                 ()->{UserUtil.getSingleInstance().deleteAccount();});
+    }
+
+    @Test
+    public void userCanRetrieveDetailsFromDatabase(){
+
+        String userId = "2negoinr3";
+        assertThrows(NotImplementedException.class,
+                ()->{UserDatabase.getSingleInstance().getUserFromDB(userId);});
+    }
+
+    @Test
+    public void userCanRemoveDetailsFromDatabase(){
+
+        String userId = "2negoinr3";
+        assertThrows(NotImplementedException.class,
+                ()->{UserDatabase.getSingleInstance().removeUserFromDB(userId);});
     }
 }

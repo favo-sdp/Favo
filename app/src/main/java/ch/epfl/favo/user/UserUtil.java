@@ -3,18 +3,11 @@ package ch.epfl.favo.user;
 import ch.epfl.favo.common.NotImplementedException;
 
 public class UserUtil {
-    /*
-    TODO: Design singleton constructor and logic
-     */
-    //Single private instance
+
     private static final UserUtil SINGLE_INSTANCE = new UserUtil();
 
-    //Private constructor
-    private UserUtil(){
-        return;
-    }
+    private UserUtil() {}
 
-    //Single instance getter
     public static UserUtil getSingleInstance() {
         return SINGLE_INSTANCE;
     }
