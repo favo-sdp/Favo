@@ -40,18 +40,14 @@ public class GpsTracker extends Service implements LocationListener {
         this.context=context;
     }
 
-    public GpsTracker(){
-        this.context = null;
-    }
-
     /**
      * @throws NoPermissionGrantedException Should check if location permissions are granted
      * @throws RuntimeException Should check if location is finally found
      * @return the location of phone
      */
     public  Location getLocation() throws NoPermissionGrantedException, RuntimeException {
-        LocationManagerDependencyFactory locationManagerDependencyFactory = new LocationManagerDependencyFactory(context);
-        locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
+        locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
+        //locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -87,7 +83,7 @@ public class GpsTracker extends Service implements LocationListener {
 
     // followings are the default method if we implement LocationListener //
     public void onLocationChanged(Location location){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     public void onStatusChanged(String Provider, int status, Bundle extras){

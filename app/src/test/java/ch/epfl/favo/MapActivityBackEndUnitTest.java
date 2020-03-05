@@ -38,56 +38,12 @@ import static org.mockito.Mockito.when;
 public class MapActivityBackEndUnitTest {
 
     @Mock
+    private Context contextMock = mock(MockContext.class);
     LocationManager locationManagerMock = mock(LocationManager.class);
-    MockContext contextMock = mock(MockContext.class);
-
-    private void setMockLocation(double latitude, double longitude, float accuracy) {
-
-        LocationManager lm = locationManagerMock;
-
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new LocationListener() {
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-
-            @Override
-            public void onLocationChanged(Location location) {
-            }
-        });
-
-
-        lm.addTestProvider(LocationManager.GPS_PROVIDER,
-                "requiresNetwork" == "",
-                "requiresSatellite" == "",
-                "requiresCell" == "",
-                "hasMonetaryCost" == "",
-                "supportsAltitude" == "",
-                "supportsSpeed" == "",
-                "supportsBearing" == "",
-                android.location.Criteria.POWER_LOW,
-                android.location.Criteria.ACCURACY_FINE);
-
-        Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-
-        newLocation.setLatitude(latitude);
-        newLocation.setLongitude(longitude);
-        newLocation.setAccuracy(accuracy);
-
-        lm.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
-        lm.setTestProviderStatus(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null, System.currentTimeMillis());
-        lm.setTestProviderLocation(LocationManager.GPS_PROVIDER, newLocation);
-    }
 
     @Test
     public void NoLocationFoundTest() {
+        LocationManager locationManagerMock = mock(LocationManager.class);
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
         PowerMockito.mockStatic(ContextCompat.class);
         PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
@@ -95,7 +51,7 @@ public class MapActivityBackEndUnitTest {
         // Given a mocked Context injected into the object under test...
         when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
-        assertThrows(NoPositionFoundException.class, () -> new GpsTracker().getLocation());
+        assertThrows(NoPositionFoundException.class, () -> new GpsTracker(contextMock).getLocation());
     }
 
 
@@ -105,7 +61,7 @@ public class MapActivityBackEndUnitTest {
         PowerMockito.mockStatic(ContextCompat.class);
         PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
                 .thenReturn(PackageManager.PERMISSION_DENIED);
-        assertThrows(NoPermissionGrantedException.class, () -> new GpsTracker().getLocation());
+        assertThrows(NoPermissionGrantedException.class, () -> new GpsTracker(contextMock).getLocation());
     }
 
     @Test
@@ -120,7 +76,7 @@ public class MapActivityBackEndUnitTest {
         when(mockLocation.getLatitude()).thenReturn(10.0);
         when(mockLocation.getLongitude()).thenReturn(15.2);
         when(locationManagerMock.getLastKnownLocation(LocationManager.GPS_PROVIDER)).thenReturn(mockLocation);
-        GpsTracker gpsTracker = new GpsTracker();
+        GpsTracker gpsTracker = new GpsTracker(contextMock);
         double latitude = gpsTracker.getLocation().getLatitude();
         double longitude = gpsTracker.getLocation().getLongitude();
         assertEquals(latitude, 10.0, 0.01);
@@ -131,14 +87,8 @@ public class MapActivityBackEndUnitTest {
     public void locationIsChanged() {
         /* Set a mock location for debugging purposes */
         //setMockLocation(15.387653, 73.872585, 500);
-        final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-        assertThrows(NotImplementedException.class,
-                new ThrowingRunnable() {
-                    @Override
-                    public void run() throws Throwable {
-                        new GpsTracker().onLocationChanged(newLocation);
-                    }
-                });
+        new GpsTracker(contextMock).onLocationChanged(mock(Location.class));
+
     }
 
     @Test
@@ -150,7 +100,7 @@ public class MapActivityBackEndUnitTest {
                 new ThrowingRunnable() {
                     @Override
                     public void run() throws Throwable {
-                        new GpsTracker().onStatusChanged(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null);
+                        new GpsTracker(contextMock).onStatusChanged(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null);
                     }
                 });
     }
@@ -164,7 +114,7 @@ public class MapActivityBackEndUnitTest {
                 new ThrowingRunnable() {
                     @Override
                     public void run() throws Throwable {
-                        new GpsTracker().onProviderDisabled(LocationManager.GPS_PROVIDER);
+                        new GpsTracker(contextMock).onProviderDisabled(LocationManager.GPS_PROVIDER);
                     }
                 });
     }
@@ -178,7 +128,7 @@ public class MapActivityBackEndUnitTest {
                 new ThrowingRunnable() {
                     @Override
                     public void run() throws Throwable {
-                        new GpsTracker().onProviderEnabled(LocationManager.GPS_PROVIDER);
+                        new GpsTracker(contextMock).onProviderEnabled(LocationManager.GPS_PROVIDER);
                     }
                 });
     }

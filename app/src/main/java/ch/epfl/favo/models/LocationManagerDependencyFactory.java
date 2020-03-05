@@ -14,15 +14,9 @@ import androidx.annotation.Nullable;
 public class LocationManagerDependencyFactory  extends Service  {
 
     private static boolean variableSet = false;
-    private static Context context;
     private static LocationManager currentLocationManager;
 
-    public  LocationManagerDependencyFactory(Context context){
-        this.context = context;
-        currentLocationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-    }
-
-    public static LocationManager getCurrentLocationManager() {
+    public static LocationManager getCurrentLocationManager(Context context) {
         if (variableSet) {
             return currentLocationManager;
         }
