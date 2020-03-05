@@ -64,8 +64,6 @@ public class AddFavorTest {
                                 0),
                         isDisplayed()));
         btn.perform(click());
-
-
     }
 
     private static Matcher<View> childAtPosition(
