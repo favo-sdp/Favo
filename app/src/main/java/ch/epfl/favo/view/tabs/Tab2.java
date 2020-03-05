@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.presenter.tabs.addFavor.FavorRequestView;
+import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 /**
  * View will contain list of favors requested in the past.

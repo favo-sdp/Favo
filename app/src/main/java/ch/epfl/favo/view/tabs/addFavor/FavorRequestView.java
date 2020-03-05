@@ -1,4 +1,4 @@
-package ch.epfl.favo.presenter.tabs.addFavor;
+package ch.epfl.favo.view.tabs.addFavor;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -96,7 +96,7 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
 
     // Todo: Try to put this method in a util package and import it here.
     private void showSnackbar(String errorMessageRes) {
-        Snackbar.make(Objects.requireNonNull(getView()).findViewById(R.id.fragment_favor),
+        Snackbar.make(requireView().findViewById(R.id.fragment_favor),
                 errorMessageRes, Snackbar.LENGTH_LONG).show();
     }
 
