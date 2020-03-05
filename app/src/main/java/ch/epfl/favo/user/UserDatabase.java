@@ -2,6 +2,10 @@ package ch.epfl.favo.user;
 
 import ch.epfl.favo.common.NotImplementedException;
 
+/**
+ * This class will only contain methods related to uploading/fetching
+ * data from the DB. This will contain all the Firebase dependencies
+ */
 public class UserDatabase {
 
     private static final UserDatabase SINGLE_INSTANCE = new UserDatabase();

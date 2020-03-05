@@ -63,10 +63,14 @@ public class FavorUnitTests {
         Favor favor = new Favor();
         int statusId = 3;
         Location location = new Location("Dummy provider 2");
+        String accepterId = "2364652";
         favor.setStatusId(3);
         favor.setLocation(location);
+        favor.setAccepterID(accepterId);
 
         assertEquals(location, favor.getLocation());
         assertEquals(statusId, favor.getStatusId());
+        assertEquals(accepterId,favor.getAccepterID());
     }
+
 }

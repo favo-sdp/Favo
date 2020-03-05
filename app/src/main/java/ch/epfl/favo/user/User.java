@@ -4,6 +4,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+/**
+ * This class contains all the relevant information about users
+ * TODO: It should implement parcelable so that it can be injected in views
+ */
 public class User {
 
     private String name;
@@ -31,6 +35,7 @@ public class User {
         this.activeRequestingFavors = activeRequestingFavors;
     }
 
+    //Getters
     public String getName() { return name; }
 
     public String getEmail() { return email; }
@@ -50,7 +55,7 @@ public class User {
     void setActiveRequestingFavors(int activeRequestingFavors) {
         this.activeRequestingFavors = activeRequestingFavors;
     }
-
+    // Can only accept or request favors
     boolean canAccept() {
         return activeAcceptingFavors + activeRequestingFavors < 1;
     }

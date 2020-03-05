@@ -1,5 +1,6 @@
 package ch.epfl.favo.user;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -16,19 +17,21 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class UserUnitTests {
-    @Test
-    public void userNameIsValid(){
-        String username = "as;dfjlasdfkja;skldfm";
-        String pw = "valid_pw";
-        assertThrows(NotImplementedException.class,
-                ()->{UserUtil.getSingleInstance().createAccount(username,pw);});
+    private User user;
+    @Before
+    public void setup(){
+        user= new User();
     }
     @Test
-    public void userShouldNotLoginWithInvalidPassword(){
-        String username = "valid_user";
-        String pw = TestUtil.generateRandomString(10);
+    public void userCannotBeCreatedIfAlreadyExists(){
         assertThrows(NotImplementedException.class,
-                ()->{UserUtil.getSingleInstance().logInAccount(username,pw);});
+                ()->{UserUtil.getSingleInstance().createAccount(user);});
+    }
+    @Test
+    public void userCannotLoginIfAccountDoesNotExist(){
+        User newUser = new User();
+        assertThrows(NotImplementedException.class,
+                ()->{UserUtil.getSingleInstance().logInAccount(user);});
     }
     @Test
     public void userCanLogOutOnlyIfLoggedIn(){
