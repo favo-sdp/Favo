@@ -1,22 +1,14 @@
-package ch.epfl.favo.presenter;
+package ch.epfl.favo;
 
-import ch.epfl.favo.R;
-import ch.epfl.favo.models.FavorUtil;
-import ch.epfl.favo.models.UserUtil;
+import ch.epfl.favo.view.TabAdapter;
 
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabItem;
+
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.ListFragment;
-import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 import androidx.appcompat.app.AppCompatActivity;
 

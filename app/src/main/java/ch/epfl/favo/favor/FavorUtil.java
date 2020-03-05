@@ -1,6 +1,6 @@
-package ch.epfl.favo.models;
+package ch.epfl.favo.favor;
 
-import ch.epfl.favo.exceptions.NotImplementedException;
+import ch.epfl.favo.common.NotImplementedException;
 /*
 This models the favor request.
 */

@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.user;
 
 public final class UserDatabase {
 

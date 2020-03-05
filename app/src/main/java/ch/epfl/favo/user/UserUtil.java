@@ -1,6 +1,6 @@
-package ch.epfl.favo.models;
+package ch.epfl.favo.user;
 
-import ch.epfl.favo.exceptions.NotImplementedException;
+import ch.epfl.favo.common.NotImplementedException;
 
 public class UserUtil {
     /*

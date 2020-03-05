@@ -1,4 +1,4 @@
-package ch.epfl.favo.exceptions;
+package ch.epfl.favo.common;
 
 public class NotImplementedException extends RuntimeException {
 

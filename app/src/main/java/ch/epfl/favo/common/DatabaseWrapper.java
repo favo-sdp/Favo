@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.common;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.OnCompleteListener;

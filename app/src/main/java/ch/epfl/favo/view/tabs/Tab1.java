@@ -1,4 +1,4 @@
-package ch.epfl.favo.presenter.tabs;
+package ch.epfl.favo.view.tabs;
 
 import android.os.Bundle;
 

@@ -1,4 +1,4 @@
-package ch.epfl.favo.presenter.tabs;
+package ch.epfl.favo.view.tabs;
 
 import android.os.Bundle;
 
@@ -11,14 +11,18 @@ import android.view.ViewGroup;
 import ch.epfl.favo.R;
 
 /**
- * View will contain list of favors requested in the past.
- * The list will contain clickable items that will expand
- * to give more information about them.
+ * This view will contain account information of the user.
+ * It will contain a user information where the user can
+ * modify his/her age, main address, profile photo, etc.
+ * It will also contain settings such as the radius of
+ * favor request.
+ * It might in the future also allow the user to add a list
+ * of skills that they can provide.
  * This object is a simple {@link Fragment} subclass.
  */
-public class Tab2 extends Fragment {
+public class Tab3 extends Fragment {
 
-    public Tab2() {
+    public Tab3() {
         // Required empty public constructor
     }
 
@@ -26,9 +30,7 @@ public class Tab2 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tab2,
-                container, false);
+        return inflater.inflate(R.layout.fragment_tab3, container, false);
     }
 }
