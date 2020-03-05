@@ -1,4 +1,4 @@
-package ch.epfl.favo.exception;
+package ch.epfl.favo.exceptions;
 
 public class NoPermissionGrantedException extends RuntimeException {
     public NoPermissionGrantedException(String s){

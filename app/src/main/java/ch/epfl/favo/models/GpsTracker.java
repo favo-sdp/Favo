@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.models;
 
 import android.Manifest;
 import android.app.Service;
@@ -14,8 +14,8 @@ import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
-import ch.epfl.favo.exception.NoPermissionGrantedException;
-import ch.epfl.favo.exception.NotImplementedException;
+import ch.epfl.favo.exceptions.NoPermissionGrantedException;
+import ch.epfl.favo.exceptions.NotImplementedException;
 
 /**
  * This will wrap the getting system location function with some permission checking,
@@ -51,8 +51,8 @@ public class GpsTracker extends Service implements LocationListener {
      */
     public  Location getLocation() throws NoPermissionGrantedException, RuntimeException {
         locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        isGPSEnabled = locationManager.isProviderEnabled(locationManager.GPS_PROVIDER);
-        isNetworkEnabled=locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER);
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
         if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ){

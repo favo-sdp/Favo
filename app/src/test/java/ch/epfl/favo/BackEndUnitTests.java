@@ -1,5 +1,5 @@
 package ch.epfl.favo;
-import android.content.Context;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -9,21 +9,17 @@ import android.test.mock.MockContext;
 
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-import static org.mockito.Mockito.*;
+import java.util.Random;
 
-import java.net.ContentHandler;
+import ch.epfl.favo.exceptions.NotImplementedException;
+import ch.epfl.favo.models.FavorUtil;
+import ch.epfl.favo.models.GpsTracker;
+import ch.epfl.favo.models.UserUtil;
 
-import ch.epfl.favo.exception.NoPermissionGrantedException;
-import ch.epfl.favo.exception.NotImplementedException;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -31,8 +27,82 @@ import static org.mockito.Mockito.mock;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-@RunWith(MockitoJUnitRunner.class)
 public class BackEndUnitTests {
+    @Test
+    public void userNameIsValid() {
+        String username = "as;dfjlasdfkja;skldfm";
+        String pw = "valid_pw";
+        assertThrows(NotImplementedException.class,
+                new ThrowingRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        UserUtil.getSingleInstance().createAccount(username, pw);
+                    }
+                });
+    }
+
+    @Test
+    public void userShouldNotLoginWithInvalidPassword() {
+        String username = "valid_user";
+        String pw = generateRandomString(10);
+        assertThrows(NotImplementedException.class,
+                new ThrowingRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        UserUtil.getSingleInstance().logInAccount(username, pw);
+                    }
+                });
+    }
+
+
+    @Test
+    public void favorIsNotLongerThan300Characters() {
+        String title = "Sample Favor";
+        String description = generateRandomString(305);
+        String location = "valid location"; //replace by valid location
+        assertThrows(NotImplementedException.class,
+                new ThrowingRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        FavorUtil.getSingleInstance().postFavor(title, description, location);
+                    }
+                });
+    }
+
+    @Test
+    public void userCanLogOutOnlyIfLoggedIn() {
+
+        assertThrows(NotImplementedException.class,
+                new ThrowingRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        UserUtil.getSingleInstance().logOutAccount();
+                    }
+                });
+    }
+
+    @Test
+    public void userCanDeleteAccountOnlyIfAccountExists() {
+
+        assertThrows(NotImplementedException.class,
+                new ThrowingRunnable() {
+                    @Override
+                    public void run() throws Throwable {
+                        UserUtil.getSingleInstance().deleteAccount();
+                    }
+                });
+    }
+
+    public String generateRandomString(int targetStringLength) {
+        String title = "sample_favor";
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        String generatedString = new Random().ints(leftLimit, rightLimit + 1)
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        return generatedString;
+    }
 
     @Mock
     LocationManager locationManagerMock = mock(LocationManager.class);
@@ -133,7 +203,4 @@ public class BackEndUnitTests {
                     }
                 });
     }
-
-
-
 }

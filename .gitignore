@@ -1,4 +1,5 @@
 .gradle
+/.idea/misc.xml
 /local.properties
 /.idea/caches
 /.idea/libraries
