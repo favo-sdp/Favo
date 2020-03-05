@@ -55,7 +55,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
 
     // Providers
-    implementation 'com.facebook.android:facebook-android-sdk:5.0.0'
+    implementation 'com.facebook.android:facebook-login:5.0.0'
 
     // Required -- JUnit 4 framework
     testImplementation 'junit:junit:4.13'
