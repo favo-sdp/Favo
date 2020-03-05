@@ -4,10 +4,8 @@ import android.location.Location;
 
 import org.junit.Test;
 
-import java.util.Random;
 
-
-import ch.epfl.favo.TestUtil;
+import ch.epfl.favo.testhelpers.TestUtil;
 import ch.epfl.favo.common.NotImplementedException;
 
 import static org.junit.Assert.*;
@@ -24,21 +22,21 @@ public class FavorUnitTests {
         String description = TestUtil.generateRandomString(305);
         String location = "valid location"; //replace by valid location
         assertThrows(NotImplementedException.class,
-                ()->{FavorUtil.getSingleInstance().postFavor(title,description,location);});
+                ()-> FavorUtil.getSingleInstance().postFavor(title,description,location));
     }
     @Test
     public void favorCanRetrieveDetailsFromDatabase(){
 
         String favorId = "2negoinr3";
         assertThrows(NotImplementedException.class,
-                ()->{FavorDatabase.getSingleInstance().getFavorDetailsFromDB(favorId);});
+                ()-> FavorDatabase.getSingleInstance().getFavorDetailsFromDB(favorId));
     }
     @Test
     public void favorCanRemoveDetailsFromDatabase(){
 
         String favorId = "2negoinr3";
         assertThrows(NotImplementedException.class,
-                ()->{FavorDatabase.getSingleInstance().removeFavorFromDB(favorId);});
+                ()-> FavorDatabase.getSingleInstance().removeFavorFromDB(favorId));
     }
     @Test
     public void favorGettersReturnCorrectValues(){
