@@ -28,9 +28,15 @@ public class MainActivityTest {
         //onView(withId(R.id.text1)).check(matches(withText("1")));
         //TODO: Replace with actual text in layout
         onView(withId(R.id.pager)).perform(swipeLeft());
-        onView(withId(R.id.text2)).check(matches(withText("2")));
+        onView(withId(R.id.pager)).perform(swipeLeft());
+        onView(withId(R.id.pager)).perform(swipeLeft());
+        onView(withId(R.id.pager)).perform(swipeLeft());
         onView(withId(R.id.pager)).perform(swipeLeft());
         onView(withId(R.id.text3)).check(matches(withText("3")));
+        onView(withId(R.id.pager)).perform(swipeRight());
+        onView(withId(R.id.text2)).check(matches(withText("2")));
+
+
     }
 
     public void testGetMapView() {
