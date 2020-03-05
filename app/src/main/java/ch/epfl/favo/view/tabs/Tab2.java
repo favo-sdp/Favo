@@ -31,10 +31,7 @@ public class Tab2 extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_tab2, container, false);
-
-        Button newFavorBtn = rootView.findViewById(R.id.new_favor);
-        newFavorBtn.setOnClickListener(this);
-
+        rootView.findViewById(R.id.new_favor).setOnClickListener(this);
         return rootView;
     }
 
