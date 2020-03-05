@@ -1,27 +1,16 @@
-package ch.epfl.favo.models;
+package ch.epfl.favo.favor;
 
-import ch.epfl.favo.exceptions.NotImplementedException;
-/*
-This models the favor request.
-*/
+import ch.epfl.favo.common.NotImplementedException;
+
 public class FavorUtil {
-    /**Singleton pattern.
-     TODO: Figure out singleton constructor
-     */
 
-    //Single class instance
     private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
 
-    //Private Constructor
-    private FavorUtil(){
-        return;
-    }
+    private FavorUtil() {}
 
-    //Single instance getter
     public static FavorUtil getSingleInstance() {
         return SINGLE_INSTANCE;
     }
-
 
     /** Allows user to post a favor with a title, description and location.
      * @param title Title of favor.

@@ -1,8 +1,8 @@
-package ch.epfl.favo.presenter;
+package ch.epfl.favo.view;
 
-import ch.epfl.favo.presenter.tabs.Tab1;
-import ch.epfl.favo.presenter.tabs.Tab2;
-import ch.epfl.favo.presenter.tabs.Tab3;
+import ch.epfl.favo.view.tabs.Tab1;
+import ch.epfl.favo.view.tabs.Tab2;
+import ch.epfl.favo.view.tabs.Tab3;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
