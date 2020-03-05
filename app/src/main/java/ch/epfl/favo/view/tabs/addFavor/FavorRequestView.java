@@ -37,19 +37,21 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+//     * @param param1 Parameter 1.
+//     * @param param2 Parameter 2.
      * @return A new instance of fragment FavorRequestView.
      */
     // TODO: Rename and change types and number of parameters
     public static FavorRequestView newInstance(String param1, String param2) {
-        FavorRequestView fragment = new FavorRequestView();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        return new FavorRequestView();
     }
+//        FavorRequestView fragment = new FavorRequestView();
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
+//        return fragment;
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,25 +76,6 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
     }
 
     // Todo: Implement the following functions to verify user input.
-    private boolean verifyInput() {
-        return verifyTitle() && verifyLocation() && verifyTime() &&verifyOther();
-    }
-
-    private boolean verifyOther() {
-        return true;
-    }
-
-    private boolean verifyLocation() {
-        return true;
-    }
-
-    private boolean verifyTime() {
-        return true;
-    }
-
-    private boolean verifyTitle() {
-        return true;
-    }
 
     // Todo: Try to put this method in a util package and import it here.
     private void showSnackbar(String errorMessageRes) {
