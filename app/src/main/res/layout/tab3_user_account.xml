@@ -7,7 +7,7 @@
     android:clipToPadding="false"
     android:paddingTop="16dp"
     android:paddingBottom="16dp"
-    tools:context=".UserAccountActivity">
+    tools:context=".view.tabs.UserAccountPage">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -51,7 +51,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:onClick="signOut"
             android:text="@string/sign_out" />
 
         <Button
@@ -60,7 +59,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:onClick="deleteAccountClicked"
             android:text="@string/delete_account_label"
             android:theme="@style/WarnButton"
             tools:ignore="ButtonStyle" />

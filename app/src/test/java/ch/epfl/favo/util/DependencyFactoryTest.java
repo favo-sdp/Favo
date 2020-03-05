@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.util;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.testhelpers.TestHelper;
 
 import static junit.framework.TestCase.assertEquals;

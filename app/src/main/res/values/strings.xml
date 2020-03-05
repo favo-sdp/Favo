@@ -1,6 +1,6 @@
 <resources>
-    <string name="email_hint">email...</string>
-    <string name="pw_hint">password...</string>
+    <string name="email_hint">email…</string>
+    <string name="pw_hint">password…</string>
     <string name="error_msg">invalid</string>
     <string name="app_name">Favo</string>
 
@@ -36,4 +36,6 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab1_description">1</string>
+    <string name="tab2_description">2</string>
 </resources>

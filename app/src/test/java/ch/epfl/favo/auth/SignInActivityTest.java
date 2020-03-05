@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.auth;
 
 import org.junit.Before;
 import org.junit.Test;

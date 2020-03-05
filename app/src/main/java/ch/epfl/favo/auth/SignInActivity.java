@@ -1,4 +1,4 @@
-package ch.epfl.favo;
+package ch.epfl.favo.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +16,11 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.epfl.favo.BuildConfig;
+import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.R;
+import ch.epfl.favo.util.DependencyFactory;
+
 public class SignInActivity extends AppCompatActivity {
 
   private static final int RC_SIGN_IN = 123;
@@ -28,7 +33,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
       // Already signed-in
-      startActivity(new Intent(this, UserAccountActivity.class));
+      startActivity(new Intent(this, MainActivity.class));
       finish();
       return;
     }
@@ -86,7 +91,7 @@ public class SignInActivity extends AppCompatActivity {
 
       if (resultCode == RESULT_OK) {
         // Successfully signed in
-        startActivity(new Intent().setClass(this, UserAccountActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
       } else {
 

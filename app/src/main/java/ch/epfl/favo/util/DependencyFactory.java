@@ -1,21 +1,21 @@
-package ch.epfl.favo;
+package ch.epfl.favo.util;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-class DependencyFactory {
+public class DependencyFactory {
 
   private static FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
   private static boolean variableSet = false;
 
-  static FirebaseUser getCurrentFirebaseUser() {
+  public static FirebaseUser getCurrentFirebaseUser() {
     if (variableSet) {
       return currentUser;
     }
     return FirebaseAuth.getInstance().getCurrentUser();
   }
 
-  static void setCurrentFirebaseUser(FirebaseUser dependency) {
+  public static void setCurrentFirebaseUser(FirebaseUser dependency) {
     variableSet = true;
     DependencyFactory.currentUser = dependency;
   }
