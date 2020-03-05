@@ -6,7 +6,7 @@ import androidx.test.rule.ActivityTestRule;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-import ch.epfl.favo.presenter.MainActivity;
+import ch.epfl.favo.MainActivity;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;

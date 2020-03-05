@@ -5,8 +5,8 @@ import org.junit.function.ThrowingRunnable;
 
 import java.util.Random;
 
-import ch.epfl.favo.exceptions.NotImplementedException;
-import ch.epfl.favo.models.FavorUtil;
+import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.models.UserUtil;
 
 import static org.junit.Assert.assertThrows;
