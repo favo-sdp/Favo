@@ -45,21 +45,16 @@ public class AddFavorTest {
                         isDisplayed()));
         tabView.perform(click());
 
-        ViewInteraction appCompatButton = onView(
-                allOf(withId(R.id.new_favor), withText("New Favor"),
-                        childAtPosition(
-                                childAtPosition(
-                                        withId(R.id.fragment_tab2),
-                                        0),
-                                0),
-                        isDisplayed()));
-        appCompatButton.perform(click());
+        pressButton(R.id.new_favor, R.id.fragment_tab2);
+        pressButton(R.id.new_favor, R.id.fragment_tab2);
+    }
 
+    private void pressButton(int buttonId, int fragmentId) {
         ViewInteraction btn = onView(
-                allOf(withId(R.id.new_favor), withText("New Favor"),
+                allOf(withId(buttonId), withText("New Favor"),
                         childAtPosition(
                                 childAtPosition(
-                                        withId(R.id.fragment_tab2),
+                                        withId(fragmentId),
                                         0),
                                 0),
                         isDisplayed()));
