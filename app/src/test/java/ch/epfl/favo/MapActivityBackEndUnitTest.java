@@ -38,12 +38,11 @@ import static org.mockito.Mockito.when;
 public class MapActivityBackEndUnitTest {
 
     @Mock
-    private Context contextMock = mock(MockContext.class);
-    LocationManager locationManagerMock = mock(LocationManager.class);
+    private Context contextMock = mock(Context.class);
+    private LocationManager locationManagerMock = mock(LocationManager.class);
 
     @Test
     public void NoLocationFoundTest() {
-        LocationManager locationManagerMock = mock(LocationManager.class);
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
         PowerMockito.mockStatic(ContextCompat.class);
         PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
