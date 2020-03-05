@@ -3,10 +3,9 @@
 
 ## Team / App name: Favo
 
-[![Build Status](https://travis-ci.com/mikanikos/Favo.svg?branch=master)](https://travis-ci.com/mikanikos/Favo)
-[![Maintainability](https://api.codeclimate.com/v1/badges/4c33c2dbfe093175f29f/maintainability)](https://codeclimate.com/github/mikanikos/Favo/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/4c33c2dbfe093175f29f/test_coverage)](https://codeclimate.com/github/mikanikos/Favo/test_coverage)
-
+[![Build Status](https://travis-ci.com/favo-sdp/Favo.svg?branch=master)](https://travis-ci.com/favo-sdp/Favo)
+[![Maintainability](https://api.codeclimate.com/v1/badges/63b8fcc1446ae6ef57d7/maintainability)](https://codeclimate.com/github/favo-sdp/Favo/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/63b8fcc1446ae6ef57d7/test_coverage)](https://codeclimate.com/github/favo-sdp/Favo/test_coverage)
 
 ## Description:
 
