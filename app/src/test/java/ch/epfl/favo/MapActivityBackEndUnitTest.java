@@ -39,7 +39,6 @@ public class MapActivityBackEndUnitTest {
 
     LocationManager locationManagerMock = PowerMockito.mock(LocationManager.class);
     Context contextMock = PowerMockito.mock(Context.class);
-
     @Test
     public void NoLocationFoundTest() {
         //Context contextMock = mock(Context.class);
