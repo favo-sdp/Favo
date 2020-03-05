@@ -8,16 +8,13 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.ActionCodeSettings;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -74,15 +71,15 @@ public class SignInActivity extends AppCompatActivity {
     return builder.build();
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
-      startActivity(new Intent().setClass(this, UserAccountActivity.class));
-      finish();
-    }
-  }
+  //  @Override
+  //  protected void onResume() {
+  //    super.onResume();
+  //    FirebaseAuth auth = FirebaseAuth.getInstance();
+  //    if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
+  //      startActivity(new Intent().setClass(this, UserAccountActivity.class));
+  //      finish();
+  //    }
+  //  }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -102,11 +99,12 @@ public class SignInActivity extends AppCompatActivity {
           return;
         }
 
-        if (Objects.requireNonNull(response.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-          showSnackbar(R.string.no_internet_connection);
-          return;
-        }
-
+        //        if (Objects.requireNonNull(response.getError()).getErrorCode() ==
+        // ErrorCodes.NO_NETWORK) {
+        //          showSnackbar(R.string.no_internet_connection);
+        //          return;
+        //        }
+        //
         showSnackbar(R.string.unknown_error);
       }
     }

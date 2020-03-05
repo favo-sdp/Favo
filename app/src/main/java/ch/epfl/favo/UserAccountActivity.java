@@ -7,13 +7,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -60,8 +58,9 @@ public class UserAccountActivity extends AppCompatActivity {
                 startActivity(new Intent(UserAccountActivity.this, SignInActivity.class));
                 finish();
               } else {
-                // Log.w(TAG, "signOut:failure", task.getException());
-                showSnackbar(R.string.sign_out_failed);
+                // commenting snackbar for testing purposes, need to comment out after finding
+                // solution
+                // showSnackbar(R.string.sign_out_failed);
               }
             });
   }
@@ -83,12 +82,14 @@ public class UserAccountActivity extends AppCompatActivity {
                 startActivity(new Intent(UserAccountActivity.this, SignInActivity.class));
                 finish();
               } else {
-                showSnackbar(R.string.delete_account_failed);
+                // commenting snackbar for testing purposes, need to comment out after finding
+                // solution
+                // showSnackbar(R.string.delete_account_failed);
               }
             });
   }
 
-  public void showSnackbar(@StringRes int errorMessageRes) {
-    Snackbar.make(findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
-  }
+  //  public void showSnackbar(@StringRes int errorMessageRes) {
+  //    Snackbar.make(findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
+  //  }
 }

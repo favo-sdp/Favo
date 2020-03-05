@@ -18,8 +18,8 @@
             <vector
                 android:width="44dp"
                 android:height="44dp"
-                android:viewportHeight="24.0"
                 android:viewportWidth="24.0"
+                android:viewportHeight="24.0"
                 tools:targetApi="lollipop">
                 <path
                     android:fillColor="@color/material_gray_500"

@@ -24,7 +24,6 @@ public class TestHelper {
   private static final String UID = "uid";
   private static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
-  private static final FirebaseApp MOCK_APP;
   private static Context CONTEXT = ApplicationProvider.getApplicationContext();
 
   static {
@@ -32,7 +31,6 @@ public class TestHelper {
     when(app.get(eq(FirebaseAuth.class))).thenReturn(mock(FirebaseAuth.class));
     when(app.getApplicationContext()).thenReturn(CONTEXT);
     when(app.getName()).thenReturn("[DEFAULT]");
-    MOCK_APP = app;
   }
 
   public static void initialize() {
