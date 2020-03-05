@@ -1,5 +1,7 @@
 package ch.epfl.favo.favor;
 
+import android.location.Location;
+
 import org.junit.Test;
 
 import java.util.Random;
@@ -38,5 +40,33 @@ public class FavorUnitTests {
         assertThrows(NotImplementedException.class,
                 ()->{FavorDatabase.getSingleInstance().removeFavorFromDB(favorId);});
     }
-    
+    @Test
+    public void favorGettersReturnCorrectValues(){
+
+        String title = "Flat tire";
+        String description = "Tiire popped while turning left on Avenue Rhodanie";
+        String requesterId = "2362489";
+        Location location = new Location("Dummy provider");
+        int statusId = 0;
+
+        Favor favor = new Favor(title, description, requesterId, location, statusId);
+
+        assertEquals(title, favor.getTitle());
+        assertEquals(description, favor.getDescription());
+        assertEquals(requesterId, favor.getRequesterId());
+        assertEquals(location, favor.getLocation());
+        assertEquals(statusId, favor.getStatusId());
+    }
+    @Test
+    public void favorSettersCorrectlyUpdateValues(){
+
+        Favor favor = new Favor();
+        int statusId = 3;
+        Location location = new Location("Dummy provider 2");
+        favor.setStatusId(3);
+        favor.setLocation(location);
+
+        assertEquals(location, favor.getLocation());
+        assertEquals(statusId, favor.getStatusId());
+    }
 }

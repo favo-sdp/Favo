@@ -52,10 +52,10 @@ public class User {
     }
 
     boolean canAccept() {
-        return activeAcceptingFavors + activeRequestingFavors <= 1;
+        return activeAcceptingFavors + activeRequestingFavors < 1;
     }
 
     boolean canRequest() {
-        return activeAcceptingFavors + activeRequestingFavors <= 1;
+        return activeAcceptingFavors + activeRequestingFavors < 1;
     }
 }
