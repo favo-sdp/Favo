@@ -1,4 +1,7 @@
 <resources>
+    <string name="email_hint">email...</string>
+    <string name="pw_hint">password...</string>
+    <string name="error_msg">invalid</string>
     <string name="app_name">Favo</string>
 
     <!-- Auth UI - Signed in -->
@@ -26,4 +29,11 @@
 
     <string name="provideError">Error from the provider</string>
 
+    <string name="button">Button</string>
+    <string name="login_text">Log in</string>
+    <string name="hint_name">Type name</string>
+    <string name="greetingMes">Hello %s!</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
