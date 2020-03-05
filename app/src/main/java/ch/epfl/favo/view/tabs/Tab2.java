@@ -11,8 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.view.tabs.F.favor;
-import ch.epfl.favo.view.tabs.addFavor.favor_added;
+import ch.epfl.favo.presenter.tabs.addFavor.favor;
 
 /**
  * View will contain list of favors requested in the past.
@@ -31,25 +30,33 @@ public class Tab2 extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_tab2, container, false);
-        Button newFavorBtn = (Button) rootView.findViewById(R.id.new_favor);
+
+        Button newFavorBtn = rootView.findViewById(R.id.new_favor);
         newFavorBtn.setOnClickListener(this);
 
-        // Inflate the layout for this fragment
         return rootView;
     }
 
     @Override
     public void onClick(View view) {
-        Fragment fragment = null;
+        Fragment fragment;
+
+        // The following inspection warning is suppressed. More cases will be added soon.
+        // noinspection SwitchStatementWithTooFewBranches
         switch (view.getId()) {
             case R.id.new_favor:
                 fragment = new favor();
                 replaceFragment(fragment);
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + view.getId());
         }
     }
 
-    public void replaceFragment(Fragment newFragment) {
+    // Replace the current fragment with the new fragment.
+    // Todo: Seems useful. Try to put this method in a util package and import it here.
+    private void replaceFragment(Fragment newFragment) {
+        assert getFragmentManager() != null;
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_tab2, newFragment);
         transaction.addToBackStack(null);
