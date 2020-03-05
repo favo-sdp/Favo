@@ -34,18 +34,20 @@ import static org.mockito.Mockito.when;
 
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(ContextCompat.class)
+@PrepareForTest({ContextCompat.class, Context.class})
 public class MapActivityBackEndUnitTest {
-    
+
+    LocationManager locationManagerMock = PowerMockito.mock(LocationManager.class);
+    Context contextMock = PowerMockito.mock(Context.class);
+
     @Test
     public void NoLocationFoundTest() {
-        Context contextMock = mock(Context.class);
-        LocationManager locationManagerMock = mock(LocationManager.class);
-
+        //Context contextMock = mock(Context.class);
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
         PowerMockito.mockStatic(ContextCompat.class);
         PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
                 .thenReturn(PackageManager.PERMISSION_GRANTED);
+
         // Given a mocked Context injected into the object under test...
         when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
@@ -55,8 +57,6 @@ public class MapActivityBackEndUnitTest {
 
     @Test
     public void NoPositionPermissionTest() {
-        Context contextMock = mock(Context.class);
-        LocationManager locationManagerMock = mock(LocationManager.class);
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
         PowerMockito.mockStatic(ContextCompat.class);
         PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
@@ -66,8 +66,6 @@ public class MapActivityBackEndUnitTest {
 
     @Test
     public void PositionFoundTest() {
-        Context contextMock = mock(Context.class);
-        LocationManager locationManagerMock = mock(LocationManager.class);
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
         PowerMockito.mockStatic(ContextCompat.class);
         PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
@@ -87,7 +85,6 @@ public class MapActivityBackEndUnitTest {
 
     @Test
     public void locationIsChanged() {
-        Context contextMock = mock(Context.class);
         /* Set a mock location for debugging purposes */
         //setMockLocation(15.387653, 73.872585, 500);
         new GpsTracker(contextMock).onLocationChanged(mock(Location.class));
@@ -96,7 +93,6 @@ public class MapActivityBackEndUnitTest {
 
     @Test
     public void StatusIsChanged() {
-        Context contextMock = mock(Context.class);
         /* Set a mock location for debugging purposes */
         //setMockLocation(15.387653, 73.872585, 500);
         final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
@@ -111,7 +107,6 @@ public class MapActivityBackEndUnitTest {
 
     @Test
     public void ProviderIsDisabled() {
-        Context contextMock = mock(Context.class);
         /* Set a mock location for debugging purposes */
         //setMockLocation(15.387653, 73.872585, 500);
         final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
@@ -126,7 +121,6 @@ public class MapActivityBackEndUnitTest {
 
     @Test
     public void ProviderIsEnabled() {
-        Context contextMock = mock(Context.class);
         /* Set a mock location for debugging purposes */
         //setMockLocation(15.387653, 73.872585, 500);
         final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
