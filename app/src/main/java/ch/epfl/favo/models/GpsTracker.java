@@ -10,11 +10,11 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
 import ch.epfl.favo.exceptions.NoPermissionGrantedException;
+import ch.epfl.favo.exceptions.NoPositionFoundException;
 import ch.epfl.favo.exceptions.NotImplementedException;
 
 /**
@@ -50,7 +50,8 @@ public class GpsTracker extends Service implements LocationListener {
      * @return the location of phone
      */
     public  Location getLocation() throws NoPermissionGrantedException, RuntimeException {
-        locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        LocationManagerDependencyFactory locationManagerDependencyFactory = new LocationManagerDependencyFactory(context);
+        locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -62,7 +63,7 @@ public class GpsTracker extends Service implements LocationListener {
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000,10,this);
                     if(locationManager!=null){
                         location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        Log.d("report", "position found by gps");
+                        //Log.d("report", "position found by gps");
                     }
                 }
             }
@@ -72,11 +73,12 @@ public class GpsTracker extends Service implements LocationListener {
                     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000,10,this);
                     if(locationManager!=null) {
                         location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        Log.d("report", "position found by network");
+                        //Log.d("report", "position found by network");
                     }
                 }
             }
-            if(location == null) throw new RuntimeException("Permission is granted, but no position is found");
+            if (location == null)
+                throw new NoPositionFoundException("Permission is granted, but no position is found");
         }
         else
             throw new NoPermissionGrantedException("No location permission granted");

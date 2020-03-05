@@ -39,9 +39,5 @@ public class MainActivityTest {
 
     }
 
-    public void testGetMapView() {
-        onView(withId(R.id.pager)).perform(swipeLeft());
-        onView(withId(R.id.pager)).perform(swipeRight());
-        //onView(withId(R.id.greetingMessage)).check(matches(withText("Hello from my unit test!")));
-    }
+
 }

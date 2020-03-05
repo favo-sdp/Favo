@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import ch.epfl.favo.presenter.tabs.Tab1;
+import ch.epfl.favo.presenter.tabs.MapsTab;
 import ch.epfl.favo.presenter.tabs.Tab2;
 import ch.epfl.favo.presenter.tabs.Tab3;
 
@@ -33,7 +33,7 @@ public class TabAdapter extends FragmentStateAdapter {
 
         switch (position) {
             case 0:
-                return new Tab1();
+                return new MapsTab();
             case 1:
                 return new Tab2();
             case 2:
