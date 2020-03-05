@@ -55,11 +55,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.material:material:1.1.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.powermock:powermock-api-mockito:1.6.2'
-    testCompile 'org.powermock:powermock-module-junit4-rule-agent:1.6.2'
-    testCompile 'org.powermock:powermock-module-junit4-rule:1.6.2'
-    testCompile 'org.powermock:powermock-module-junit4:1.6.2'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.powermock:powermock-api-mockito:1.6.2'
+    testImplementation 'org.powermock:powermock-module-junit4-rule-agent:1.6.2'
+    testImplementation 'org.powermock:powermock-module-junit4-rule:1.6.2'
+    testImplementation 'org.powermock:powermock-module-junit4:1.6.2'
     // Optional -- Mockito framework
     testImplementation 'org.mockito:mockito-core:2.7.22'
 }
