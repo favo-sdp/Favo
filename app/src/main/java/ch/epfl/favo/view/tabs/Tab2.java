@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.presenter.tabs.addFavor.favor;
+import ch.epfl.favo.presenter.tabs.addFavor.FavorRequestView;
 
 /**
  * View will contain list of favors requested in the past.
@@ -45,7 +45,7 @@ public class Tab2 extends Fragment implements View.OnClickListener {
         // noinspection SwitchStatementWithTooFewBranches
         switch (view.getId()) {
             case R.id.new_favor:
-                fragment = new favor();
+                fragment = new FavorRequestView();
                 replaceFragment(fragment);
                 break;
             default:

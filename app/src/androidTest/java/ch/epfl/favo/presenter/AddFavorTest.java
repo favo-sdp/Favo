@@ -55,33 +55,17 @@ public class AddFavorTest {
                         isDisplayed()));
         appCompatButton.perform(click());
 
-        ViewInteraction viewGroup = onView(
-                allOf(childAtPosition(
-                        allOf(withId(R.id.fragment_favor),
+        ViewInteraction btn = onView(
+                allOf(withId(R.id.new_favor), withText("New Favor"),
+                        childAtPosition(
                                 childAtPosition(
                                         withId(R.id.fragment_tab2),
-                                        0)),
-                        0),
-                        isDisplayed()));
-        viewGroup.check(matches(isDisplayed()));
-
-        ViewInteraction tabView2 = onView(
-                allOf(childAtPosition(
-                        childAtPosition(
-                                withId(R.id.tab_layout),
+                                        0),
                                 0),
-                        0),
                         isDisplayed()));
-        tabView2.perform(click());
+        btn.perform(click());
 
-        ViewInteraction tabView3 = onView(
-                allOf(childAtPosition(
-                        childAtPosition(
-                                withId(R.id.tab_layout),
-                                0),
-                        1),
-                        isDisplayed()));
-        tabView3.perform(click());
+
     }
 
     private static Matcher<View> childAtPosition(

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presenter.tabs.addFavor.favor"
+    tools:context=".presenter.tabs.addFavor.FavorRequestView"
     android:id="@+id/fragment_favor">
 
     <androidx.constraintlayout.widget.ConstraintLayout

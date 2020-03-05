@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import ch.epfl.favo.R;
 
 /**
- * View will contain a map and a favor request pop-up.
+ * View will contain a map and a FavorRequestView request pop-up.
  * It is implemented using the {@link Fragment} subclass.
  */
 public class Tab1 extends Fragment {
