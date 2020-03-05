@@ -6,6 +6,7 @@ import java.util.Random;
 
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.TestUtil;
 import ch.epfl.favo.common.NotImplementedException;
 
 import static org.junit.Assert.*;

@@ -6,6 +6,7 @@ import java.util.Random;
 
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.TestUtil;
 import ch.epfl.favo.common.NotImplementedException;
 
 
@@ -27,7 +28,7 @@ public class UserUnitTests {
     @Test
     public void userShouldNotLoginWithInvalidPassword(){
         String username = "valid_user";
-        String pw = generateRandomString(10);
+        String pw = TestUtil.generateRandomString(10);
         assertThrows(NotImplementedException.class,
                 ()->{UserUtil.getSingleInstance().logInAccount(username,pw);});
     }
