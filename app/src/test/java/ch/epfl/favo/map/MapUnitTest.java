@@ -7,7 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 
-import androidx.core.content.ContextCompat;
+//import androidx.core.content.ContextCompat;
 
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -29,7 +29,7 @@ public class MapUnitTest {
 
   //  Context contextMock = mock(Context.class);
 //    LocationManager locationManagerMock = mock(LocationManager.class);
-/*
+
     @Test
     public void NoLocationFoundTest() {
         Context contextMock = mock(Context.class);
@@ -40,7 +40,7 @@ public class MapUnitTest {
         when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
         assertThrows(NoPositionFoundException.class, () -> new GpsTracker(contextMock).getLocation());
     }
-
+/*
 
     @Test
     public void NoPermissionTest() {
