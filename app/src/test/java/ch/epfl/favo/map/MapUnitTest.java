@@ -9,14 +9,8 @@ import android.location.LocationProvider;
 
 import androidx.core.content.ContextCompat;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-//import org.powermock.api.mockito.PowerMockito;
-//import org.powermock.core.classloader.annotations.PrepareForTest;
-//import org.powermock.modules.junit4.PowerMockRunner;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
@@ -42,9 +36,6 @@ public class MapUnitTest {
     @Test
     public void NoLocationFoundTest() {
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
-        //PowerMockito.mockStatic(ContextCompat.class);
-        //PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
-        //        .thenReturn(PackageManager.PERMISSION_GRANTED);
         // Given a mocked Context injected into the object under test...
         when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
@@ -55,9 +46,6 @@ public class MapUnitTest {
     @Test
     public void NoPermissionTest() {
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
-        //PowerMockito.mockStatic(ContextCompat.class);
-        //PowerMockito.when(ContextCompat.checkSelfPermission(any(Context.class), anyString()))
-        //        .thenReturn(PackageManager.PERMISSION_DENIED);
         when(ContextCompat.checkSelfPermission(contextMock,
                 Manifest.permission.ACCESS_FINE_LOCATION))
                 .thenReturn(PackageManager.PERMISSION_DENIED);

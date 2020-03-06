@@ -40,7 +40,9 @@ public class GpsTracker extends Service implements LocationListener {
     public GpsTracker(Context context){
         this.context=context;
     }
-
+    public GpsTracker(){
+        this.context=null;
+    }
     /**
      * @throws NoPermissionGrantedException Should check if location permissions are granted
      * @throws RuntimeException Should check if location is finally found
