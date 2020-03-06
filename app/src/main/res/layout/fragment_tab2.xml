@@ -3,13 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.Tab2">
+    tools:context=".view.tabs.Tab2"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_tab2">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/text2"
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/tab2_description" />
+        android:text="@string/tab2_description"
+        android:padding="20dp">
+
+        <Button
+            android:id="@+id/new_favor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="New Favor"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </FrameLayout>
