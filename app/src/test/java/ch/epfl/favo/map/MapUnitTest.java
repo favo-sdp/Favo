@@ -1,4 +1,6 @@
+/*
 package ch.epfl.favo.map;
+ */
 /*
 import android.Manifest;
 import android.content.Context;
@@ -22,11 +24,11 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-*/
+
 public class MapUnitTest {
 
 
-/*
+
   //  Context contextMock = mock(Context.class);
 //    LocationManager locationManagerMock = mock(LocationManager.class);
 
@@ -126,5 +128,5 @@ public class MapUnitTest {
                         new GpsTracker(contextMock).onProviderEnabled(LocationManager.GPS_PROVIDER);
                     }
                 });
-    }*/
-}
+    }
+}*/
