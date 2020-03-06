@@ -1,7 +1,5 @@
-/*
+
 package ch.epfl.favo.map;
- */
-/*
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -9,7 +7,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 
-//import androidx.core.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -29,20 +27,17 @@ public class MapUnitTest {
 
 
 
-  //  Context contextMock = mock(Context.class);
-//    LocationManager locationManagerMock = mock(LocationManager.class);
+    Context contextMock = mock(Context.class);
+    LocationManager locationManagerMock = mock(LocationManager.class);
 
     @Test
     public void NoLocationFoundTest() {
-        Context contextMock = mock(Context.class);
-        LocationManager locationManagerMock = mock(LocationManager.class);
         LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
         // Given a mocked Context injected into the object under test...
         when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
         when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
         assertThrows(NoPositionFoundException.class, () -> new GpsTracker(contextMock).getLocation());
     }
-/*
 
     @Test
     public void NoPermissionTest() {
@@ -87,8 +82,8 @@ public class MapUnitTest {
         assertEquals(latitude, 4.0, 0.01);
         assertEquals(longitude, 5.0, 0.01);
     }
-*/
-/*
+
+
     @Test
     public void locationIsChanged() {
         //new GpsTracker(contextMock).onLocationChanged(mock(Location.class));
@@ -129,4 +124,4 @@ public class MapUnitTest {
                     }
                 });
     }
-}*/
+}
