@@ -1,5 +1,5 @@
 package ch.epfl.favo.map;
-
+/*
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
+*/
 public class MapUnitTest {
 
 
