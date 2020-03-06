@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class MapUnitTest {
 
 
-
+/*
   //  Context contextMock = mock(Context.class);
 //    LocationManager locationManagerMock = mock(LocationManager.class);
 
@@ -86,11 +86,12 @@ public class MapUnitTest {
         assertEquals(longitude, 5.0, 0.01);
     }
 */
+/*
     @Test
     public void locationIsChanged() {
         //new GpsTracker(contextMock).onLocationChanged(mock(Location.class));
     }
-/*
+
     @Test
     public void StatusIsChanged() {
         final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
