@@ -23,6 +23,7 @@ import ch.epfl.favo.R;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
+import static androidx.test.espresso.action.ViewActions.swipeRight;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -44,7 +45,6 @@ public class AddFavorTest {
                                 0),
                         1),
                         isDisplayed()));
-
         onView(withId(R.id.pager)).perform(swipeLeft());
         tabView.perform(click());
         pressButton(R.id.new_favor, R.id.fragment_tab2);
@@ -80,5 +80,10 @@ public class AddFavorTest {
                         && view.equals(((ViewGroup) parent).getChildAt(position));
             }
         };
+    }
+    void wait(int count){
+        while(count > 0){
+            count--;
+        }
     }
 }

@@ -37,6 +37,8 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
     onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
@@ -49,6 +51,8 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
   }
 
@@ -58,6 +62,8 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
   }
 
@@ -65,6 +71,8 @@ public class UserAccountPageTest {
   public void testUserAlreadyLoggedIn_displayUserDataMissingPhoto() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
@@ -85,6 +93,8 @@ public class UserAccountPageTest {
   public void clickOnGivenButton(int id) {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     DependencyFactory.setCurrentFirebaseUser(null);
