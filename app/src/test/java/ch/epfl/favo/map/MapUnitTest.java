@@ -2,6 +2,7 @@
 package ch.epfl.favo.map;
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -17,7 +18,9 @@ import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.LocationManagerDependencyFactory;
 
+import static android.content.Context.LOCATION_SERVICE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,7 +89,10 @@ public class MapUnitTest {
 
     @Test
     public void locationIsChanged() {
-        //new GpsTracker(contextMock).onLocationChanged(mock(Location.class));
+        GpsTracker gpsTracker = new GpsTracker(contextMock);
+        gpsTracker.onLocationChanged(mock(Location.class));
+        Intent intent = mock(Intent.class);
+        assertNull(gpsTracker.onBind(intent));
     }
 
     @Test
@@ -123,5 +129,12 @@ public class MapUnitTest {
                         new GpsTracker(contextMock).onProviderEnabled(LocationManager.GPS_PROVIDER);
                     }
                 });
+    }
+
+    @Test
+    public void LocationMangerDependencyFactoryReturnSet(){
+        LocationManagerDependencyFactory factory = new LocationManagerDependencyFactory();
+        factory.setCurrentLocationManager(locationManagerMock);
+        assertEquals(locationManagerMock, factory.getCurrentLocationManager(null));
     }
 }

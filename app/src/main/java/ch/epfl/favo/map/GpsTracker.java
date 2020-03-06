@@ -40,9 +40,7 @@ public class GpsTracker extends Service implements LocationListener {
     public GpsTracker(Context context){
         this.context=context;
     }
-    public GpsTracker(){
-        this.context=null;
-    }
+
     /**
      * @throws NoPermissionGrantedException Should check if location permissions are granted
      * @throws RuntimeException Should check if location is finally found
@@ -56,24 +54,16 @@ public class GpsTracker extends Service implements LocationListener {
 
         if(ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
-
-            if(isGPSEnabled){
-                if(location==null){
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000,10,this);
-                    if(locationManager!=null){
-                        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        //Log.d("report", "position found by gps");
-                    }
-                }
-            }
-            // if location is not found from GPS then it will be found from network
-            if(location==null){
-                if(isNetworkEnabled){
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000,10,this);
-                    if(locationManager!=null) {
-                        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        //Log.d("report", "position found by network");
-                    }
+            String provider = null;
+            if(isGPSEnabled)
+                provider = LocationManager.GPS_PROVIDER;
+            else if(isNetworkEnabled)
+                provider = LocationManager.NETWORK_PROVIDER;
+            if(provider != null){
+                locationManager.requestLocationUpdates(provider, 10000,10,this);
+                if(locationManager!=null){
+                    location = locationManager.getLastKnownLocation(provider);
+                    //Log.d("report", "position found by gps");
                 }
             }
             if (location == null)
