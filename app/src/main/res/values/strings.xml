@@ -47,4 +47,14 @@
     <string name="favor_confirm_button">Confirm Adding Favor</string>
     <string name="tab1_description">1</string>
     <string name="tab2_description">2</string>
+    <string name="share">Share</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
+    <string name="account">Account</string>
+    <string name="communicate">Communicate</string>
+    <string name="nav_header_desc">Navigation Header</string>
+    <string name="app_lema">Help others help you</string>
+    <string name="favors_icon_label">Favors</string>
+    <string name="map_icon_label">Map</string>
+    <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 </resources>

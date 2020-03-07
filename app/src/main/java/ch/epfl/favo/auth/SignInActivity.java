@@ -18,6 +18,7 @@ import java.util.List;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.MainActivity2;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -33,7 +34,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
       // Already signed-in
-      startActivity(new Intent(this, MainActivity.class));
+      startActivity(new Intent(this, MainActivity2.class));
       finish();
       return;
     }
