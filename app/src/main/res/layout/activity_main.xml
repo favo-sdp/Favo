@@ -40,7 +40,4 @@
             android:layout_above="@id/tab_layout"
              />
     </RelativeLayout>
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
