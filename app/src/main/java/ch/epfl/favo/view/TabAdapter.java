@@ -1,15 +1,14 @@
 package ch.epfl.favo.view;
 
-import ch.epfl.favo.view.tabs.Tab1;
+import ch.epfl.favo.view.tabs.MapsPage;
 import ch.epfl.favo.view.tabs.Tab2;
 import ch.epfl.favo.view.tabs.UserAccountPage;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
-
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
 
 /**
  * This adapter class will ensure the fragments are injected in the view when the
@@ -24,6 +23,7 @@ public class TabAdapter extends FragmentStateAdapter {
 
     /**
      * Adaptor produces a fragment when tab is active.
+     *
      * @param position corresponds to current tab
      * @return a Fragment from the tabs
      */
@@ -31,8 +31,9 @@ public class TabAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
 
+
         switch (position){
-            case 0: return new Tab1();
+            case 0: return new MapsPage();
             case 1: return new Tab2();
             case 2: return new UserAccountPage();
             default: return null;
@@ -41,6 +42,7 @@ public class TabAdapter extends FragmentStateAdapter {
 
     /**
      * Get the number of tabs.
+     *
      * @return number of tabs.
      */
     @Override

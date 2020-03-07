@@ -58,3 +58,4 @@ public class Tab2 extends Fragment implements View.OnClickListener {
         transaction.commit();
     }
 }
+
