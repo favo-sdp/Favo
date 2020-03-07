@@ -86,6 +86,10 @@ public class MainActivity2 extends AppCompatActivity
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     nav.setNavigationItemSelectedListener(this);
   }
+  //TODO: Remove second top bar
+  //TODO: Implement tests
+  //TODO: Figure out how to show hamburger menu
+  //TODO: Constraint fragment to be over the bottom tabview
 
   /**
    * Will control hamburger menu
