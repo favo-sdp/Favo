@@ -12,6 +12,7 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -33,7 +34,10 @@ public class AddFavorTest {
             };
 
     @Test
-    public void addFavorTest() {
+    public void addFavorTest() throws InterruptedException {
+        onView(withId(R.id.pager)).perform(swipeLeft());
+        onView(withId(R.id.pager)).perform(swipeLeft());
+        Thread.sleep(3000);
         onView(withId(R.id.tab_layout)).perform(click());
         onView(withId(R.id.new_favor)).perform(click());
         onView(withId(R.id.add_button)).check(matches(isDisplayed()));

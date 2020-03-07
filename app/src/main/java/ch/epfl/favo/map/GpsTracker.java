@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.util.LocationManagerDependencyFactory;
+import ch.epfl.favo.util.DependencyFactory;
 
 /**
  * This will wrap the getting system location function with some permission checking,
@@ -31,8 +31,8 @@ import ch.epfl.favo.util.LocationManagerDependencyFactory;
 public class GpsTracker extends Service implements LocationListener {
 
     private final Context context;
-    boolean isGPSEnabled =false;
-    boolean isNetworkEnabled =false;
+    boolean isGPSEnabled = false;
+    boolean isNetworkEnabled = false;
 
     Location location;
     protected LocationManager locationManager;
@@ -47,7 +47,7 @@ public class GpsTracker extends Service implements LocationListener {
      * @return the location of phone
      */
     public  Location getLocation() throws NoPermissionGrantedException, RuntimeException {
-        locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
+        locationManager = DependencyFactory.getCurrentLocationManager(context); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
         //locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
