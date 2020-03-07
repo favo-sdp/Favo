@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.map.GpsTracker;
@@ -97,7 +98,7 @@ public class MapsPage extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
+        mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -110,7 +111,7 @@ public class MapsPage extends Fragment {
      * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
      * @return human readable format of date and time
      */
-    public String convertTime(long time) {
+    private String convertTime(long time) {
         Date date = new Date(time);
         Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
         return format.format(date);
@@ -119,7 +120,7 @@ public class MapsPage extends Fragment {
     /**
      * utilities functions to help debug
      */
-    public void displayDebugInfo() {
+    private void displayDebugInfo() {
         Log.d("latitude", Double.toString(mLocation.getLatitude()));
         Log.d("longitude", Double.toString(mLocation.getLongitude()));
         Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));

@@ -17,6 +17,7 @@ import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.LocationManagerDependencyFactory;
 
 /**
  * This will wrap the getting system location function with some permission checking,
@@ -47,7 +48,7 @@ public class GpsTracker extends Service implements LocationListener {
      * @return the location of phone
      */
     public  Location getLocation() throws NoPermissionGrantedException, RuntimeException {
-        locationManager = DependencyFactory.getCurrentLocationManager(context); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
+        locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context); //(LocationManager) context.getSystemService(LOCATION_SERVICE);
         //locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
