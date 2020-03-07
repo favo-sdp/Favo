@@ -80,13 +80,13 @@ public class GpsTracker extends Service implements LocationListener {
     }
 
     public void onStatusChanged(String Provider, int status, Bundle extras){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     public void onProviderEnabled(String Provider){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     public void onProviderDisabled(String Provider){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     public IBinder onBind(Intent arg0){
         return null;
