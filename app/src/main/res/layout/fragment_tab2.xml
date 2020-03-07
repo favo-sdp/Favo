@@ -19,7 +19,7 @@
             android:id="@+id/new_favor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="New Favor"
+            android:text="@string/new_favor"
             android:onClick="onClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

@@ -1,4 +1,4 @@
-package ch.epfl.favo.testhelpers;
+package ch.epfl.favo;
 
 import android.net.Uri;
 

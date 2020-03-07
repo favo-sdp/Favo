@@ -10,13 +10,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -75,7 +75,15 @@ public class UserAccountPage extends Fragment {
   }
 
   private void signOut(View view) {
-    AuthUI.getInstance().signOut(Objects.requireNonNull(getActivity())).addOnCompleteListener(this::onComplete);
+    AuthUI.getInstance()
+            .signOut(Objects.requireNonNull(getActivity()))
+            .addOnCompleteListener(task -> {
+              if (task.isSuccessful()) {
+                startActivity(new Intent(getActivity(), SignInActivity.class));
+              } else {
+                showSnackbar(R.string.sign_out_failed);
+              }
+            });
   }
 
   private void deleteAccountClicked(View view) {
@@ -87,10 +95,18 @@ public class UserAccountPage extends Fragment {
   }
 
   private void deleteAccount() {
-    AuthUI.getInstance().delete(Objects.requireNonNull(getActivity())).addOnCompleteListener(this::onComplete);
+    AuthUI.getInstance()
+            .delete(Objects.requireNonNull(getActivity()))
+            .addOnCompleteListener(task -> {
+              if (task.isSuccessful()) {
+                startActivity(new Intent(getActivity(), SignInActivity.class));
+              } else {
+                showSnackbar(R.string.delete_account_failed);
+              }
+            });
   }
 
-  private void onComplete(@NonNull Task<Void> task) {
-    startActivity(new Intent(getActivity(), SignInActivity.class));
+  private void showSnackbar(@StringRes int errorMessageRes) {
+    Snackbar.make(view.findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 }

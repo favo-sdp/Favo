@@ -47,4 +47,5 @@
     <string name="favor_confirm_button">Confirm Adding Favor</string>
     <string name="tab1_description">1</string>
     <string name="tab2_description">2</string>
+    <string name="new_favor">New Favor</string>
 </resources>
