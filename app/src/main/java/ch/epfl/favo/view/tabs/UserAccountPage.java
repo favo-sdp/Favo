@@ -10,12 +10,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -78,13 +80,7 @@ public class UserAccountPage extends Fragment {
     AuthUI.getInstance()
         .signOut(Objects.requireNonNull(getActivity()))
         .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                startActivity(new Intent(getActivity(), SignInActivity.class));
-              } else {
-                showSnackbar(R.string.sign_out_failed);
-              }
-            });
+            task -> onComplete(task, R.string.sign_out_failed));
   }
 
   private void deleteAccountClicked(View view) {
@@ -98,14 +94,16 @@ public class UserAccountPage extends Fragment {
   private void deleteAccount() {
     AuthUI.getInstance()
         .delete(Objects.requireNonNull(getActivity()))
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                startActivity(new Intent(getActivity(), SignInActivity.class));
-              } else {
-                showSnackbar(R.string.delete_account_failed);
-              }
-            });
+            .addOnCompleteListener(
+                    task -> onComplete(task, R.string.delete_account_failed));
+  }
+
+  private void onComplete(@NonNull Task<Void> task, int errorMessage) {
+    if (task.isSuccessful()) {
+      startActivity(new Intent(getActivity(), SignInActivity.class));
+    } else {
+      showSnackbar(errorMessage);
+    }
   }
 
   private void showSnackbar(@StringRes int errorMessageRes) {

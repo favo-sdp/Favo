@@ -65,7 +65,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
@@ -77,7 +77,7 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
   }
 
@@ -87,7 +87,7 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
     onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
@@ -100,7 +100,7 @@ public class UserAccountPageTest {
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     DependencyFactory.setCurrentFirebaseUser(null);
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(R.id.sign_out)).perform(click());
 
     // can't test that logo sign-in page is displayed because this is handled by the library
