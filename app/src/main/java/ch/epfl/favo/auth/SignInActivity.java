@@ -8,13 +8,16 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
@@ -33,8 +36,7 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
       // Already signed-in
-      startActivity(new Intent(this, MainActivity.class));
-      finish();
+      startMainActivity();
       return;
     }
 
@@ -65,11 +67,13 @@ public class SignInActivity extends AppCompatActivity {
   }
 
   private List<AuthUI.IdpConfig> getProviders(ActionCodeSettings actionCodeSettings) {
+
     return Arrays.asList(
         new AuthUI.IdpConfig.GoogleBuilder().build(),
         new AuthUI.IdpConfig.FacebookBuilder().build(),
         new AuthUI.IdpConfig.EmailBuilder()
             .enableEmailLinkSignIn()
+            .setRequireName(true)
             .setActionCodeSettings(actionCodeSettings)
             .build());
   }
@@ -88,26 +92,42 @@ public class SignInActivity extends AppCompatActivity {
 
     if (requestCode == RC_SIGN_IN) {
       IdpResponse idpResponse = IdpResponse.fromResultIntent(intent);
+      handleSignInResponse(idpResponse, resultCode);
+    }
+  }
 
-      if (resultCode == RESULT_OK) {
-        // Successfully signed in
-        startActivity(new Intent(this, MainActivity.class));
-        finish();
-      } else {
+  @Override
+  protected void onResume() {
+    super.onResume();
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
+      startMainActivity();
+    }
+  }
 
-        if (idpResponse == null) {
-          showSnackbar(R.string.sign_in_cancelled);
-          return;
-        }
+  private void startMainActivity() {
+    startActivity(new Intent(this, MainActivity.class));
+    finish();
+  }
 
-        //        if (Objects.requireNonNull(response.getError()).getErrorCode() ==
-        // ErrorCodes.NO_NETWORK) {
-        //          showSnackbar(R.string.no_internet_connection);
-        //          return;
-        //        }
+  private void handleSignInResponse(IdpResponse idpResponse, int resultCode) {
 
-        showSnackbar(R.string.unknown_error);
+    if (resultCode == RESULT_OK) {
+      // Successfully signed in
+      startMainActivity();
+    } else {
+
+      if (idpResponse == null) {
+        showSnackbar(R.string.sign_in_cancelled);
+        return;
       }
+
+      if (Objects.requireNonNull(idpResponse.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
+        showSnackbar(R.string.no_internet_connection);
+        return;
+      }
+
+      showSnackbar(R.string.unknown_error);
     }
   }
 
