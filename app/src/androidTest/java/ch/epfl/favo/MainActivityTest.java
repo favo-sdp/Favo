@@ -2,7 +2,9 @@ package ch.epfl.favo;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,15 @@ public class MainActivityTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
         }
       };
+
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+  @After
+  public void tearDown() {
+    DependencyFactory.setCurrentFirebaseUser(null);
+  }
 
   @Test
   public void testCanChangeTabs() throws InterruptedException {

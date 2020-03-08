@@ -79,8 +79,7 @@ public class UserAccountPage extends Fragment {
   private void signOut(View view) {
     AuthUI.getInstance()
         .signOut(Objects.requireNonNull(getActivity()))
-        .addOnCompleteListener(
-            task -> onComplete(task, R.string.sign_out_failed));
+        .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
   }
 
   private void deleteAccountClicked(View view) {
@@ -94,8 +93,7 @@ public class UserAccountPage extends Fragment {
   private void deleteAccount() {
     AuthUI.getInstance()
         .delete(Objects.requireNonNull(getActivity()))
-            .addOnCompleteListener(
-                    task -> onComplete(task, R.string.delete_account_failed));
+        .addOnCompleteListener(task -> onComplete(task, R.string.delete_account_failed));
   }
 
   private void onComplete(@NonNull Task<Void> task, int errorMessage) {

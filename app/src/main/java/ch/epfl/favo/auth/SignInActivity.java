@@ -91,7 +91,8 @@ public class SignInActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, intent);
 
     if (requestCode == RC_SIGN_IN) {
-      handleSignInResponse(resultCode, intent);
+      IdpResponse idpResponse = IdpResponse.fromResultIntent(intent);
+      handleSignInResponse(idpResponse, resultCode);
     }
   }
 
@@ -109,8 +110,7 @@ public class SignInActivity extends AppCompatActivity {
     finish();
   }
 
-  private void handleSignInResponse(int resultCode, Intent intent) {
-    IdpResponse idpResponse = IdpResponse.fromResultIntent(intent);
+  private void handleSignInResponse(IdpResponse idpResponse, int resultCode) {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in

@@ -1,12 +1,18 @@
-package ch.epfl.favo;
+package ch.epfl.favo.view;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -33,15 +39,24 @@ public class AddFavorTest {
         }
       };
 
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+  @After
+  public void tearDown() {
+    DependencyFactory.setCurrentFirebaseUser(null);
+  }
+
   @Test
   public void addFavorTest() throws InterruptedException {
-      onView(withId(R.id.tab_layout)).check(matches(isDisplayed()));
+    onView(ViewMatchers.withId(R.id.tab_layout)).check(matches(isDisplayed()));
     onView(withId(R.id.pager)).perform(swipeLeft());
     Thread.sleep(3000);
     onView(withId(R.id.tab_layout)).perform(click());
     onView(withId(R.id.new_favor)).perform(click());
     Thread.sleep(3000);
     onView(withId(R.id.add_button)).check(matches(isDisplayed()));
-      onView(withId(R.id.add_button)).perform(click());
+    onView(withId(R.id.add_button)).perform(click());
   }
 }

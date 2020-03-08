@@ -1,12 +1,17 @@
-package ch.epfl.favo;
+package ch.epfl.favo.view;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -31,16 +36,13 @@ public class UserAccountPageTest {
   public final ActivityTestRule<SignInActivity> mActivityRule =
       new ActivityTestRule<>(SignInActivity.class, true, false);
 
-  @Test
-  public void testUserNotLoggedIn() {
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+  @After
+  public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
-    mActivityRule.launchActivity(null);
-
-    // can't test that logo sign-in page is displayed because this is handled by the library
-    // automatically
-
-    // Thread.sleep(5000);
-    // onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -48,7 +50,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(ViewMatchers.withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
@@ -122,7 +124,6 @@ public class UserAccountPageTest {
     // give time to display the first interface
     Thread.sleep(3000);
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
-    Thread.sleep(5000);
     onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button2)).perform(click());
@@ -136,12 +137,11 @@ public class UserAccountPageTest {
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     DependencyFactory.setCurrentFirebaseUser(null);
-    Thread.sleep(5000);
+    Thread.sleep(3000);
     onView(withId(R.id.delete_account)).perform(click());
     // give time to display the first interface
-    Thread.sleep(5000);
-    onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     Thread.sleep(3000);
+    onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
 
     // can't test confirm delete account because operation depends on too many internal
