@@ -53,7 +53,7 @@ public class Tab2 extends Fragment implements View.OnClickListener {
     // Todo: Seems useful. Try to put this method in a util package and import it here.
     private void replaceFragment(Fragment newFragment) {
         FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_tab2, newFragment);
+        transaction.replace(R.id.nav_host_fragment, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
         //transaction.remove(this);

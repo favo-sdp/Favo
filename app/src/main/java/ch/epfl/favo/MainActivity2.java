@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+//import android.support.v7.app.ActionBarDrawerToggle;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
@@ -48,6 +52,7 @@ public class MainActivity2 extends AppCompatActivity
   private NavController navController;
   private NavigationView nav;
   private DrawerLayout drawerLayout;
+  private ActionBarDrawerToggle hambMenu;
   //private Toolbar toolbar;
 
   @Override
@@ -57,13 +62,18 @@ public class MainActivity2 extends AppCompatActivity
     setContentView(R.layout.activity_main2);
     nav = findViewById(R.id.nav_view);
     drawerLayout = (DrawerLayout) findViewById(drawer_layout);
+    final ImageButton hambMenu = (ImageButton) findViewById(R.id.hamburger_menu);
+    hambMenu.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+    });
     //toolbar = findViewById(R.id.toolbar);
     //setSupportActionBar(toolbar);
     setupNavController();
     setupDrawerNavigation();
     setupBottomNavigation();
-
-
     // Use tabs.
 
   }
@@ -90,7 +100,6 @@ public class MainActivity2 extends AppCompatActivity
   }
   //TODO: Implement tests
   //TODO: Figure out how to show hamburger menu
-  //TODO: Constraint fragment to be over the bottom tabview
 
   /**
    * Will control hamburger menu

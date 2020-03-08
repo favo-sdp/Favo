@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.tabs.addFavor.FavorRequestView"
-    android:background="@color/material_green_50"
     android:id="@+id/fragment_favor"
     android:clickable="true"
     android:focusable="true">
-
+    <!-- add above: android:background="@color/material_green_50"-->
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:padding="20dp"

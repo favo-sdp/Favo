@@ -24,5 +24,14 @@
     <include layout="@layout/content_main" />
      -->
     <include layout="@layout/content_main" />
+    <ImageButton
+        android:id="@+id/hamburger_menu"
+        android:layout_width="@dimen/hamburger_button_size"
+        android:layout_height="@dimen/hamburger_button_size"
+        android:src="@drawable/ic_menu_green_24dp"
+        android:background="@drawable/hamb_menu_button"
+        android:gravity="top|end"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
