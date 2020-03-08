@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:text="New Favor"
             android:onClick="onClick"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
 

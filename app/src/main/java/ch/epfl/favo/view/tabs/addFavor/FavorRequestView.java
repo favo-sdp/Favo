@@ -26,7 +26,7 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private boolean isparentFragment=true;
     private String mParam2;
 
     public FavorRequestView() {
@@ -64,6 +64,7 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
 
         return rootView;
     }
+
 
     @Override
     public void onClick(View view) {

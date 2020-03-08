@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +33,7 @@ import static androidx.navigation.ui.NavigationUI.setupActionBarWithNavControlle
 import static androidx.navigation.ui.NavigationUI.setupWithNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
 import static ch.epfl.favo.R.id.nav_host_fragment;
-import static ch.epfl.favo.R.id.toolbar;
+//import static ch.epfl.favo.R.id.toolbar;
 import static com.google.android.gms.common.util.CollectionUtils.setOf;
 
 /**
@@ -48,7 +48,7 @@ public class MainActivity2 extends AppCompatActivity
   private NavController navController;
   private NavigationView nav;
   private DrawerLayout drawerLayout;
-  private Toolbar toolbar;
+  //private Toolbar toolbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +57,12 @@ public class MainActivity2 extends AppCompatActivity
     setContentView(R.layout.activity_main2);
     nav = findViewById(R.id.nav_view);
     drawerLayout = (DrawerLayout) findViewById(drawer_layout);
-    // toolbar = findViewById(R.id.toolbar);
+    //toolbar = findViewById(R.id.toolbar);
+    //setSupportActionBar(toolbar);
     setupNavController();
     setupDrawerNavigation();
     setupBottomNavigation();
+
 
     // Use tabs.
 
@@ -83,10 +85,9 @@ public class MainActivity2 extends AppCompatActivity
 
     appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
 
-    NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     nav.setNavigationItemSelectedListener(this);
   }
-  //TODO: Remove second top bar
   //TODO: Implement tests
   //TODO: Figure out how to show hamburger menu
   //TODO: Constraint fragment to be over the bottom tabview

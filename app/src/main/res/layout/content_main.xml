@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,11 +12,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/bot_view"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         app:navGraph="@navigation/mobile_navigation"/>
 
-    <include layout="@layout/bottom_navigation_view"/>
+    <include layout="@layout/bottom_navigation_view"
+        android:id="@+id/bot_view"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
