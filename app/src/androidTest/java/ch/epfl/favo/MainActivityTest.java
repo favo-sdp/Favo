@@ -48,6 +48,8 @@ public class MainActivityTest {
   public void testCanChangeTabs() {
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.sign_out)).check(matches(isDisplayed()));
     onView(withId(R.id.pager)).perform(swipeRight());
     onView(withId(R.id.pager)).perform(swipeRight());
