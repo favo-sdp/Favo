@@ -107,9 +107,6 @@ public class UserAccountPageTest {
 
     // can't test that logo sign-in page is displayed because this is handled by the library
     // automatically
-
-    // Thread.sleep(5000);
-    // onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -137,19 +134,17 @@ public class UserAccountPageTest {
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     DependencyFactory.setCurrentFirebaseUser(null);
-    Thread.sleep(3000);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    Thread.sleep(5000);
     onView(withId(R.id.delete_account)).perform(click());
     // give time to display the first interface
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
 
     // can't test confirm delete account because operation depends on too many internal
     // calls of the FirebaseAuth library but the written code is simple so it should be correct
 
-    //    onView(withId(android.R.id.button1)).perform(click());
-    //    onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
-    //    Thread.sleep(3000);
-    //    onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
 }
