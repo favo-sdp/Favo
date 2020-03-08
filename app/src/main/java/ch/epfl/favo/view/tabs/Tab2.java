@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.Objects;
+
 import ch.epfl.favo.R;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
@@ -48,8 +50,7 @@ public class Tab2 extends Fragment implements View.OnClickListener {
   // Replace the current fragment with the new fragment.
   // Todo: Seems useful. Try to put this method in a util package and import it here.
   private void replaceFragment(Fragment newFragment) {
-    assert getFragmentManager() != null;
-    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+    FragmentTransaction transaction = Objects.requireNonNull(getFragmentManager()).beginTransaction();
     transaction.replace(R.id.fragment_tab2, newFragment);
     transaction.addToBackStack(null);
     transaction.commit();

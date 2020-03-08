@@ -21,6 +21,7 @@ public class DependencyFactoryTest {
   @Before
   public void setup() {
     new DependencyFactory();
+    new LocationManagerDependencyFactory();
   }
 
   @Test
