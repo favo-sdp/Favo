@@ -1,5 +1,8 @@
 package ch.epfl.favo.favor;
 
+import java.util.ArrayList;
+import android.location.Location;
+
 import ch.epfl.favo.common.NotImplementedException;
 
 /*
@@ -29,4 +32,74 @@ public class FavorUtil {
 
     throw new NotImplementedException();
   }
+
+  /**
+   * Returns all the favors for a given user (accepted  + requested)
+   *
+   * @param userId Id of the user
+   */
+  public ArrayList<Favor> retrieveAllFavorsForGivenUser(String userId) {
+
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all active favors for a given user.
+   *
+   * @param userId Id of the user
+   */
+  public ArrayList<Favor> retrieveAllActiveFavorsForGivenUser(String userId) {
+
+    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // Filter out all favors except active ones
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all inactive (past) favors for a given user.
+   *
+   * @param userId Id of the user
+   */
+  public ArrayList<Favor> retrieveAllPastFavorsForGivenUser(String userId) {
+
+    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // Filter out all favors except inactive (past) ones
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all the favors a given user has requested.
+   *
+   * @param userId Id of the user
+   */
+  public ArrayList<Favor> retrieveAllRequestedFavorsForGivenUser(String userId) {
+
+    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // Filter out all favors except requested ones
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all the favors a given user has accepted.
+   *
+   * @param userId Id of the user
+   */
+  public ArrayList<Favor> retrieveAllAcceptedFavorsForGivenUser(String userId) {
+
+    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // Filter out all favors except accepted
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all the favors that are active in a given radius.
+   *
+   * @param loc a given Location (Android location type)
+   * @param radius a given radius to search within
+   */
+  public ArrayList<Favor> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
+
+    throw new NotImplementedException();
+  }
+
 }

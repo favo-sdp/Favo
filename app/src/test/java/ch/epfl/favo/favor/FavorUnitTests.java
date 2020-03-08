@@ -5,6 +5,7 @@ import android.location.Location;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.TestUtil;
 
@@ -81,6 +82,77 @@ public class FavorUnitTests {
               @Override
               public void run() throws Throwable {
                 FavorUtil.getSingleInstance().postFavor(title, description, location);
+              }
+            });
+  }
+
+  @Test
+  public void favorCanRetrieveAllFavorsForGivenUser() {
+
+    String userId = TestConstants.USER_ID;
+    throw assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                FavorUtil.getSingleInstance().retrieveAllFavorsForGivenUser(userId);
+              }
+            });
+  }
+
+  @Test
+  public void favorCanRetrieveAllActiveFavorsForGivenUser() {
+
+    String userId = TestConstants.USER_ID;
+    throw assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser(userId);
+              }
+            });
+  }
+
+  @Test
+  public void favorCanRetrieveAllRequestedFavorsForGivenUser() {
+
+    String userId = TestConstants.USER_ID;
+    throw assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                FavorUtil.getSingleInstance().retrieveAllRequestedFavorsForGivenUser(userId);
+              }
+            });
+  }
+
+  @Test
+  public void favorCanRetrieveAllAcceptedFavorsForGivenUser() {
+
+    String userId = TestConstants.USER_ID;
+    throw assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId);
+              }
+            });
+  }
+
+  @Test
+  public void favorCanRetrieveAllFavorsInGivenRadius() {
+
+    Location loc = TestConstants.LOCATION;
+    double radius = TestConstants.RADIUS;
+    throw assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(loc, radius);
               }
             });
   }

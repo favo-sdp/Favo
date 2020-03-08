@@ -1,5 +1,8 @@
 package ch.epfl.favo.user;
 
+import java.util.ArrayList;
+import android.location.Location;
+
 import ch.epfl.favo.common.NotImplementedException;
 
 public class UserUtil {
@@ -52,6 +55,17 @@ public class UserUtil {
   }
 
   public void deleteAccount() {
+    throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all the favors that are active in a given radius.
+   *
+   * @param loc Location to search around (Android location type)
+   * @param radius a given radius to search within
+   */
+  public ArrayList<User> retrieveOtherUsersInGivenRadius(Location loc, double radius) {
+
     throw new NotImplementedException();
   }
 }
