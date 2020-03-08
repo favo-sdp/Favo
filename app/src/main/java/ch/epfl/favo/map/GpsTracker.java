@@ -66,8 +66,9 @@ public class GpsTracker extends Service implements LocationListener {
                     //Log.d("report", "position found by gps");
                 }
             }
-            if (location == null)
+            if (location == null) {
                 throw new NoPositionFoundException("Permission is granted, but no position is found");
+            }
         }
         else
             throw new NoPermissionGrantedException("No location permission granted");
@@ -80,13 +81,13 @@ public class GpsTracker extends Service implements LocationListener {
     }
 
     public void onStatusChanged(String Provider, int status, Bundle extras){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     public void onProviderEnabled(String Provider){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     public void onProviderDisabled(String Provider){
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
     public IBinder onBind(Intent arg0){
         return null;
