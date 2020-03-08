@@ -30,11 +30,15 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static ch.epfl.favo.R.id.nav_about;
+import static ch.epfl.favo.R.id.nav_account;
 import static ch.epfl.favo.testhelpers.TestConstants.EMAIL;
 import static ch.epfl.favo.testhelpers.TestConstants.NAME;
 import static ch.epfl.favo.testhelpers.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.testhelpers.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -69,6 +73,132 @@ public class MainActivity2Test {
         getInstrumentation().waitForIdleSync();
         //check that tab 2 is indeed opened
         onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+                .check(matches(isDisplayed()));
+    }
+    @Test
+    public void testMenuDrawerIsLaunched(){
+
+    }
+    @Test
+    public void testMenuDrawerCanBeLaunchedFromMapView(){
+        //Click on map tab
+        onView(withId(R.id.nav_map_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        getInstrumentation().waitForIdleSync();
+
+        //Click on menu tab
+        onView(withId(R.id.hamburger_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+
+        //check that menu drawer is displayed
+        onView(withId(R.id.nav_view))
+                .check(matches(isDisplayed()));
+    }
+    @Test
+    public void testMenuDrawerCanBeLaunchedFromFavorsView(){
+        //Click on map tab
+        onView(withId(R.id.nav_favor_list_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        getInstrumentation().waitForIdleSync();
+
+        //Click on menu tab
+        onView(withId(R.id.hamburger_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+
+        //check that menu drawer is displayed
+        onView(withId(R.id.nav_view))
+                .check(matches(isDisplayed()));
+    }
+    @Test
+    public void testAccountTabIsLaunched(){
+
+        //Click on menu tab
+        onView(withId(R.id.hamburger_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+
+        //Click on account icon
+        onView(anyOf(withText(R.string.account),
+        withId(nav_account)))
+        .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+        //check that tab 2 is indeed opened
+        onView(allOf(withId(R.id.user_info_fragment),
+                withParent(withId(R.id.nav_host_fragment))))
+                .check(matches(isDisplayed()));
+    }
+    @Test
+    public void testSettingsTabIsLaunched(){
+
+        //Click on menu tab
+        onView(withId(R.id.hamburger_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+
+        //Click on account icon
+        onView(anyOf(withText(R.string.settings),
+                withId(R.id.nav_settings)))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+        //check that tab 2 is indeed opened
+        onView(allOf(withId(R.id.fragment_settings),
+                withParent(withId(R.id.nav_host_fragment))))
+                .check(matches(isDisplayed()));
+    }
+    @Test
+    public void testAboutTabIsLaunched(){
+
+        //Click on menu tab
+        onView(withId(R.id.hamburger_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+
+        //Click on account icon
+        onView(anyOf(withText(R.string.about),
+                withId(nav_about)))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+        //check that tab 2 is indeed opened
+        onView(allOf(withId(R.id.fragment_about),
+                withParent(withId(R.id.nav_host_fragment))))
+                .check(matches(isDisplayed()));
+    }
+    @Test
+    public void testShareTabIsLaunched(){
+
+        //Click on menu tab
+        onView(withId(R.id.hamburger_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+
+        //Click on account icon
+        onView(anyOf(withText(R.string.share),
+                withId(R.id.nav_share)))
+                .perform(click());
+
+        getInstrumentation().waitForIdleSync();
+        //check that tab 2 is indeed opened
+        onView(allOf(withId(R.id.fragment_share),
+                withParent(withId(R.id.nav_host_fragment))))
                 .check(matches(isDisplayed()));
     }
 }

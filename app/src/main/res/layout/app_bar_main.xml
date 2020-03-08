@@ -25,7 +25,7 @@
      -->
     <include layout="@layout/content_main" />
     <ImageButton
-        android:id="@+id/hamburger_menu"
+        android:id="@+id/hamburger_menu_button"
         android:layout_width="@dimen/hamburger_button_size"
         android:layout_height="@dimen/hamburger_button_size"
         android:src="@drawable/ic_menu_green_24dp"

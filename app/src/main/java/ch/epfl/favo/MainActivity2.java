@@ -3,79 +3,72 @@ package ch.epfl.favo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-//import android.support.v7.app.ActionBarDrawerToggle;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
-import ch.epfl.favo.view.TabAdapter;
 
 import static androidx.navigation.Navigation.findNavController;
-import static androidx.navigation.ui.NavigationUI.setupActionBarWithNavController;
-import static androidx.navigation.ui.NavigationUI.setupWithNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
-import static ch.epfl.favo.R.id.nav_host_fragment;
-//import static ch.epfl.favo.R.id.toolbar;
-import static com.google.android.gms.common.util.CollectionUtils.setOf;
+// import static ch.epfl.favo.R.id.toolbar;
+
 
 /**
- * This will control the general view of our app. It will contain 3 tabs. On the first tab it will
- * have the map and the favor request pop-up. On the second tab it will contain the list view of
- * previous favors. On the third tab it will contain account information. These tabs will be
- * implemented in more detail in the other presenter classes.
+ * This view will control all the fragments that are created.
+ * Contains a navigation drawer on the left.
+ * Contains a bottom navigation for top-level activities.
  */
 public class MainActivity2 extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
+  // UI
   private AppBarConfiguration appBarConfiguration;
   private NavController navController;
   private NavigationView nav;
   private DrawerLayout drawerLayout;
-  private ActionBarDrawerToggle hambMenu;
-  //private Toolbar toolbar;
+  private ImageButton hambMenu;
+  //  //private Toolbar toolbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main2);
+
+    // Initialize Variables
     nav = findViewById(R.id.nav_view);
     drawerLayout = (DrawerLayout) findViewById(drawer_layout);
-    final ImageButton hambMenu = (ImageButton) findViewById(R.id.hamburger_menu);
-    hambMenu.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            drawerLayout.openDrawer(GravityCompat.START);
-        }
-    });
-    //toolbar = findViewById(R.id.toolbar);
-    //setSupportActionBar(toolbar);
+    hambMenu = (ImageButton) findViewById(R.id.hamburger_menu_button);
+
+    // Setup Controllers
+    setUpHamburgerMenuButton();
     setupNavController();
     setupDrawerNavigation();
     setupBottomNavigation();
+
+    // toolbar = findViewById(R.id.toolbar);
+    // setSupportActionBar(toolbar);
     // Use tabs.
 
+  }
+
+  private void setUpHamburgerMenuButton() {
+    final ImageButton hambMenu = (ImageButton) findViewById(R.id.hamburger_menu_button);
+    hambMenu.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            drawerLayout.openDrawer(GravityCompat.START);
+          }
+        });
   }
 
   private void setupNavController() {
@@ -89,23 +82,19 @@ public class MainActivity2 extends AppCompatActivity
   }
 
   private void setupDrawerNavigation() {
-    // Passing each menu ID as a set of Ids because
-    // each menu should be considered as top level
-    // destination
 
+    //Only pass top-level destinations.
     appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
 
-    //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     nav.setNavigationItemSelectedListener(this);
   }
-  //TODO: Implement tests
-  //TODO: Figure out how to show hamburger menu
+  // TODO: Implement tests
 
   /**
-   * Will control hamburger menu
-   *
-   * @param item
-   * @return
+   * Will control drawer layout.
+   * @param item One of the buttons in the left drawer menu.
+   * @return boolean of whether operation was successful.
    */
   @Override
   public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -139,6 +128,7 @@ public class MainActivity2 extends AppCompatActivity
     return true;
   }
 
+  /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
     findViewById(R.id.nav_map_button)
         .setOnClickListener(
@@ -157,6 +147,4 @@ public class MainActivity2 extends AppCompatActivity
               }
             });
   }
-
-
 }

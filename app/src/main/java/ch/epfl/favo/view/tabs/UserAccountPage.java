@@ -37,7 +37,7 @@ public class UserAccountPage extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
       // Inflate the layout for this fragment
-      view = inflater.inflate(R.layout.tab3_user_account, container, false);
+      view = inflater.inflate(R.layout.account_info, container, false);
 
       setupButtons();
       displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));

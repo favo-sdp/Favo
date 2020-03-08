@@ -30,6 +30,6 @@ public class Tab3 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.tab3_user_account, container, false);
+        return inflater.inflate(R.layout.account_info, container, false);
     }
 }
