@@ -34,14 +34,14 @@ public class UserAccountPage extends Fragment {
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-      // Inflate the layout for this fragment
-      view = inflater.inflate(R.layout.tab3_user_account, container, false);
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    // Inflate the layout for this fragment
+    view = inflater.inflate(R.layout.tab3_user_account, container, false);
 
-      setupButtons();
-      displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
-      return view;
+    setupButtons();
+    displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
+    return view;
   }
 
   private void setupButtons() {
@@ -76,8 +76,9 @@ public class UserAccountPage extends Fragment {
 
   private void signOut(View view) {
     AuthUI.getInstance()
-            .signOut(Objects.requireNonNull(getActivity()))
-            .addOnCompleteListener(task -> {
+        .signOut(Objects.requireNonNull(getActivity()))
+        .addOnCompleteListener(
+            task -> {
               if (task.isSuccessful()) {
                 startActivity(new Intent(getActivity(), SignInActivity.class));
               } else {
@@ -96,8 +97,9 @@ public class UserAccountPage extends Fragment {
 
   private void deleteAccount() {
     AuthUI.getInstance()
-            .delete(Objects.requireNonNull(getActivity()))
-            .addOnCompleteListener(task -> {
+        .delete(Objects.requireNonNull(getActivity()))
+        .addOnCompleteListener(
+            task -> {
               if (task.isSuccessful()) {
                 startActivity(new Intent(getActivity(), SignInActivity.class));
               } else {

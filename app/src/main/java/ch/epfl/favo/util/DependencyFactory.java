@@ -1,9 +1,5 @@
 package ch.epfl.favo.util;
 
-import android.content.Intent;
-import android.os.IBinder;
-
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,5 +22,4 @@ public class DependencyFactory {
     testMode = true;
     currentUser = dependency;
   }
-
 }

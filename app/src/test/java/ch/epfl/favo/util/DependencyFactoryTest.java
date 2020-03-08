@@ -31,10 +31,10 @@ public class DependencyFactoryTest {
   }
 
   @Test
-  public void testLocationManagerDependency(){
+  public void testLocationManagerDependency() {
     LocationManager locationManagerMock = mock(LocationManager.class);
     LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
-    assertEquals(locationManagerMock, LocationManagerDependencyFactory.getCurrentLocationManager(null));
+    assertEquals(
+        locationManagerMock, LocationManagerDependencyFactory.getCurrentLocationManager(null));
   }
-
 }

@@ -1,8 +1,8 @@
-//package ch.epfl.favo.common;
+// package ch.epfl.favo.common;
 //
-//import com.google.firebase.firestore.FirebaseFirestore;
+// import com.google.firebase.firestore.FirebaseFirestore;
 //
-//public final class DatabaseWrapper {
+// public final class DatabaseWrapper {
 //
 //    private static FirebaseFirestore mFirestore;
 //
@@ -14,4 +14,4 @@
 //    public static FirebaseFirestore getDatabaseInstance() {
 //        return mFirestore;
 //    }
-//}
+// }

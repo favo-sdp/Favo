@@ -8,27 +8,26 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
-public class LocationManagerDependencyFactory  extends Service  {
+public class LocationManagerDependencyFactory extends Service {
 
-    private static boolean testMode = false;
-    private static LocationManager currentLocationManager;
+  private static boolean testMode = false;
+  private static LocationManager currentLocationManager;
 
-    public static LocationManager getCurrentLocationManager(Context context) {
-        if (testMode) {
-            return currentLocationManager;
-        }
-        return (LocationManager) context.getSystemService(LOCATION_SERVICE);
+  public static LocationManager getCurrentLocationManager(Context context) {
+    if (testMode) {
+      return currentLocationManager;
     }
+    return (LocationManager) context.getSystemService(LOCATION_SERVICE);
+  }
 
-    public static void setCurrentLocationManager(LocationManager dependency) {
-        testMode = true;
-        LocationManagerDependencyFactory.currentLocationManager = dependency;
-    }
+  public static void setCurrentLocationManager(LocationManager dependency) {
+    testMode = true;
+    LocationManagerDependencyFactory.currentLocationManager = dependency;
+  }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
+  @Nullable
+  @Override
+  public IBinder onBind(Intent intent) {
+    return null;
+  }
 }

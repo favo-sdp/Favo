@@ -23,27 +23,27 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
-    @Rule
-    public final ActivityTestRule<MainActivity> mainActivityActivityTestRule =
-            new ActivityTestRule<MainActivity>(MainActivity.class){
-                @Override
-                protected void beforeActivityLaunched() {
-                    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-                }
-            };
+  @Rule
+  public final ActivityTestRule<MainActivity> mainActivityActivityTestRule =
+      new ActivityTestRule<MainActivity>(MainActivity.class) {
+        @Override
+        protected void beforeActivityLaunched() {
+          DependencyFactory.setCurrentFirebaseUser(
+              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+        }
+      };
 
-    @Test
-    public void testCanChangeTabs() throws InterruptedException {
-        //onView(withId(R.id.text1)).check(matches(withText("1")));
-        //TODO: Replace with actual text in layout
-        onView(withId(R.id.pager)).perform(swipeLeft());
-        onView(withId(R.id.pager)).perform(swipeLeft());
-        Thread.sleep(3000);
-        onView(withId(R.id.pager)).perform(swipeLeft());
-        onView(withId(R.id.sign_out)).check(matches(isDisplayed()));
-        onView(withId(R.id.pager)).perform(swipeRight());
-        onView(withId(R.id.pager)).perform(swipeRight());
-        //onView(withId(R.id.text2)).check(matches(withText("2")));
-    }
-
+  @Test
+  public void testCanChangeTabs() throws InterruptedException {
+    // onView(withId(R.id.text1)).check(matches(withText("1")));
+    // TODO: Replace with actual text in layout
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    Thread.sleep(3000);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.sign_out)).check(matches(isDisplayed()));
+    onView(withId(R.id.pager)).perform(swipeRight());
+    onView(withId(R.id.pager)).perform(swipeRight());
+    // onView(withId(R.id.text2)).check(matches(withText("2")));
+  }
 }

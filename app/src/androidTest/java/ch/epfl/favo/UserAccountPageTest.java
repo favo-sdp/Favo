@@ -31,14 +31,16 @@ public class UserAccountPageTest {
   public final ActivityTestRule<SignInActivity> mActivityRule =
       new ActivityTestRule<>(SignInActivity.class, true, false);
 
-
   @Test
-  public void testUserNotLoggedIn() throws InterruptedException {
+  public void testUserNotLoggedIn() {
     DependencyFactory.setCurrentFirebaseUser(null);
     mActivityRule.launchActivity(null);
-    // give time to display the first interface
-    Thread.sleep(5000);
-    onView(withId(R.id.logo)).check(matches(isDisplayed()));
+
+    // can't test that logo sign-in page is displayed because this is handled by the library
+    // automatically
+
+    // Thread.sleep(5000);
+    // onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -48,14 +50,18 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(3000);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    Thread.sleep(5000);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
     onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserDataMissingName() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData_missingName() throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
@@ -66,7 +72,7 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserDataMissingEmail() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData_missingEmail() throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, "", PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
@@ -76,7 +82,7 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserDataMissingPhoto() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData_missingPhoto() throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
@@ -97,12 +103,13 @@ public class UserAccountPageTest {
     Thread.sleep(3000);
     onView(withId(R.id.sign_out)).perform(click());
     // give time to display the first interface
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_deleteAccount_AlertShowed() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_cancelOperation()
+      throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
@@ -112,52 +119,34 @@ public class UserAccountPageTest {
     // give time to display the first interface
     Thread.sleep(3000);
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void testUserAlreadyLoggedIn_deleteAccount_CancelOperation() throws InterruptedException {
-    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
-    mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    DependencyFactory.setCurrentFirebaseUser(null);
-    Thread.sleep(3000);
-    onView(withId(R.id.delete_account)).perform(click());
-    // give time to display the first interface
-    Thread.sleep(3000);
-    onView(withText(endsWith("?"))).check(matches(isDisplayed()));
-    Thread.sleep(3000);
-    onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
-
     onView(withId(android.R.id.button2)).perform(click());
     onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_deleteAccount_ConfirmOperation() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_deleteAccount_confirmOperation() throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     DependencyFactory.setCurrentFirebaseUser(null);
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withId(R.id.delete_account)).perform(click());
     // give time to display the first interface
-    Thread.sleep(3000);
+    Thread.sleep(5000);
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     Thread.sleep(3000);
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
 
     // can't test confirm delete account because operation depends on too many internal
-    // calls of the FirebaseAuth library but the code is simple so it should be correct
+    // calls of the FirebaseAuth library but the written code is simple so it should be correct
 
-//    onView(withId(android.R.id.button1)).perform(click());
-//    onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
-//    Thread.sleep(3000);
-//    onView(withId(R.id.logo)).check(matches(isDisplayed()));
+    //    onView(withId(android.R.id.button1)).perform(click());
+    //    onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
+    //    Thread.sleep(3000);
+    //    onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
-
 }
