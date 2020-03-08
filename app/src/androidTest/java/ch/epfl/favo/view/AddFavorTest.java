@@ -49,13 +49,11 @@ public class AddFavorTest {
   }
 
   @Test
-  public void addFavorTest() throws InterruptedException {
+  public void addFavorTest() {
     onView(ViewMatchers.withId(R.id.tab_layout)).check(matches(isDisplayed()));
     onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(3000);
     onView(withId(R.id.tab_layout)).perform(click());
     onView(withId(R.id.new_favor)).perform(click());
-    Thread.sleep(3000);
     onView(withId(R.id.add_button)).check(matches(isDisplayed()));
     onView(withId(R.id.add_button)).perform(click());
   }

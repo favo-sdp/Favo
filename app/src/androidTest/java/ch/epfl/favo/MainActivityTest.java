@@ -45,16 +45,11 @@ public class MainActivityTest {
   }
 
   @Test
-  public void testCanChangeTabs() throws InterruptedException {
-    // onView(withId(R.id.text1)).check(matches(withText("1")));
-    // TODO: Replace with actual text in layout
+  public void testCanChangeTabs() {
     onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(3000);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.sign_out)).check(matches(isDisplayed()));
     onView(withId(R.id.pager)).perform(swipeRight());
     onView(withId(R.id.pager)).perform(swipeRight());
-    // onView(withId(R.id.text2)).check(matches(withText("2")));
   }
 }

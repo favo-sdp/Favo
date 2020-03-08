@@ -1,6 +1,5 @@
 package ch.epfl.favo.view;
 
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -46,15 +45,19 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData() throws InterruptedException {
+  public void testUserNotLoggedIn() {
+    // just to test that sign-in activity handled by the library is correctly displayed without
+    // errors
+    mActivityRule.launchActivity(null);
+  }
+
+  @Test
+  public void testUserAlreadyLoggedIn_displayUserData() {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(ViewMatchers.withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(5000);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
@@ -63,49 +66,51 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData_missingName() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData_missingName() {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    Thread.sleep(5000);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData_missingEmail() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData_missingEmail() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, "", PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(5000);
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData_missingPhoto() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData_missingPhoto() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(5000);
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
     onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_signOut() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_signOut() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
     onView(withId(R.id.pager)).perform(swipeLeft());
     onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
+    onView(withId(R.id.pager)).perform(swipeLeft());
     DependencyFactory.setCurrentFirebaseUser(null);
-    Thread.sleep(5000);
     onView(withId(R.id.sign_out)).perform(click());
 
-    // can't test that logo sign-in page is displayed because this is handled by the library
+    // can't test that sign-in page is displayed because this is handled by the library
     // automatically
   }
 
@@ -118,7 +123,7 @@ public class UserAccountPageTest {
     onView(withId(R.id.pager)).perform(swipeLeft());
     Thread.sleep(3000);
     onView(withId(R.id.delete_account)).perform(click());
-    // give time to display the first interface
+    // give time to display the dialog
     Thread.sleep(3000);
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
@@ -127,24 +132,6 @@ public class UserAccountPageTest {
     onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
   }
 
-  @Test
-  public void testUserAlreadyLoggedIn_deleteAccount_confirmOperation() throws InterruptedException {
-    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
-    mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    DependencyFactory.setCurrentFirebaseUser(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    Thread.sleep(5000);
-    onView(withId(R.id.delete_account)).perform(click());
-    // give time to display the first interface
-    Thread.sleep(5000);
-    onView(withText(endsWith("?"))).check(matches(isDisplayed()));
-    onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
-
-    // can't test confirm delete account because operation depends on too many internal
-    // calls of the FirebaseAuth library but the written code is simple so it should be correct
-
-  }
+  // can't test confirm delete account because operation depends on too many internal
+  // calls of the FirebaseAuth library but the written code is simple so it should be correct
 }
