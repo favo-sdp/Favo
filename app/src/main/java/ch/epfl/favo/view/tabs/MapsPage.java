@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.map.GpsTracker;
@@ -80,7 +79,7 @@ public class MapsPage extends Fragment {
 
                     mMap.moveCamera(
                             CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
-                    displayDebugInfo();
+                  /*  displayDebugInfo();*/
                 }
             };
 
@@ -98,7 +97,7 @@ public class MapsPage extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
+        mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -110,22 +109,22 @@ public class MapsPage extends Fragment {
     /**
      * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
      * @return human readable format of date and time
-     */
-    private String convertTime(long time) {
+
+    public String convertTime(long time) {
         Date date = new Date(time);
         Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
         return format.format(date);
     }
-
+*/
     /**
      * utilities functions to help debug
-     */
-    private void displayDebugInfo() {
+
+    public void displayDebugInfo() {
         Log.d("latitude", Double.toString(mLocation.getLatitude()));
         Log.d("longitude", Double.toString(mLocation.getLongitude()));
         Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));
         Log.d("gpstime", convertTime(mLocation.getTime()));
         Log.d("bearing", Float.toString(mLocation.getBearing()));
-    }
+    }*/
 }
 
