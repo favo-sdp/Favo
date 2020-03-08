@@ -7,7 +7,7 @@ import java.util.Random;
 
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.models.UserUtil;
+import ch.epfl.favo.user.UserUtil;
 
 import static org.junit.Assert.assertThrows;
 
@@ -17,74 +17,11 @@ import static org.junit.Assert.assertThrows;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class BackEndUnitTests {
-  @Test
-  public void userNameIsValid() {
-    String username = "as;dfjlasdfkja;skldfm";
-    String pw = "valid_pw";
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            UserUtil.getSingleInstance().createAccount(username, pw);
-          }
-        });
-  }
 
-  @Test
-  public void userShouldNotLoginWithInvalidPassword() {
-    String username = "valid_user";
-    String pw = generateRandomString(10);
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            UserUtil.getSingleInstance().logInAccount(username, pw);
-          }
-        });
-  }
 
-  @Test
-  public void favorIsNotLongerThan300Characters() {
-    String title = "Sample Favor";
-    String description = generateRandomString(305);
-    String location = "valid location"; // replace by valid location
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            FavorUtil.getSingleInstance().postFavor(title, description, location);
-          }
-        });
-  }
 
-  @Test
-  public void userCanLogOutOnlyIfLoggedIn() {
 
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            UserUtil.getSingleInstance().logOutAccount();
-          }
-        });
-  }
 
-  @Test
-  public void userCanDeleteAccountOnlyIfAccountExists() {
-
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            UserUtil.getSingleInstance().deleteAccount();
-          }
-        });
-  }
 
   public String generateRandomString(int targetStringLength) {
     String title = "sample_favor";

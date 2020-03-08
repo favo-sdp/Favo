@@ -2,10 +2,12 @@ package ch.epfl.favo.user;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 
 import java.time.LocalDate;
 
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.util.TestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -96,5 +98,59 @@ public class UserUnitTests {
 
     assertTrue(user.canAccept());
     assertTrue(user.canRequest());
+  }
+
+  @Test
+  public void userNameIsValid() {
+    String username = "as;dfjlasdfkja;skldfm";
+    String pw = "valid_pw";
+    assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                UserUtil.getSingleInstance().createAccount(username, pw);
+              }
+            });
+  }
+
+  @Test
+  public void userShouldNotLoginWithInvalidPassword() {
+    String username = "valid_user";
+    String pw = TestUtil.generateRandomString(10);
+    assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                UserUtil.getSingleInstance().logInAccount(username, pw);
+              }
+            });
+  }
+
+  @Test
+  public void userCanLogOutOnlyIfLoggedIn() {
+
+    assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                UserUtil.getSingleInstance().logOutAccount();
+              }
+            });
+  }
+
+  @Test
+  public void userCanDeleteAccountOnlyIfAccountExists() {
+
+    assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                UserUtil.getSingleInstance().deleteAccount();
+              }
+            });
   }
 }

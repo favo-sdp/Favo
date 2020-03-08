@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import ch.epfl.favo.view.tabs.MapsPage;
-import ch.epfl.favo.view.tabs.Tab2;
+import ch.epfl.favo.view.tabs.FavorPage;
 import ch.epfl.favo.view.tabs.UserAccountPage;
 
 /**
@@ -35,7 +35,7 @@ public class TabAdapter extends FragmentStateAdapter {
       case 0:
         return new MapsPage();
       case 1:
-        return new Tab2();
+        return new FavorPage();
       case 2:
         return new UserAccountPage();
       default:

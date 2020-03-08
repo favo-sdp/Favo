@@ -3,9 +3,10 @@ package ch.epfl.favo.favor;
 import android.location.Location;
 
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.testhelpers.TestUtil;
+import ch.epfl.favo.util.TestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -16,15 +17,6 @@ import static org.junit.Assert.assertThrows;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class FavorUnitTests {
-  @Test
-  public void favorIsNotLongerThan300Characters() {
-    String title = "Sample Favor";
-    String description = TestUtil.generateRandomString(305);
-    String location = "valid location"; // replace by valid location
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().postFavor(title, description, location));
-  }
 
   @Test
   public void favorCanRetrieveDetailsFromDatabase() {
@@ -76,5 +68,20 @@ public class FavorUnitTests {
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
     assertEquals(accepterId, favor.getAccepterID());
+  }
+
+  @Test
+  public void favorIsNotLongerThan300Characters() {
+    String title = "Sample Favor";
+    String description = TestUtil.generateRandomString(305);
+    String location = "valid location"; // replace by valid location
+    assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                FavorUtil.getSingleInstance().postFavor(title, description, location);
+              }
+            });
   }
 }
