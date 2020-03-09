@@ -24,7 +24,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MapUnitTest {
+public class MapUnitTests {
 
   private Context contextMock = mock(Context.class);
   private LocationManager locationManagerMock = mock(LocationManager.class);

@@ -18,9 +18,9 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
-public class Tab2 extends Fragment implements View.OnClickListener {
+public class FavorPage extends Fragment implements View.OnClickListener {
 
-  public Tab2() {
+  public FavorPage() {
     // Required empty public constructor
   }
 
