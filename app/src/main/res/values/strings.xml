@@ -60,4 +60,5 @@
     <string name="open_drawer"></string>
     <string name="close_drawer"></string>
     <string name="home">Home</string>
+    <string name="new_favor">New Favor</string>
 </resources>

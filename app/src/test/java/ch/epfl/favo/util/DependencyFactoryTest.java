@@ -1,37 +1,41 @@
 package ch.epfl.favo.util;
 
-import com.google.firebase.auth.FirebaseAuth;
+import android.location.LocationManager;
+
 import com.google.firebase.auth.FirebaseUser;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.RobolectricTestRunner;
 
-import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.testhelpers.TestHelper;
+import ch.epfl.favo.FakeFirebaseUser;
 
+import static ch.epfl.favo.TestConstants.EMAIL;
+import static ch.epfl.favo.TestConstants.NAME;
+import static ch.epfl.favo.TestConstants.PHOTO_URI;
+import static ch.epfl.favo.TestConstants.PROVIDER;
 import static junit.framework.TestCase.assertEquals;
+import static org.mockito.Mockito.mock;
 
-@RunWith(RobolectricTestRunner.class)
 public class DependencyFactoryTest {
 
   @Before
   public void setup() {
-    TestHelper.initialize();
     new DependencyFactory();
+    new LocationManagerDependencyFactory();
   }
 
   @Test
-  public void testGetInstanceFirstTime() {
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    assertEquals(DependencyFactory.getCurrentFirebaseUser(), user);
-  }
-
-  @Test
-  public void testSetInstance() {
-    FirebaseUser testUser = TestHelper.createMockFirebaseUser();
+  public void testFirebaseUserDependency() {
+    FirebaseUser testUser = new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER);
     DependencyFactory.setCurrentFirebaseUser(testUser);
     assertEquals(DependencyFactory.getCurrentFirebaseUser(), testUser);
+  }
+
+  @Test
+  public void testLocationManagerDependency() {
+    LocationManager locationManagerMock = mock(LocationManager.class);
+    LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
+    assertEquals(
+        locationManagerMock, LocationManagerDependencyFactory.getCurrentLocationManager(null));
   }
 }
