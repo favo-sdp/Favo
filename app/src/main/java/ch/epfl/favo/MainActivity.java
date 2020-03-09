@@ -1,12 +1,16 @@
 package ch.epfl.favo;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.firebase.iid.FirebaseInstanceId;
+
+import java.util.Objects;
 
 import ch.epfl.favo.view.TabAdapter;
 
@@ -28,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    // retrieve current registration token for notifications
+    retrieveCurrentRegistrationToken();
 
     // Use tabs.
     setUpViewPager();
@@ -75,5 +82,22 @@ public class MainActivity extends AppCompatActivity {
               }
             })
         .attach();
+  }
+
+  private void retrieveCurrentRegistrationToken() {
+    FirebaseInstanceId.getInstance()
+        .getInstanceId()
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                return;
+              }
+
+              // Get new Instance ID token
+              String token = Objects.requireNonNull(task.getResult()).getToken();
+
+              String msg = getString(R.string.msg_token_fmt, token);
+              Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            });
   }
 }

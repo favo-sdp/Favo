@@ -70,6 +70,9 @@ dependencies {
     // Add the SDKs for any other Firebase products you want to use in your app
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
 
+    // Add the SDKs for any other Firebase products you want to use in your app
+    implementation 'com.google.firebase:firebase-messaging:20.1.2'
+
     // Providers
     implementation 'com.facebook.android:facebook-login:5.0.0'
 

@@ -48,4 +48,9 @@
     <string name="tab1_description">1</string>
     <string name="tab2_description">2</string>
     <string name="new_favor">New Favor</string>
+
+    <!-- Notification -->
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+
 </resources>
