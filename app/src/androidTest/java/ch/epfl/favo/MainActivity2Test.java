@@ -76,10 +76,6 @@ public class MainActivity2Test {
                 .check(matches(isDisplayed()));
     }
     @Test
-    public void testMenuDrawerIsLaunched(){
-
-    }
-    @Test
     public void testMenuDrawerCanBeLaunchedFromMapView(){
         //Click on map tab
         onView(withId(R.id.nav_map_button))

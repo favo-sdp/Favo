@@ -1,4 +1,4 @@
-package ch.epfl.favo.view.tabs.addFavor;
+package ch.epfl.favo.view.tabs;
 
 import android.os.Bundle;
 
@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 
 import ch.epfl.favo.R;
 
+
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentShare extends Fragment {
+
+public class FragmentShare extends BottomDestinationTab {
 
     public FragmentShare() {
         // Required empty public constructor
@@ -24,6 +26,7 @@ public class FragmentShare extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setupView();
         return inflater.inflate(R.layout.fragment_share, container, false);
     }
 }

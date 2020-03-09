@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.addFavor.FragmentShare"
+    tools:context=".view.tabs.FragmentShare"
     android:id="@+id/fragment_share">
 
     <!-- TODO: Update blank fragment layout -->

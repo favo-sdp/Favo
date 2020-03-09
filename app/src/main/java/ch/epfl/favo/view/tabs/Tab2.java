@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -11,7 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.util.Objects;
+
+import ch.epfl.favo.MainActivity2;
 import ch.epfl.favo.R;
+import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 /**
@@ -20,7 +25,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
  * to give more information about them.
  * This object is a simple {@link Fragment} subclass.
  */
-public class Tab2 extends Fragment implements View.OnClickListener {
+public class Tab2 extends TopDestinationTab implements View.OnClickListener {
 
     public Tab2() {
         // Required empty public constructor
@@ -29,7 +34,7 @@ public class Tab2 extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        setupView();
         View rootView = inflater.inflate(R.layout.fragment_tab2, container, false);
         rootView.findViewById(R.id.new_favor).setOnClickListener(this);
         return rootView;

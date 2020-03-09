@@ -59,4 +59,5 @@
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="open_drawer"></string>
     <string name="close_drawer"></string>
+    <string name="home">Home</string>
 </resources>

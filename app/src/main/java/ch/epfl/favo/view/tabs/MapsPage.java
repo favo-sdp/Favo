@@ -26,12 +26,13 @@ import java.util.Date;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.view.ViewController;
 
 /**
  * View will contain a map and a favor request pop-up.
  * It is implemented using the {@link Fragment} subclass.
  */
-public class MapsPage extends Fragment {
+public class MapsPage extends TopDestinationTab {
 
 
     private GoogleMap mMap;
@@ -91,12 +92,16 @@ public class MapsPage extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setupView();
         return inflater.inflate(R.layout.tab1_map, container, false);
+
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        ((ViewController) (getActivity())).showBottomTabs();
+        ((ViewController) (getActivity())).showBurgerIcon();
         mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -104,6 +109,7 @@ public class MapsPage extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
 
 
     /**

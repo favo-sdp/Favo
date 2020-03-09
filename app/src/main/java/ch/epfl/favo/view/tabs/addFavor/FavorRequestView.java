@@ -13,6 +13,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.view.ViewController;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,6 +58,8 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        ((ViewController) getActivity()).hideBottomTabs();
+        ((ViewController) getActivity()).showBackIcon();
         View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
 
         Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
@@ -73,8 +76,11 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.add_button:
                 showSnackbar("Favor added successfully.");
+                break;
         }
     }
+
+
 
     // Todo: Implement the following functions to verify user input.
 

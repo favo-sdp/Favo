@@ -33,5 +33,15 @@
         android:gravity="top|end"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp" />
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="@dimen/hamburger_button_size"
+        android:layout_height="@dimen/hamburger_button_size"
+        android:src="@drawable/ic_arrow_back_green_24dp"
+        android:background="@drawable/hamb_menu_button"
+        android:gravity="top|end"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:visibility="invisible"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

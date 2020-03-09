@@ -25,7 +25,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.util.DependencyFactory;
 
-public class UserAccountPage extends Fragment {
+public class UserAccountPage extends BottomDestinationTab {
 
   private View view;
 
@@ -40,6 +40,7 @@ public class UserAccountPage extends Fragment {
       view = inflater.inflate(R.layout.account_info, container, false);
 
       setupButtons();
+      setupView();
       displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
       return view;
   }
