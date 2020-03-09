@@ -18,7 +18,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
-public class FavorPage extends Fragment implements View.OnClickListener {
+public class FavorPage extends TopDestinationTab implements View.OnClickListener {
 
   public FavorPage() {
     // Required empty public constructor
@@ -27,7 +27,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    setupView();
     View rootView = inflater.inflate(R.layout.fragment_tab2, container, false);
     rootView.findViewById(R.id.new_favor).setOnClickListener(this);
     return rootView;
@@ -50,9 +50,8 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   // Replace the current fragment with the new fragment.
   // Todo: Seems useful. Try to put this method in a util package and import it here.
   private void replaceFragment(Fragment newFragment) {
-    FragmentTransaction transaction =
-        Objects.requireNonNull(getFragmentManager()).beginTransaction();
-    transaction.replace(R.id.fragment_tab2, newFragment);
+    FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+    transaction.replace(R.id.nav_host_fragment, newFragment);
     transaction.addToBackStack(null);
     transaction.commit();
   }

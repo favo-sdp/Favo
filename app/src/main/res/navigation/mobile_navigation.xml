@@ -30,7 +30,7 @@
         />
     <fragment
         android:id="@+id/nav_favorlist"
-        android:name="ch.epfl.favo.view.tabs.Tab2"
+        android:name="ch.epfl.favo.view.tabs.FavorPage"
         android:label="FavorView"
         />
 </navigation>
