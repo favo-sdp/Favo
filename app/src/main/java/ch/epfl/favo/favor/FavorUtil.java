@@ -50,7 +50,7 @@ public class FavorUtil {
    */
   public ArrayList<Favor> retrieveAllActiveFavorsForGivenUser(String userId) {
 
-    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except active ones
     throw new NotImplementedException();
   }
@@ -62,7 +62,7 @@ public class FavorUtil {
    */
   public ArrayList<Favor> retrieveAllPastFavorsForGivenUser(String userId) {
 
-    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except inactive (past) ones
     throw new NotImplementedException();
   }
@@ -74,7 +74,7 @@ public class FavorUtil {
    */
   public ArrayList<Favor> retrieveAllRequestedFavorsForGivenUser(String userId) {
 
-    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except requested ones
     throw new NotImplementedException();
   }
@@ -86,7 +86,7 @@ public class FavorUtil {
    */
   public ArrayList<Favor> retrieveAllAcceptedFavorsForGivenUser(String userId) {
 
-    ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
+    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except accepted
     throw new NotImplementedException();
   }
