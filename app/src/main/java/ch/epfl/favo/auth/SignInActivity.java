@@ -21,7 +21,6 @@ import java.util.Objects;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
-import ch.epfl.favo.MainActivity2;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 

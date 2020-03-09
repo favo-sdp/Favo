@@ -1,27 +1,49 @@
 package ch.epfl.favo;
 
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.RadioButton;
 
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
+import com.google.android.material.navigation.NavigationView;
 
-import ch.epfl.favo.view.TabAdapter;
+
+import ch.epfl.favo.view.ViewController;
+
+import static androidx.navigation.Navigation.findNavController;
+import static ch.epfl.favo.R.id.drawer_layout;
+// import static ch.epfl.favo.R.id.toolbar;
+
 
 /**
- * This will control the general view of our app. It will contain 3 tabs. On the first tab it will
- * have the map and the favor request pop-up. On the second tab it will contain the list view of
- * previous favors. On the third tab it will contain account information. These tabs will be
- * implemented in more detail in the other presenter classes.
+ * This view will control all the fragments that are created.
+ * Contains a navigation drawer on the left.
+ * Contains a bottom navigation for top-level activities.
  */
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity
+    implements NavigationView.OnNavigationItemSelectedListener, ViewController {
   // UI
-  TabLayout tabLayout;
-  ViewPager2 viewPager;
-  TabAdapter myAdapter;
+  private AppBarConfiguration appBarConfiguration;
+  private NavController navController;
+  private NavigationView nav;
+  private DrawerLayout drawerLayout;
+  private ImageButton hambMenuButton;
+  private ImageButton backButton;
+
+  // Bottom tabs
+  private RadioButton mapButton;
+  private RadioButton favListButton;
+  //  //private Toolbar toolbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -29,51 +51,150 @@ public class MainActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    // Initialize Variables
+    nav = findViewById(R.id.nav_view);
+    drawerLayout = (DrawerLayout) findViewById(drawer_layout);
+    hambMenuButton = (ImageButton) findViewById(R.id.hamburger_menu_button);
+    backButton = (ImageButton) findViewById(R.id.back_button);
+    mapButton = (RadioButton) findViewById(R.id.nav_map_button);
+    favListButton = (RadioButton) findViewById(R.id.nav_favor_list_button);
+
+    // Setup Controllers
+    setUpHamburgerMenuButton();
+    setUpBackButton();
+    setupNavController();
+    setupDrawerNavigation();
+    setupBottomNavigation();
+
+    // toolbar = findViewById(R.id.toolbar);
+    // setSupportActionBar(toolbar);
     // Use tabs.
-    setUpViewPager();
+
   }
+
+  private void setUpHamburgerMenuButton() {
+    hambMenuButton.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            drawerLayout.openDrawer(GravityCompat.START);
+          }
+        });
+  }
+  private void setUpBackButton() {
+    backButton.setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                getSupportFragmentManager().popBackStackImmediate();
+              }
+            });
+  }
+
+  private void setupNavController() {
+    navController = findNavController(this, R.id.nav_host_fragment);
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    return NavigationUI.navigateUp(navController, appBarConfiguration)
+        || super.onSupportNavigateUp();
+  }
+
+  private void setupDrawerNavigation() {
+
+    //Only pass top-level destinations.
+    appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
+
+    // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    nav.setNavigationItemSelectedListener(this);
+  }
+  // TODO: Implement tests
 
   /**
-   * This function will set up the view pager and sync it with the tab layout to allow the user to
-   * scroll from one tab to the other while changing the current view.
+   * Will control drawer layout.
+   * @param item One of the buttons in the left drawer menu.
+   * @return boolean of whether operation was successful.
    */
-  private void setUpViewPager() {
-    // Instantiate UI elements
-    tabLayout = findViewById(R.id.tab_layout);
-    viewPager = findViewById(R.id.pager);
-
-    // set pager orientation
-    viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
-    myAdapter = new TabAdapter(getSupportFragmentManager(), getLifecycle());
-
-    // hook adapter to view pager
-    viewPager.setAdapter(myAdapter);
-    // viewPager.setPageTransformer(new MarginPageTransformer(1500));
-
-    // Create mediator
-    // Assign icons to tabs
-    new TabLayoutMediator(
-            tabLayout,
-            viewPager,
-            (tab, position) -> {
-              switch (position) {
-                case 0:
-                  {
-                    tab.setIcon(R.drawable.ic_group_work_24px);
-                    break;
-                  }
-                case 1:
-                  {
-                    tab.setIcon(R.drawable.ic_list_24px);
-                    break;
-                  }
-                case 2:
-                  {
-                    tab.setIcon(R.drawable.ic_face_24px);
-                    break;
-                  }
-              }
-            })
-        .attach();
+  @Override
+  public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.nav_home:
+      {
+        navController.navigate(R.id.nav_map);
+        showBottomTabs();
+        favListButton.setChecked(false);
+        mapButton.setChecked(true);
+        break;
+      }
+      case R.id.nav_account:
+        {
+          navController.navigate(R.id.nav_account);
+          hideBottomTabs();
+          break;
+        }
+      case R.id.nav_settings:
+        {
+          navController.navigate(R.id.nav_settings);
+          hideBottomTabs();
+          break;
+        }
+      case R.id.nav_about:
+        {
+          navController.navigate(R.id.nav_about);
+          hideBottomTabs();
+          break;
+        }
+      case R.id.nav_share:
+        {
+          navController.navigate(R.id.nav_share);
+          hideBottomTabs();
+          break;
+        }
+    }
+    drawerLayout.closeDrawer(GravityCompat.START);
+    return true;
   }
+
+  /** Will control the bottom navigation tabs */
+  private void setupBottomNavigation() {
+    mapButton.setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                navController.navigate(R.id.nav_map);
+              }
+            });
+    favListButton.setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                navController.navigate(R.id.nav_favorlist);
+              }
+            });
+  }
+  @Override
+  public void hideBottomTabs(){
+    mapButton.setVisibility(View.INVISIBLE);
+    favListButton.setVisibility(View.INVISIBLE);
+  }
+  @Override
+  public void showBottomTabs(){
+    mapButton.setVisibility(View.VISIBLE);
+    favListButton.setVisibility(View.VISIBLE);
+  }
+
+  @Override
+  public void showBurgerIcon() {
+    hambMenuButton.setVisibility(View.VISIBLE);
+    backButton.setVisibility(View.INVISIBLE);
+
+  }
+
+  @Override
+  public void showBackIcon() {
+    backButton.setVisibility(View.VISIBLE);
+    hambMenuButton.setVisibility(View.INVISIBLE);
+  }
+
 }
