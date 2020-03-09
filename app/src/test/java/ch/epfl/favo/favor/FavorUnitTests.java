@@ -90,7 +90,7 @@ public class FavorUnitTests {
   public void favorCanRetrieveAllFavorsForGivenUser() {
 
     String userId = TestConstants.USER_ID;
-    throw assertThrows(
+    assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override
@@ -104,7 +104,7 @@ public class FavorUnitTests {
   public void favorCanRetrieveAllActiveFavorsForGivenUser() {
 
     String userId = TestConstants.USER_ID;
-    throw assertThrows(
+    assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override
@@ -118,7 +118,7 @@ public class FavorUnitTests {
   public void favorCanRetrieveAllRequestedFavorsForGivenUser() {
 
     String userId = TestConstants.USER_ID;
-    throw assertThrows(
+    assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override
@@ -132,7 +132,7 @@ public class FavorUnitTests {
   public void favorCanRetrieveAllAcceptedFavorsForGivenUser() {
 
     String userId = TestConstants.USER_ID;
-    throw assertThrows(
+    assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override
@@ -147,7 +147,7 @@ public class FavorUnitTests {
 
     Location loc = TestConstants.LOCATION;
     double radius = TestConstants.RADIUS;
-    throw assertThrows(
+    assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override

@@ -162,7 +162,7 @@ public class UserUnitTests {
 
     Location loc =  TestConstants.LOCATION;
     double radius = TestConstants.RADIUS;
-    throw assertThrows(
+    assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override
