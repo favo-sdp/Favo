@@ -124,6 +124,8 @@ public class MainActivity2 extends AppCompatActivity
       {
         navController.navigate(R.id.nav_map);
         showBottomTabs();
+        favListButton.setChecked(false);
+        mapButton.setChecked(true);
         break;
       }
       case R.id.nav_account:
