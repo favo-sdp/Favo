@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
@@ -17,18 +16,15 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 
-
 import ch.epfl.favo.view.ViewController;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
 // import static ch.epfl.favo.R.id.toolbar;
 
-
 /**
- * This view will control all the fragments that are created.
- * Contains a navigation drawer on the left.
- * Contains a bottom navigation for top-level activities.
+ * This view will control all the fragments that are created. Contains a navigation drawer on the
+ * left. Contains a bottom navigation for top-level activities.
  */
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
@@ -43,7 +39,8 @@ public class MainActivity extends AppCompatActivity
   // Bottom tabs
   public RadioButton mapButton;
   public RadioButton favListButton;
-  //  //private Toolbar toolbar;
+  /*Activate if we want a toolbar */
+  // private Toolbar toolbar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +63,9 @@ public class MainActivity extends AppCompatActivity
     setupDrawerNavigation();
     setupBottomNavigation();
 
+    /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
-    // Use tabs.
-
   }
 
   private void setUpHamburgerMenuButton() {
@@ -81,32 +77,30 @@ public class MainActivity extends AppCompatActivity
           }
         });
   }
+
   private void setUpBackButton() {
     backButton.setOnClickListener(
-            new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                onBackPressed();
-              }
-            });
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            onBackPressed();
+          }
+        });
   }
 
   private void setupNavController() {
     navController = findNavController(this, R.id.nav_host_fragment);
   }
 
-  @Override
-  public boolean onSupportNavigateUp() {
-    return NavigationUI.navigateUp(navController, appBarConfiguration)
-        || super.onSupportNavigateUp();
-  }
 
   private void setupDrawerNavigation() {
 
-    //Only pass top-level destinations.
+    // Only pass top-level destinations.
     appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
 
-    // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    /*Activate if we want a toolbar */
+    //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
     nav.setNavigationItemSelectedListener(this);
   }
 
@@ -119,11 +113,11 @@ public class MainActivity extends AppCompatActivity
   public boolean onNavigationItemSelected(@NonNull MenuItem item) {
     switch (item.getItemId()) {
       case R.id.nav_home:
-      {
-        navController.navigate(R.id.nav_map);
-        showBottomTabs();
-        break;
-      }
+        {
+          navController.navigate(R.id.nav_map);
+          showBottomTabs();
+          break;
+        }
       case R.id.nav_account:
         {
           navController.navigate(R.id.nav_account);
@@ -156,27 +150,30 @@ public class MainActivity extends AppCompatActivity
   /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
     mapButton.setOnClickListener(
-            new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                navController.navigate(R.id.nav_map);
-              }
-            });
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            navController.navigate(R.id.nav_map);
+          }
+        });
     favListButton.setOnClickListener(
-            new View.OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                navController.navigate(R.id.nav_favorlist);
-              }
-            });
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            navController.navigate(R.id.nav_favorlist);
+          }
+        });
   }
+
+  /** Implementations of the ViewController interface below */
   @Override
-  public void hideBottomTabs(){
+  public void hideBottomTabs() {
     mapButton.setVisibility(View.INVISIBLE);
     favListButton.setVisibility(View.INVISIBLE);
   }
+
   @Override
-  public void showBottomTabs(){
+  public void showBottomTabs() {
     mapButton.setVisibility(View.VISIBLE);
     favListButton.setVisibility(View.VISIBLE);
   }
@@ -185,7 +182,6 @@ public class MainActivity extends AppCompatActivity
   public void showBurgerIcon() {
     hambMenuButton.setVisibility(View.VISIBLE);
     backButton.setVisibility(View.INVISIBLE);
-
   }
 
   @Override
@@ -205,7 +201,6 @@ public class MainActivity extends AppCompatActivity
     mapButton.setChecked(false);
     favListButton.setChecked(true);
   }
-
 
   @Override
   public void onBackPressed() {
