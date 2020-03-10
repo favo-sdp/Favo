@@ -111,35 +111,16 @@ public class MainActivity extends AppCompatActivity
    */
   @Override
   public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-    switch (item.getItemId()) {
+    int itemId = item.getItemId();
+    switch (itemId) {
       case R.id.nav_home:
         {
           navController.navigate(R.id.nav_map);
-          showBottomTabs();
           break;
         }
-      case R.id.nav_account:
+      default:
         {
-          navController.navigate(R.id.nav_account);
-          hideBottomTabs();
-          break;
-        }
-      case R.id.nav_settings:
-        {
-          navController.navigate(R.id.nav_settings);
-          hideBottomTabs();
-          break;
-        }
-      case R.id.nav_about:
-        {
-          navController.navigate(R.id.nav_about);
-          hideBottomTabs();
-          break;
-        }
-      case R.id.nav_share:
-        {
-          navController.navigate(R.id.nav_share);
-          hideBottomTabs();
+          navController.navigate(itemId);
           break;
         }
     }
