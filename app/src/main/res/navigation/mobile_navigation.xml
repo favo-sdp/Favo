@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation.xml"
+    app:startDestination="@+id/nav_map">
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="ch.epfl.favo.view.tabs.UserAccountPage"
+        android:label="@string/account"
+        tools:layout="@layout/account_info"/>
+    <fragment
+        android:id="@id/nav_settings"
+        android:name="ch.epfl.favo.view.tabs.FragmentSettings"
+        android:label="@string/settings"
+        />
+    <fragment
+        android:id="@id/nav_about"
+        android:name="ch.epfl.favo.view.tabs.FragmentAbout"
+        android:label="@string/about"/>
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="ch.epfl.favo.view.tabs.FragmentShare"
+        android:label="@string/share"
+        />
+    <fragment
+        android:id="@+id/nav_map"
+        android:name="ch.epfl.favo.view.tabs.MapsPage"
+        android:label="Map"
+        />
+    <fragment
+        android:id="@+id/nav_favorlist"
+        android:name="ch.epfl.favo.view.tabs.FavorPage"
+        android:label="FavorView"
+        />
+</navigation>

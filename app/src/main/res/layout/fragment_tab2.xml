@@ -5,9 +5,9 @@
     android:id="@+id/fragment_tab2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.FavorPage">
+    tools:context=".view.tabs.FavorPage"
+    android:layout_marginBottom="54dp">
 
-    <!-- TODO: Update blank fragment layout -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,7 +23,8 @@
             android:text="@string/new_favor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="54dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

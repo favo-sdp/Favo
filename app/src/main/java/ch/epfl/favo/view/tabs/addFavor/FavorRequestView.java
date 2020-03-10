@@ -11,12 +11,14 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
  * to create an instance of this fragment.
  */
-public class FavorRequestView extends Fragment implements View.OnClickListener {
+public class FavorRequestView extends BottomDestinationTab implements View.OnClickListener {
   // TODO: Rename parameter arguments, choose names that match
   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
   private static final String ARG_PARAM1 = "param1";
@@ -53,7 +55,7 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    setupView();
     View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
 
     Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
@@ -68,7 +70,7 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
     // noinspection SwitchStatementWithTooFewBranches
     switch (view.getId()) {
       case R.id.add_button:
-        showSnackbar("Favor added successfully.");
+        showSnackbar(getString(R.string.favor_success_msg));
     }
   }
 

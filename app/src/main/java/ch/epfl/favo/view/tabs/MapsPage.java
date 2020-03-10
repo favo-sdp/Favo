@@ -1,7 +1,9 @@
 package ch.epfl.favo.view.tabs;
 
+
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +21,21 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.view.ViewController;
 
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-public class MapsPage extends Fragment {
+public class MapsPage extends TopDestinationTab {
+
 
   private GoogleMap mMap;
   private Location mLocation;
@@ -87,19 +96,49 @@ public class MapsPage extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
+      setupView();
+      checkMapButton();
+
+
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    setupView();
+    checkMapButton();
     mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null) {
       mapFragment.getMapAsync(callback);
     }
-  }
+    }
+
+
+
+    /**
+     * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
+     * @return human readable format of date and time
+     */
+    public String convertTime(long time) {
+        Date date = new Date(time);
+        Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+        return format.format(date);
+    }
+
+    /**
+     * utilities functions to help debug
+     */
+//    public void displayDebugInfo() {
+//        Log.d("latitude", Double.toString(mLocation.getLatitude()));
+//        Log.d("longitude", Double.toString(mLocation.getLongitude()));
+//        Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));
+//        Log.d("gpstime", convertTime(mLocation.getTime()));
+//        Log.d("bearing", Float.toString(mLocation.getBearing()));
+//    }
+
 
   /**
    * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
