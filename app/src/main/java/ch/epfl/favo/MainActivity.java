@@ -92,20 +92,20 @@ public class MainActivity extends AppCompatActivity
     navController = findNavController(this, R.id.nav_host_fragment);
   }
 
-
   private void setupDrawerNavigation() {
 
     // Only pass top-level destinations.
     appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
 
     /*Activate if we want a toolbar */
-    //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
     nav.setNavigationItemSelectedListener(this);
   }
 
   /**
    * Will control drawer layout.
+   *
    * @param item One of the buttons in the left drawer menu.
    * @return boolean of whether operation was successful.
    */
