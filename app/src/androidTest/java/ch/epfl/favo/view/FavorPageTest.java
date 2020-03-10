@@ -14,17 +14,22 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -61,13 +66,18 @@ public class FavorPageTest {
             .check(matches(isDisplayed()));
 
     getInstrumentation().waitForIdleSync();
-    // check that new_favor button is displayed
     onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
 
-    getInstrumentation().waitForIdleSync();
-    // check that listView is displayed
     onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.spinner)).check(matches(isDisplayed()));
+    onView(withId(R.id.spinner)).perform(click());
+    onData(allOf(is(instanceOf(String.class)), is("Past"))).perform(click());
+    onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Past"))));
+
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.spinner)).perform(click());
+    onData(allOf(is(instanceOf(String.class)), is("Active"))).perform(click());
+    onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Active"))));
   }
 }
