@@ -45,6 +45,12 @@ android {
         main {
             java {
                 srcDirs 'src/main/java'
+                res.srcDirs=
+                        [
+                                'src/main/res/layout/mainactivity',
+                                'src/main/res/layout',
+                                'src/main/res'
+                        ]
             }
         }
 
