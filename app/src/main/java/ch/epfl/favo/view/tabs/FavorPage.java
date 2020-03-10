@@ -47,10 +47,10 @@ public class FavorPage extends TopDestinationTab implements View.OnClickListener
       public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
           case 0: // default: active favors
-            listView.setAdapter(new FavorAdapter(getContext(), getActiveFavorList()));
+            listView.setAdapter(new FavorAdapter(getContext(), genFavor("active", 20)));
             break;
           case 1: // past favors
-            listView.setAdapter(new FavorAdapter(getContext(), getPastFavorList()));
+            listView.setAdapter(new FavorAdapter(getContext(), genFavor("past", 20)));
             break;
         }
       }
@@ -62,45 +62,12 @@ public class FavorPage extends TopDestinationTab implements View.OnClickListener
     return rootView;
   }
 
-    private ArrayList<Favor> getPastFavorList() {
-        ArrayList<Favor> favorList = new ArrayList<>();
-        favorList.add(new Favor("past1", "desc1", null,  null, 0));
-        favorList.add(new Favor("past2", "desc2", null,  null, 0));
-        favorList.add(new Favor("past3", "desc3", null,  null, 0));
-        favorList.add(new Favor("past4", "desc4", null,  null, 0));
-        favorList.add(new Favor("past5", "desc5", null,  null, 0));
-        favorList.add(new Favor("past1", "desc1", null,  null, 0));
-        favorList.add(new Favor("past2", "desc2", null,  null, 0));
-        favorList.add(new Favor("past3", "desc3", null,  null, 0));
-        favorList.add(new Favor("past4", "desc4", null,  null, 0));
-        favorList.add(new Favor("past5", "desc5", null,  null, 0));
-        favorList.add(new Favor("past1", "desc1", null,  null, 0));
-        favorList.add(new Favor("past2", "desc2", null,  null, 0));
-        favorList.add(new Favor("past3", "desc3", null,  null, 0));
-        favorList.add(new Favor("past4", "desc4", null,  null, 0));
-        favorList.add(new Favor("past5", "desc5", null,  null, 0));
-        return favorList;
-    }
-
-
-    private ArrayList<Favor> getActiveFavorList() {
-        ArrayList<Favor> favorList = new ArrayList<>();
-        favorList.add(new Favor("active1", "desc1", null,  null, 0));
-        favorList.add(new Favor("active2", "desc2", null,  null, 0));
-        favorList.add(new Favor("active3", "desc3", null,  null, 0));
-        favorList.add(new Favor("active4", "desc4", null,  null, 0));
-        favorList.add(new Favor("active5", "desc5", null,  null, 0));
-        favorList.add(new Favor("active1", "desc1", null,  null, 0));
-        favorList.add(new Favor("active2", "desc2", null,  null, 0));
-        favorList.add(new Favor("active3", "desc3", null,  null, 0));
-        favorList.add(new Favor("active4", "desc4", null,  null, 0));
-        favorList.add(new Favor("active5", "desc5", null,  null, 0));
-        favorList.add(new Favor("active1", "desc1", null,  null, 0));
-        favorList.add(new Favor("active2", "desc2", null,  null, 0));
-        favorList.add(new Favor("active3", "desc3", null,  null, 0));
-        favorList.add(new Favor("active4", "desc4", null,  null, 0));
-        favorList.add(new Favor("active5", "desc5", null,  null, 0));
-        return favorList;
+    private ArrayList<Favor> genFavor(String s, int n) {
+      ArrayList<Favor> favorList = new ArrayList<>();
+      for(int i=0; i<n; ++i) {
+        favorList.add(new Favor(String.format("%s%d", s, i), "desc", null,  null, 0));
+      }
+      return favorList;
     }
 
     @Override
