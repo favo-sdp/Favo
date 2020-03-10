@@ -2,6 +2,7 @@ package ch.epfl.favo.view;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -38,6 +39,10 @@ public class FavorPageTest {
             }
           };
 
+  @Rule
+  public GrantPermissionRule permissionRule =
+          GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
@@ -55,10 +60,14 @@ public class FavorPageTest {
     onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
             .check(matches(isDisplayed()));
 
+    getInstrumentation().waitForIdleSync();
     // check that new_favor button is displayed
     onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
 
+    getInstrumentation().waitForIdleSync();
     // check that listView is displayed
     onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
+
+    onView(withId(R.id.spinner)).check(matches(isDisplayed()));
   }
 }
