@@ -8,18 +8,28 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.NoPermissionGrantedException;
+import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
 
 /**
@@ -46,41 +56,54 @@ public class MapsPage extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
           mMap = googleMap;
-          double latitude, longitude;
-          mLocation = mGpsTracker.getLocation();
-          latitude = mLocation.getLatitude();
-          longitude = mLocation.getLongitude();
-          // Add a marker at my location and move the camera
-          LatLng myLocation = new LatLng(latitude, longitude);
-          Marker myPos =
-              mMap.addMarker(new MarkerOptions().position(myLocation).title("I am Here"));
-          myPos.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-          myPos.setFlat(true);
-
-          LatLng otherUserLocation = new LatLng(latitude + 0.001, longitude + 0.001);
-          Marker otherPos =
-              mMap.addMarker(
-                  new MarkerOptions().position(otherUserLocation).title("Another user/favor"));
-          otherPos.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-          otherPos.setFlat(false);
-          otherPos.setSnippet("Description of favor");
-
-          otherUserLocation = new LatLng(latitude + 0.006, longitude - 0.004);
-          otherPos =
-              mMap.addMarker(
-                  new MarkerOptions().position(otherUserLocation).title("Another user/favor"));
-          otherPos.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-          otherPos.setFlat(false);
-          otherPos.setSnippet("Description of favor");
-
-          mMap.moveCamera(
-              CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
-          /*  displayDebugInfo();*/
+          drawSelfLocation();
+          drawFavorMarker(getListOfFavor());
         }
       };
 
   public MapsPage() {
     // Required empty public constructor
+  }
+
+  private List<Favor> getListOfFavor(){
+    //FavorUtil favorUtil = FavorUtil.getSingleInstance();
+    //return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
+
+    //LatLng otherUserLocation = new LatLng(latitude + 0.001, longitude + 0.001);
+    // otherUserLocation = new LatLng(latitude + 0.006, longitude - 0.004);
+    return null;
+  }
+
+  private void drawSelfLocation(){
+    try{
+      mLocation = mGpsTracker.getLocation();
+      // Add a marker at my location and move the camera
+      LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+      mMap.addMarker(new MarkerOptions()
+          .position(myLocation)
+          .title("I am Here")
+          .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+      mMap.moveCamera(
+              CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
+    }
+    catch (NoPermissionGrantedException | NoPositionFoundException e){
+      showSnackbar(e.getMessage());
+    }
+  }
+
+  private void drawFavorMarker(List<Favor> favors){
+    if(favors == null)
+      favors = new ArrayList<>();
+    for(Favor favor:favors){
+      LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
+      Marker marker = mMap.addMarker(new MarkerOptions()
+              .position(latLng)
+              .title(favor.getTitle())
+              .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+      StringBuffer summary = new StringBuffer();
+      summary.append(favor.getDescription());
+      marker.setSnippet(summary.toString());
+    }
   }
 
   @Override
@@ -99,6 +122,12 @@ public class MapsPage extends Fragment {
     if (mapFragment != null) {
       mapFragment.getMapAsync(callback);
     }
+  }
+
+  private void showSnackbar(String errorMessageRes) {
+    Snackbar.make(
+            requireView().findViewById(R.id.map), errorMessageRes, Snackbar.LENGTH_LONG)
+            .show();
   }
 
   /**
