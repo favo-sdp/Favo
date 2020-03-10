@@ -45,6 +45,11 @@
     <string name="favor_datetime_hint">Now</string>
     <string name="favor_details_hint">Add more details?</string>
     <string name="favor_confirm_button">Confirm Adding Favor</string>
+    <string-array name="favor_list_spinner">
+        <item>Active</item>
+        <item>Past</item>
+    </string-array>
+
     <string name="tab1_description">1</string>
     <string name="tab2_description">2</string>
     <string name="share">Share</string>

@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.tabs.FavorPage"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_tab2">
+    >
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -23,6 +22,7 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="@string/new_favor"
+            android:layout_marginBottom="55dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
@@ -31,9 +31,18 @@
             android:id="@+id/favor_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/spinner"
             app:layout_constraintBottom_toTopOf="@id/new_favor"
+            android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"/>
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:entries="@array/favor_list_spinner"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
