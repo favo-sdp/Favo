@@ -28,6 +28,7 @@ public class FavorPage extends TopDestinationTab implements View.OnClickListener
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     setupView();
+    checkFavListButton();
     View rootView = inflater.inflate(R.layout.fragment_tab2, container, false);
     rootView.findViewById(R.id.new_favor).setOnClickListener(this);
     return rootView;

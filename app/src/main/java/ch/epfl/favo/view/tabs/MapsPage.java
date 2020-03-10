@@ -25,6 +25,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.view.ViewController;
@@ -96,6 +97,9 @@ public class MapsPage extends TopDestinationTab {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
       setupView();
+      checkMapButton();
+
+
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
 
@@ -103,6 +107,7 @@ public class MapsPage extends TopDestinationTab {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
+    checkMapButton();
     mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);

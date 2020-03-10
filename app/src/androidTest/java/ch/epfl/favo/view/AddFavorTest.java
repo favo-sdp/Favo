@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -20,6 +21,8 @@ import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
@@ -49,11 +52,22 @@ public class AddFavorTest {
 
   @Test
   public void addFavorTest() {
-    onView(ViewMatchers.withId(R.id.tab_layout)).check(matches(isDisplayed()));
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.tab_layout)).perform(click());
-    onView(withId(R.id.new_favor)).perform(click());
-    onView(withId(R.id.add_button)).check(matches(isDisplayed()));
-    onView(withId(R.id.add_button)).perform(click());
+    //Click on fav list tab
+    onView(withId(R.id.nav_favor_list_button))
+            .check(matches(isDisplayed()))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.new_favor))
+            .check(matches(isDisplayed()))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.add_button))
+            .check(matches(isDisplayed()))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+    //check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.favor_success_msg)));
+
   }
 }

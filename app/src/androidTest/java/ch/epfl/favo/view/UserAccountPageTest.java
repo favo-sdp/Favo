@@ -5,6 +5,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,10 +23,12 @@ import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
@@ -38,6 +41,18 @@ public class UserAccountPageTest {
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+  public void navigateToAccountTab(){
+
+    //direct to the account tab
+    onView(withId(R.id.hamburger_menu_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    //Click on account icon
+    onView(anyOf(withText(R.string.account),
+            withId(R.id.nav_account)))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+  }
 
   @After
   public void tearDown() {
@@ -53,13 +68,14 @@ public class UserAccountPageTest {
 
   @Test
   public void testUserAlreadyLoggedIn_displayUserData() {
+
+    //set mock user
     DependencyFactory.setCurrentFirebaseUser(
-        new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+            new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
+
+    navigateToAccountTab();
+
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
     onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
@@ -70,10 +86,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
+    navigateToAccountTab();
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
   }
 
@@ -81,10 +94,7 @@ public class UserAccountPageTest {
   public void testUserAlreadyLoggedIn_displayUserData_missingEmail() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, "", PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
+    navigateToAccountTab();
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
   }
 
@@ -92,8 +102,7 @@ public class UserAccountPageTest {
   public void testUserAlreadyLoggedIn_displayUserData_missingPhoto() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
+    navigateToAccountTab();
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
     onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
@@ -103,12 +112,11 @@ public class UserAccountPageTest {
   public void testUserAlreadyLoggedIn_signOut() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
+    navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(R.id.sign_out)).perform(click());
+    getInstrumentation().waitForIdleSync();
+
 
     // can't test that sign-in page is displayed because this is handled by the library
     // automatically
@@ -119,8 +127,7 @@ public class UserAccountPageTest {
       throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
-    onView(withId(R.id.pager)).perform(swipeLeft());
-    onView(withId(R.id.pager)).perform(swipeLeft());
+    navigateToAccountTab();
     Thread.sleep(3000);
     onView(withId(R.id.delete_account)).perform(click());
     // give time to display the dialog

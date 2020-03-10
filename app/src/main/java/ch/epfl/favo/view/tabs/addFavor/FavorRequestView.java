@@ -70,7 +70,7 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     // noinspection SwitchStatementWithTooFewBranches
     switch (view.getId()) {
       case R.id.add_button:
-        showSnackbar("Favor added successfully.");
+        showSnackbar(getString(R.string.favor_success_msg));
     }
   }
 

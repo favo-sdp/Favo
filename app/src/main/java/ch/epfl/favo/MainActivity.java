@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity
   private ImageButton backButton;
 
   // Bottom tabs
-  private RadioButton mapButton;
-  private RadioButton favListButton;
+  public RadioButton mapButton;
+  public RadioButton favListButton;
   //  //private Toolbar toolbar;
 
   @Override
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity
             new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                getSupportFragmentManager().popBackStackImmediate();
+                onBackPressed();
               }
             });
   }
@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity
     // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     nav.setNavigationItemSelectedListener(this);
   }
-  // TODO: Implement tests
 
   /**
    * Will control drawer layout.
@@ -123,8 +122,6 @@ public class MainActivity extends AppCompatActivity
       {
         navController.navigate(R.id.nav_map);
         showBottomTabs();
-        favListButton.setChecked(false);
-        mapButton.setChecked(true);
         break;
       }
       case R.id.nav_account:
@@ -197,4 +194,21 @@ public class MainActivity extends AppCompatActivity
     hambMenuButton.setVisibility(View.INVISIBLE);
   }
 
+  @Override
+  public void checkMapViewButton() {
+    favListButton.setChecked(false);
+    mapButton.setChecked(true);
+  }
+
+  @Override
+  public void checkFavListViewButton() {
+    mapButton.setChecked(false);
+    favListButton.setChecked(true);
+  }
+
+
+  @Override
+  public void onBackPressed() {
+    getSupportFragmentManager().popBackStackImmediate();
+  }
 }
