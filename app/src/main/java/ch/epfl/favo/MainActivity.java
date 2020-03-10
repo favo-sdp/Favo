@@ -1,6 +1,7 @@
 package ch.epfl.favo;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         .attach();
   }
 
+  // retrieve current registration token for the notification system
   private void retrieveCurrentRegistrationToken() {
     FirebaseInstanceId.getInstance()
         .getInstanceId()
@@ -95,9 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
               // Get new Instance ID token
               String token = Objects.requireNonNull(task.getResult()).getToken();
-
               String msg = getString(R.string.msg_token_fmt, token);
-              Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+              Log.d("Main Activity", msg);
             });
   }
 }
