@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -20,48 +21,47 @@ import java.util.Random;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.util.DependencyFactory;
 
 public class FirebaseMessagingService
     extends com.google.firebase.messaging.FirebaseMessagingService {
 
   private static final String TAG = "MyFirebaseMsgService";
+  public static String CHANNEL_NAME = "Default channel name";
 
   // method called when new message (notification or data message) is received
   @Override
   public void onMessageReceived(RemoteMessage remoteMessage) {
-    Log.d(TAG, "From: " + remoteMessage.getFrom());
 
     // Check if message contains a data payload.
-    if (remoteMessage.getData().size() > 0) {
-      Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-      // do something with message data, like chat (TODO for later sprints)
-    }
+//    if (remoteMessage.getData().size() > 0) {
+//      Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+//      // do something with message data, like chat (TODO for later sprints)
+//    }
 
     // Check if message contains a notification payload.
     if (remoteMessage.getNotification() != null) {
-      Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-      showNotification(remoteMessage.getNotification());
+      showNotification(this, remoteMessage.getNotification(), getString(R.string.default_notification_channel_id));
     }
   }
 
   // onNewToken callback fires whenever a new token is generated
-  @Override
-  public void onNewToken(@NonNull String token) {
-    Log.d(TAG, "Refreshed token: " + token);
-    // TODO send new refreshed token to db
-  }
+//  @Override
+//  public void onNewToken(@NonNull String token) {
+//    Log.d(TAG, "Refreshed token: " + token);
+//    // TODO send new refreshed token to db
+//  }
 
   // show notification received
-  private void showNotification(RemoteMessage.Notification notification) {
-    Intent intent = new Intent(this, MainActivity.class);
+  public static void showNotification(Context context, RemoteMessage.Notification notification, String channelId) {
+    Intent intent = new Intent(context, MainActivity.class);
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     PendingIntent pendingIntent =
-        PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-    String channelId = getString(R.string.default_notification_channel_id);
     Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
     NotificationCompat.Builder notificationBuilder =
-        new NotificationCompat.Builder(this, channelId)
+        new NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(notification.getTitle())
             .setContentText(notification.getBody())
@@ -69,14 +69,14 @@ public class FirebaseMessagingService
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent);
 
-    NotificationManager notificationManager =
-        (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    NotificationManagerCompat notificationManager =
+        NotificationManagerCompat.from(context);
 
     // Since android Oreo notification channel is needed
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       NotificationChannel channel =
           new NotificationChannel(
-              channelId, "Default channel", NotificationManager.IMPORTANCE_DEFAULT);
+                  channelId, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
       Objects.requireNonNull(notificationManager).createNotificationChannel(channel);
     }
 

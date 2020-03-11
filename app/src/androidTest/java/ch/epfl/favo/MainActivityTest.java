@@ -31,7 +31,7 @@ import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-    private MainActivity mActivity;
+
     @Rule
     public final ActivityTestRule<MainActivity> mainActivityTestRule =
             new ActivityTestRule<MainActivity>(MainActivity.class){
