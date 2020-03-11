@@ -27,11 +27,21 @@ public class MainActivity extends AppCompatActivity {
   ViewPager2 viewPager;
   TabAdapter myAdapter;
 
+  private static final String TAG = "MainActivity";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+
+    // handle possible data accompanying notification message
+    if (getIntent().getExtras() != null) {
+      for (String key : getIntent().getExtras().keySet()) {
+        Object value = getIntent().getExtras().get(key);
+        Log.d(TAG, "Key: " + key + " Value: " + value);
+      }
+    }
 
     // retrieve current registration token for notifications
     retrieveCurrentRegistrationToken();
@@ -96,8 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
               // Get new Instance ID token
               String token = Objects.requireNonNull(task.getResult()).getToken();
-              String msg = getString(R.string.msg_token_fmt, token);
-              Log.d("Main Activity", msg);
+              Log.d(TAG, getString(R.string.msg_token_fmt, token));
               // TODO send registration token to db
             });
   }
