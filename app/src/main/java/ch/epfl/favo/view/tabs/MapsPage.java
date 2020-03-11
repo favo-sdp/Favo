@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
+
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,17 +30,26 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
+import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-public class MapsPage extends Fragment {
+public class MapsPage extends TopDestinationTab {
+
 
   private GoogleMap mMap;
   private Location mLocation;
@@ -115,8 +126,9 @@ public class MapsPage extends Fragment {
     }
     catch (NoPermissionGrantedException | NoPositionFoundException e){
       showSnackbar(e.getMessage());
+      }
     }
-  }
+
 
     private void drawFavorMarker(List<Favor> favors) {
         if (favors == null)
@@ -174,8 +186,9 @@ public class MapsPage extends Fragment {
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Toast.makeText(getContext(), "Info window clicked",
-                Toast.LENGTH_SHORT).show();
+        replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
+       // Toast.makeText(getContext(), "Info window clicked",
+       //         Toast.LENGTH_SHORT).show();
     }
   }
 
@@ -187,19 +200,11 @@ public class MapsPage extends Fragment {
             .show();
   }
 
-  /**
-   * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
-   * @return human readable format of date and time
-   *     <p>public String convertTime(long time) { Date date = new Date(time); Format format = new
-   *     SimpleDateFormat("yyyy MM dd HH:mm:ss"); return format.format(date); }
-   */
-  /**
-   * utilities functions to help debug
-   *
-   * <p>public void displayDebugInfo() { Log.d("latitude",
-   * Double.toString(mLocation.getLatitude())); Log.d("longitude",
-   * Double.toString(mLocation.getLongitude())); Log.d("zoom",
-   * Float.toString(mMap.getMaxZoomLevel())); Log.d("gpstime", convertTime(mLocation.getTime()));
-   * Log.d("bearing", Float.toString(mLocation.getBearing())); }
-   */
+    private void replaceFragment(Fragment newFragment) {
+        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+        transaction.replace(R.id.nav_host_fragment, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+        //transaction.remove(this);
+    }
 }
