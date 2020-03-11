@@ -12,16 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Objects;
+
 import ch.epfl.favo.view.ViewController;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -35,7 +31,7 @@ import static ch.epfl.favo.R.id.drawer_layout;
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
   // UI
-  private AppBarConfiguration appBarConfiguration;
+  //private AppBarConfiguration appBarConfiguration;
   private NavController navController;
   private NavigationView nav;
   private DrawerLayout drawerLayout;
@@ -67,15 +63,13 @@ public class MainActivity extends AppCompatActivity
     // retrieve current registration token for notifications
     retrieveCurrentRegistrationToken();
 
-    // Use tabs.
-    setUpViewPager();
     // Initialize Variables
     nav = findViewById(R.id.nav_view);
-    drawerLayout = (DrawerLayout) findViewById(drawer_layout);
-    hambMenuButton = (ImageButton) findViewById(R.id.hamburger_menu_button);
-    backButton = (ImageButton) findViewById(R.id.back_button);
-    mapButton = (RadioButton) findViewById(R.id.nav_map_button);
-    favListButton = (RadioButton) findViewById(R.id.nav_favor_list_button);
+    drawerLayout = findViewById(drawer_layout);
+    hambMenuButton = findViewById(R.id.hamburger_menu_button);
+    backButton = findViewById(R.id.back_button);
+    mapButton = findViewById(R.id.nav_map_button);
+    favListButton = findViewById(R.id.nav_favor_list_button);
 
     // Setup Controllers
     setUpHamburgerMenuButton();
@@ -91,22 +85,12 @@ public class MainActivity extends AppCompatActivity
 
   private void setUpHamburgerMenuButton() {
     hambMenuButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            drawerLayout.openDrawer(GravityCompat.START);
-          }
-        });
+            v -> drawerLayout.openDrawer(GravityCompat.START));
   }
 
   private void setUpBackButton() {
     backButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            onBackPressed();
-          }
-        });
+            v -> onBackPressed());
   }
 
   private void setupNavController() {
@@ -116,7 +100,7 @@ public class MainActivity extends AppCompatActivity
   private void setupDrawerNavigation() {
 
     // Only pass top-level destinations.
-    appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
+    //appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
 
     /*Activate if we want a toolbar */
     // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -133,17 +117,10 @@ public class MainActivity extends AppCompatActivity
   @Override
   public boolean onNavigationItemSelected(@NonNull MenuItem item) {
     int itemId = item.getItemId();
-    switch (itemId) {
-      case R.id.nav_home:
-        {
-          navController.navigate(R.id.nav_map);
-          break;
-        }
-      default:
-        {
-          navController.navigate(itemId);
-          break;
-        }
+    if (itemId == R.id.nav_home) {
+      navController.navigate(R.id.nav_map);
+    } else {
+      navController.navigate(itemId);
     }
     drawerLayout.closeDrawer(GravityCompat.START);
     return true;
@@ -152,19 +129,9 @@ public class MainActivity extends AppCompatActivity
   /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
     mapButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            navController.navigate(R.id.nav_map);
-          }
-        });
+            v -> navController.navigate(R.id.nav_map));
     favListButton.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            navController.navigate(R.id.nav_favorlist);
-          }
-        });
+            v -> navController.navigate(R.id.nav_favorlist));
   }
 
   /** Implementations of the ViewController interface below */
