@@ -2,6 +2,7 @@ package ch.epfl.favo;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -43,6 +44,11 @@ public class MainActivityTest {
     public void tearDown() {
         DependencyFactory.setCurrentFirebaseUser(null);
     }
+
+    @Rule
+    public GrantPermissionRule permissionRule =
+            GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
 
     @Test
     public void testMapViewIsLaunched() {
