@@ -5,11 +5,9 @@ import android.location.Location;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +38,7 @@ import ch.epfl.favo.map.GpsTracker;
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-public class MapsPage extends Fragment implements GoogleMap.OnMarkerClickListener {
+public class MapsPage extends Fragment {
 
   private GoogleMap mMap;
   private Location mLocation;
@@ -69,6 +67,25 @@ public class MapsPage extends Fragment implements GoogleMap.OnMarkerClickListene
     // Required empty public constructor
   }
 
+    @Override
+    public View onCreateView(
+            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.tab1_map, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(callback);
+        }
+    }
+
+
   private List<Favor> getListOfFavor(){
     //FavorUtil favorUtil = FavorUtil.getSingleInstance();
     //return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
@@ -93,8 +110,6 @@ public class MapsPage extends Fragment implements GoogleMap.OnMarkerClickListene
 
       mMap.moveCamera(
               CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
-      mMap.setOnMarkerClickListener(this);
-      mMap.setOnMarkerDragListener(new MarkerDrag());
       mMap.setInfoWindowAdapter(new infoWindow());
       mMap.setOnInfoWindowClickListener(new onInfoWindowClick());
     }
@@ -103,28 +118,27 @@ public class MapsPage extends Fragment implements GoogleMap.OnMarkerClickListene
     }
   }
 
-  public boolean onMarkerClick(final Marker marker) {
-    Toast.makeText(getContext(), marker.getTitle() + ": \n " + marker.getSnippet(), Toast.LENGTH_SHORT).show();
-    return false;
+    private void drawFavorMarker(List<Favor> favors) {
+        if (favors == null)
+            favors = new ArrayList<>();
+        for (Favor favor : favors) {
+            LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
+            Marker marker = mMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(favor.getTitle())
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            StringBuffer summary = new StringBuffer();
+            summary.append(favor.getDescription());
+            marker.setSnippet(summary.toString());
+        }
   }
 
-  class onInfoWindowClick implements GoogleMap.OnInfoWindowClickListener {
-
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-      Toast.makeText(getContext(), "Info window clicked",
-              Toast.LENGTH_SHORT).show();
-    }
-  }
 
   class infoWindow implements GoogleMap.InfoWindowAdapter {
     private final View mWindow;
 
-    private final View mContents;
-
     infoWindow() {
       mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
-      mContents = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
     }
 
     @Override
@@ -145,91 +159,27 @@ public class MapsPage extends Fragment implements GoogleMap.OnMarkerClickListene
         snippetText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, snippet.length(), 0);
         snippetUi.setText(snippetText);
       }
-
-      Button button = mWindow.findViewById(R.id.detail);
       return mWindow;
     }
 
 
     @Override
     public View getInfoContents(Marker marker) {
-      String title = marker.getTitle();
-      TextView titleUi = mContents.findViewById(R.id.title);
-      if (title != null) {
-        // Spannable string allows us to edit the formatting of the text.
-        SpannableString titleText = new SpannableString(title);
-        titleText.setSpan(new ForegroundColorSpan(Color.RED), 0, titleText.length(), 0);
-        titleUi.setText(titleText);
-      }
-
-      String snippet = marker.getSnippet();
-      TextView snippetUi = mContents.findViewById(R.id.snippet);
-      if (snippet != null) {
-        SpannableString snippetText = new SpannableString(snippet);
-        snippetText.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, snippet.length(), 0);
-        snippetUi.setText(snippetText);
-      }
-
-      Button button = mContents.findViewById(R.id.detail);
-      button.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          Toast.makeText(getContext(), "Info window button clicked",
-                  Toast.LENGTH_SHORT).show();
-        }
-      });
-      return mContents;
+        return null;
     }
   }
 
-  class MarkerDrag implements GoogleMap.OnMarkerDragListener {
-    @Override
-    public void onMarkerDragStart(Marker marker) {
-      Log.d("begin loc", marker.getPosition().toString());
-    }
 
-    public void onMarkerDrag(final Marker marker) {
-
-    }
+    class onInfoWindowClick implements GoogleMap.OnInfoWindowClickListener {
 
     @Override
-    public void onMarkerDragEnd(Marker marker) {
-      Log.d("end loc", marker.getPosition().toString());
+    public void onInfoWindowClick(Marker marker) {
+        Toast.makeText(getContext(), "Info window clicked",
+                Toast.LENGTH_SHORT).show();
     }
   }
 
-  private void drawFavorMarker(List<Favor> favors){
-    if(favors == null)
-      favors = new ArrayList<>();
-    for(Favor favor:favors){
-      LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
-      Marker marker = mMap.addMarker(new MarkerOptions()
-              .position(latLng)
-              .title(favor.getTitle())
-              .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-      StringBuffer summary = new StringBuffer();
-      summary.append(favor.getDescription());
-      marker.setSnippet(summary.toString());
-    }
-  }
 
-  @Override
-  public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.tab1_map, container, false);
-  }
-
-  @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
-    SupportMapFragment mapFragment =
-        (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    if (mapFragment != null) {
-      mapFragment.getMapAsync(callback);
-    }
-  }
 
   private void showSnackbar(String errorMessageRes) {
     Snackbar.make(
