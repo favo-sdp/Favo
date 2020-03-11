@@ -5,8 +5,11 @@
     android:id="@+id/fragment_favor"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.addFavor.FavorRequestView">
-
+    tools:context="view.tabs.addFavor.FavorRequestView"
+    android:background="@color/material_green_50"
+    android:clickable="true"
+    android:focusable="true">
+    <!-- add above: android:background="@color/material_green_50"-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

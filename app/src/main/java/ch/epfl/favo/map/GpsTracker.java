@@ -69,7 +69,8 @@ public class GpsTracker extends Service implements LocationListener {
       if (location == null) {
         throw new NoPositionFoundException("Permission is granted, but no position is found");
       }
-    } else throw new NoPermissionGrantedException("No location permission granted");
+    }
+    else throw new NoPermissionGrantedException("No location permission granted");
     return location;
   }
 

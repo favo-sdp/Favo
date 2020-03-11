@@ -1,11 +1,14 @@
 package ch.epfl.favo.user;
 
+import android.location.Location;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
 import java.time.LocalDate;
 
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.TestUtil;
 
@@ -30,7 +33,7 @@ public class UserUnitTests {
   @Test
   public void userCanRetrieveDetailsFromDatabase() {
 
-    String userId = "2negoinr3";
+    String userId = TestConstants.USER_ID;
     assertThrows(
         NotImplementedException.class,
         () -> UserDatabase.getSingleInstance().getUserFromDB(userId));
@@ -39,7 +42,7 @@ public class UserUnitTests {
   @Test
   public void userCanRemoveDetailsFromDatabase() {
 
-    String userId = "2negoinr3";
+    String userId = TestConstants.USER_ID;
     assertThrows(
         NotImplementedException.class,
         () -> UserDatabase.getSingleInstance().removeUserFromDB(userId));
@@ -48,9 +51,9 @@ public class UserUnitTests {
   @Test
   public void userGettersReturnCorrectValues() {
 
-    String name = "Peter Parker";
-    String email = "peterparker@gmail.com";
-    String deviceId = "23a48d9hj";
+    String name = TestConstants.NAME;
+    String email = TestConstants.EMAIL;
+    String deviceId = TestConstants.DEVICE_ID;
     LocalDate birthDate = LocalDate.of(1994, 11, 8);
     int acceptedFavors = 2;
     int requestedFavors = 3;
@@ -102,8 +105,8 @@ public class UserUnitTests {
 
   @Test
   public void userNameIsValid() {
-    String username = "as;dfjlasdfkja;skldfm";
-    String pw = "valid_pw";
+    String username = TestConstants.USERNAME;
+    String pw = TestConstants.PASSWORD;
     assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
@@ -116,7 +119,7 @@ public class UserUnitTests {
 
   @Test
   public void userShouldNotLoginWithInvalidPassword() {
-    String username = "valid_user";
+    String username = TestConstants.USERNAME;
     String pw = TestUtil.generateRandomString(10);
     assertThrows(
             NotImplementedException.class,
@@ -150,6 +153,21 @@ public class UserUnitTests {
               @Override
               public void run() throws Throwable {
                 UserUtil.getSingleInstance().deleteAccount();
+              }
+            });
+  }
+
+  @Test
+  public void userCanRetrieveOtherUsersInGivenRadius() {
+
+    Location loc =  TestConstants.LOCATION;
+    double radius = TestConstants.RADIUS;
+    assertThrows(
+            NotImplementedException.class,
+            new ThrowingRunnable() {
+              @Override
+              public void run() throws Throwable {
+                UserUtil.getSingleInstance().retrieveOtherUsersInGivenRadius(loc, radius);
               }
             });
   }
