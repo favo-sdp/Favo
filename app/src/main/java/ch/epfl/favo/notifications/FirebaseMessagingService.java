@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -21,12 +20,11 @@ import java.util.Random;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.util.DependencyFactory;
 
 public class FirebaseMessagingService
     extends com.google.firebase.messaging.FirebaseMessagingService {
 
-  private static final String TAG = "MyFirebaseMsgService";
+  //private static final String TAG = "MyFirebaseMsgService";
   public static String CHANNEL_NAME = "Default channel name";
 
   // method called when new message (notification or data message) is received
@@ -46,11 +44,11 @@ public class FirebaseMessagingService
   }
 
   // onNewToken callback fires whenever a new token is generated
-//  @Override
-//  public void onNewToken(@NonNull String token) {
-//    Log.d(TAG, "Refreshed token: " + token);
-//    // TODO send new refreshed token to db
-//  }
+  @Override
+  public void onNewToken(@NonNull String token) {
+    //Log.d(TAG, "Refreshed token: " + token);
+    // TODO send new refreshed token to db
+  }
 
   // show notification received
   public static void showNotification(Context context, RemoteMessage.Notification notification, String channelId) {

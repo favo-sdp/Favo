@@ -1,5 +1,6 @@
 package ch.epfl.favo.notifications;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -24,17 +25,17 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
+import static ch.epfl.favo.TestConstants.NOTIFICATION_BODY;
+import static ch.epfl.favo.TestConstants.NOTIFICATION_TITLE;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 import static org.junit.Assert.assertEquals;
 
 public class FirebaseMessagingServiceTest {
-
-    private final static String NOTIFICATION_TITLE = "title";
-    private final static String NOTIFICATION_BODY = "body";
 
     @Rule
     public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -48,6 +49,8 @@ public class FirebaseMessagingServiceTest {
     @After
     public void tearDown() {
         DependencyFactory.setCurrentFirebaseUser(null);
+        Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        mainActivityTestRule.getActivity().sendBroadcast(closeIntent);
     }
 
     @Rule
@@ -56,7 +59,7 @@ public class FirebaseMessagingServiceTest {
 
 
     @Test
-    public void testNotifications() {
+    public void testNotifications() throws InterruptedException {
 
         Bundle bundle = new Bundle();
         bundle.putString("google.delivered_priority", "high");
@@ -71,8 +74,13 @@ public class FirebaseMessagingServiceTest {
 
         FirebaseMessagingService.showNotification(mainActivityTestRule.getActivity(), Objects.requireNonNull(new RemoteMessage(bundle).getNotification()), "Default channel id");
 
+        Thread.sleep(3000);
+
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         device.openNotification();
+
+        getInstrumentation().waitForIdleSync();
+
         device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT);
         UiObject2 title = device.findObject(By.text(NOTIFICATION_TITLE));
         UiObject2 text = device.findObject(By.text(NOTIFICATION_BODY));
