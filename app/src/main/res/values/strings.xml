@@ -34,6 +34,8 @@
     <string name="hint_name">Type name</string>
     <string name="greetingMes">Hello %s!</string>
 
+    <string name="detail">detail</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

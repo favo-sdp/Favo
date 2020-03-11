@@ -11,12 +11,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 
-import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.material.snackbar.Snackbar;
-
-import ch.epfl.favo.R;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.util.LocationManagerDependencyFactory;
@@ -51,8 +47,7 @@ public class GpsTracker extends Service implements LocationListener {
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
     locationManager =
         LocationManagerDependencyFactory.getCurrentLocationManager(
-            context); // (LocationManager) context.getSystemService(LOCATION_SERVICE);
-    // locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+                context);
     isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
