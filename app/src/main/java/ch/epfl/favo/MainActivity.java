@@ -2,7 +2,6 @@ package ch.epfl.favo;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -99,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
               String token = Objects.requireNonNull(task.getResult()).getToken();
               String msg = getString(R.string.msg_token_fmt, token);
               Log.d("Main Activity", msg);
+              // TODO send registration token to db
             });
   }
 }
