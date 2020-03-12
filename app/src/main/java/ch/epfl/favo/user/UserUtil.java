@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import java.util.ArrayList;
 import android.location.Location;
 
+import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 
 public class UserUtil {
@@ -10,7 +11,9 @@ public class UserUtil {
   TODO: Design singleton constructor and logic
    */
   // Single private instance
+  private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
+  private static final CollectionWrapper collection = new CollectionWrapper("users");
 
   // Private constructor
   private UserUtil() {

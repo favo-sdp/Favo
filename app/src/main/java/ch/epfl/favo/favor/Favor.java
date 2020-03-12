@@ -10,6 +10,7 @@ import android.os.Parcelable;
  */
 public class Favor implements Parcelable {
 
+  private String id;
   private String title;
   private String description;
   private String requesterId;
@@ -20,7 +21,8 @@ public class Favor implements Parcelable {
   public Favor() {}
 
   public Favor(
-      String title, String description, String requesterId, Location location, int statusId) {
+      String id, String title, String description, String requesterId, Location location, int statusId) {
+    this.id = id;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -53,6 +55,10 @@ public class Favor implements Parcelable {
       return new Favor[size];
     }
   };
+
+  public String getId() {
+    return id;
+  }
 
   public String getTitle() {
     return title;

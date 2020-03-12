@@ -65,7 +65,7 @@ public class FavorPage extends TopDestinationTab implements View.OnClickListener
     private ArrayList<Favor> genFavor(String s, int n) {
       ArrayList<Favor> favorList = new ArrayList<>();
       for(int i=0; i<n; ++i) {
-        favorList.add(new Favor(String.format("%s%d", s, i), "desc", null,  null, 0));
+        favorList.add(new Favor(null, String.format("%s%d", s, i), "desc", null,  null, 0));
       }
       return favorList;
     }

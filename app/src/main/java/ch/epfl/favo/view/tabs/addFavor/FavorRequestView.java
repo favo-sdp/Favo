@@ -5,12 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Objects;
+
 import ch.epfl.favo.R;
+import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
@@ -71,6 +76,10 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     switch (view.getId()) {
       case R.id.add_button:
         showSnackbar(getString(R.string.favor_success_msg));
+        EditText element = Objects.requireNonNull(getView()).findViewById(R.id.title);
+        String title = element.getText().toString();
+        Favor favor = new Favor("", title, "some desc", "", null, 0);
+        FavorUtil.getSingleInstance().postFavor(favor);
     }
   }
 
