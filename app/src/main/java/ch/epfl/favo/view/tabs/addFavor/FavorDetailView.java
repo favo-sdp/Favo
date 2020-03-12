@@ -17,7 +17,6 @@ import java.util.Date;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
 /**
@@ -95,10 +94,12 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
             confirmFavorBtn.setText("Respond");
 
             TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
-            greeting.setText("User " + favor.getRequesterId() + "' favor");
+            greeting.setText("favor of " + favor.getRequesterId());
 
             TextView location = rootView.findViewById(R.id.location);
-            location.setText(favor.getLocation().toString());
+            String locationDescription = "latitude: " + String.format("%.4f", favor.getLocation().getLatitude())
+                    + " longitude: " + String.format("%.4f", favor.getLocation().getLongitude());
+            location.setText(locationDescription);
 
             TextView time = rootView.findViewById(R.id.datetime);
             time.setText(convertTime(favor.getLocation().getTime()));

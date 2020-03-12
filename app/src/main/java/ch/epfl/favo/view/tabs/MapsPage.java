@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,31 +28,29 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
-import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
-
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-public class MapsPage extends TopDestinationTab {
+public class MapsPage extends TopDestinationTab implements
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.InfoWindowAdapter {
 
 
   private GoogleMap mMap;
   private Location mLocation;
   private GpsTracker mGpsTracker;
+    private ArrayList<Favor> currentActiveLocalFavorList;
   private OnMapReadyCallback callback =
       new OnMapReadyCallback() {
 
@@ -69,8 +66,8 @@ public class MapsPage extends TopDestinationTab {
         @Override
         public void onMapReady(GoogleMap googleMap) {
           mMap = googleMap;
-          drawSelfLocation();
-          drawFavorMarker(getListOfFavor());
+            drawSelfLocationMarker();
+            drawFavorMarker(updateFavorlist());
         }
       };
 
@@ -88,7 +85,7 @@ public class MapsPage extends TopDestinationTab {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
+        mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -97,16 +94,15 @@ public class MapsPage extends TopDestinationTab {
     }
 
 
-  private List<Favor> getListOfFavor(){
+    private List<Favor> updateFavorlist() {
     //FavorUtil favorUtil = FavorUtil.getSingleInstance();
     //return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
-
-    //LatLng otherUserLocation = new LatLng(latitude + 0.001, longitude + 0.001);
-    // otherUserLocation = new LatLng(latitude + 0.006, longitude - 0.004);
-    return null;
+        FakeFavorList fakeFavorList = new FakeFavorList(mLocation);
+        currentActiveLocalFavorList = fakeFavorList.retrieveFavorList();
+        return currentActiveLocalFavorList;
   }
 
-  private void drawSelfLocation(){
+    private void drawSelfLocationMarker() {
     try{
       mLocation = mGpsTracker.getLocation();
       // Add a marker at my location and move the camera
@@ -114,15 +110,13 @@ public class MapsPage extends TopDestinationTab {
       Marker me = mMap.addMarker(new MarkerOptions()
           .position(myLocation)
           .title("I am Here")
-              .snippet("Description")
               .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-              .draggable(true).flat(true));
-      // me.showInfoWindow();
+      );
 
       mMap.moveCamera(
               CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
-      mMap.setInfoWindowAdapter(new infoWindow());
-      mMap.setOnInfoWindowClickListener(new onInfoWindowClick());
+        mMap.setInfoWindowAdapter(this);
+        mMap.setOnInfoWindowClickListener(this);
     }
     catch (NoPermissionGrantedException | NoPositionFoundException e){
       showSnackbar(e.getMessage());
@@ -146,15 +140,10 @@ public class MapsPage extends TopDestinationTab {
   }
 
 
-  class infoWindow implements GoogleMap.InfoWindowAdapter {
-    private final View mWindow;
-
-    infoWindow() {
-      mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
-    }
 
     @Override
     public View getInfoWindow(Marker marker) {
+        View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
       String title = marker.getTitle();
       TextView titleUi = mWindow.findViewById(R.id.title);
       if (title != null) {
@@ -179,20 +168,26 @@ public class MapsPage extends TopDestinationTab {
     public View getInfoContents(Marker marker) {
         return null;
     }
-  }
 
-
-    class onInfoWindowClick implements GoogleMap.OnInfoWindowClickListener {
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
-       // Toast.makeText(getContext(), "Info window clicked",
-       //         Toast.LENGTH_SHORT).show();
+        //replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
+        if (marker.getTitle().equals("I am Here"))
+            replaceFragment(new FavorRequestView());
+        else
+            replaceFragment(new FavorDetailView(
+                    queryFavor(marker.getPosition().latitude, marker.getPosition().longitude)));
     }
-  }
 
-
+    private Favor queryFavor(double latitude, double longitude) {
+        for (Favor favor : currentActiveLocalFavorList) {
+            if (favor.getLocation().getLatitude() == latitude
+                    && favor.getLocation().getLongitude() == longitude)
+                return favor;
+        }
+        return null;
+    }
 
   private void showSnackbar(String errorMessageRes) {
     Snackbar.make(
