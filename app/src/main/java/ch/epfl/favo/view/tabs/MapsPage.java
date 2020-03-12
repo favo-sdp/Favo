@@ -35,6 +35,7 @@ import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
@@ -66,6 +67,7 @@ public class MapsPage extends TopDestinationTab implements
         @Override
         public void onMapReady(GoogleMap googleMap) {
           mMap = googleMap;
+          mMap.clear();
             drawSelfLocationMarker();
             drawFavorMarker(updateFavorlist());
         }
@@ -110,6 +112,7 @@ public class MapsPage extends TopDestinationTab implements
       Marker me = mMap.addMarker(new MarkerOptions()
           .position(myLocation)
           .title("I am Here")
+              .draggable(true)
               .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
       );
 
@@ -119,7 +122,7 @@ public class MapsPage extends TopDestinationTab implements
         mMap.setOnInfoWindowClickListener(this);
     }
     catch (NoPermissionGrantedException | NoPositionFoundException e){
-      showSnackbar(e.getMessage());
+      CommonTools.showSnackbar(getView() ,e.getMessage());
       }
     }
 
@@ -174,10 +177,11 @@ public class MapsPage extends TopDestinationTab implements
     public void onInfoWindowClick(Marker marker) {
         //replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
         if (marker.getTitle().equals("I am Here"))
-            replaceFragment(new FavorRequestView());
+            CommonTools.replaceFragment(getParentFragmentManager(), new FavorRequestView());
         else
-            replaceFragment(new FavorDetailView(
+            CommonTools.replaceFragment(getParentFragmentManager(), new FavorDetailView(
                     queryFavor(marker.getPosition().latitude, marker.getPosition().longitude)));
+
     }
 
     private Favor queryFavor(double latitude, double longitude) {
@@ -189,17 +193,5 @@ public class MapsPage extends TopDestinationTab implements
         return null;
     }
 
-  private void showSnackbar(String errorMessageRes) {
-    Snackbar.make(
-            requireView().findViewById(R.id.map), errorMessageRes, Snackbar.LENGTH_LONG)
-            .show();
-  }
 
-    private void replaceFragment(Fragment newFragment) {
-        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment, newFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-        //transaction.remove(this);
-    }
 }

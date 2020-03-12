@@ -13,10 +13,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.time.OffsetTime;
 import java.util.Date;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
 /**
@@ -77,42 +79,47 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
         Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
         confirmFavorBtn.setOnClickListener(this);
 
-
         if(mParam1 != null && mParam2 != null){
             confirmFavorBtn.setText("Respond");
-
-            TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
-            greeting.setText("User XXX' favor");
-
-            TextView title = rootView.findViewById(R.id.title);
-            title.setText(mParam1);
-
-            TextView details = rootView.findViewById(R.id.details);
-            details.setText(mParam2);
+            displayFromParam(rootView,"User XXX' favor", " ", " ",
+                    mParam1, mParam2);
         }
         else if(favor != null){
             confirmFavorBtn.setText("Respond");
-
-            TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
-            greeting.setText("favor of " + favor.getRequesterId());
-
-            TextView location = rootView.findViewById(R.id.location);
-            String locationDescription = "latitude: " + String.format("%.4f", favor.getLocation().getLatitude())
-                    + " longitude: " + String.format("%.4f", favor.getLocation().getLongitude());
-            location.setText(locationDescription);
-
-            TextView time = rootView.findViewById(R.id.datetime);
-            time.setText(convertTime(favor.getLocation().getTime()));
-
-            TextView title = rootView.findViewById(R.id.title);
-            title.setText(favor.getTitle());
-
-            TextView details = rootView.findViewById(R.id.details);
-            details.setText(favor.getDescription());
+            displayFromFavor(rootView ,favor);
         }
 
 
         return rootView;
+    }
+
+    public void displayFromFavor(View rootView, Favor favor){
+        String greetingStr = "favor of " + favor.getRequesterId();
+        String locationStr = "latitude: " + String.format("%.4f", favor.getLocation().getLatitude())
+                + " longitude: " + String.format("%.4f", favor.getLocation().getLongitude());
+        String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
+        String titleStr = favor.getTitle();
+        String descriptionStr = favor.getDescription();
+        displayFromParam(rootView, greetingStr, locationStr, timeStr, titleStr, descriptionStr);
+    }
+
+    public void displayFromParam(View rootView, String greetingStr, String locationStr
+            , String timeStr, String titleStr, String descriptionStr){
+
+        TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
+        greeting.setText(greetingStr);
+
+        TextView location = rootView.findViewById(R.id.location);
+        location.setText(locationStr);
+
+        TextView time = rootView.findViewById(R.id.datetime);
+        time.setText(timeStr);
+
+        TextView title = rootView.findViewById(R.id.title);
+        title.setText(titleStr);
+
+        TextView details = rootView.findViewById(R.id.details);
+        details.setText(descriptionStr);
     }
 
     @Override
@@ -121,21 +128,10 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
         // noinspection SwitchStatementWithTooFewBranches
         switch (view.getId()) {
             case R.id.add_button:
-                showSnackbar(getString(R.string.favor_respond_success_msg));
+                CommonTools.showSnackbar(requireView().findViewById(R.id.fragment_favor),
+                        getString(R.string.favor_respond_success_msg));
         }
     }
 
-    // Todo: Implement the following functions to verify user input.
-
-    // Todo: Try to put this method in a util package and import it here.
-    private void showSnackbar(String errorMessageRes) {
-        Snackbar.make(
-                requireView().findViewById(R.id.fragment_favor), errorMessageRes, Snackbar.LENGTH_LONG)
-                .show();
-    }
-    public String convertTime(long time) {
-        Date date = new Date(time);
-        Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss"); return format.format(date);
-    }
 }
 
