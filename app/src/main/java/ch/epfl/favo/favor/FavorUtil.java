@@ -1,8 +1,13 @@
 package ch.epfl.favo.favor;
 
 import java.util.ArrayList;
-import android.location.Location;
+import java.util.HashMap;
+import java.util.Map;
 
+import android.location.Location;
+import android.util.Log;
+
+import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 
 /*
@@ -10,7 +15,9 @@ This models the favor request.
 */
 public class FavorUtil {
   /** Singleton pattern. TODO: Figure out singleton constructor */
+  private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
+  private static final CollectionWrapper collection = new CollectionWrapper("favors");
   // Private Constructor
   private FavorUtil() {
     return;
@@ -23,14 +30,20 @@ public class FavorUtil {
   /**
    * Allows user to post a favor with a title, description and location.
    *
-   * @param title Title of favor.
-   * @param description String containing 300 char (max) description of text.
-   * @param location Address or coordinates at which the favor is requested. TODO: post favor in DB
-   *     linked to user
+   * @param f A favor object.
    */
-  public void postFavor(String title, String description, String location) {
+  public void postFavor(Favor f) {
 
-    throw new NotImplementedException();
+    Map<String, Object>favor = new HashMap<>();
+
+    favor.put("title", f.getTitle());
+    favor.put("description", f.getDescription());
+    favor.put("location", f.getLocation());
+    try {
+      collection.addDocument(favor);
+    } catch (RuntimeException e) {
+      Log.d(TAG, "unable to add document to db.");
+    }
   }
 
   /**

@@ -8,6 +8,7 @@ import android.location.Location;
  */
 public class Favor {
 
+  private String id;
   private String title;
   private String description;
   private String requesterId;
@@ -18,13 +19,18 @@ public class Favor {
   public Favor() {}
 
   public Favor(
-      String title, String description, String requesterId, Location location, int statusId) {
+      String id, String title, String description, String requesterId, Location location, int statusId) {
+    this.id = id;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
     this.location = location;
     this.statusId = statusId;
     this.accepterID = null;
+  }
+
+  public String getId() {
+    return id;
   }
 
   public String getTitle() {
