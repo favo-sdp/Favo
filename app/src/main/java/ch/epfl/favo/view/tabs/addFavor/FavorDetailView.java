@@ -26,49 +26,12 @@ import ch.epfl.favo.view.tabs.BottomDestinationTab;
  * to create an instance of this fragment.
  */
 public class FavorDetailView extends BottomDestinationTab implements View.OnClickListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private Favor favor;
-
-    public FavorDetailView() {
-        // Required empty public constructor
-    }
 
     public FavorDetailView(Favor favor) {
         this.favor = favor;
         // create favor detail from a favor
     }
-
-    public FavorDetailView(String param1, String param2) {
-        mParam1 = param1;
-        mParam2 = param2;
-        // create favor detail from some parameters
-    }
-    /**
-     * Use this factory method to create a new instance of this fragment using the provided
-     * parameters.
-     *
-     * <p>// * @param param1 Parameter 1. // * @param param2 Parameter 2.
-     *
-     * @return A new instance of fragment FavorRequestView.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FavorDetailView newInstance(String param1, String param2) {
-        return new FavorDetailView(param1, param2);
-    }
-    //        FavorRequestView fragment = new FavorRequestView();
-    //        Bundle args = new Bundle();
-    //        args.putString(ARG_PARAM1, param1);
-    //        args.putString(ARG_PARAM2, param2);
-    //        fragment.setArguments(args);
-    //        return fragment;
-    //    }
 
     @Override
     public View onCreateView(

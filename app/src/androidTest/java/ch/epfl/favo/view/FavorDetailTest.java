@@ -20,6 +20,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
@@ -52,9 +53,12 @@ public class FavorDetailTest {
     @Test
     public void FavorDetailTest() throws UiObjectNotFoundException {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        UiObject marker = device.findObject(new UiSelector().descriptionContains("I am Here"));
+        onView(withContentDescription("Google Map")).perform(click());
+        /*UiObject marker = device.findObject(new UiSelector().descriptionContains("I am Here"));
         marker.click();
-        /*onView(withId(R.id.add_button))
+        getInstrumentation().waitForIdleSync();
+
+        onView(withId(R.id.add_button))
                 .check(matches(isDisplayed()))
                 .perform(click());
         getInstrumentation().waitForIdleSync();
