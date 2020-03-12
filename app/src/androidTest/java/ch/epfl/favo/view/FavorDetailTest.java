@@ -2,6 +2,10 @@ package ch.epfl.favo.view;
 
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -46,7 +50,16 @@ public class FavorDetailTest {
     }
 
     @Test
-    public void FavorDetailTest() {
-
+    public void FavorDetailTest() throws UiObjectNotFoundException {
+        UiDevice device = UiDevice.getInstance(getInstrumentation());
+        UiObject marker = device.findObject(new UiSelector().descriptionContains("I am Here"));
+        marker.click();
+        /*onView(withId(R.id.add_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        getInstrumentation().waitForIdleSync();
+        //check snackbar shows
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+                .check(matches(withText(R.string.favor_success_msg)));*/
     }
 }

@@ -149,21 +149,21 @@ public class MapsPage extends TopDestinationTab implements
         View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
       String title = marker.getTitle();
       TextView titleUi = mWindow.findViewById(R.id.title);
-      if (title != null) {
-        // Spannable string allows us to edit the formatting of the text.
-        SpannableString titleText = new SpannableString(title);
-        titleText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, titleText.length(), 0);
-        titleUi.setText(titleText);
-      }
+      setSpannableString(title, titleUi);
 
       String snippet = marker.getSnippet();
       TextView snippetUi = mWindow.findViewById(R.id.snippet);
-      if (snippet != null) {
-        SpannableString snippetText = new SpannableString(snippet);
-        snippetText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, snippet.length(), 0);
-        snippetUi.setText(snippetText);
-      }
+      setSpannableString(snippet, snippetUi);
       return mWindow;
+    }
+
+    private void setSpannableString(String content, TextView view ){
+      if(content != null){
+          SpannableString snippetText = new SpannableString(content);
+          snippetText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, content.length(), 0);
+          view.setText(snippetText);
+      }
+
     }
 
 

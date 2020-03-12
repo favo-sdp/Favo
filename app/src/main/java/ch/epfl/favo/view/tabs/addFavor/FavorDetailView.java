@@ -79,12 +79,7 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
         Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
         confirmFavorBtn.setOnClickListener(this);
 
-        if(mParam1 != null && mParam2 != null){
-            confirmFavorBtn.setText("Respond");
-            displayFromParam(rootView,"User XXX' favor", " ", " ",
-                    mParam1, mParam2);
-        }
-        else if(favor != null){
+        if(favor != null){
             confirmFavorBtn.setText("Respond");
             displayFromFavor(rootView ,favor);
         }
@@ -100,11 +95,6 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
         String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
         String titleStr = favor.getTitle();
         String descriptionStr = favor.getDescription();
-        displayFromParam(rootView, greetingStr, locationStr, timeStr, titleStr, descriptionStr);
-    }
-
-    public void displayFromParam(View rootView, String greetingStr, String locationStr
-            , String timeStr, String titleStr, String descriptionStr){
 
         TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
         greeting.setText(greetingStr);
