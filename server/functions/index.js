@@ -5,7 +5,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 exports.sendNotificationOnDBChange = functions.firestore
-    .document('users/{userId}')
+    .document('favors/{favorId}')
     .onWrite((change, context) => {
 
         // This registration token comes from the client FCM SDKs.
