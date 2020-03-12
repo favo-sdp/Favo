@@ -89,6 +89,7 @@ public class MapsPage extends TopDestinationTab implements
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupView();
         mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
