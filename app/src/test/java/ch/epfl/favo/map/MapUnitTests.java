@@ -87,6 +87,9 @@ public class MapUnitTests {
   public void locationIsChanged() {
     GpsTracker gpsTracker = new GpsTracker(contextMock);
     gpsTracker.onLocationChanged(mock(Location.class));
+    gpsTracker.onStatusChanged(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null);
+    gpsTracker.onProviderDisabled(LocationManager.GPS_PROVIDER);
+    gpsTracker.onProviderEnabled(LocationManager.GPS_PROVIDER);
     Intent intent = mock(Intent.class);
     assertNull(gpsTracker.onBind(intent));
   }
@@ -95,13 +98,8 @@ public class MapUnitTests {
   public void StatusIsChanged() {
     final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
     assertNotEquals(
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            new GpsTracker(contextMock)
-                .onStatusChanged(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null);
-          }
-        },
+            (ThrowingRunnable) () -> new GpsTracker(contextMock)
+                .onStatusChanged(LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null),
         null);
   }
 

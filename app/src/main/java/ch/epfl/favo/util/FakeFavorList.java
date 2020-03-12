@@ -37,7 +37,7 @@ public class FakeFavorList {
         location.setLatitude(latitude + latitudeOffset);
         location.setLongitude(longitude + longitudeOffset);
         location.setTime(time);
-        return new Favor("title of favor " + number,
-                "description of favor " + number, "requester" + number, location, 0);
+        return new Favor("Title of Favor " + number,
+                "Description of favor " + number, "Requester" + number, location, 0);
     }
 }

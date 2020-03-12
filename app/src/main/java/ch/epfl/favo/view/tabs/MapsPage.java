@@ -66,8 +66,9 @@ public class MapsPage extends TopDestinationTab implements
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-          mMap = googleMap;
-          mMap.clear();
+            setupView();
+            mMap = googleMap;
+            mMap.clear();
             drawSelfLocationMarker();
             drawFavorMarker(updateFavorlist());
         }
@@ -81,6 +82,7 @@ public class MapsPage extends TopDestinationTab implements
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        setupView();
         return inflater.inflate(R.layout.tab1_map, container, false);
     }
 
@@ -99,9 +101,12 @@ public class MapsPage extends TopDestinationTab implements
     private List<Favor> updateFavorlist() {
     //FavorUtil favorUtil = FavorUtil.getSingleInstance();
     //return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
-        FakeFavorList fakeFavorList = new FakeFavorList(mLocation);
-        currentActiveLocalFavorList = fakeFavorList.retrieveFavorList();
-        return currentActiveLocalFavorList;
+        if(mLocation != null){
+            FakeFavorList fakeFavorList = new FakeFavorList(mLocation);
+            currentActiveLocalFavorList = fakeFavorList.retrieveFavorList();
+            return currentActiveLocalFavorList;
+        }
+        else return null;
   }
 
     private void drawSelfLocationMarker() {
@@ -177,9 +182,9 @@ public class MapsPage extends TopDestinationTab implements
     public void onInfoWindowClick(Marker marker) {
         //replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
         if (marker.getTitle().equals("I am Here"))
-            CommonTools.replaceFragment(getParentFragmentManager(), new FavorRequestView());
+            CommonTools.replaceFragment(R.id.nav_host_fragment,getParentFragmentManager(), new FavorRequestView());
         else
-            CommonTools.replaceFragment(getParentFragmentManager(), new FavorDetailView(
+            CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new FavorDetailView(
                     queryFavor(marker.getPosition().latitude, marker.getPosition().longitude)));
 
     }

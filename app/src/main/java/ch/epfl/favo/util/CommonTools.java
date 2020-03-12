@@ -21,9 +21,9 @@ public class CommonTools {
                 .show();
     }
 
-    public static void replaceFragment(FragmentManager fragmentManager, Fragment newFragment) {
+    public static void replaceFragment(int id, FragmentManager fragmentManager, Fragment newFragment) {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.nav_host_fragment, newFragment);
+        transaction.replace(id, newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
         //transaction.remove(this);
