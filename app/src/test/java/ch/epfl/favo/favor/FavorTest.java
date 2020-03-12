@@ -5,7 +5,12 @@ import android.location.Location;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
+<<<<<<< HEAD:app/src/test/java/ch/epfl/favo/favor/FavorUnitTests.java
 import ch.epfl.favo.TestConstants;
+=======
+
+import ch.epfl.favo.common.TestUtil;
+>>>>>>> code complete on UserDatabase callbacks:app/src/test/java/ch/epfl/favo/favor/FavorTest.java
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.TestUtil;
 

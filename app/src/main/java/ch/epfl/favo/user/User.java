@@ -8,6 +8,7 @@ import java.time.LocalDate;
  */
 public class User {
 
+  private String id;
   private String name;
   private String email;
   private String deviceId;
@@ -18,12 +19,16 @@ public class User {
   public User() {}
 
   public User(
+
+      String id,
       String name,
       String email,
       String deviceId,
       LocalDate birthDate,
       int activeAcceptingFavors,
       int activeRequestingFavors) {
+
+    this.id = id;
     this.name = name;
     this.email = email;
     this.deviceId = deviceId;
@@ -33,6 +38,10 @@ public class User {
   }
 
   // Getters
+  public String getId() {
+    return id;
+  }
+
   public String getName() {
     return name;
   }
@@ -53,12 +62,12 @@ public class User {
     return activeAcceptingFavors;
   }
 
-  void setActiveAcceptingFavors(int activeAcceptingFavors) {
-    this.activeAcceptingFavors = activeAcceptingFavors;
-  }
-
   public int getActiveRequestingFavors() {
     return activeRequestingFavors;
+  }
+
+  void setActiveAcceptingFavors(int activeAcceptingFavors) {
+    this.activeAcceptingFavors = activeAcceptingFavors;
   }
 
   void setActiveRequestingFavors(int activeRequestingFavors) {
