@@ -107,6 +107,6 @@ public class UserAccountPage extends BottomDestinationTab {
   }
 
   private void showSnackbar(@StringRes int errorMessageRes) {
-    Snackbar.make(view.findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
+    Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 }

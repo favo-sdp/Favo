@@ -76,6 +76,9 @@ dependencies {
     // Add the SDKs for any other Firebase products you want to use in your app
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
 
+    // Add the SDKs for any other Firebase products you want to use in your app
+    implementation 'com.google.firebase:firebase-messaging:20.1.2'
+
     // Providers
     implementation 'com.facebook.android:facebook-login:5.0.0'
 
@@ -89,6 +92,8 @@ dependencies {
     //implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation "com.google.android.material:material:1.2.0-alpha05"
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
+
     //fragment navigation
     implementation 'androidx.navigation:navigation-fragment:2.2.1'
     implementation 'androidx.navigation:navigation-ui:2.2.1'
@@ -100,6 +105,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.google.googlejavaformat:google-java-format:1.7'
+    implementation 'androidx.navigation:navigation-runtime:2.2.1'
 }
 
 tasks.withType(Test) {

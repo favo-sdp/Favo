@@ -62,9 +62,13 @@
     <string name="favors_icon_label">Favors</string>
     <string name="map_icon_label">Map</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
-    <string name="open_drawer"></string>
-    <string name="close_drawer"></string>
+    <string name="open_drawer" />
+    <string name="close_drawer" />
     <string name="home">Home</string>
     <string name="new_favor">New Favor</string>
     <string name="favor_success_msg">Favor added successfully.</string>
+
+    <!-- Notification -->
+    <string name="default_notification_channel_id" translatable="false">Default channel id</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
 </resources>
