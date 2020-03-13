@@ -54,7 +54,6 @@ public class MapPageCoarsePermissionTest {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
         //UiObject marker = device.findObject(new UiSelector().descriptionContains("Title of Favor 1"));
         //marker.click();
-
         waitFor(1000);
         Display display = mainActivityTestRule.getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -63,15 +62,16 @@ public class MapPageCoarsePermissionTest {
         int screenHeight = size.y;
         int x = (screenWidth / 2);
         int y = (int)(screenHeight * 0.43 );
-        Log.d("debug", "h" + screenHeight);
-        Log.d("debug ", "w " + screenWidth);
+
+        device.click(x, y);
+        waitFor(1000);
         device.click(x, (int)(y * 0.66));
         waitFor(2000);
         onView(withId(R.id.add_button))
                 .check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
         onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.favor_respond_success_msg)));
+                .check(matches(withText(R.string.favor_success_msg)));
     }
 
     private void waitFor(int t) throws InterruptedException {
