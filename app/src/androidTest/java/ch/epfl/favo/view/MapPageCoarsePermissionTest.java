@@ -45,7 +45,7 @@ public class MapPageCoarsePermissionTest {
         DependencyFactory.setCurrentFirebaseUser(null);
     }
 
-    @Rule public GrantPermissionRule grantPermissionRule =
+    @Rule public GrantPermissionRule permissionRule =
             GrantPermissionRule.grant(Manifest.permission.ACCESS_COARSE_LOCATION);
 
     @Test

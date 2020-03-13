@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openjdk.tools.javac.comp.Check;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -39,9 +40,10 @@ public class MapPageTest {
           }
       };
 
-      @Rule public GrantPermissionRule grantPermissionRule =
-            GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+    @Rule
+    public GrantPermissionRule permissionRule =
+            GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
     @After
     public void tearDown() {
         DependencyFactory.setCurrentFirebaseUser(null);
@@ -50,35 +52,19 @@ public class MapPageTest {
     @Test
     public void InfoWindowClickSelfTest() throws InterruptedException, UiObjectNotFoundException {
 
-        UiDevice device = UiDevice.getInstance(getInstrumentation());
-        UiObject marker = device.findObject(new UiSelector().descriptionContains("I am Here"));
-        marker.click();
-
-        waitFor(1000);
-        Display display = mainActivityTestRule.getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getRealSize(size);
-        int screenWidth = size.x;
-        int screenHeight = size.y;
-        int x = (screenWidth / 2);
-        int y = (int)(screenHeight * 0.43 );
-        Log.d("debug", "h" + screenHeight);
-        Log.d("debug ", "w " + screenWidth);
-        device.click(x, (int)(y * 0.66));
-        waitFor(2000);
-        onView(withId(R.id.add_button))
-                .check(matches(isDisplayed())).perform(click());
-        getInstrumentation().waitForIdleSync();
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.favor_success_msg)));
+        CheckContent("I am Here", R.string.favor_success_msg);
     }
 
 
     @Test
     public void InfoWindowClickOtherTest() throws InterruptedException, UiObjectNotFoundException {
 
+        CheckContent("Title of Favor 0", R.string.favor_respond_success_msg);
+    }
+
+    public void CheckContent(String MarkerTitle, int snackbar) throws UiObjectNotFoundException, InterruptedException {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        UiObject marker = device.findObject(new UiSelector().descriptionContains("Title of Favor 0"));
+        UiObject marker = device.findObject(new UiSelector().descriptionContains(MarkerTitle));
         marker.click();
 
         waitFor(1000);
@@ -97,7 +83,7 @@ public class MapPageTest {
                 .check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
         onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.favor_respond_success_msg)));
+                .check(matches(withText(snackbar)));
     }
 
 

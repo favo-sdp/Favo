@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,6 +35,9 @@ public class SignInActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_sign_in);
 
+    // check for google play services and make request if not present
+    checkPlayServices();
+
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
       // Already signed-in
@@ -41,6 +46,14 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     startActivityForResult(createSignInIntent(), RC_SIGN_IN);
+  }
+
+  private void checkPlayServices () {
+    GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+    int resultCode = gApi.isGooglePlayServicesAvailable(this);
+    if (resultCode != ConnectionResult.SUCCESS) {
+      gApi.makeGooglePlayServicesAvailable(this);
+    }
   }
 
   @NonNull
@@ -99,6 +112,9 @@ public class SignInActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
+
+    checkPlayServices();
+
     FirebaseAuth auth = FirebaseAuth.getInstance();
     if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
       startMainActivity();
@@ -132,6 +148,6 @@ public class SignInActivity extends AppCompatActivity {
   }
 
   public void showSnackbar(@StringRes int errorMessageRes) {
-    Snackbar.make(findViewById(R.id.root), errorMessageRes, Snackbar.LENGTH_LONG).show();
+    Snackbar.make(findViewById(android.R.id.content), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 }
