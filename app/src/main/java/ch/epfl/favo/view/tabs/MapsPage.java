@@ -9,6 +9,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -82,6 +83,19 @@ public class MapsPage extends TopDestinationTab implements
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+       /* Button theButton = (Button) getActivity().findViewById(R.id.hiddenButton);
+        theButton.setVisibility(View.VISIBLE);
+        theButton.setBackgroundColor(Color.TRANSPARENT);
+
+        theButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // DO STUFF
+
+            }
+        });*/
         setupView();
         return inflater.inflate(R.layout.tab1_map, container, false);
     }
@@ -111,7 +125,7 @@ public class MapsPage extends TopDestinationTab implements
   }
 
     public void drawSelfLocationMarker() {
-    //try{
+    try{
       mLocation = mGpsTracker.getLocation();
       // Add a marker at my location and move the camera
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -126,11 +140,14 @@ public class MapsPage extends TopDestinationTab implements
               CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
         mMap.setInfoWindowAdapter(this);
         mMap.setOnInfoWindowClickListener(this);
-    //}
-    //catch (NoPermissionGrantedException | NoPositionFoundException e){
-     // CommonTools.showSnackbar(getView() ,e.getMessage());
-     // }
+        throw new NoPermissionGrantedException("random");
     }
+    catch (NoPermissionGrantedException | NoPositionFoundException e){
+      CommonTools.showSnackbar(getView() ,e.getMessage());
+      }
+
+    }
+
 
 
     private void drawFavorMarker(List<Favor> favors) {
