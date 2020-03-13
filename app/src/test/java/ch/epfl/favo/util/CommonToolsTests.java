@@ -1,11 +1,16 @@
 package ch.epfl.favo.util;
 
+import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.view.SurfaceControl;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -20,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static junit.framework.TestCase.assertEquals;
 
 import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 
 import static org.junit.Assert.assertEquals;
@@ -33,18 +39,4 @@ public class CommonToolsTests {
         String time = format.format(date);
         assertEquals(CommonTools.convertTime(date), time);
     }
-
-    @Test
-    public void replaceFragmentTest(){
-        FragmentManager fragmentManager = mock(FragmentManager.class);
-        Fragment newFragment = mock(Fragment.class);
-        assertThrows(RuntimeException.class, ()->CommonTools.replaceFragment(1, fragmentManager, newFragment));
-    }
-
-    @Test
-    public void showSnackbar(){
-        View view = mock(View.class);
-        assertThrows(RuntimeException.class, ()->CommonTools.showSnackbar(view, "error message"));
-    }
-
 }

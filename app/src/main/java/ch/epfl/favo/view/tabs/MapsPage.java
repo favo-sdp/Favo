@@ -51,7 +51,7 @@ public class MapsPage extends TopDestinationTab implements
   private GoogleMap mMap;
   private Location mLocation;
   private GpsTracker mGpsTracker;
-    private ArrayList<Favor> currentActiveLocalFavorList;
+  private ArrayList<Favor> currentActiveLocalFavorList = null;
   private OnMapReadyCallback callback =
       new OnMapReadyCallback() {
 
@@ -110,7 +110,7 @@ public class MapsPage extends TopDestinationTab implements
         else return null;
   }
 
-    private void drawSelfLocationMarker() {
+    public void drawSelfLocationMarker() {
     try{
       mLocation = mGpsTracker.getLocation();
       // Add a marker at my location and move the camera
@@ -190,7 +190,7 @@ public class MapsPage extends TopDestinationTab implements
 
     }
 
-    private Favor queryFavor(double latitude, double longitude) {
+    public Favor queryFavor(double latitude, double longitude) {
         for (Favor favor : currentActiveLocalFavorList) {
             if (favor.getLocation().getLatitude() == latitude
                     && favor.getLocation().getLongitude() == longitude)

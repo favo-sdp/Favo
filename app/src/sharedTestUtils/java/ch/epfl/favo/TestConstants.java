@@ -20,4 +20,6 @@ public class TestConstants {
   public static final String DESCRIPTION = "Rock popped near river trailhead";
   public static final Location LOCATION = new Location("Dummy Provider");
   public static final double RADIUS = 134.56;
+  public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
+
 }
