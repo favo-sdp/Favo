@@ -111,7 +111,7 @@ public class MapsPage extends TopDestinationTab implements
   }
 
     public void drawSelfLocationMarker() {
-    try{
+    //try{
       mLocation = mGpsTracker.getLocation();
       // Add a marker at my location and move the camera
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -126,10 +126,10 @@ public class MapsPage extends TopDestinationTab implements
               CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
         mMap.setInfoWindowAdapter(this);
         mMap.setOnInfoWindowClickListener(this);
-    }
-    catch (NoPermissionGrantedException | NoPositionFoundException e){
-      CommonTools.showSnackbar(getView() ,e.getMessage());
-      }
+    //}
+    //catch (NoPermissionGrantedException | NoPositionFoundException e){
+     // CommonTools.showSnackbar(getView() ,e.getMessage());
+     // }
     }
 
 
