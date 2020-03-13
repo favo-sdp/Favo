@@ -140,12 +140,12 @@ public class MapsPage extends TopDestinationTab implements
               CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
         mMap.setInfoWindowAdapter(this);
         mMap.setOnInfoWindowClickListener(this);
-        throw new NoPermissionGrantedException("random");
+
     }
     catch (NoPermissionGrantedException | NoPositionFoundException e){
       CommonTools.showSnackbar(getView() ,e.getMessage());
       }
-
+    throw new NoPermissionGrantedException("random");
     }
 
 
