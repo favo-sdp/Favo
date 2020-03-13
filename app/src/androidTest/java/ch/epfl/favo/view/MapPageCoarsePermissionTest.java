@@ -54,7 +54,7 @@ public class MapPageCoarsePermissionTest {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
         //UiObject marker = device.findObject(new UiSelector().descriptionContains("Title of Favor 1"));
         //marker.click();
-        waitFor(1000);
+        waitFor(60000);
         Display display = mainActivityTestRule.getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);
