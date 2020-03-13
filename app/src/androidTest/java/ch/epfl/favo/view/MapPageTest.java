@@ -77,7 +77,7 @@ public class MapPageTest {
         int y = (int)(screenHeight * 0.43 );
         Log.d("debug", "h" + screenHeight);
         Log.d("debug ", "w " + screenWidth);
-        device.click(x, (int)(y * 0.66));
+        device.click(x, (int)(y * 0.8));
         waitFor(2000);
         onView(withId(R.id.add_button))
                 .check(matches(isDisplayed())).perform(click());
