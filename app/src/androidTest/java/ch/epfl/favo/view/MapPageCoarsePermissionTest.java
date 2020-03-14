@@ -28,8 +28,10 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class MapPageCoarsePermissionTest {
@@ -59,11 +61,23 @@ public class MapPageCoarsePermissionTest {
        //     waitFor(1000);
       //  }
 
+        onView(withId(R.id.nav_favor_list_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        getInstrumentation().waitForIdleSync();
+
+        onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+                .check(matches(isDisplayed()));
+
+        getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
+
 
         Espresso.closeSoftKeyboard();
         getInstrumentation().waitForIdleSync();
         onView(withId(R.id.hiddenButton))
-                .check(matches(isDisplayed()))
                 .perform(click());
         waitFor(2000);
         onView(withId(R.id.add_button));
