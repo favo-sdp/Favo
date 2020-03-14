@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.Display;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -51,28 +52,20 @@ public class MapPageCoarsePermissionTest {
     @Test
     public void InfoWindowClickOtherTest() throws InterruptedException, UiObjectNotFoundException {
 
-        UiDevice device = UiDevice.getInstance(getInstrumentation());
         //UiObject marker = device.findObject(new UiSelector().descriptionContains("Title of Favor 1"));
         //marker.click();
-        Display display = mainActivityTestRule.getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getRealSize(size);
-        int screenWidth = size.x;
-        int screenHeight = size.y;
-        int x = (screenWidth / 2);
-        int y = (int)(screenHeight * 0.43 );
       //  for(float i = 0; i < 1; i += 0.01){
       //      device.click(x, (int)(i * screenHeight));
        //     waitFor(1000);
       //  }
-        getInstrumentation().waitForIdleSync();
-        device.click(x, (int)(y * 0.66));
-        waitFor(2000);
 
+
+        Espresso.closeSoftKeyboard();
+        getInstrumentation().waitForIdleSync();
         onView(withId(R.id.hiddenButton))
                 .check(matches(isDisplayed()))
                 .perform(click());
-
+        waitFor(2000);
         onView(withId(R.id.add_button));
               //  .check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
