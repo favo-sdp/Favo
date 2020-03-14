@@ -1,27 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".view.tabs.MapsPage"
-    android:id="@+id/fragment_map">
-
-    <Button
-        android:id="@+id/hiddenButton"
-
-        android:layout_width="1dp"
-
-        android:layout_height="1dp"
-        android:layout_marginTop="620dp"
-        android:text=""
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="300dp"
-        app:layout_constraintRight_toRightOf="50dp" />
 
 <fragment
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/map"
     android:name="com.google.android.gms.maps.SupportMapFragment"
     android:layout_width="match_parent"
@@ -29,5 +12,3 @@
     android:layout_marginBottom="54dp"
     tools:context=".view.tabs.MapsPage"
     />
-
-</FrameLayout>
