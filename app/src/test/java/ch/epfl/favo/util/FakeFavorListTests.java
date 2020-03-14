@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.FakeFavorList;
 import static org.junit.Assert.assertEquals;
@@ -22,7 +23,7 @@ public class FakeFavorListTests {
     @Test
     public void retrieveSingleFavorTest(){
 
-        FakeFavorList fakeFavorList = new FakeFavorList(location);
+    FakeFavorList fakeFavorList = new FakeFavorList(TestConstants.LATITUDE, TestConstants.LONGITUDE, System.currentTimeMillis());
         Favor favor0 = fakeFavorList.retrieveFavor(0, 0.001, 0.001);
         assertEquals(favor0.getLocation().getLatitude(),
                 fakeFavorList.retrieveFavor(0,0.001, 0.001)
@@ -33,7 +34,7 @@ public class FakeFavorListTests {
 
     @Test
     public void retrieveFavorListTest(){
-        FakeFavorList fakeFavorList = new FakeFavorList(location);
+        FakeFavorList fakeFavorList = new FakeFavorList(TestConstants.LATITUDE, TestConstants.LONGITUDE, System.currentTimeMillis());
         Favor favor0 = fakeFavorList.retrieveFavor(0, 0.001, 0.001);
         Favor favor1 = fakeFavorList.retrieveFavor(1, 0.001, -0.002);
         Favor favor2 = fakeFavorList.retrieveFavor(2, -0.002, -0.001);
