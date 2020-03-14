@@ -54,7 +54,6 @@ public class MapPageCoarsePermissionTest {
         UiDevice device = UiDevice.getInstance(getInstrumentation());
         //UiObject marker = device.findObject(new UiSelector().descriptionContains("Title of Favor 1"));
         //marker.click();
-        waitFor(60000);
         Display display = mainActivityTestRule.getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getRealSize(size);
@@ -62,13 +61,18 @@ public class MapPageCoarsePermissionTest {
         int screenHeight = size.y;
         int x = (screenWidth / 2);
         int y = (int)(screenHeight * 0.43 );
-        for(float i = 0; i < 1; i += 0.01){
-            device.click(x, (int)(i * screenHeight));
-            waitFor(1000);
-        }
+      //  for(float i = 0; i < 1; i += 0.01){
+      //      device.click(x, (int)(i * screenHeight));
+       //     waitFor(1000);
+      //  }
         getInstrumentation().waitForIdleSync();
         device.click(x, (int)(y * 0.66));
         waitFor(2000);
+
+        onView(withId(R.id.hiddenButton))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
         onView(withId(R.id.add_button));
               //  .check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();

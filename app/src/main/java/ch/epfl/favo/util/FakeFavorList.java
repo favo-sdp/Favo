@@ -10,15 +10,15 @@ public class FakeFavorList {
     private long time;
     private double latitude, longitude;
 
-    public FakeFavorList(Location currentLocation) {
-        latitude = currentLocation.getLatitude();
-        longitude = currentLocation.getLongitude();
-        time = currentLocation.getTime();
+    public FakeFavorList(double latitude, double longitude, long time) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.time = time;
 
         Location location = new Location("provider name");
         location.setLatitude(latitude);
         location.setLongitude(longitude);
-        location.setTime(currentLocation.getTime());
+        location.setTime(time);
     }
 
     public ArrayList<Favor> retrieveFavorList() {

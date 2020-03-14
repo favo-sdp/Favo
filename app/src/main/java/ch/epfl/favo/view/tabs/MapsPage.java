@@ -83,19 +83,7 @@ public class MapsPage extends TopDestinationTab implements
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-       /* Button theButton = (Button) getActivity().findViewById(R.id.hiddenButton);
-        theButton.setVisibility(View.VISIBLE);
-        theButton.setBackgroundColor(Color.TRANSPARENT);
 
-        theButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                // DO STUFF
-
-            }
-        });*/
         setupView();
         return inflater.inflate(R.layout.tab1_map, container, false);
     }
@@ -110,6 +98,31 @@ public class MapsPage extends TopDestinationTab implements
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+
+        // add a hidden button for testing
+        Button theButton = getActivity().findViewById(R.id.hiddenButton);
+        theButton.setVisibility(View.VISIBLE);
+        theButton.setBackgroundColor(Color.TRANSPARENT);
+
+        theButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                //drawSelfLocationMarker();
+                drawFavorMarker(updateFavorlist());
+                FakeFavorList fakeFavorList = new FakeFavorList(20,
+                        10, System.currentTimeMillis());
+                String snippet = "test";
+                View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+                TextView snippetUi = mWindow.findViewById(R.id.snippet);
+                setSpannableString(snippet, snippetUi);
+                queryFavor(10,21);
+                CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new FavorDetailView(
+                       fakeFavorList.retrieveFavor(0,0,0)));
+            }
+        });
+
     }
 
 
@@ -117,11 +130,17 @@ public class MapsPage extends TopDestinationTab implements
     //FavorUtil favorUtil = FavorUtil.getSingleInstance();
     //return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
         if(mLocation != null){
-            FakeFavorList fakeFavorList = new FakeFavorList(mLocation);
+            FakeFavorList fakeFavorList = new FakeFavorList(mLocation.getLatitude(),
+                    mLocation.getLongitude(), mLocation.getTime());
             currentActiveLocalFavorList = fakeFavorList.retrieveFavorList();
             return currentActiveLocalFavorList;
         }
-        else return null;
+        else {
+            FakeFavorList fakeFavorList = new FakeFavorList(20,
+                    10, System.currentTimeMillis());
+            currentActiveLocalFavorList = fakeFavorList.retrieveFavorList();
+            return currentActiveLocalFavorList;
+        }
   }
 
     public void drawSelfLocationMarker() {
@@ -145,7 +164,6 @@ public class MapsPage extends TopDestinationTab implements
     catch (NoPermissionGrantedException | NoPositionFoundException e){
       CommonTools.showSnackbar(getView() ,e.getMessage());
       }
-    throw new NoPermissionGrantedException("random");
     }
 
 
