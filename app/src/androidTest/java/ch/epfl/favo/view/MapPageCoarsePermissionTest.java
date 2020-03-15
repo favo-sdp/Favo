@@ -61,30 +61,7 @@ public class MapPageCoarsePermissionTest {
        //     waitFor(1000);
       //  }
 
-        onView(withId(R.id.nav_favor_list_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
-
-        onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-
-        getInstrumentation().waitForIdleSync();
-        onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
-
-
-        Espresso.closeSoftKeyboard();
-        getInstrumentation().waitForIdleSync();
-        onView(withId(R.id.hiddenButton))
-                .perform(click());
-        waitFor(2000);
-        onView(withId(R.id.add_button)).perform(click());
-              //.check(matches(isDisplayed())).perform(click());
-        getInstrumentation().waitForIdleSync();
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.favor_respond_success_msg)));
+      
     }
 
     private void waitFor(int t) throws InterruptedException {
