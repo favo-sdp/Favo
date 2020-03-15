@@ -2,11 +2,18 @@ package ch.epfl.favo.view;
 
 import android.location.Location;
 import android.location.LocationManager;
+import android.view.View;
 
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
+
+import com.google.android.gms.maps.model.Marker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +34,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
@@ -70,6 +79,7 @@ public class FavorDetailViewTest {
         DependencyFactory.setCurrentFirebaseUser(null);
     }
 
+
     @Test
     public void favorDetailViewIsLaunched(){
         FavorDetailView fragment = FavorDetailView.newInstance(fakeFavor);
@@ -87,6 +97,7 @@ public class FavorDetailViewTest {
         //Check clicking on the button
         onView(withId(R.id.add_button)).check(matches(isDisplayed()))
                 .perform(click());
+
     }
 
 
