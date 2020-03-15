@@ -26,10 +26,18 @@ import ch.epfl.favo.view.tabs.BottomDestinationTab;
  * to create an instance of this fragment.
  */
 public class FavorDetailView extends BottomDestinationTab implements View.OnClickListener {
+    private final static String FAVOR_ARGS = "FAVOR_ARGS";
     private Favor favor;
 
-    public FavorDetailView(Favor favor) {
-        this.favor = favor;
+    public static FavorDetailView newInstance(Favor favor){
+        FavorDetailView fragment = new FavorDetailView();
+        Bundle args = new Bundle();
+        args.putParcelable(FAVOR_ARGS,favor);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public FavorDetailView() {
         // create favor detail from a favor
     }
 

@@ -118,7 +118,7 @@ public class MapsPage extends TopDestinationTab implements
                 TextView snippetUi = mWindow.findViewById(R.id.snippet);
                 setSpannableString(snippet, snippetUi);
                 queryFavor(10,21);
-                CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new FavorDetailView(
+                CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), FavorDetailView.newInstance(
                        fakeFavorList.retrieveFavor(0,0,0)));
             }
         });
@@ -220,7 +220,7 @@ public class MapsPage extends TopDestinationTab implements
         if (marker.getTitle().equals("I am Here"))
             CommonTools.replaceFragment(R.id.nav_host_fragment,getParentFragmentManager(), new FavorRequestView());
         else
-            CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new FavorDetailView(
+            CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), FavorDetailView.newInstance(
                     queryFavor(marker.getPosition().latitude, marker.getPosition().longitude)));
 
     }
