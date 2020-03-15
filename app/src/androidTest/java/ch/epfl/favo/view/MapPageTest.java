@@ -4,6 +4,7 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.Display;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -51,7 +52,9 @@ public class MapPageTest {
 
     @Test
     public void InfoWindowClickSelfTest() throws InterruptedException, UiObjectNotFoundException {
-
+        Espresso.closeSoftKeyboard();
+        getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.hiddenButton));
         //CheckContent("I am Here", R.string.favor_success_msg);
     }
 
