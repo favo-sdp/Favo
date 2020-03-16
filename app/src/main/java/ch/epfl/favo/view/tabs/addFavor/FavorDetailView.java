@@ -34,15 +34,14 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
     private Favor favor;
 
     public static FavorDetailView newInstance(Favor favor){
-        FavorDetailView fragment = new FavorDetailView(favor);
+        FavorDetailView fragment = new FavorDetailView();
         Bundle args = new Bundle();
         args.putParcelable(FAVOR_ARGS,favor);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public FavorDetailView(Favor favor) {
-        this.favor = favor;
+    public FavorDetailView() {
         // create favor detail from a favor
     }
 
@@ -53,7 +52,9 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
         View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
         Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
         confirmFavorBtn.setOnClickListener(this);
-
+        if (favor == null){
+            favor = getArguments().getParcelable(FAVOR_ARGS);
+        }
         if(favor != null){
             confirmFavorBtn.setText("Respond");
             displayFromFavor(rootView ,favor);
