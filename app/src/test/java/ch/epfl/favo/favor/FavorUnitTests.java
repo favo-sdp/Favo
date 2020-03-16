@@ -160,27 +160,6 @@ public class FavorUnitTests {
             });
   }
 
-    @Test
-    public void favorGettersReturnCorrectValuesByParcelable() {
-
-        String title = "Flat tire";
-        String description = "Tiire popped while turning left on Avenue Rhodanie";
-        String requesterId = "2362489";
-        Location location = new Location("Dummy provider");
-        int statusId = 0;
-
-        Favor favor = new Favor(title, description, requesterId, location, statusId);
-        Parcel parcel = Parcel.obtain();
-        int flag = 0;
-        favor.writeToParcel(parcel, flag);
-        Favor favorNew = Favor.CREATOR.createFromParcel(parcel);
-        assertEquals(title, favorNew.getTitle());
-        assertEquals(description, favorNew.getDescription());
-        assertEquals(requesterId, favorNew.getRequesterId());
-        assertEquals(location, favorNew.getLocation());
-        assertEquals(statusId, favorNew.getStatusId());
-  }
-
   @Test
     public void describeContentsCorrect(){
       String title = "Flat tire";
@@ -202,11 +181,11 @@ public class FavorUnitTests {
         int statusId = 0;
         Favor[] favors = Favor.CREATOR.newArray(3);
         favors[0] = new Favor(title, description, requesterId, location, statusId);
-        assertEquals(favors[0].getTitle(), title);
-        assertEquals(favors[0].getDescription(),description);
-        assertEquals(favors[0].getRequesterId(), requesterId);
-        assertEquals(favors[0].getLocation(), location);
-        assertEquals(favors[0].getStatusId(), statusId);
+        assertEquals(title,favors[0].getTitle());
+        assertEquals(description, favors[0].getDescription());
+        assertEquals(requesterId, favors[0].getRequesterId());
+        assertEquals(location, favors[0].getLocation());
+        assertEquals(statusId, favors[0].getStatusId());
     }
 
 }

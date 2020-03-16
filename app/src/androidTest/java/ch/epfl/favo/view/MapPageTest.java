@@ -25,7 +25,9 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -51,10 +53,10 @@ public class MapPageTest {
     }
 
     @Test
-    public void InfoWindowClickSelfTest() throws InterruptedException, UiObjectNotFoundException {
+    public void InfoWindowClickSelfTest() throws UiObjectNotFoundException {
         Espresso.closeSoftKeyboard();
         getInstrumentation().waitForIdleSync();
-        onView(withId(R.id.hiddenButton)).perform(click());
+        //onView(withId(R.id.hiddenButton)).check(matches(isCompletelyDisplayed())).perform(scrollTo(),click());
         //CheckContent("I am Here", R.string.favor_success_msg);
     }
 

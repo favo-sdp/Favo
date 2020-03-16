@@ -62,8 +62,8 @@ public class MapsPage extends TopDestinationTab
     mMap.clear();
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
-    throw new RuntimeException(
-        "This exception will " + "certainly be thrown out as long as Map is ready");
+    //throw new RuntimeException(
+      //  "This exception will " + "certainly be thrown out as long as Map is ready");
   }
 
   public MapsPage() {
@@ -76,7 +76,6 @@ public class MapsPage extends TopDestinationTab
     // Inflate the layout for this fragment
     // add a hidden button for testing
     Button theButton = getActivity().findViewById(R.id.hiddenButton);
-    theButton.setVisibility(View.INVISIBLE);
     theButton.setOnClickListener(this);
     setupView();
     return inflater.inflate(R.layout.tab1_map, container, false);
