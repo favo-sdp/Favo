@@ -46,7 +46,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
  */
 public class MapsPage extends TopDestinationTab
     implements OnMapReadyCallback,
-        View.OnClickListener,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
 
@@ -75,8 +74,6 @@ public class MapsPage extends TopDestinationTab
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     // add a hidden button for testing
-    Button theButton = getActivity().findViewById(R.id.hiddenButton);
-    theButton.setOnClickListener(this);
     setupView();
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
@@ -93,23 +90,8 @@ public class MapsPage extends TopDestinationTab
     }
   }
 
-  public void onClick(View v) {
-    // drawSelfLocationMarker();
-    // drawFavorMarker(updateFavorlist());
-    FakeFavorList fakeFavorList = new FakeFavorList(20, 10, System.currentTimeMillis());
-    String snippet = "test";
-    View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
-    CommonTools.showSnackbar(mWindow, snippet);
-    TextView snippetUi = mWindow.findViewById(R.id.snippet);
-    setSpannableString(snippet, snippetUi);
-    queryFavor(10, 21);
-    CommonTools.replaceFragment(
-        R.id.nav_host_fragment,
-        getParentFragmentManager(),
-        FavorDetailView.newInstance(fakeFavorList.retrieveFavor(0, 0, 0)));
-  }
 
-  private List<Favor> updateFavorlist() {
+  public List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
     // return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
     if (mLocation != null) {
