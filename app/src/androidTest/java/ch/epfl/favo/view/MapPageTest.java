@@ -54,7 +54,7 @@ public class MapPageTest {
     public void InfoWindowClickSelfTest() throws InterruptedException, UiObjectNotFoundException {
         Espresso.closeSoftKeyboard();
         getInstrumentation().waitForIdleSync();
-        onView(withId(R.id.hiddenButton));
+        onView(withId(R.id.hiddenButton)).perform(click());
         //CheckContent("I am Here", R.string.favor_success_msg);
     }
 

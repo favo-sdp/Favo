@@ -100,6 +100,7 @@ public class MapsPage extends TopDestinationTab
     FakeFavorList fakeFavorList = new FakeFavorList(20, 10, System.currentTimeMillis());
     String snippet = "test";
     View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+    CommonTools.showSnackbar(mWindow, snippet);
     TextView snippetUi = mWindow.findViewById(R.id.snippet);
     setSpannableString(snippet, snippetUi);
     queryFavor(10, 21);
@@ -206,7 +207,8 @@ public class MapsPage extends TopDestinationTab
   public Favor queryFavor(double latitude, double longitude) {
     for (Favor favor : currentActiveLocalFavorList) {
       if (favor.getLocation().getLatitude() == latitude
-          && favor.getLocation().getLongitude() == longitude) return favor;
+          && favor.getLocation().getLongitude() == longitude)
+        return favor;
     }
     return null;
   }
