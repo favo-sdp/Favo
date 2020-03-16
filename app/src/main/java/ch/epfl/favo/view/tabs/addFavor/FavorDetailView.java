@@ -34,15 +34,14 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
     private Favor favor;
 
     public static FavorDetailView newInstance(Favor favor){
-        FavorDetailView fragment = new FavorDetailView(favor);
+        FavorDetailView fragment = new FavorDetailView();
         Bundle args = new Bundle();
         args.putParcelable(FAVOR_ARGS,favor);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public FavorDetailView(Favor favor) {
-        this.favor = favor;
+    public FavorDetailView() {
         // create favor detail from a favor
     }
 
