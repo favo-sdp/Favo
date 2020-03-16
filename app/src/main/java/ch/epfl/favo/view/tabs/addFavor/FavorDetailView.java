@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,9 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
+import static android.content.Intent.getIntent;
+import static android.content.Intent.getIntentOld;
+
 /**
  * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
  * to create an instance of this fragment.
@@ -30,14 +34,15 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
     private Favor favor;
 
     public static FavorDetailView newInstance(Favor favor){
-        FavorDetailView fragment = new FavorDetailView();
+        FavorDetailView fragment = new FavorDetailView(favor);
         Bundle args = new Bundle();
         args.putParcelable(FAVOR_ARGS,favor);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public FavorDetailView() {
+    public FavorDetailView(Favor favor) {
+        this.favor = favor;
         // create favor detail from a favor
     }
 
@@ -46,7 +51,6 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setupView();
         View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
-
         Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
         confirmFavorBtn.setOnClickListener(this);
 

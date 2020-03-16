@@ -87,6 +87,7 @@ public class FavorDetailViewTest {
         //Check clicking on the button
         onView(withId(R.id.add_button)).check(matches(isDisplayed()))
                 .perform(click());
+
     }
 
 
