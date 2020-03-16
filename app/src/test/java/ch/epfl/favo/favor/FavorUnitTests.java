@@ -208,4 +208,5 @@ public class FavorUnitTests {
         assertEquals(favors[0].getLocation(), location);
         assertEquals(favors[0].getStatusId(), statusId);
     }
+
 }

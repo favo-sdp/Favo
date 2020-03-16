@@ -53,7 +53,9 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
         View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
         Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
         confirmFavorBtn.setOnClickListener(this);
-
+        if (favor == null){
+            favor = getArguments().getParcelable(FAVOR_ARGS);
+        }
         if(favor != null){
             confirmFavorBtn.setText("Respond");
             displayFromFavor(rootView ,favor);
