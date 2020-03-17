@@ -9,16 +9,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.view.ViewController;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentAbout extends BottomDestinationTab {
+public class FragmentAbout extends Fragment {
 
     public FragmentAbout() {
         // Required empty public constructor
     }
 
+    private void setupView(){
+        ((ViewController) getActivity()).showBackIcon();
+        ((ViewController) getActivity()).hideBottomTabs();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

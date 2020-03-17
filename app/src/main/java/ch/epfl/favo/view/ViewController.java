@@ -1,7 +1,5 @@
 package ch.epfl.favo.view;
 
-import android.widget.RadioButton;
-
 public interface ViewController {
     void hideBottomTabs();
     void showBottomTabs();

@@ -1,0 +1,17 @@
+<resources>
+    <!-- Preference Titles -->
+    <string name="messages_header">Account</string>
+    <string name="notification_header">Notifications</string>
+    <string name="help_header">Help</string>
+
+    <!-- Account Preferences -->
+    <string name="username_title">Username</string>
+
+    <!-- Notification Preferences -->
+    <string name="notification_title">Enable new favor notifications</string>
+    <string name="notification_radius_title">Notifications radius</string>
+
+    <!-- Help preferences -->
+    <string name="help_title">Send feedback</string>
+    <string name="help_subtitle">Report technical issues or suggest new features</string>
+</resources>

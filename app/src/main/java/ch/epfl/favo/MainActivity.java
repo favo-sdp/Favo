@@ -1,5 +1,7 @@
 package ch.epfl.favo;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -78,6 +80,9 @@ public class MainActivity extends AppCompatActivity
     setupDrawerNavigation();
     setupBottomNavigation();
 
+    // prevent swipe to open the navigation menu
+    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
@@ -117,13 +122,30 @@ public class MainActivity extends AppCompatActivity
   @Override
   public boolean onNavigationItemSelected(@NonNull MenuItem item) {
     int itemId = item.getItemId();
-    if (itemId == R.id.nav_home) {
-      navController.navigate(R.id.nav_map);
-    } else {
-      navController.navigate(itemId);
+
+    switch (itemId) {
+      case R.id.nav_home:
+        navController.navigate(R.id.nav_map);
+        break;
+      case R.id.nav_share:
+        startShareIntent();
+        break;
+      default:
+        navController.navigate(itemId);
     }
+
     drawerLayout.closeDrawer(GravityCompat.START);
     return true;
+  }
+
+  private void startShareIntent() {
+    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+    shareIntent.setType("text/plain");
+
+    shareIntent.putExtra(Intent.EXTRA_TITLE, "Favo app");
+    shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.app_site));
+
+    startActivity(Intent.createChooser(shareIntent, null));
   }
 
   /** Will control the bottom navigation tabs */

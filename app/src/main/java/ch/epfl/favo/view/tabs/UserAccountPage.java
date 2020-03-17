@@ -26,8 +26,9 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.ViewController;
 
-public class UserAccountPage extends BottomDestinationTab {
+public class UserAccountPage extends Fragment {
 
   private View view;
 
@@ -46,6 +47,11 @@ public class UserAccountPage extends BottomDestinationTab {
       displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
       return view;
 
+  }
+
+  private void setupView(){
+    ((ViewController) getActivity()).showBackIcon();
+    ((ViewController) getActivity()).hideBottomTabs();
   }
 
   private void setupButtons() {

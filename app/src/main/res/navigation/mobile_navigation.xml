@@ -20,9 +20,7 @@
         android:label="@string/about"/>
     <fragment
         android:id="@+id/nav_share"
-        android:name="ch.epfl.favo.view.tabs.FragmentShare"
-        android:label="@string/share"
-        />
+        android:label="@string/share" />
     <fragment
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapsPage"
