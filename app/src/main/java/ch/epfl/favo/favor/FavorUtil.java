@@ -21,9 +21,7 @@ public class FavorUtil {
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static final CollectionWrapper collection = new CollectionWrapper("favors");
   // Private Constructor
-  private FavorUtil() {
-    return;
-  }
+  private FavorUtil() {}
 
   public static FavorUtil getSingleInstance() {
     return SINGLE_INSTANCE;
@@ -41,8 +39,6 @@ public class FavorUtil {
 
     favor.put("title", f.getTitle());
     favor.put("description", f.getDescription());
-    favor.put("requesterId", f.getRequesterId());
-    favor.put("accepterId", f.getAccepterID());
     favor.put("statusId", 0);
     favor.put("location", new GeoPoint(loc.getLatitude(), loc.getLongitude()));
     try {

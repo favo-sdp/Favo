@@ -20,24 +20,6 @@ import static org.junit.Assert.assertThrows;
 public class FavorUnitTests {
 
   @Test
-  public void favorCanRetrieveDetailsFromDatabase() {
-
-    String favorId = "2negoinr3";
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorDatabase.getSingleInstance().getFavorDetailsFromDB(favorId));
-  }
-
-  @Test
-  public void favorCanRemoveDetailsFromDatabase() {
-
-    String favorId = "2negoinr3";
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorDatabase.getSingleInstance().removeFavorFromDB(favorId));
-  }
-
-  @Test
   public void favorGettersReturnCorrectValues() {
 
     String title = "Flat tire";
@@ -75,13 +57,16 @@ public class FavorUnitTests {
   public void favorIsNotLongerThan300Characters() {
     String title = "Sample Favor";
     String description = TestUtil.generateRandomString(305);
-    String location = "valid location"; // replace by valid location
+    Location location = new Location("dummy provider");
+    String requesterId = "requester Id";
+    int statusId = 0;
     assertThrows(
             NotImplementedException.class,
             new ThrowingRunnable() {
               @Override
               public void run() throws Throwable {
-                FavorUtil.getSingleInstance().postFavor(title, description, location);
+                Favor f = new Favor(title, description, requesterId, location, statusId);
+                FavorUtil.getSingleInstance().postFavor(f);
               }
             });
   }

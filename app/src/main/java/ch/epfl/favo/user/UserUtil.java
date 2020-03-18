@@ -16,9 +16,7 @@ public class UserUtil {
   private static final CollectionWrapper collection = new CollectionWrapper("users");
 
   // Private constructor
-  private UserUtil() {
-    return;
-  }
+  private UserUtil() {}
 
   // Single instance getter
   public static UserUtil getSingleInstance() {

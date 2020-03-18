@@ -18,7 +18,6 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
-import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
 /**
@@ -82,8 +81,8 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     switch (view.getId()) {
       case R.id.add_button:
         showSnackbar(getString(R.string.favor_success_msg));
-        EditText titleElem = Objects.requireNonNull(view.findViewById(R.id.title));
-        EditText descElem = Objects.requireNonNull(view.findViewById(R.id.title));
+        EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title);
+        EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.title);
         String title = titleElem.getText().toString();
         String desc = descElem.getText().toString();
         Location loc = mGpsTracker.getLocation();

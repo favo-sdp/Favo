@@ -14,6 +14,7 @@ public class User {
   private String name;
   private String email;
   private String deviceId;
+  private String notificationId;
   private LocalDate birthDate;
   private int activeAcceptingFavors;
   private int activeRequestingFavors;
@@ -31,6 +32,7 @@ public class User {
     this.name = name;
     this.email = email;
     this.deviceId = deviceId;
+    this.notificationId = null;
     this.birthDate = birthDate;
     this.activeAcceptingFavors = activeAcceptingFavors;
     this.activeRequestingFavors = activeRequestingFavors;
@@ -53,6 +55,10 @@ public class User {
     return deviceId;
   }
 
+  public String getNotificationId() {
+    return notificationId;
+  }
+
   public LocalDate getBirthDate() {
     return birthDate;
   }
@@ -61,17 +67,22 @@ public class User {
     return activeAcceptingFavors;
   }
 
-  void setActiveAcceptingFavors(int activeAcceptingFavors) {
-    this.activeAcceptingFavors = activeAcceptingFavors;
-  }
-
   public int getActiveRequestingFavors() {
     return activeRequestingFavors;
+  }
+
+  void setActiveAcceptingFavors(int activeAcceptingFavors) {
+    this.activeAcceptingFavors = activeAcceptingFavors;
   }
 
   void setActiveRequestingFavors(int activeRequestingFavors) {
     this.activeRequestingFavors = activeRequestingFavors;
   }
+
+  void setNotificationId(String notificationId) {
+    this.notificationId =  notificationId;
+  }
+
   // Can only accept or request favors
   boolean canAccept() {
     return activeAcceptingFavors + activeRequestingFavors < 1;
