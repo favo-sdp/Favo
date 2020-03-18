@@ -14,6 +14,7 @@ import ch.epfl.favo.util.TestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -31,21 +32,12 @@ public class UserUnitTests {
   }
 
   @Test
-  public void userCanRetrieveDetailsFromDatabase() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> UserDatabase.getSingleInstance().getUserFromDB(userId));
-  }
-
-  @Test
   public void userCanRemoveDetailsFromDatabase() {
 
     String userId = TestConstants.USER_ID;
     assertThrows(
         NotImplementedException.class,
-        () -> UserDatabase.getSingleInstance().removeUserFromDB(userId));
+        () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
   @Test
@@ -66,6 +58,9 @@ public class UserUnitTests {
     assertEquals(birthDate, user.getBirthDate());
     assertEquals(acceptedFavors, user.getActiveAcceptingFavors());
     assertEquals(requestedFavors, user.getActiveRequestingFavors());
+
+    // field should initialize null and populate later
+    assertNull(user.getNotificationId());
   }
 
   @Test
@@ -74,11 +69,14 @@ public class UserUnitTests {
     User user = new User();
     int activeAcceptingFavors = 3;
     int activeRequestingFavors = 4;
+    String temporaryId = "temporaryId";
     user.setActiveAcceptingFavors(activeAcceptingFavors);
     user.setActiveRequestingFavors(activeRequestingFavors);
+    user.setNotificationId(temporaryId);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
+    assertEquals(temporaryId, user.getNotificationId());
   }
 
   @Test

@@ -17,7 +17,7 @@ public class DatabaseWrapper {
 
     // final fields regarding ID generation
     private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final int ID_LENGTH = 15;
+    private static final int ID_LENGTH = 25;
 
     private DatabaseWrapper() {
         FirebaseFirestore.setLoggingEnabled(true);
@@ -42,7 +42,7 @@ public class DatabaseWrapper {
 
         StringBuilder sb = new StringBuilder(ID_LENGTH);
         for (int i = 0; i < ID_LENGTH; i++) {
-            int index = (int)(37 * Math.random());
+            int index = (int)(36 * Math.random());
             sb.append(ID_CHARS.charAt(index));
         }
         return sb.toString();
