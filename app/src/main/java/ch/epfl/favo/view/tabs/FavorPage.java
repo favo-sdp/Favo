@@ -15,6 +15,7 @@ import java.util.ArrayList;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
@@ -24,7 +25,7 @@ import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
  * to give more information about them.
  * This object is a simple {@link Fragment} subclass.
  */
-public class FavorPage extends TopDestinationTab implements View.OnClickListener {
+public class FavorPage extends Fragment implements View.OnClickListener {
 
   public FavorPage() {
     // Required empty public constructor
@@ -34,7 +35,7 @@ public class FavorPage extends TopDestinationTab implements View.OnClickListener
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     setupView();
-    checkFavListButton();
+
 
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
     rootView.findViewById(R.id.new_favor).setOnClickListener(this);
@@ -92,6 +93,11 @@ public class FavorPage extends TopDestinationTab implements View.OnClickListener
         transaction.addToBackStack(null);
         transaction.commit();
         //transaction.remove(this);
+    }
+
+    private void setupView(){
+        ((ViewController) getActivity()).setupViewTopDestTab();
+        ((ViewController) getActivity()).checkFavListViewButton();
     }
 }
 

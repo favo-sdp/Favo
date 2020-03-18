@@ -12,13 +12,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
  * to create an instance of this fragment.
  */
-public class FavorRequestView extends BottomDestinationTab implements View.OnClickListener {
+public class FavorRequestView extends Fragment implements View.OnClickListener {
   // TODO: Rename parameter arguments, choose names that match
   // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
   private static final String ARG_PARAM1 = "param1";
@@ -82,4 +81,9 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
             requireView().findViewById(R.id.fragment_favor), errorMessageRes, Snackbar.LENGTH_LONG)
         .show();
   }
+
+    public void setupView(){
+        ((ViewController) getActivity()).showBackIcon();
+        ((ViewController) getActivity()).hideBottomTabs();
+    }
 }

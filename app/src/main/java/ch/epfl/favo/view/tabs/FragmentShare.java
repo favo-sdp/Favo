@@ -9,13 +9,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.view.ViewController;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 
-public class FragmentShare extends BottomDestinationTab {
+public class FragmentShare extends Fragment {
 
     public FragmentShare() {
         // Required empty public constructor
@@ -28,5 +29,9 @@ public class FragmentShare extends BottomDestinationTab {
         // Inflate the layout for this fragment
         setupView();
         return inflater.inflate(R.layout.fragment_share, container, false);
+    }
+
+    private void setupView(){
+        ((ViewController) getActivity()).setupViewBotDestTab();
     }
 }

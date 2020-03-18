@@ -9,4 +9,6 @@ public interface ViewController {
     void showBackIcon();
     void checkMapViewButton();
     void checkFavListViewButton();
+    void setupViewTopDestTab();
+    void setupViewBotDestTab();
 }

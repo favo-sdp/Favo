@@ -172,6 +172,18 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
+  public void setupViewTopDestTab() {
+    showBurgerIcon();
+    showBottomTabs();
+  }
+
+  @Override
+  public void setupViewBotDestTab() {
+    hideBottomTabs();
+    showBackIcon();
+  }
+
+  @Override
   public void onBackPressed() {
     getSupportFragmentManager().popBackStackImmediate();
   }

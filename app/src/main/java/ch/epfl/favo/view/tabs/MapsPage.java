@@ -3,7 +3,6 @@ package ch.epfl.favo.view.tabs;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.view.ViewController;
@@ -34,7 +32,7 @@ import ch.epfl.favo.view.ViewController;
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-public class MapsPage extends TopDestinationTab {
+public class MapsPage extends Fragment {
 
 
   private GoogleMap mMap;
@@ -97,7 +95,7 @@ public class MapsPage extends TopDestinationTab {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
       setupView();
-      checkMapButton();
+
 
 
     return inflater.inflate(R.layout.tab1_map, container, false);
@@ -107,7 +105,6 @@ public class MapsPage extends TopDestinationTab {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
-    checkMapButton();
     mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -126,6 +123,11 @@ public class MapsPage extends TopDestinationTab {
         Date date = new Date(time);
         Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
         return format.format(date);
+    }
+
+    private void setupView(){
+        ((ViewController) getActivity()).setupViewTopDestTab();
+        ((ViewController) getActivity()).checkMapViewButton();
     }
 
     /**

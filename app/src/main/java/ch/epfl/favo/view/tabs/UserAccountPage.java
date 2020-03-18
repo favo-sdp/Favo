@@ -26,8 +26,9 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.ViewController;
 
-public class UserAccountPage extends BottomDestinationTab {
+public class UserAccountPage extends Fragment {
 
   private View view;
 
@@ -108,5 +109,9 @@ public class UserAccountPage extends BottomDestinationTab {
 
   private void showSnackbar(@StringRes int errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
+  }
+
+  private void setupView(){
+      ((ViewController) getActivity()).setupViewBotDestTab();
   }
 }
