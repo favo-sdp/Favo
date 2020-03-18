@@ -29,52 +29,54 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 public class FirebaseMessagingServiceTest {
 
-    @Rule
-    public final ActivityTestRule<MainActivity> mainActivityTestRule =
-            new ActivityTestRule<MainActivity>(MainActivity.class){
-                @Override
-                protected void beforeActivityLaunched() {
-                    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-                }
-            };
+  @Rule
+  public final ActivityTestRule<MainActivity> mainActivityTestRule =
+      new ActivityTestRule<MainActivity>(MainActivity.class) {
+        @Override
+        protected void beforeActivityLaunched() {
+          DependencyFactory.setCurrentFirebaseUser(
+              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+        }
+      };
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-    @After
-    public void tearDown() {
-        DependencyFactory.setCurrentFirebaseUser(null);
-        Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        mainActivityTestRule.getActivity().sendBroadcast(closeIntent);
-    }
+  @After
+  public void tearDown() {
+    DependencyFactory.setCurrentFirebaseUser(null);
+    Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+    mainActivityTestRule.getActivity().sendBroadcast(closeIntent);
+  }
 
-    @Rule
-    public GrantPermissionRule permissionRule =
-            GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+  @Test
+  public void testNotifications() {
 
+    Bundle bundle = new Bundle();
+    bundle.putString("google.delivered_priority", "high");
+    bundle.putLong("google.sent_time", (new Date()).getTime());
+    bundle.putLong("google.ttl", 2419200);
+    bundle.putString("google.original_priority", "high");
+    bundle.putString("google.message_id", UUID.randomUUID().toString());
+    bundle.putString("from", "533932732600");
+    bundle.putString("gcm.notification.title", NOTIFICATION_TITLE);
+    bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
+    bundle.putString("gcm.notification.e", "1");
 
-    @Test
-    public void testNotifications() {
+    FirebaseMessagingService.showNotification(
+        mainActivityTestRule.getActivity(),
+        Objects.requireNonNull(new RemoteMessage(bundle).getNotification()),
+        "Default channel id");
 
-        Bundle bundle = new Bundle();
-        bundle.putString("google.delivered_priority", "high");
-        bundle.putLong("google.sent_time",  (new Date()).getTime());
-        bundle.putLong("google.ttl", 2419200);
-        bundle.putString("google.original_priority", "high");
-        bundle.putString("google.message_id", UUID.randomUUID().toString());
-        bundle.putString("from", "533932732600");
-        bundle.putString("gcm.notification.title", NOTIFICATION_TITLE);
-        bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
-        bundle.putString("gcm.notification.e", "1");
-
-        FirebaseMessagingService.showNotification(mainActivityTestRule.getActivity(), Objects.requireNonNull(new RemoteMessage(bundle).getNotification()), "Default channel id");
-
-        // WORKS LOCALLY, NOT ON TRAVIS
-//        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-//        device.openNotification();
-//
-//        device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT);
-//        UiObject2 title = device.findObject(By.text(NOTIFICATION_TITLE));
-//        UiObject2 text = device.findObject(By.text(NOTIFICATION_BODY));
-//        assertEquals(NOTIFICATION_TITLE, title.getText());
-//        assertEquals(NOTIFICATION_BODY, text.getText());
-//        title.click();
-    }
+    // WORKS LOCALLY, NOT ON TRAVIS
+    //        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    //        device.openNotification();
+    //
+    //        device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT);
+    //        UiObject2 title = device.findObject(By.text(NOTIFICATION_TITLE));
+    //        UiObject2 text = device.findObject(By.text(NOTIFICATION_BODY));
+    //        assertEquals(NOTIFICATION_TITLE, title.getText());
+    //        assertEquals(NOTIFICATION_BODY, text.getText());
+    //        title.click();
+  }
 }

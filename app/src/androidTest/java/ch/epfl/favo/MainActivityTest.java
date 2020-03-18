@@ -1,8 +1,10 @@
 package ch.epfl.favo;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -32,268 +34,226 @@ import static org.hamcrest.core.AllOf.allOf;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
-    @Rule
-    public final ActivityTestRule<MainActivity> mainActivityTestRule =
-            new ActivityTestRule<MainActivity>(MainActivity.class){
-                @Override
-                protected void beforeActivityLaunched() {
-                    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-                }
-            };
-    @After
-    public void tearDown() {
-        DependencyFactory.setCurrentFirebaseUser(null);
-    }
+  @Rule
+  public final ActivityTestRule<MainActivity> mainActivityTestRule =
+      new ActivityTestRule<MainActivity>(MainActivity.class) {
+        @Override
+        protected void beforeActivityLaunched() {
+          DependencyFactory.setCurrentFirebaseUser(
+              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+        }
+      };
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-    @Rule
-    public GrantPermissionRule permissionRule =
-            GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+  @After
+  public void tearDown() {
+    DependencyFactory.setCurrentFirebaseUser(null);
+  }
 
+  @Test
+  public void testMapViewIsLaunched() {
+    // Click on map tab
+    onView(withId(R.id.nav_map_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // Check that the current fragment is the map tab
+    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
 
-    @Test
-    public void testMapViewIsLaunched() {
-        //Click on map tab
-        onView(withId(R.id.nav_map_button))
-                .check(matches(isDisplayed()))
-                        .perform(click());
-        getInstrumentation().waitForIdleSync();
-        //Check that the current fragment is the map tab
-        onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testFavorListViewIsLaunched() {
-        //Click on favors tab
-        onView(withId(R.id.nav_favor_list_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
-        //check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testMenuDrawerCanBeLaunchedFromMapView(){
-        //Click on map tab
-        onView(withId(R.id.nav_map_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
+  @Test
+  public void testFavorListViewIsLaunched() {
+    // Click on favors tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+  @Test
+  public void testMenuDrawerCanBeLaunchedFromMapView() {
+    // Click on map tab
+    onView(withId(R.id.nav_map_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        getInstrumentation().waitForIdleSync();
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        //check that menu drawer is displayed
-        onView(withId(R.id.nav_view))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testMenuDrawerCanBeLaunchedFromFavorsView(){
-        //Click on map tab
-        onView(withId(R.id.nav_favor_list_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
+    getInstrumentation().waitForIdleSync();
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    // check that menu drawer is displayed
+    onView(withId(R.id.nav_view)).check(matches(isDisplayed()));
+  }
 
-        getInstrumentation().waitForIdleSync();
+  @Test
+  public void testMenuDrawerCanBeLaunchedFromFavorsView() {
+    // Click on map tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        //check that menu drawer is displayed
-        onView(withId(R.id.nav_view))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testAccountTabIsLaunched(){
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        getInstrumentation().waitForIdleSync();
+    // check that menu drawer is displayed
+    onView(withId(R.id.nav_view)).check(matches(isDisplayed()));
+  }
 
-        //Click on account icon
-        onView(anyOf(withText(R.string.account),
-        withId(nav_account)))
-        .perform(click());
+  @Test
+  public void testAccountTabIsLaunched() {
 
-        getInstrumentation().waitForIdleSync();
-        //check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.user_info_fragment),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testSettingsTabIsLaunched(){
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        getInstrumentation().waitForIdleSync();
+    // Click on account icon
+    onView(anyOf(withText(R.string.account), withId(nav_account))).perform(click());
 
-        //Click on account icon
-        onView(anyOf(withText(R.string.settings),
-                withId(R.id.nav_settings)))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.user_info_fragment), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
 
-        getInstrumentation().waitForIdleSync();
-        //check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.fragment_settings),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testAboutTabIsLaunched(){
+  @Test
+  public void testSettingsTabIsLaunched() {
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        getInstrumentation().waitForIdleSync();
+    getInstrumentation().waitForIdleSync();
 
-        //Click on account icon
-        onView(anyOf(withText(R.string.about),
-                withId(nav_about)))
-                .perform(click());
+    // Click on account icon
+    onView(anyOf(withText(R.string.settings), withId(R.id.nav_settings))).perform(click());
 
-        getInstrumentation().waitForIdleSync();
-        //check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.fragment_about),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testShareTabIsLaunched(){
+    getInstrumentation().waitForIdleSync();
+    // check that tab 2 is indeed opened
+    onView(withId(R.id.recycler_view)).check(matches(isDisplayed()));
+  }
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+  @Test
+  public void testAboutTabIsLaunched() {
 
-        getInstrumentation().waitForIdleSync();
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        //Click on account icon
-        onView(anyOf(withText(R.string.share),
-                withId(R.id.nav_share)))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        getInstrumentation().waitForIdleSync();
-        //check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.fragment_share),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testHomeTabIsLaunched_IsMap(){
+    // Click on account icon
+    onView(anyOf(withText(R.string.about), withId(nav_about))).perform(click());
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.fragment_about), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
 
-        getInstrumentation().waitForIdleSync();
+  @Test
+  public void testShareIntentIsLaunched() {
 
-        //Click on account icon
-        onView(anyOf(withText(R.string.home),
-                withId(R.id.nav_home)))
-                .perform(click());
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        getInstrumentation().waitForIdleSync();
-        //check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.map),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testBackButtonReturnsPreviousFragment_Map(){
+    getInstrumentation().waitForIdleSync();
 
-        //Click on menu tab
-        onView(withId(R.id.hamburger_menu_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    // Click on account icon
+    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
 
-        getInstrumentation().waitForIdleSync();
+    getInstrumentation().waitForIdleSync();
+    // check that share intent is indeed opened
+    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
 
-        //Click on account icon
-        onView(anyOf(withText(R.string.share),
-                withId(R.id.nav_share)))
-                .perform(click());
+    // click back button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.pressBack();
+  }
 
-        getInstrumentation().waitForIdleSync();
-        //check that share fragment is indeed opened
-        onView(allOf(withId(R.id.fragment_share),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-        //Click on back button
-        onView(withId(R.id.back_button))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
-        //check that we're back on the main page
-        onView(allOf(withId(R.id.map),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testBackButtonReturnsPreviousFragment_FavorList(){
+  @Test
+  public void testHomeTabIsLaunched_IsMap() {
 
-        //Click on favor list tab
-        onView(withId(R.id.nav_favor_list_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        //Click on new favor to open favor request tab
-        onView(withId(R.id.new_favor))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        getInstrumentation().waitForIdleSync();
+    // Click on account icon
+    onView(anyOf(withText(R.string.home), withId(R.id.nav_home))).perform(click());
 
-        //Click on back button
-        onView(withId(R.id.back_button))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
+    getInstrumentation().waitForIdleSync();
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
 
-        //check that we're back on the favor list page
-        onView(allOf(withId(R.id.fragment_tab2),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
-    @Test
-    public void testAndroidBackButtonReturnsPreviousFragment_FavorList(){
+  @Test
+  public void testBackButtonReturnsPreviousFragment_Map() {
 
-        //Click on favor list tab
-        onView(withId(R.id.nav_favor_list_button))
-                .check(matches(isDisplayed()))
-                .perform(click());
-        getInstrumentation().waitForIdleSync();
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
 
-        //Click on new favor to open favor request tab
-        onView(withId(R.id.new_favor))
-                .check(matches(isDisplayed()))
-                .perform(click());
+    getInstrumentation().waitForIdleSync();
 
-        getInstrumentation().waitForIdleSync();
+    // Click on account icon
+    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
 
-        //Click on back button
-        pressBack();
-        getInstrumentation().waitForIdleSync();
+    getInstrumentation().waitForIdleSync();
 
+    // check that share intent is indeed opened
+    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
 
-        //check that we're back on the favor list page
-        onView(allOf(withId(R.id.fragment_tab2),
-                withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
-    }
+    // click back button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.pressBack();
+
+    getInstrumentation().waitForIdleSync();
+    // check that we're back on the main page
+    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testBackButtonReturnsPreviousFragment_FavorList() {
+
+    // Click on favor list tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // Click on new favor to open favor request tab
+    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    // Click on back button
+    onView(withId(R.id.back_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check that we're back on the favor list page
+    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testAndroidBackButtonReturnsPreviousFragment_FavorList() {
+
+    // Click on favor list tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // Click on new favor to open favor request tab
+    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    // Click on back button
+    pressBack();
+    getInstrumentation().waitForIdleSync();
+
+    // check that we're back on the favor list page
+    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+  }
 }
