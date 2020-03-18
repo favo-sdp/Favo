@@ -2,6 +2,8 @@ package ch.epfl.favo.favor;
 
 import android.location.Location;
 
+import ch.epfl.favo.common.DatabaseWrapper;
+
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
@@ -12,21 +14,21 @@ public class Favor {
   private String title;
   private String description;
   private String requesterId;
-  private String accepterID;
+  private String accepterId;
   private Location location;
   private int statusId;
 
   public Favor() {}
 
   public Favor(
-      String id, String title, String description, String requesterId, Location location, int statusId) {
-    this.id = id;
+      String title, String description, String requesterId, Location location, int statusId) {
+    this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
     this.location = location;
     this.statusId = statusId;
-    this.accepterID = null;
+    this.accepterId = null;
   }
 
   public String getId() {
@@ -46,11 +48,11 @@ public class Favor {
   }
 
   public String getAccepterID() {
-    return accepterID;
+    return accepterId;
   }
 
   void setAccepterID(String accepterID) {
-    this.accepterID = accepterID;
+    this.accepterId = accepterID;
   }
 
   /**

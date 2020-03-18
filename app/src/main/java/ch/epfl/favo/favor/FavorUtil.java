@@ -7,6 +7,8 @@ import java.util.Map;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 
@@ -35,12 +37,16 @@ public class FavorUtil {
   public void postFavor(Favor f) {
 
     Map<String, Object>favor = new HashMap<>();
+    Location loc = f.getLocation();
 
     favor.put("title", f.getTitle());
     favor.put("description", f.getDescription());
-    favor.put("location", f.getLocation());
+    favor.put("requesterId", f.getRequesterId());
+    favor.put("accepterId", f.getAccepterID());
+    favor.put("statusId", 0);
+    favor.put("location", new GeoPoint(loc.getLatitude(), loc.getLongitude()));
     try {
-      collection.addDocument(favor);
+      collection.addDocument(f.getId(), favor);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }

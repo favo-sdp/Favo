@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
@@ -32,6 +34,8 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
   // TODO: Rename and change types of parameters
   private String mParam1;
   private String mParam2;
+
+  private GpsTracker mGpsTracker;
 
   public FavorRequestView() {
     // Required empty public constructor
@@ -66,6 +70,8 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
     confirmFavorBtn.setOnClickListener(this);
 
+    mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
+
     return rootView;
   }
 
@@ -76,9 +82,13 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     switch (view.getId()) {
       case R.id.add_button:
         showSnackbar(getString(R.string.favor_success_msg));
-        EditText element = Objects.requireNonNull(getView()).findViewById(R.id.title);
-        String title = element.getText().toString();
-        Favor favor = new Favor("", title, "some desc", "", null, 0);
+        EditText titleElem = Objects.requireNonNull(view.findViewById(R.id.title));
+        EditText descElem = Objects.requireNonNull(view.findViewById(R.id.title));
+        String title = titleElem.getText().toString();
+        String desc = descElem.getText().toString();
+        Location loc = mGpsTracker.getLocation();
+
+        Favor favor = new Favor(title, desc, null, loc, 0);
         FavorUtil.getSingleInstance().postFavor(favor);
     }
   }

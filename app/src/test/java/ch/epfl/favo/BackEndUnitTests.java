@@ -18,11 +18,6 @@ import static org.junit.Assert.assertThrows;
  */
 public class BackEndUnitTests {
 
-
-
-
-
-
   public String generateRandomString(int targetStringLength) {
     String title = "sample_favor";
     int leftLimit = 97; // letter 'a'
