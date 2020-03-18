@@ -15,6 +15,10 @@ public class DatabaseWrapper {
     private static DatabaseWrapper INSTANCE = null;
     private FirebaseFirestore firestore;
 
+    // final fields regarding ID generation
+    private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int ID_LENGTH = 15;
+
     private DatabaseWrapper() {
         FirebaseFirestore.setLoggingEnabled(true);
         FirebaseFirestoreSettings settings =
@@ -34,27 +38,28 @@ public class DatabaseWrapper {
         return INSTANCE;
     }
 
-    private static String generateRandomId() {
-        return new Random()
-                .ints(97, 123)
-                .limit(20)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
+    public static String generateRandomId() {
+
+        StringBuilder sb = new StringBuilder(ID_LENGTH);
+        for (int i = 0; i < ID_LENGTH; i++) {
+            int index = (int)(37 * Math.random());
+            sb.append(ID_CHARS.charAt(index));
+        }
+        return sb.toString();
     }
 
-    public static void addDocument(Map document, String collection) throws RuntimeException {
-        String documentId = DatabaseWrapper.generateRandomId();
-        DatabaseWrapper.getInstance().firestore
-                .collection(collection)
-                .document(documentId)
-                .set(document)
-                .addOnSuccessListener(
-                        aVoid -> {
-                            Log.d(TAG, String.format("Successfully wrote document", documentId));
-                        })
-                .addOnFailureListener(
-                        e -> {
-                            throw new RuntimeException(e);
-                        });
+    public static void addDocument(String key, Map document, String collection) throws RuntimeException {
+    DatabaseWrapper.getInstance().firestore
+            .collection(collection)
+            .document(key)
+            .set(document)
+            .addOnSuccessListener(
+                    aVoid -> {
+                        Log.d(TAG, String.format("Successfully wrote document", key));
+                    })
+            .addOnFailureListener(
+                    e -> {
+                        throw new RuntimeException(e);
+                    });
     }
 }

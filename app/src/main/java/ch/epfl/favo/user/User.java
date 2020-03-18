@@ -2,12 +2,15 @@ package ch.epfl.favo.user;
 
 import java.time.LocalDate;
 
+import ch.epfl.favo.common.DatabaseWrapper;
+
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
  * so that it can be injected in views
  */
 public class User {
 
+  private String id;
   private String name;
   private String email;
   private String deviceId;
@@ -24,6 +27,7 @@ public class User {
       LocalDate birthDate,
       int activeAcceptingFavors,
       int activeRequestingFavors) {
+    this.id = DatabaseWrapper.generateRandomId();
     this.name = name;
     this.email = email;
     this.deviceId = deviceId;
@@ -33,6 +37,10 @@ public class User {
   }
 
   // Getters
+  public String getId() {
+    return id;
+  }
+
   public String getName() {
     return name;
   }

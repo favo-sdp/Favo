@@ -11,7 +11,7 @@ public class CollectionWrapper {
         this.collectionReference = collectionReference;
     }
 
-    public void addDocument(Map document) {
-        DatabaseWrapper.addDocument(document, collectionReference);
+    public void addDocument(String key, Map document) {
+        DatabaseWrapper.addDocument(key, document, collectionReference);
     }
 }
