@@ -17,7 +17,7 @@ public class LocationManagerDependencyFactory extends Service {
     if (testMode) {
       return currentLocationManager;
     }
-    return (LocationManager) context.getSystemService(LOCATION_SERVICE);
+    return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
   }
 
   public static void setCurrentLocationManager(LocationManager dependency) {

@@ -23,6 +23,7 @@ public class TestConstants {
   // Favor related test constants
   public static final Location LOCATION = new Location("Dummy Provider");
   public static final double RADIUS = 134.56;
+  public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
 
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";

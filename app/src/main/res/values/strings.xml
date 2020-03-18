@@ -1,15 +1,10 @@
 <resources>
-    <string name="email_hint">email…</string>
-    <string name="pw_hint">password…</string>
-    <string name="error_msg">invalid</string>
     <string name="app_name">Favo</string>
 
     <!-- Auth UI - Signed in -->
-    <string name="signed_in_header">You are signed in!</string>
     <string name="sign_out">Sign out</string>
     <string name="delete_account_label">Delete account</string>
 
-    <string name="sign_in_failed">Sign in failed</string>
     <string name="sign_out_failed">Sign out failed</string>
     <string name="delete_account_failed">Delete account failed</string>
 
@@ -17,25 +12,13 @@
     <string name="used_providers">Provider used: %s</string>
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
-    <string name="account_disabled">The account is disabled</string>
     <string name="unknown_error">No internet connection or provider error</string>
-
-    <string name="providers_google">Google</string>
-    <string name="providers_facebook">Facebook</string>
 
     <string name="facebook_application_id" translatable="false">616130435602635</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb616130435602635</string>
 
-    <string name="provideError">Error from the provider</string>
-
-    <string name="button">Button</string>
-    <string name="login_text">Log in</string>
-    <string name="hint_name">Type name</string>
-    <string name="greetingMes">Hello %s!</string>
-
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- TAB 2 (David) -->
     <string name="favor_greeting_str">Hello!</string>
@@ -50,7 +33,6 @@
         <item>Past</item>
     </string-array>
 
-    <string name="tab1_description">1</string>
     <string name="tab2_description">2</string>
     <string name="share">Share</string>
     <string name="about">About</string>
@@ -62,6 +44,9 @@
     <string name="favors_icon_label">Favors</string>
     <string name="map_icon_label">Map</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="detail">descriptions</string>
+    <string name="favor_respond_success_msg">Favor responded successfully.</string>
+
     <string name="open_drawer" />
     <string name="close_drawer" />
     <string name="home">Home</string>
