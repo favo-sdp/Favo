@@ -1,5 +1,8 @@
 package ch.epfl.favo;
 
+import android.graphics.Point;
+import android.os.RemoteException;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -7,6 +10,7 @@ import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +50,24 @@ public class MainActivityTest {
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+  @Before
+  public void setup(){
+    UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    Point[] coordinates = new Point[4];
+    coordinates[0] = new Point(248, 1520);
+    coordinates[1] = new Point(248, 929);
+    coordinates[2] = new Point(796, 1520);
+    coordinates[3] = new Point(796, 929);
+    try {
+      if (!uiDevice.isScreenOn()) {
+        uiDevice.wakeUp();
+        uiDevice.swipe(coordinates, 10);
+      }
+    } catch (RemoteException e) {
+      e.printStackTrace();
+    }
+  }
 
   @After
   public void tearDown() {
