@@ -13,6 +13,7 @@
     <PreferenceCategory android:title="@string/notification_header">
         <SwitchPreferenceCompat
             app:key="notifications"
+            app:summary="@string/notification_summary"
             app:title="@string/notification_title" />
         <ListPreference
             app:defaultValue="1 Km"
@@ -22,6 +23,22 @@
             app:key="radius"
             app:title="@string/notification_radius_title"
             app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="notifications_update"
+            app:summary="@string/notification_update_summary"
+            app:title="@string/notification_update_title" />
+        <SwitchPreferenceCompat
+            app:key="notifications_update"
+            app:summary="@string/notification_delete_summary"
+            app:title="@string/notification_delete_title" />
+        <SwitchPreferenceCompat
+            app:key="notifications_join"
+            app:summary="@string/notification_join_summary"
+            app:title="@string/notification_join_title" />
+        <SwitchPreferenceCompat
+            app:key="notifications_chat"
+            app:summary="@string/notification_chat_summary"
+            app:title="@string/notification_chat_title" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/help_header">
         <Preference

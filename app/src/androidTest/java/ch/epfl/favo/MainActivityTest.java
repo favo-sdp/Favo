@@ -209,7 +209,7 @@ public class MainActivityTest {
     UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     mDevice.pressBack();
 
-    getInstrumentation().waitForIdleSync();
+    //getInstrumentation().waitForIdleSync();
     // check that we're back on the main page
     onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
