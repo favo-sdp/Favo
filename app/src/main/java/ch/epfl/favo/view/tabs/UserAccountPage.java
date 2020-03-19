@@ -112,6 +112,6 @@ public class UserAccountPage extends Fragment {
   }
 
   private void setupView(){
-      ((ViewController) getActivity()).setupViewBotDestTab();
+      ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
   }
 }

@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.Objects;
+
 import ch.epfl.favo.R;
 import ch.epfl.favo.view.ViewController;
 
@@ -30,6 +32,6 @@ public class FragmentAbout extends Fragment {
     }
 
     private void setupView(){
-        ((ViewController) getActivity()).setupViewBotDestTab();
+        ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
     }
 }

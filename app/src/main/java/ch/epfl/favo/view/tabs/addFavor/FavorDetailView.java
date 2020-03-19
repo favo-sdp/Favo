@@ -10,26 +10,19 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.time.OffsetTime;
-import java.util.Date;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
-import ch.epfl.favo.view.tabs.BottomDestinationTab;
+import ch.epfl.favo.view.ViewController;
 
-import static android.content.Intent.getIntent;
-import static android.content.Intent.getIntentOld;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
  * to create an instance of this fragment.
  */
-public class FavorDetailView extends BottomDestinationTab implements View.OnClickListener {
+public class FavorDetailView extends Fragment implements View.OnClickListener {
     private final static String FAVOR_ARGS = "FAVOR_ARGS";
     private Favor favor;
 
@@ -97,6 +90,10 @@ public class FavorDetailView extends BottomDestinationTab implements View.OnClic
                 CommonTools.showSnackbar(requireView().findViewById(R.id.fragment_favor),
                         getString(R.string.favor_respond_success_msg));
         }
+    }
+
+    private void setupView(){
+        ((ViewController) getActivity()).setupViewBotDestTab();
     }
 
 }
