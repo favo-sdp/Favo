@@ -25,10 +25,10 @@ public class DatabaseWrapper {
                 new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
         try {
             firestore = FirebaseFirestore.getInstance();
+            firestore.setFirestoreSettings(settings);
         } catch (Exception e) {
             Log.d(TAG, e.toString());
         }
-        firestore.setFirestoreSettings(settings);
     }
 
     public static DatabaseWrapper getInstance() {
@@ -53,13 +53,7 @@ public class DatabaseWrapper {
             .collection(collection)
             .document(key)
             .set(document)
-            .addOnSuccessListener(
-                    aVoid -> {
-                        Log.d(TAG, String.format("Successfully wrote document", key));
-                    })
-            .addOnFailureListener(
-                    e -> {
-                        throw new RuntimeException(e);
-                    });
+            .addOnSuccessListener( aVoid -> {})
+            .addOnFailureListener( e -> { throw new RuntimeException(e); });
     }
 }
