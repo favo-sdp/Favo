@@ -12,7 +12,7 @@ import static junit.framework.TestCase.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class LocationManagerDependencyFacotryTest {
+public class LocationManagerDependencyFactoryTest {
 
   @Test
   public void testLocationManagerDependency() {
