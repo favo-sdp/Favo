@@ -151,28 +151,6 @@ public class MainActivityTest {
         .check(matches(isDisplayed()));
   }
 
-  // WORKS LOCALLY, NOT ON TRAVIS
-
-  //  @Test
-  //  public void testShareIntentIsLaunched() throws UiObjectNotFoundException {
-  //
-  //    // Click on menu tab
-  //    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-  //
-  //    getInstrumentation().waitForIdleSync();
-  //
-  //    // Click on account icon
-  //    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
-  //
-  //    getInstrumentation().waitForIdleSync();
-  //    // check that share intent is indeed opened
-  //    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
-  //
-  //    // click back button
-  //    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-  //    mDevice.pressBack();
-  //  }
-
   @Test
   public void testHomeTabIsLaunched_IsMap() {
 
@@ -206,19 +184,6 @@ public class MainActivityTest {
     // Click on back button
     onView(withId(R.id.back_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-
-    // WORKS LOCALLY, NOT ON TRAVIS
-
-    //    getInstrumentation().waitForIdleSync();
-    //
-    //    // check that share intent is indeed opened
-    //    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
-    //
-    //    // click back button
-    //    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    //    mDevice.pressBack();
-    //
-    //    getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
     onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))

@@ -68,16 +68,5 @@ public class FirebaseMessagingServiceTest {
         mainActivityTestRule.getActivity(),
         Objects.requireNonNull(new RemoteMessage(bundle).getNotification()),
         "Default channel id");
-
-    // WORKS LOCALLY, NOT ON TRAVIS
-    //        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    //        device.openNotification();
-    //
-    //        device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT);
-    //        UiObject2 title = device.findObject(By.text(NOTIFICATION_TITLE));
-    //        UiObject2 text = device.findObject(By.text(NOTIFICATION_BODY));
-    //        assertEquals(NOTIFICATION_TITLE, title.getText());
-    //        assertEquals(NOTIFICATION_BODY, text.getText());
-    //        title.click();
   }
 }

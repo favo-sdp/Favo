@@ -25,13 +25,13 @@ public class User {
   public User() {}
 
   public User(
-      String name,
-      String email,
-      String deviceId,
-      LocalDate birthDate,
-      Location location,
-      int activeAcceptingFavors,
-      int activeRequestingFavors) {
+          String name,
+          String email,
+          String deviceId,
+          LocalDate birthDate,
+          Location location,
+          int activeAcceptingFavors,
+          int activeRequestingFavors) {
     this.id = DatabaseWrapper.generateRandomId();
     this.name = name;
     this.email = email;
@@ -64,37 +64,33 @@ public class User {
     return notificationId;
   }
 
-  void setNotificationId(String notificationId) {
-    this.notificationId = notificationId;
-  }
-
   public LocalDate getBirthDate() {
     return birthDate;
   }
 
-  public Location getLocation() {
-    return location;
-  }
-
-  void setLocation(Location location) {
-    this.location = location;
-  }
+  public Location getLocation() { return location; }
 
   public int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
-  }
-
-  void setActiveAcceptingFavors(int activeAcceptingFavors) {
-    this.activeAcceptingFavors = activeAcceptingFavors;
   }
 
   public int getActiveRequestingFavors() {
     return activeRequestingFavors;
   }
 
+  void setActiveAcceptingFavors(int activeAcceptingFavors) {
+    this.activeAcceptingFavors = activeAcceptingFavors;
+  }
+
   void setActiveRequestingFavors(int activeRequestingFavors) {
     this.activeRequestingFavors = activeRequestingFavors;
   }
+
+  void setNotificationId(String notificationId) {
+    this.notificationId =  notificationId;
+  }
+
+  void setLocation(Location location) { this.location = location; }
 
   // Can only accept or request favors
   boolean canAccept() {

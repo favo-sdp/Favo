@@ -62,8 +62,6 @@ public class MapsPage extends Fragment
     mMap.clear();
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
-    // throw new RuntimeException(
-    //  "This exception will " + "certainly be thrown out as long as Map is ready");
   }
 
   private void setupView() {

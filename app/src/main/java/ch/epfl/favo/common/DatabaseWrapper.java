@@ -10,9 +10,9 @@ import java.util.Map;
 public class DatabaseWrapper {
 
   private static final String TAG = "DatabaseWrapper";
-  private static final int ID_LENGTH = 25;
   private static DatabaseWrapper INSTANCE = null;
   // final fields regarding ID generation
+  private static final int ID_LENGTH = 25;
   private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private FirebaseFirestore firestore;
 

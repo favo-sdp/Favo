@@ -21,7 +21,7 @@ function sendMessage(message, usersIds) {
     admin.messaging().sendMulticast(message)
         .then((response) => {
             if (response.failureCount > 0) {
-                const failedTokens = [];
+                var failedTokens = [];
                 response.responses.forEach((resp, idx) => {
                     if (!resp.success) {
                         failedTokens.push(usersIds[idx]);

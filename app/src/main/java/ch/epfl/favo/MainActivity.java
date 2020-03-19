@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity
   public RadioButton mapButton;
   public RadioButton favListButton;
   // UI
-  // private AppBarConfiguration appBarConfiguration;
   private NavController navController;
   private NavigationView nav;
   private DrawerLayout drawerLayout;
