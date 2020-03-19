@@ -71,8 +71,8 @@ public class FavorUnitTests {
 
   @Test
   public void favorSuccessfullyPostsToDB() {
-    DatabaseWrapper mock = Mockito.mock(DatabaseWrapper.class);
-    Mockito.doNothing().when(mock).addDocument(anyString(), anyMap(), anyString());
+    CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
+    Mockito.doNothing().when(mock).addDocument(anyString(), anyMap());
 
     String title = "Sample Favor";
     String description = TestUtil.generateRandomString(305);
