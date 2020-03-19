@@ -4,14 +4,14 @@ import java.util.Map;
 
 public class CollectionWrapper {
 
-    private static final String TAG = "DatabaseWrapper";
-    private String collectionReference;
+  private static final String TAG = "DatabaseWrapper";
+  private String collectionReference;
 
-    public CollectionWrapper(String collectionReference) {
-        this.collectionReference = collectionReference;
-    }
+  public CollectionWrapper(String collectionReference) {
+    this.collectionReference = collectionReference;
+  }
 
-    public void addDocument(String key, Map document) {
-        DatabaseWrapper.addDocument(key, document, collectionReference);
-    }
+  public void addDocument(String key, Map document) {
+    DatabaseWrapper.addDocument(key, document, collectionReference);
+  }
 }

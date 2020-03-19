@@ -35,9 +35,7 @@ public class UserUnitTests {
   public void userCanRemoveDetailsFromDatabase() {
 
     String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> UserUtil.getSingleInstance().deleteAccount());
+    assertThrows(NotImplementedException.class, () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
   @Test
@@ -51,7 +49,8 @@ public class UserUnitTests {
     int acceptedFavors = 2;
     int requestedFavors = 3;
 
-    User user = new User(name, email, deviceId, birthDate, location, acceptedFavors, requestedFavors);
+    User user =
+        new User(name, email, deviceId, birthDate, location, acceptedFavors, requestedFavors);
 
     assertEquals(name, user.getName());
     assertEquals(email, user.getEmail());
@@ -107,13 +106,13 @@ public class UserUnitTests {
     String username = TestConstants.USERNAME;
     String pw = TestConstants.PASSWORD;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                UserUtil.getSingleInstance().createAccount(username, pw);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            UserUtil.getSingleInstance().createAccount(username, pw);
+          }
+        });
   }
 
   @Test
@@ -121,53 +120,53 @@ public class UserUnitTests {
     String username = TestConstants.USERNAME;
     String pw = TestUtil.generateRandomString(10);
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                UserUtil.getSingleInstance().logInAccount(username, pw);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            UserUtil.getSingleInstance().logInAccount(username, pw);
+          }
+        });
   }
 
   @Test
   public void userCanLogOutOnlyIfLoggedIn() {
 
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                UserUtil.getSingleInstance().logOutAccount();
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            UserUtil.getSingleInstance().logOutAccount();
+          }
+        });
   }
 
   @Test
   public void userCanDeleteAccountOnlyIfAccountExists() {
 
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                UserUtil.getSingleInstance().deleteAccount();
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            UserUtil.getSingleInstance().deleteAccount();
+          }
+        });
   }
 
   @Test
   public void userCanRetrieveOtherUsersInGivenRadius() {
 
-    Location loc =  TestConstants.LOCATION;
+    Location loc = TestConstants.LOCATION;
     double radius = TestConstants.RADIUS;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                UserUtil.getSingleInstance().retrieveOtherUsersInGivenRadius(loc, radius);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            UserUtil.getSingleInstance().retrieveOtherUsersInGivenRadius(loc, radius);
+          }
+        });
   }
 }

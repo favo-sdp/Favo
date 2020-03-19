@@ -1,13 +1,13 @@
 package ch.epfl.favo.favor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.location.Location;
 import android.util.Log;
 
 import com.google.firebase.firestore.GeoPoint;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
@@ -16,10 +16,10 @@ import ch.epfl.favo.common.NotImplementedException;
 This models the favor request.
 */
 public class FavorUtil {
-  private static boolean testUiMode =false;
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static final CollectionWrapper collection = new CollectionWrapper("favors");
+  private static boolean testUiMode = false;
   // Private Constructor
   private FavorUtil() {}
 
@@ -33,8 +33,10 @@ public class FavorUtil {
    * @param f A favor object.
    */
   public void postFavor(Favor f) {
-    if (testUiMode) {return;} //will skip if testing the UI
-    Map<String, Object>favor = new HashMap<>();
+    if (testUiMode) {
+      return;
+    } // will skip if testing the UI
+    Map<String, Object> favor = new HashMap<>();
     Location loc = f.getLocation();
 
     favor.put("title", f.getTitle());
@@ -49,7 +51,7 @@ public class FavorUtil {
   }
 
   /**
-   * Returns all the favors for a given user (accepted  + requested)
+   * Returns all the favors for a given user (accepted + requested)
    *
    * @param userId Id of the user
    */
@@ -117,8 +119,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public void setTestUiMode(boolean testMode){
-    this.testUiMode =testMode;
+  public void setTestUiMode(boolean testMode) {
+    testUiMode = testMode;
   }
-
 }

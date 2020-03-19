@@ -2,12 +2,6 @@ package ch.epfl.favo;
 
 import android.location.Location;
 import android.net.Uri;
-import android.os.Bundle;
-
-import com.google.firebase.messaging.RemoteMessage;
-
-import java.time.LocalDate;
-import java.util.UUID;
 
 public class TestConstants {
 
@@ -29,5 +23,4 @@ public class TestConstants {
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";
   public static final String NOTIFICATION_BODY = "body";
-
 }

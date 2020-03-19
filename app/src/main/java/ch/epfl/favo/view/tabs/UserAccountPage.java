@@ -26,8 +26,9 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.ViewController;
 
-public class UserAccountPage extends BottomDestinationTab {
+public class UserAccountPage extends Fragment {
 
   private View view;
 
@@ -36,16 +37,20 @@ public class UserAccountPage extends BottomDestinationTab {
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-      // Inflate the layout for this fragment
-      view = inflater.inflate(R.layout.account_info, container, false);
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    // Inflate the layout for this fragment
+    view = inflater.inflate(R.layout.account_info, container, false);
 
-      setupButtons();
-      setupView();
-      displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
-      return view;
+    setupButtons();
+    setupView();
+    displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
+    return view;
+  }
 
+  private void setupView() {
+    ((ViewController) getActivity()).showBackIcon();
+    ((ViewController) getActivity()).hideBottomTabs();
   }
 
   private void setupButtons() {

@@ -5,7 +5,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +16,6 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -42,15 +40,13 @@ public class UserAccountPageTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-  public void navigateToAccountTab(){
+  public void navigateToAccountTab() {
 
-    //direct to the account tab
+    // direct to the account tab
     onView(withId(R.id.hamburger_menu_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    //Click on account icon
-    onView(anyOf(withText(R.string.account),
-            withId(R.id.nav_account)))
-            .perform(click());
+    // Click on account icon
+    onView(anyOf(withText(R.string.account), withId(R.id.nav_account))).perform(click());
     getInstrumentation().waitForIdleSync();
   }
 
@@ -69,9 +65,9 @@ public class UserAccountPageTest {
   @Test
   public void testUserAlreadyLoggedIn_displayUserData() {
 
-    //set mock user
+    // set mock user
     DependencyFactory.setCurrentFirebaseUser(
-            new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+        new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     mActivityRule.launchActivity(null);
 
     navigateToAccountTab();
@@ -116,7 +112,6 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(R.id.sign_out)).perform(click());
     getInstrumentation().waitForIdleSync();
-
 
     // can't test that sign-in page is displayed because this is handled by the library
     // automatically

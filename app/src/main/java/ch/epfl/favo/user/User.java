@@ -25,13 +25,13 @@ public class User {
   public User() {}
 
   public User(
-      String name,
-      String email,
-      String deviceId,
-      LocalDate birthDate,
-      Location location,
-      int activeAcceptingFavors,
-      int activeRequestingFavors) {
+          String name,
+          String email,
+          String deviceId,
+          LocalDate birthDate,
+          Location location,
+          int activeAcceptingFavors,
+          int activeRequestingFavors) {
     this.id = DatabaseWrapper.generateRandomId();
     this.name = name;
     this.email = email;

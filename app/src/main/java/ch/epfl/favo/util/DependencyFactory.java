@@ -22,6 +22,13 @@ public class DependencyFactory {
     }
     return FirebaseAuth.getInstance().getCurrentUser();
   }
+
+  @VisibleForTesting
+  public static void setCurrentFirebaseUser(FirebaseUser dependency) {
+    testMode = true;
+    currentUser = dependency;
+  }
+
   public static Locator getCurrentGpsTracker(@Nullable Context context) {
     if (testMode && currentGpsTracker != null) {
       return currentGpsTracker;
@@ -29,11 +36,6 @@ public class DependencyFactory {
     return new GpsTracker(context);
   }
 
-  @VisibleForTesting
-  public static void setCurrentFirebaseUser(FirebaseUser dependency) {
-    testMode = true;
-    currentUser = dependency;
-  }
   @VisibleForTesting
   public static void setCurrentGpsTracker(Locator gpsTrackerDependency) {
     testMode = true;

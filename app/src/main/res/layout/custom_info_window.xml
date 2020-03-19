@@ -11,9 +11,9 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/custom"
     android:layout_width="80dp"
     android:layout_height="50dp"
-    android:id="@+id/custom"
     android:background="@drawable/custom_info_bubble"
     android:orientation="horizontal">
 

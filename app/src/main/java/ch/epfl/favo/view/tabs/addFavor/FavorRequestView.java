@@ -17,18 +17,16 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.LocationManagerDependencyFactory;
-import ch.epfl.favo.view.tabs.BottomDestinationTab;
+import ch.epfl.favo.view.ViewController;
 
-/**
- * allows user to create favor objects that can be posted in the DB
- */
-public class FavorRequestView extends BottomDestinationTab implements View.OnClickListener {
-
-
+/** allows user to create favor objects that can be posted in the DB */
+public class FavorRequestView extends Fragment implements View.OnClickListener {
+  // TODO: Rename parameter arguments, choose names that match
+  // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+  private static final String ARG_PARAM1 = "param1";
+  private static final String ARG_PARAM2 = "param2";
 
   private Locator mGpsTracker;
 
@@ -45,9 +43,9 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
    * @return A new instance of fragment FavorRequestView.
    */
   // TODO: Rename and change types and number of parameters
-  //public static FavorRequestView newInstance(String param1, String param2) {
-  //  return new FavorRequestView();
-  //}
+  //  public static FavorRequestView newInstance(String param1, String param2) {
+  //    return new FavorRequestView();
+  //  }
   //        FavorRequestView fragment = new FavorRequestView();
   //        Bundle args = new Bundle();
   //        args.putString(ARG_PARAM1, param1);
@@ -55,6 +53,11 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
   //        fragment.setArguments(args);
   //        return fragment;
   //    }
+
+  public void setupView() {
+    ((ViewController) getActivity()).showBackIcon();
+    ((ViewController) getActivity()).hideBottomTabs();
+  }
 
   @Override
   public View onCreateView(
@@ -65,8 +68,7 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
     confirmFavorBtn.setOnClickListener(this);
 
-    mGpsTracker = DependencyFactory
-            .getCurrentGpsTracker(getActivity().getApplicationContext());
+    mGpsTracker = DependencyFactory.getCurrentGpsTracker(getActivity().getApplicationContext());
 
     return rootView;
   }

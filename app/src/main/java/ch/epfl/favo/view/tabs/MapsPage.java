@@ -1,6 +1,5 @@
 package ch.epfl.favo.view.tabs;
 
-
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,13 +8,11 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +22,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,13 +34,14 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FakeFavorList;
+import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-public class MapsPage extends TopDestinationTab
+public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
@@ -54,6 +51,10 @@ public class MapsPage extends TopDestinationTab
   private GpsTracker mGpsTracker;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
 
+  public MapsPage() {
+    // Required empty public constructor
+  }
+
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
@@ -61,20 +62,24 @@ public class MapsPage extends TopDestinationTab
     mMap.clear();
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
-    //throw new RuntimeException(
-      //  "This exception will " + "certainly be thrown out as long as Map is ready");
   }
 
-  public MapsPage() {
-    // Required empty public constructor
+  private void setupView() {
+    ((ViewController) getActivity()).showBurgerIcon();
+    ((ViewController) getActivity()).showBottomTabs();
+  }
+
+  private void checkMapButton() {
+    ((ViewController) getActivity()).checkMapViewButton();
   }
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    // add a hidden button for testing
     setupView();
+    checkMapButton();
+
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
 
@@ -82,6 +87,7 @@ public class MapsPage extends TopDestinationTab
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
+    checkMapButton();
     mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -89,7 +95,6 @@ public class MapsPage extends TopDestinationTab
       mapFragment.getMapAsync(this);
     }
   }
-
 
   public List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
@@ -188,8 +193,7 @@ public class MapsPage extends TopDestinationTab
   public Favor queryFavor(double latitude, double longitude) {
     for (Favor favor : currentActiveLocalFavorList) {
       if (favor.getLocation().getLatitude() == latitude
-          && favor.getLocation().getLongitude() == longitude)
-        return favor;
+          && favor.getLocation().getLongitude() == longitude) return favor;
     }
     return null;
   }

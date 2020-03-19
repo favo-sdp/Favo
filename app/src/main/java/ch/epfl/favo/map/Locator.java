@@ -6,5 +6,5 @@ import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 
 public interface Locator {
-    Location getLocation () throws NoPermissionGrantedException, NoPositionFoundException;
+  Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException;
 }
