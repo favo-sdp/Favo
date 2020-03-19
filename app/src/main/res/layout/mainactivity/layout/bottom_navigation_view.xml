@@ -22,4 +22,5 @@
         android:text="@string/favors_icon_label">
 
     </RadioButton>
+
 </RadioGroup>

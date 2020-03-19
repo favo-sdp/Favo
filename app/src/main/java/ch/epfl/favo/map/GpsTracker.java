@@ -1,7 +1,6 @@
 package ch.epfl.favo.map;
 
 import android.Manifest;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
@@ -27,7 +27,7 @@ import ch.epfl.favo.util.LocationManagerDependencyFactory;
  * view. And when running on a virtual device, the position does not seems consist with expectation.
  * But this will not happen on a real phone.
  */
-public class GpsTracker extends Service implements LocationListener {
+public class GpsTracker extends FragmentActivity implements LocationListener {
 
   private final Context context;
   protected LocationManager locationManager;
@@ -44,11 +44,10 @@ public class GpsTracker extends Service implements LocationListener {
    * @throws RuntimeException Should check if location is finally found
    * @return the location of phone
    */
-  public Location getLocation() throws NoPermissionGrantedException, RuntimeException {
+  public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
     locationManager =
         LocationManagerDependencyFactory.getCurrentLocationManager(
-            context); // (LocationManager) context.getSystemService(LOCATION_SERVICE);
-    // locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+                context);
     isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -75,7 +74,8 @@ public class GpsTracker extends Service implements LocationListener {
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
-    // throw new NotImplementedException();
+
+      // throw new NotImplementedException();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {
