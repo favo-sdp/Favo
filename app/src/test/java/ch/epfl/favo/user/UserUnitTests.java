@@ -46,7 +46,7 @@ public class UserUnitTests {
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    LocalDate birthDate = TestConstants.BIRTHDATE;
+    LocalDate birthDate = LocalDate.of(1994, 11, 8);
     Location location = TestConstants.LOCATION;
     int acceptedFavors = 2;
     int requestedFavors = 3;

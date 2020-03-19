@@ -19,7 +19,6 @@ public class TestConstants {
   public static final String USERNAME = "testerson123";
   public static final String PASSWORD = "fh498f30cpe";
   public static final String PROVIDER = "test provider";
-  public static final LocalDate BIRTHDATE = LocalDate.of(1994, 11, 8);
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
   // Favor related test constants
