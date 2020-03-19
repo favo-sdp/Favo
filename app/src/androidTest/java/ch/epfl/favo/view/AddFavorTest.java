@@ -6,6 +6,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.junit.runner.RunWith;
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -44,10 +46,14 @@ public class AddFavorTest {
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
-
+  @Before
+  public void setTestModeForUtilMethods(){
+    FavorUtil.getSingleInstance().setTestUiMode(true);
+  }
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
+    FavorUtil.getSingleInstance().setTestUiMode(false);
   }
 
   @Test
@@ -56,10 +62,12 @@ public class AddFavorTest {
     onView(withId(R.id.nav_favor_list_button))
             .check(matches(isDisplayed()))
             .perform(click());
+
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.new_favor))
             .check(matches(isDisplayed()))
             .perform(click());
+
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.add_button))
             .check(matches(isDisplayed()))

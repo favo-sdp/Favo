@@ -16,7 +16,7 @@ import ch.epfl.favo.common.NotImplementedException;
 This models the favor request.
 */
 public class FavorUtil {
-  /** Singleton pattern. TODO: Figure out singleton constructor */
+  private static boolean testUiMode =false;
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static final CollectionWrapper collection = new CollectionWrapper("favors");
@@ -33,7 +33,7 @@ public class FavorUtil {
    * @param f A favor object.
    */
   public void postFavor(Favor f) {
-
+    if (testUiMode) {return;} //will skip if testing the UI
     Map<String, Object>favor = new HashMap<>();
     Location loc = f.getLocation();
 
@@ -115,6 +115,10 @@ public class FavorUtil {
   public ArrayList<Favor> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
 
     throw new NotImplementedException();
+  }
+
+  public void setTestUiMode(boolean testMode){
+    this.testUiMode =testMode;
   }
 
 }
