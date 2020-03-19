@@ -1,5 +1,8 @@
 package ch.epfl.favo.view;
 
+import android.location.Location;
+import android.location.LocationManager;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -7,6 +10,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +18,10 @@ import org.junit.runner.RunWith;
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.NoPermissionGrantedException;
+import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -30,6 +38,13 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 
+class MockGpsTracker implements Locator {
+  @Override
+  public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
+    return null;
+  }
+}
+
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
 
@@ -40,6 +55,8 @@ public class AddFavorTest {
         protected void beforeActivityLaunched() {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          FavorUtil.getSingleInstance().setTestUiMode(true);
         }
       };
 
@@ -50,6 +67,7 @@ public class AddFavorTest {
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
+    FavorUtil.getSingleInstance().setTestUiMode(false);
   }
 
   @Test
@@ -58,10 +76,12 @@ public class AddFavorTest {
     onView(withId(R.id.nav_favor_list_button))
             .check(matches(isDisplayed()))
             .perform(click());
+
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.new_favor))
             .check(matches(isDisplayed()))
             .perform(click());
+
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.add_button))
             .check(matches(isDisplayed()))

@@ -2,11 +2,23 @@ package ch.epfl.favo.favor;
 
 import android.location.Location;
 import android.os.Parcel;
+import android.provider.ContactsContract;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
+import org.mockito.Mockito;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.spy;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMap;
 
 import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.util.TestUtil;
@@ -14,6 +26,7 @@ import ch.epfl.favo.util.TestUtil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.when;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -23,28 +36,10 @@ import static org.junit.Assert.assertThrows;
 public class FavorUnitTests {
 
   @Test
-  public void favorCanRetrieveDetailsFromDatabase() {
-
-    String favorId = "2negoinr3";
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorDatabase.getSingleInstance().getFavorDetailsFromDB(favorId));
-  }
-
-  @Test
-  public void favorCanRemoveDetailsFromDatabase() {
-
-    String favorId = "2negoinr3";
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorDatabase.getSingleInstance().removeFavorFromDB(favorId));
-  }
-
-  @Test
   public void favorGettersReturnCorrectValues() {
 
     String title = "Flat tire";
-    String description = "Tiire popped while turning left on Avenue Rhodanie";
+    String description = "Tire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
     int statusId = 0;
@@ -75,18 +70,20 @@ public class FavorUnitTests {
   }
 
   @Test
-  public void favorIsNotLongerThan300Characters() {
+  public void favorSuccessfullyPostsToDB() {
+    CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
+    Mockito.doNothing().when(mock).addDocument(anyString(), anyMap());
+
     String title = "Sample Favor";
     String description = TestUtil.generateRandomString(305);
-    String location = "valid location"; // replace by valid location
-    assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().postFavor(title, description, location);
-              }
-            });
+    Location location = new Location("dummy provider");
+    String requesterId = "requester Id";
+    int statusId = 0;
+
+    Favor f = new Favor(title, description, requesterId, location, statusId);
+    FavorUtil.getSingleInstance().postFavor(f);
+
+    assertNotNull(f);
   }
 
   @Test

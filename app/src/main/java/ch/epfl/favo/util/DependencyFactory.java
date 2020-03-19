@@ -1,12 +1,18 @@
 package ch.epfl.favo.util;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class DependencyFactory {
+import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.map.Locator;
 
+public class DependencyFactory {
+  private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
   private static boolean testMode = false;
 
@@ -16,10 +22,21 @@ public class DependencyFactory {
     }
     return FirebaseAuth.getInstance().getCurrentUser();
   }
+  public static Locator getCurrentGpsTracker(@Nullable Context context) {
+    if (testMode && currentGpsTracker != null) {
+      return currentGpsTracker;
+    }
+    return new GpsTracker(context);
+  }
 
   @VisibleForTesting
   public static void setCurrentFirebaseUser(FirebaseUser dependency) {
     testMode = true;
     currentUser = dependency;
+  }
+  @VisibleForTesting
+  public static void setCurrentGpsTracker(Locator gpsTrackerDependency) {
+    testMode = true;
+    currentGpsTracker = gpsTrackerDependency;
   }
 }
