@@ -25,13 +25,8 @@ import ch.epfl.favo.view.tabs.BottomDestinationTab;
  * to create an instance of this fragment.
  */
 public class FavorRequestView extends BottomDestinationTab implements View.OnClickListener {
-  // TODO: Rename parameter arguments, choose names that match
-  // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-  private static final String ARG_PARAM1 = "favorCallBack";
 
-  // TODO: Rename and change types of parameters
-  private String mParam1;
-  private String mParam2;
+
 
   private GpsTracker mGpsTracker;
 
@@ -48,9 +43,9 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
    * @return A new instance of fragment FavorRequestView.
    */
   // TODO: Rename and change types and number of parameters
-  public static FavorRequestView newInstance(String param1, String param2) {
-    return new FavorRequestView();
-  }
+  //public static FavorRequestView newInstance(String param1, String param2) {
+  //  return new FavorRequestView();
+  //}
   //        FavorRequestView fragment = new FavorRequestView();
   //        Bundle args = new Bundle();
   //        args.putString(ARG_PARAM1, param1);
