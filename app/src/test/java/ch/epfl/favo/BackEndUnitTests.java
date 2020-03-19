@@ -1,15 +1,6 @@
 package ch.epfl.favo;
 
-import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
-
 import java.util.Random;
-
-import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
-
-import static org.junit.Assert.assertThrows;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -17,11 +8,6 @@ import static org.junit.Assert.assertThrows;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class BackEndUnitTests {
-
-
-
-
-
 
   public String generateRandomString(int targetStringLength) {
     String title = "sample_favor";

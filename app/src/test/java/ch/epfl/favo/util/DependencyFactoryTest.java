@@ -1,5 +1,6 @@
 package ch.epfl.favo.util;
 
+import android.content.Context;
 import android.location.LocationManager;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -15,13 +16,13 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DependencyFactoryTest {
 
   @Before
   public void setup() {
     new DependencyFactory();
-    new LocationManagerDependencyFactory();
   }
 
   @Test
@@ -31,11 +32,4 @@ public class DependencyFactoryTest {
     assertEquals(DependencyFactory.getCurrentFirebaseUser(), testUser);
   }
 
-  @Test
-  public void testLocationManagerDependency() {
-    LocationManager locationManagerMock = mock(LocationManager.class);
-    LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
-    assertEquals(
-        locationManagerMock, LocationManagerDependencyFactory.getCurrentLocationManager(null));
-  }
 }
