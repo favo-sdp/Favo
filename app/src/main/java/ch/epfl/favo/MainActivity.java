@@ -51,14 +51,6 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    // handle possible data accompanying notification message
-    if (getIntent().getExtras() != null) {
-      for (String key : getIntent().getExtras().keySet()) {
-        Object value = getIntent().getExtras().get(key);
-        Log.d(TAG, "Key: " + key + " Value: " + value);
-      }
-    }
-
     // retrieve current registration token for notifications
     retrieveCurrentRegistrationToken();
 
