@@ -34,15 +34,23 @@ function sendMessage(message, usersIds) {
 
 // send new favor notification to users in the area
 exports.sendNotificationNearbyOnNewFavor = functions.firestore
-    .document('favors/{favorId}')
+    .document('/favors/{favorId}')
     .onCreate((change) => {
 
         // get new favor that has just been posted
-        const newFavorLocation = change.data().location;
-        var latFav = newFavorLocation[0];
-        var longFav = newFavorLocation[1];
+        const newFavor = change.data();
+        var latFav = newFavor.location.latitude;
+        var longFav = newFavor.location.longitude;
         var usersIds = [];
-        var maxDistance = 5;
+        var maxDistance = 100.0; // in km
+
+        const message = {
+            notification: {
+                title: 'New favor nearby',
+                body: 'Check out the post in the map',
+            },
+            tokens: usersIds
+        };
 
         // go through all the users
         db.collection('/users').get()
@@ -50,27 +58,18 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                 snapshot.forEach((doc) => {
                     //Checking each user for location distance from the post
                     var user = doc.data();
-                    var location = user.locations;
-                    var latUser = location[0];
-                    var longUser = location[1];
-
+                    var latUser = user.location.latitude;
+                    var longUser = user.location.longitude;
                     var distance = distanceInKm(longFav, latFav, longUser, latUser);
                     if (distance < maxDistance) {
-                        usersIds.push(user.notificationIds)
+                        usersIds.push(user.notificationId)
                     }
                 });
+
+                sendMessage(message, usersIds);
+
             })
             .catch((err) => {
                 console.log('Error getting documents', err);
             });
-
-        const message = {
-            notification: {
-                title: 'New favor nearby',
-                body: 'Check out the post in the map',
-            },
-            token: usersIds
-        };
-
-        sendMessage(message, usersIds);
     });
