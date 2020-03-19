@@ -18,17 +18,19 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.LocationManagerDependencyFactory;
 import ch.epfl.favo.view.tabs.BottomDestinationTab;
 
 /**
- * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
- * to create an instance of this fragment.
+ * allows user to create favor objects that can be posted in the DB
  */
 public class FavorRequestView extends BottomDestinationTab implements View.OnClickListener {
 
 
 
-  private GpsTracker mGpsTracker;
+  private Locator mGpsTracker;
 
   public FavorRequestView() {
     // Required empty public constructor
@@ -63,7 +65,8 @@ public class FavorRequestView extends BottomDestinationTab implements View.OnCli
     Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
     confirmFavorBtn.setOnClickListener(this);
 
-    mGpsTracker = new GpsTracker(getActivity().getApplicationContext());
+    mGpsTracker = DependencyFactory
+            .getCurrentGpsTracker(getActivity().getApplicationContext());
 
     return rootView;
   }

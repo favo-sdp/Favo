@@ -27,7 +27,7 @@ import ch.epfl.favo.util.LocationManagerDependencyFactory;
  * view. And when running on a virtual device, the position does not seems consist with expectation.
  * But this will not happen on a real phone.
  */
-public class GpsTracker extends FragmentActivity implements LocationListener {
+public class GpsTracker extends FragmentActivity implements LocationListener,Locator {
 
   private final Context context;
   protected LocationManager locationManager;
