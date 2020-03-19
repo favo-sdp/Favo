@@ -4,28 +4,21 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import ch.epfl.favo.common.DatabaseWrapper;
+
+import ch.epfl.favo.common.DatabaseWrapper;
+
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
  */
 public class Favor implements Parcelable {
 
-  public static final Creator<Favor> CREATOR =
-      new Creator<Favor>() {
-        @Override
-        public Favor createFromParcel(Parcel in) {
-          return new Favor(in);
-        }
-
-        @Override
-        public Favor[] newArray(int size) {
-          return new Favor[size];
-        }
-      };
+  private String id;
   private String title;
   private String description;
   private String requesterId;
-  private String accepterID;
+  private String accepterId;
   private Location location;
   private int statusId;
 
@@ -33,26 +26,43 @@ public class Favor implements Parcelable {
 
   public Favor(
       String title, String description, String requesterId, Location location, int statusId) {
+    this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
     this.location = location;
     this.statusId = statusId;
-    this.accepterID = null;
+    this.accepterId = null;
   }
+
 
   /**
    * Parcelable implementaion allows us to pass favor to fragment
-   *
    * @param in
    */
   protected Favor(Parcel in) {
     title = in.readString();
     description = in.readString();
     requesterId = in.readString();
-    accepterID = in.readString();
+    accepterId = in.readString();
     location = in.readParcelable(Location.class.getClassLoader());
     statusId = in.readInt();
+  }
+
+  public static final Creator<Favor> CREATOR = new Creator<Favor>() {
+    @Override
+    public Favor createFromParcel(Parcel in) {
+      return new Favor(in);
+    }
+
+    @Override
+    public Favor[] newArray(int size) {
+      return new Favor[size];
+    }
+  };
+
+  public String getId() {
+    return id;
   }
 
   public String getTitle() {
@@ -68,11 +78,11 @@ public class Favor implements Parcelable {
   }
 
   public String getAccepterID() {
-    return accepterID;
+    return accepterId;
   }
 
   void setAccepterID(String accepterID) {
-    this.accepterID = accepterID;
+    this.accepterId = accepterID;
   }
 
   /**
@@ -107,7 +117,7 @@ public class Favor implements Parcelable {
     dest.writeString(title);
     dest.writeString(description);
     dest.writeString(requesterId);
-    dest.writeString(accepterID);
+    dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
     dest.writeInt(statusId);
   }
