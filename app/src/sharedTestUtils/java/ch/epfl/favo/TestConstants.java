@@ -23,7 +23,7 @@ public class TestConstants {
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
   // Favor related test constants
-  public static final Location LOCATION = new Location("Dummy Provider");
+  public static final Location LOCATION = new Location(PROVIDER);
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
 
