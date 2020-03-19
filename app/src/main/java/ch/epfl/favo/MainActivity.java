@@ -1,7 +1,6 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -32,21 +31,19 @@ import static ch.epfl.favo.R.id.drawer_layout;
  */
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
+  private static final String TAG = "MainActivity";
+  // Bottom tabs
+  public RadioButton mapButton;
+  public RadioButton favListButton;
   // UI
-  //private AppBarConfiguration appBarConfiguration;
+  // private AppBarConfiguration appBarConfiguration;
   private NavController navController;
   private NavigationView nav;
   private DrawerLayout drawerLayout;
   private ImageButton hambMenuButton;
-  private ImageButton backButton;
-
-  // Bottom tabs
-  public RadioButton mapButton;
-  public RadioButton favListButton;
   /*Activate if we want a toolbar */
   // private Toolbar toolbar;
-
-  private static final String TAG = "MainActivity";
+  private ImageButton backButton;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -89,13 +86,11 @@ public class MainActivity extends AppCompatActivity
   }
 
   private void setUpHamburgerMenuButton() {
-    hambMenuButton.setOnClickListener(
-            v -> drawerLayout.openDrawer(GravityCompat.START));
+    hambMenuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
   }
 
   private void setUpBackButton() {
-    backButton.setOnClickListener(
-            v -> onBackPressed());
+    backButton.setOnClickListener(v -> onBackPressed());
   }
 
   private void setupNavController() {
@@ -105,7 +100,7 @@ public class MainActivity extends AppCompatActivity
   private void setupDrawerNavigation() {
 
     // Only pass top-level destinations.
-    //appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
+    // appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
 
     /*Activate if we want a toolbar */
     // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -150,10 +145,8 @@ public class MainActivity extends AppCompatActivity
 
   /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
-    mapButton.setOnClickListener(
-            v -> navController.navigate(R.id.nav_map));
-    favListButton.setOnClickListener(
-            v -> navController.navigate(R.id.nav_favorlist));
+    mapButton.setOnClickListener(v -> navController.navigate(R.id.nav_map));
+    favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
   }
 
   /** Implementations of the ViewController interface below */

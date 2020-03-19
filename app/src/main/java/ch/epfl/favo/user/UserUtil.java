@@ -1,7 +1,8 @@
 package ch.epfl.favo.user;
 
-import java.util.ArrayList;
 import android.location.Location;
+
+import java.util.ArrayList;
 
 import ch.epfl.favo.common.NotImplementedException;
 

@@ -43,9 +43,11 @@ public class FavorPageTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
         }
       };
+
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
   private MainActivity mActivity;
 
   @After

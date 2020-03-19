@@ -48,7 +48,7 @@ public class SignInActivity extends AppCompatActivity {
     startActivityForResult(createSignInIntent(), RC_SIGN_IN);
   }
 
-  private void checkPlayServices () {
+  private void checkPlayServices() {
     GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
     int resultCode = gApi.isGooglePlayServicesAvailable(this);
     if (resultCode != ConnectionResult.SUCCESS) {

@@ -5,47 +5,59 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 var db = admin.firestore();
 
+// function to calculate the distance between two points given their coordinates
+function distanceInKm(lon1, lat1, lon2, lat2) {
+    var R = 6371; // Radius of the earth in km
+    var dLat = (lat2 - lat1) * Math.PI / 180;  // Javascript functions in radians
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+function sendMessage(message, usersIds) {
+    admin.messaging().sendMulticast(message)
+        .then((response) => {
+            if (response.failureCount > 0) {
+                const failedTokens = [];
+                response.responses.forEach((resp, idx) => {
+                    if (!resp.success) {
+                        failedTokens.push(usersIds[idx]);
+                    }
+                });
+                console.log('List of tokens that caused failures: ' + failedTokens);
+            }
+        });
+}
+
+// send new favor notification to users in the area
 exports.sendNotificationNearbyOnNewFavor = functions.firestore
     .document('favors/{favorId}')
-    .onCreate((change, context) => {
+    .onCreate((change) => {
 
         // get new favor that has just been posted
         const newFavorLocation = change.data().location;
-
-        var latRadFav = newFavorLocation[0];
-        var longRadFav = newFavorLocation[1];
-
-        //const R = 6371e3; // metres
-        const pi = 0.017453292519943295;    // Math.PI / 180
-        const maxDistance = 5;
+        var latFav = newFavorLocation[0];
+        var longFav = newFavorLocation[1];
         var usersIds = [];
+        var maxDistance = 5;
 
+        // go through all the users
         db.collection('/users').get()
             .then((snapshot) => {
                 snapshot.forEach((doc) => {
-                    //Checking each document in that collection
+                    //Checking each user for location distance from the post
                     var user = doc.data();
                     var location = user.locations;
-                    var latRadUser = location[0];
-                    var longRadUser = location[1];
+                    var latUser = location[0];
+                    var longUser = location[1];
 
-                    var c = Math.cos;
-                    var a = 0.5 - c((latRadUser - latRadFav) * pi)/2 + c(latRadFav * pi) * c(latRadUser * pi) * (1 - c((longRadUser - longRadFav) * pi))/2;
-
-                    var dist = 12742 * Math.asin(Math.sqrt(a));
-
-                    if (dist < maxDistance) {
+                    var distance = distanceInKm(longFav, latFav, longUser, latUser);
+                    if (distance < maxDistance) {
                         usersIds.push(user.notificationIds)
                     }
-
-                    // ALTERNATIVE Pythagoras method
-                    // var x = (longRadUser-longRadFav) * Math.cos((latRadFav+latRadUser)/2);
-                    // var y = (latRadFav-latRadFav);
-                    // var d = Math.sqrt(x*x + y*y) * R;
-                    // if (d < distance) {
-                    //
-                    // }
-                    console.log(doc.id, '=>', doc.data().clientID);
                 });
             })
             .catch((err) => {
@@ -60,18 +72,5 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
             token: usersIds
         };
 
-
-        admin.messaging().sendMulticast(message)
-            .then((response) => {
-                if (response.failureCount > 0) {
-                    const failedTokens = [];
-                    response.responses.forEach((resp, idx) => {
-                        if (!resp.success) {
-                            failedTokens.push(usersIds[idx]);
-                        }
-                    });
-                    console.log('List of tokens that caused failures: ' + failedTokens);
-                }
-            });
+        sendMessage(message, usersIds);
     });
-

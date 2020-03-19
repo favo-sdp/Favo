@@ -77,13 +77,13 @@ public class FavorUnitTests {
     String description = TestUtil.generateRandomString(305);
     String location = "valid location"; // replace by valid location
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().postFavor(title, description, location);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            FavorUtil.getSingleInstance().postFavor(title, description, location);
+          }
+        });
   }
 
   @Test
@@ -91,13 +91,13 @@ public class FavorUnitTests {
 
     String userId = TestConstants.USER_ID;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().retrieveAllFavorsForGivenUser(userId);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            FavorUtil.getSingleInstance().retrieveAllFavorsForGivenUser(userId);
+          }
+        });
   }
 
   @Test
@@ -105,13 +105,13 @@ public class FavorUnitTests {
 
     String userId = TestConstants.USER_ID;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser(userId);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser(userId);
+          }
+        });
   }
 
   @Test
@@ -119,13 +119,13 @@ public class FavorUnitTests {
 
     String userId = TestConstants.USER_ID;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().retrieveAllRequestedFavorsForGivenUser(userId);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            FavorUtil.getSingleInstance().retrieveAllRequestedFavorsForGivenUser(userId);
+          }
+        });
   }
 
   @Test
@@ -133,13 +133,13 @@ public class FavorUnitTests {
 
     String userId = TestConstants.USER_ID;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId);
+          }
+        });
   }
 
   @Test
@@ -148,12 +148,12 @@ public class FavorUnitTests {
     Location loc = TestConstants.LOCATION;
     double radius = TestConstants.RADIUS;
     assertThrows(
-            NotImplementedException.class,
-            new ThrowingRunnable() {
-              @Override
-              public void run() throws Throwable {
-                FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(loc, radius);
-              }
-            });
+        NotImplementedException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(loc, radius);
+          }
+        });
   }
 }

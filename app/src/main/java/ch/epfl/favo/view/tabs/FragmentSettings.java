@@ -9,14 +9,14 @@ import ch.epfl.favo.view.ViewController;
 
 public class FragmentSettings extends PreferenceFragmentCompat {
 
-    private void setupView(){
-        ((ViewController) getActivity()).showBackIcon();
-        ((ViewController) getActivity()).hideBottomTabs();
-    }
+  private void setupView() {
+    ((ViewController) getActivity()).showBackIcon();
+    ((ViewController) getActivity()).hideBottomTabs();
+  }
 
-    @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        setupView();
-        setPreferencesFromResource(R.xml.root_preferences, rootKey);
-    }
+  @Override
+  public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    setupView();
+    setPreferencesFromResource(R.xml.root_preferences, rootKey);
+  }
 }

@@ -1,7 +1,8 @@
 package ch.epfl.favo.favor;
 
-import java.util.ArrayList;
 import android.location.Location;
+
+import java.util.ArrayList;
 
 import ch.epfl.favo.common.NotImplementedException;
 
@@ -34,7 +35,7 @@ public class FavorUtil {
   }
 
   /**
-   * Returns all the favors for a given user (accepted  + requested)
+   * Returns all the favors for a given user (accepted + requested)
    *
    * @param userId Id of the user
    */
@@ -101,5 +102,4 @@ public class FavorUtil {
 
     throw new NotImplementedException();
   }
-
 }

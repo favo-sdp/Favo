@@ -31,11 +31,6 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
     // Required empty public constructor
   }
 
-  public void setupView(){
-    ((ViewController) getActivity()).showBackIcon();
-    ((ViewController) getActivity()).hideBottomTabs();
-  }
-
   /**
    * Use this factory method to create a new instance of this fragment using the provided
    * parameters.
@@ -47,6 +42,11 @@ public class FavorRequestView extends Fragment implements View.OnClickListener {
   // TODO: Rename and change types and number of parameters
   public static FavorRequestView newInstance(String param1, String param2) {
     return new FavorRequestView();
+  }
+
+  public void setupView() {
+    ((ViewController) getActivity()).showBackIcon();
+    ((ViewController) getActivity()).hideBottomTabs();
   }
   //        FavorRequestView fragment = new FavorRequestView();
   //        Bundle args = new Bundle();
