@@ -21,7 +21,9 @@ import org.openjdk.tools.javac.comp.Check;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.MapsPage;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -54,8 +56,9 @@ public class MapPageTest {
 
     @Test
     public void InfoWindowClickSelfTest() throws UiObjectNotFoundException {
-        Espresso.closeSoftKeyboard();
-        getInstrumentation().waitForIdleSync();
+        MapsPage mapsPage = new MapsPage();
+        mapsPage.updateFavorlist();
+        mapsPage.queryFavor(TestConstants.LATITUDE, TestConstants.LONGITUDE);
         //onView(withId(R.id.hiddenButton)).check(matches(isCompletelyDisplayed())).perform(scrollTo(),click());
         //CheckContent("I am Here", R.string.favor_success_msg);
     }
