@@ -35,9 +35,7 @@ public class UserUnitTests {
   public void userCanRemoveDetailsFromDatabase() {
 
     String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> UserUtil.getSingleInstance().deleteAccount());
+    assertThrows(NotImplementedException.class, () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
   @Test
@@ -51,7 +49,8 @@ public class UserUnitTests {
     int acceptedFavors = 2;
     int requestedFavors = 3;
 
-    User user = new User(name, email, deviceId, birthDate, location, acceptedFavors, requestedFavors);
+    User user =
+        new User(name, email, deviceId, birthDate, location, acceptedFavors, requestedFavors);
 
     assertEquals(name, user.getName());
     assertEquals(email, user.getEmail());

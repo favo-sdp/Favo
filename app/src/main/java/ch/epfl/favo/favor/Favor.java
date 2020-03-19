@@ -6,14 +6,24 @@ import android.os.Parcelable;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 
-import ch.epfl.favo.common.DatabaseWrapper;
-
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
  */
 public class Favor implements Parcelable {
 
+  public static final Creator<Favor> CREATOR =
+      new Creator<Favor>() {
+        @Override
+        public Favor createFromParcel(Parcel in) {
+          return new Favor(in);
+        }
+
+        @Override
+        public Favor[] newArray(int size) {
+          return new Favor[size];
+        }
+      };
   private String id;
   private String title;
   private String description;
@@ -35,9 +45,9 @@ public class Favor implements Parcelable {
     this.accepterId = null;
   }
 
-
   /**
    * Parcelable implementaion allows us to pass favor to fragment
+   *
    * @param in
    */
   protected Favor(Parcel in) {
@@ -48,18 +58,6 @@ public class Favor implements Parcelable {
     location = in.readParcelable(Location.class.getClassLoader());
     statusId = in.readInt();
   }
-
-  public static final Creator<Favor> CREATOR = new Creator<Favor>() {
-    @Override
-    public Favor createFromParcel(Parcel in) {
-      return new Favor(in);
-    }
-
-    @Override
-    public Favor[] newArray(int size) {
-      return new Favor[size];
-    }
-  };
 
   public String getId() {
     return id;

@@ -64,33 +64,37 @@ public class User {
     return notificationId;
   }
 
+  void setNotificationId(String notificationId) {
+    this.notificationId = notificationId;
+  }
+
   public LocalDate getBirthDate() {
     return birthDate;
   }
 
-  public Location getLocation() { return location; }
+  public Location getLocation() {
+    return location;
+  }
+
+  void setLocation(Location location) {
+    this.location = location;
+  }
 
   public int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
-  }
-
-  public int getActiveRequestingFavors() {
-    return activeRequestingFavors;
   }
 
   void setActiveAcceptingFavors(int activeAcceptingFavors) {
     this.activeAcceptingFavors = activeAcceptingFavors;
   }
 
+  public int getActiveRequestingFavors() {
+    return activeRequestingFavors;
+  }
+
   void setActiveRequestingFavors(int activeRequestingFavors) {
     this.activeRequestingFavors = activeRequestingFavors;
   }
-
-  void setNotificationId(String notificationId) {
-    this.notificationId =  notificationId;
-  }
-
-  void setLocation(Location location) { this.location = location; }
 
   // Can only accept or request favors
   boolean canAccept() {
