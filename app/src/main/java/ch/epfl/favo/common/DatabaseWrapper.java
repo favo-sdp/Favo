@@ -2,19 +2,24 @@ package ch.epfl.favo.common;
 
 import android.util.Log;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class DatabaseWrapper {
 
   private static final String TAG = "DatabaseWrapper";
   private static DatabaseWrapper INSTANCE = null;
-  // final fields regarding ID generation
-  private static final int ID_LENGTH = 25;
-  private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private FirebaseFirestore firestore;
+
+  // final fields regarding ID generation
+  private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static final int ID_LENGTH = 25;
 
   private DatabaseWrapper() {
     FirebaseFirestore.setLoggingEnabled(true);
@@ -24,7 +29,7 @@ public class DatabaseWrapper {
       firestore = FirebaseFirestore.getInstance();
       firestore.setFirestoreSettings(settings);
     } catch (Exception e) {
-      Log.d(TAG, e.toString());
+      throw e;
     }
   }
 
@@ -56,6 +61,75 @@ public class DatabaseWrapper {
         .addOnFailureListener(
             e -> {
               throw new RuntimeException(e);
+            });
+  }
+
+  public static void removeDocument(String key, String collection) throws RuntimeException {
+    DatabaseWrapper.getInstance()
+        .firestore
+        .collection(collection)
+        .document(key)
+        .delete()
+        .addOnSuccessListener(aVoid -> {})
+        .addOnFailureListener(
+            e -> {
+              throw new RuntimeException(e);
+            });
+  }
+
+  public static void updateDocument(String key, Map<String, Object> updates, String collection)
+      throws RuntimeException {
+    DatabaseWrapper.getInstance()
+        .firestore
+        .collection(collection)
+        .document(key)
+        .update(updates)
+        .addOnSuccessListener(aVoid -> {})
+        .addOnFailureListener(
+            e -> {
+              throw new RuntimeException(e);
+            });
+  }
+
+  public static void getDocument(String key, String collection, DocumentCallback callback)
+      throws RuntimeException {
+    DatabaseWrapper.getInstance()
+        .firestore
+        .collection(collection)
+        .document(key)
+        .get()
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot.exists()) {
+                  callback.onCallback(documentSnapshot.getData());
+                } else {
+                  throw new RuntimeException(String.format("Document %s does not exist ", key));
+                }
+              } else {
+                throw new RuntimeException(task.getException());
+              }
+            });
+  }
+
+  public static void getAllDocuments(String collection, MultipleDocumentsCallback callback)
+      throws RuntimeException {
+    DatabaseWrapper.getInstance()
+        .firestore
+        .collection(collection)
+        .get()
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                List<Map> values = new ArrayList<>();
+                for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                  values.add(documentSnapshot.getData());
+                }
+                callback.onCallback(values);
+              } else {
+                throw new RuntimeException(task.getException());
+              }
             });
   }
 }
