@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static junit.framework.TestCase.assertEquals;
 
+import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
@@ -38,5 +40,15 @@ public class CommonToolsTests {
         Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
         String time = format.format(date);
         assertEquals(CommonTools.convertTime(date), time);
+    }
+
+    @Test
+    public void databaseUtilCorrectlyGeneratesIds() {
+        int ID_LENGTH = 25;
+        String id1 = DatabaseWrapper.generateRandomId();
+        String id2 = DatabaseWrapper.generateRandomId();
+        assertEquals(ID_LENGTH, id1.length());
+        assertEquals(ID_LENGTH, id2.length());
+        assertNotEquals(id1, id2);
     }
 }

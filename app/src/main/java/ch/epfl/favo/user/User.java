@@ -1,5 +1,7 @@
 package ch.epfl.favo.user;
 
+import android.location.Location;
+
 import java.time.LocalDate;
 
 import ch.epfl.favo.common.DatabaseWrapper;
@@ -16,6 +18,7 @@ public class User {
   private String deviceId;
   private String notificationId;
   private LocalDate birthDate;
+  private Location location;
   private int activeAcceptingFavors;
   private int activeRequestingFavors;
 
@@ -26,6 +29,7 @@ public class User {
       String email,
       String deviceId,
       LocalDate birthDate,
+      Location location,
       int activeAcceptingFavors,
       int activeRequestingFavors) {
     this.id = DatabaseWrapper.generateRandomId();
@@ -34,6 +38,7 @@ public class User {
     this.deviceId = deviceId;
     this.notificationId = null;
     this.birthDate = birthDate;
+    this.location = location;
     this.activeAcceptingFavors = activeAcceptingFavors;
     this.activeRequestingFavors = activeRequestingFavors;
   }
@@ -63,6 +68,8 @@ public class User {
     return birthDate;
   }
 
+  public Location getLocation() { return location; }
+
   public int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
   }
@@ -82,6 +89,8 @@ public class User {
   void setNotificationId(String notificationId) {
     this.notificationId =  notificationId;
   }
+
+  void setLocation(Location location) { this.location = location; }
 
   // Can only accept or request favors
   boolean canAccept() {

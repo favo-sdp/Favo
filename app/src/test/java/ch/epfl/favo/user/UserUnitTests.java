@@ -46,11 +46,12 @@ public class UserUnitTests {
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    LocalDate birthDate = LocalDate.of(1994, 11, 8);
+    LocalDate birthDate = TestConstants.BIRTHDATE;
+    Location location = TestConstants.LOCATION;
     int acceptedFavors = 2;
     int requestedFavors = 3;
 
-    User user = new User(name, email, deviceId, birthDate, acceptedFavors, requestedFavors);
+    User user = new User(name, email, deviceId, birthDate, location, acceptedFavors, requestedFavors);
 
     assertEquals(name, user.getName());
     assertEquals(email, user.getEmail());

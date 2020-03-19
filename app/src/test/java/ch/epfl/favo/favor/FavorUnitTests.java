@@ -2,12 +2,15 @@ package ch.epfl.favo.favor;
 
 import android.location.Location;
 import android.os.Parcel;
+import android.provider.ContactsContract;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -68,9 +71,8 @@ public class FavorUnitTests {
 
   @Test
   public void favorSuccessfullyPostsToDB() {
-    CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
-
-    Mockito.doNothing().when(mock).addDocument(anyString(), anyMap());
+    DatabaseWrapper mock = Mockito.mock(DatabaseWrapper.class);
+    Mockito.doNothing().when(mock).addDocument(anyString(), anyMap(), anyString());
 
     String title = "Sample Favor";
     String description = TestUtil.generateRandomString(305);
