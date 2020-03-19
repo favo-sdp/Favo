@@ -10,6 +10,18 @@ import android.os.Parcelable;
  */
 public class Favor implements Parcelable {
 
+  public static final Creator<Favor> CREATOR =
+      new Creator<Favor>() {
+        @Override
+        public Favor createFromParcel(Parcel in) {
+          return new Favor(in);
+        }
+
+        @Override
+        public Favor[] newArray(int size) {
+          return new Favor[size];
+        }
+      };
   private String title;
   private String description;
   private String requesterId;
@@ -31,6 +43,7 @@ public class Favor implements Parcelable {
 
   /**
    * Parcelable implementaion allows us to pass favor to fragment
+   *
    * @param in
    */
   protected Favor(Parcel in) {
@@ -41,18 +54,6 @@ public class Favor implements Parcelable {
     location = in.readParcelable(Location.class.getClassLoader());
     statusId = in.readInt();
   }
-
-  public static final Creator<Favor> CREATOR = new Creator<Favor>() {
-    @Override
-    public Favor createFromParcel(Parcel in) {
-      return new Favor(in);
-    }
-
-    @Override
-    public Favor[] newArray(int size) {
-      return new Favor[size];
-    }
-  };
 
   public String getTitle() {
     return title;

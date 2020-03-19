@@ -45,9 +45,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener {
    * @return the location of phone
    */
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    locationManager =
-        LocationManagerDependencyFactory.getCurrentLocationManager(
-                context);
+    locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context);
     isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -75,7 +73,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener {
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
 
-      // throw new NotImplementedException();
+    // throw new NotImplementedException();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {

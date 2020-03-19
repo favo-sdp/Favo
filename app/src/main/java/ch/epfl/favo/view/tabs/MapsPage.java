@@ -1,6 +1,5 @@
 package ch.epfl.favo.view.tabs;
 
-
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,13 +8,11 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,7 +22,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +34,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FakeFavorList;
+import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 /**
@@ -54,6 +51,10 @@ public class MapsPage extends Fragment
   private GpsTracker mGpsTracker;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
 
+  public MapsPage() {
+    // Required empty public constructor
+  }
+
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
@@ -61,12 +62,17 @@ public class MapsPage extends Fragment
     mMap.clear();
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
-    //throw new RuntimeException(
-      //  "This exception will " + "certainly be thrown out as long as Map is ready");
+    // throw new RuntimeException(
+    //  "This exception will " + "certainly be thrown out as long as Map is ready");
   }
 
-  public MapsPage() {
-    // Required empty public constructor
+  private void setupView() {
+    ((ViewController) getActivity()).showBurgerIcon();
+    ((ViewController) getActivity()).showBottomTabs();
+  }
+
+  private void checkMapButton() {
+    ((ViewController) getActivity()).checkMapViewButton();
   }
 
   @Override
@@ -91,7 +97,6 @@ public class MapsPage extends Fragment
       mapFragment.getMapAsync(this);
     }
   }
-
 
   public List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
@@ -129,33 +134,7 @@ public class MapsPage extends Fragment
       CommonTools.showSnackbar(getView(), e.getMessage());
     }
   }
-  /**
-   * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
-   * @return human readable format of date and time
-   */
-  public String convertTime(long time) {
-    Date date = new Date(time);
-    Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
-    return format.format(date);
-  }
 
-  private void setupView() {
-    ((ViewController) getActivity()).showBurgerIcon();
-    ((ViewController) getActivity()).showBottomTabs();
-  }
-
-  private void checkMapButton() {
-    ((ViewController) getActivity()).checkMapViewButton();
-  }
-
-  /** utilities functions to help debug */
-  //    public void displayDebugInfo() {
-  //        Log.d("latitude", Double.toString(mLocation.getLatitude()));
-  //        Log.d("longitude", Double.toString(mLocation.getLongitude()));
-  //        Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));
-  //        Log.d("gpstime", convertTime(mLocation.getTime()));
-  //        Log.d("bearing", Float.toString(mLocation.getBearing()));
-  //    }
   private void drawFavorMarker(List<Favor> favors) {
     if (favors == null) favors = new ArrayList<>();
     for (Favor favor : favors) {
@@ -185,22 +164,6 @@ public class MapsPage extends Fragment
     setSpannableString(snippet, snippetUi);
     return mWindow;
   }
-  /**
-   * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
-   * @return human readable format of date and time
-   *     <p>public String convertTime(long time) { Date date = new Date(time); Format format = new
-   *     SimpleDateFormat("yyyy MM dd HH:mm:ss"); return format.format(date); }
-   */
-  /**
-   * utilities functions to help debug
-   *
-   * <p>public void displayDebugInfo() { Log.d("latitude",
-   * Double.toString(mLocation.getLatitude())); Log.d("longitude",
-   * Double.toString(mLocation.getLongitude())); Log.d("zoom",
-   * Float.toString(mMap.getMaxZoomLevel())); Log.d("gpstime", convertTime(mLocation.getTime()));
-   * Log.d("bearing", Float.toString(mLocation.getBearing())); }
-   */
-}
 
   private void setSpannableString(String content, TextView view) {
     if (content != null) {
@@ -232,8 +195,7 @@ public class MapsPage extends Fragment
   public Favor queryFavor(double latitude, double longitude) {
     for (Favor favor : currentActiveLocalFavorList) {
       if (favor.getLocation().getLatitude() == latitude
-          && favor.getLocation().getLongitude() == longitude)
-        return favor;
+          && favor.getLocation().getLongitude() == longitude) return favor;
     }
     return null;
   }
