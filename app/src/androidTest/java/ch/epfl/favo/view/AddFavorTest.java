@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -18,6 +19,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -76,6 +78,7 @@ public class AddFavorTest {
     //check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(matches(withText(R.string.favor_success_msg)));
+
 
   }
 }

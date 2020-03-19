@@ -1,6 +1,7 @@
 package ch.epfl.favo.favor;
 
 import android.location.Location;
+import android.os.Parcel;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -16,6 +17,7 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.util.TestUtil;
 
 import static org.junit.Assert.assertEquals;
@@ -152,4 +154,33 @@ public class FavorUnitTests {
               }
             });
   }
+
+  @Test
+    public void describeContentsCorrect(){
+      String title = "Flat tire";
+      String description = "Tiire popped while turning left on Avenue Rhodanie";
+      String requesterId = "2362489";
+      Location location = new Location("Dummy provider");
+      int statusId = 0;
+
+      Favor favor = new Favor(title, description, requesterId, location, statusId);
+      assertEquals(favor.describeContents(), 0);
+  }
+
+    @Test
+    public void CreatorArrayCorrect(){
+        String title = "Flat tire";
+        String description = "Tiire popped while turning left on Avenue Rhodanie";
+        String requesterId = "2362489";
+        Location location = new Location("Dummy provider");
+        int statusId = 0;
+        Favor[] favors = Favor.CREATOR.newArray(3);
+        favors[0] = new Favor(title, description, requesterId, location, statusId);
+        assertEquals(title,favors[0].getTitle());
+        assertEquals(description, favors[0].getDescription());
+        assertEquals(requesterId, favors[0].getRequesterId());
+        assertEquals(location, favors[0].getLocation());
+        assertEquals(statusId, favors[0].getStatusId());
+    }
+
 }
