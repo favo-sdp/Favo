@@ -1,7 +1,5 @@
 package ch.epfl.favo.view;
 
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -19,7 +17,6 @@ import ch.epfl.favo.util.DependencyFactory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -69,27 +66,7 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     //check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_success_msg)));
-
-  }
-  @Test
-  public void upLoadPictureButtonWorks() {
-    //Click on fav list tab
-    onView(withId(R.id.nav_favor_list_button))
-            .check(matches(isDisplayed()))
-            .perform(click());
-    getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.new_favor))
-            .check(matches(isDisplayed()))
-            .perform(click());
-    getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.add_picture_button))
-            .check(matches(isDisplayed()))
-            .perform(click());
-    getInstrumentation().waitForIdleSync();
-    pressBack();
-    pressBack();
-    pressBack();
+            .check(matches(withText(R.string.favor_request_success_msg)));
 
   }
 

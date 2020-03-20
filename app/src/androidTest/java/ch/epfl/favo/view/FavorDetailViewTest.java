@@ -53,7 +53,6 @@ public class FavorDetailViewTest {
     public void setUP(){
         Location mockLocation = createLocation(37  ,-122,3.0f);
         fakeFavor = new Favor("Title","Desc","0",mockLocation,0);
-
     }
 
    Location createLocation(double lat, double lng, float accuracy) {
@@ -82,12 +81,16 @@ public class FavorDetailViewTest {
         transaction.commit();
 
         //check that detailed view is indeed opened
-        onView(allOf(withId(R.id.fragment_favor_detail_view), withParent(withId(R.id.nav_host_fragment))))
+        onView(allOf(withId(R.id.fragment_favor_accept_view), withParent(withId(R.id.nav_host_fragment))))
                 .check(matches(isDisplayed()));
 
         //Check clicking on the button
         onView(withId(R.id.accept_button)).check(matches(isDisplayed()))
                 .perform(click());
+
+        //check snackbar shows
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+                .check(matches(withText(R.string.favor_respond_success_msg)));
     }
 
 

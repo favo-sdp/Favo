@@ -45,13 +45,16 @@
     <string name="map_icon_label">Map</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="detail">descriptions</string>
+    <!--Favor Accepting View -->
+    <string name="accept_favor">Accept Favor</string>
     <string name="favor_respond_success_msg">Favor responded successfully.</string>
-
     <string name="open_drawer" />
     <string name="close_drawer" />
     <string name="home">Home</string>
     <string name="new_favor">New Favor</string>
-    <string name="favor_success_msg">Favor added successfully.</string>
+    <string name="favor_request_success_msg">Favor added successfully.</string>
+    <string name="upload_image">Upload Image</string>
+
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>

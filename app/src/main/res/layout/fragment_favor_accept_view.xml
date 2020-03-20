@@ -113,7 +113,7 @@
 
             android:layout_height="wrap_content"
             android:layout_marginTop="604dp"
-            android:text="@string/favor_confirm_button"
+            android:text="@string/accept_favor"
 
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

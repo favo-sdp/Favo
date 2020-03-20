@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -35,18 +34,7 @@ public class FavorRequestView extends Fragment {
     // Required empty public constructor
   }
 
-  /**
-   * Use this factory method to create a new instance of this fragment using the provided
-   * parameters.
-   *
-   * <p>// * @param param1 Parameter 1. // * @param param2 Parameter 2.
-   *
-   * @return A new instance of fragment FavorRequestView.
-   */
-  // TODO: Rename and change types and number of parameters
-  public static FavorRequestView newInstance(String param1, String param2) {
-    return new FavorRequestView();
-  }
+
 
   @Override
   public View onCreateView(
@@ -61,7 +49,7 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            showSnackbar(getString(R.string.favor_success_msg));
+            showSnackbar(getString(R.string.favor_request_success_msg));
         }
     });
 

@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 
+import com.google.android.material.snackbar.Snackbar;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -17,11 +18,7 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 
 
-/**
- * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
- * to create an instance of this fragment.
- */
-public class FavorDetailView extends Fragment implements View.OnClickListener {
+public class FavorDetailView extends Fragment {
     private final static String FAVOR_ARGS = "FAVOR_ARGS";
     private Favor favor;
 
@@ -40,15 +37,25 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //hide bottom tabs and hamburger menu
         setupView();
+        //inflate view
         View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
         Button confirmFavorBtn = rootView.findViewById(R.id.accept_button);
-        confirmFavorBtn.setOnClickListener(this);
+
+        // Show snackbar when favor has been confirmed
+        confirmFavorBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSnackbar(getString(R.string.favor_respond_success_msg));
+            }
+        });
+
+
         if (favor == null){
             favor = getArguments().getParcelable(FAVOR_ARGS);
         }
         if(favor != null){
-            confirmFavorBtn.setText("Respond");
             displayFromFavor(rootView ,favor);
         }
 
@@ -80,19 +87,14 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
         details.setText(descriptionStr);
     }
 
-    @Override
-    public void onClick(View view) {
-        // The following inspection warning is suppressed. More cases will be added soon.
-        // noinspection SwitchStatementWithTooFewBranches
-        switch (view.getId()) {
-            case R.id.accept_button:
-                CommonTools.showSnackbar(requireView().findViewById(R.id.fragment_favor_accept_view),
-                        getString(R.string.favor_respond_success_msg));
-        }
-    }
 
     private void setupView(){
         ((ViewController) getActivity()).setupViewBotDestTab();
+    }
+    private void showSnackbar(String errorMessageRes) {
+        Snackbar.make(
+                requireView().findViewById(R.id.fragment_favor_accept_view), errorMessageRes, Snackbar.LENGTH_LONG)
+                .show();
     }
 
 }
