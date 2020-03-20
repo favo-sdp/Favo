@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-import java.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.NotImplementedException;

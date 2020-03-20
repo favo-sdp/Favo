@@ -40,6 +40,7 @@ public class FavorUnitTests {
     assertEquals(requesterId, favor.getRequesterId());
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
+    assertNotNull(favor.getPostedTime());
   }
 
   @Test
