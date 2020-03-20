@@ -4,7 +4,7 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.threeten.bp.LocalDateTime;
+import java.util.Date;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 
@@ -32,7 +32,7 @@ public class Favor implements Parcelable {
   private String requesterId;
   private String accepterId;
   private Location location;
-  private LocalDateTime postedTime;
+  private Date postedTime;
   private int statusId;
 
   public Favor() {}
@@ -44,7 +44,7 @@ public class Favor implements Parcelable {
     this.description = description;
     this.requesterId = requesterId;
     this.location = location;
-    this.postedTime = LocalDateTime.now();
+    this.postedTime = new Date();
     this.statusId = statusId;
     this.accepterId = null;
   }
@@ -83,7 +83,7 @@ public class Favor implements Parcelable {
     return accepterId;
   }
 
-  public LocalDateTime getPostedTime() {
+  public Date getPostedTime() {
     return postedTime;
   }
 

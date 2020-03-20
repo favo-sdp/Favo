@@ -3,6 +3,7 @@ package ch.epfl.favo.favor;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
@@ -38,11 +39,11 @@ public class FavorUtil {
     } // will skip if testing the UI
     Map<String, Object> favor = new HashMap<>();
     Location loc = f.getLocation();
-
     favor.put("title", f.getTitle());
     favor.put("description", f.getDescription());
     favor.put("statusId", 0);
     favor.put("location", new GeoPoint(loc.getLatitude(), loc.getLongitude()));
+    favor.put("postedTime", new Timestamp(f.getPostedTime()));
     try {
       collection.addDocument(f.getId(), favor);
     } catch (RuntimeException e) {
