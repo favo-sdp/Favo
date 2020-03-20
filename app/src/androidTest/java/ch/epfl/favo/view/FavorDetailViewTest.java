@@ -35,62 +35,64 @@ import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class FavorDetailViewTest {
-    private Favor fakeFavor;
-    @Rule
-    public final ActivityTestRule<MainActivity> mainActivityTestRule =
-            new ActivityTestRule<MainActivity>(MainActivity.class) {
-                @Override
-                protected void beforeActivityLaunched() {
-                    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-                }
-            };
+  private Favor fakeFavor;
 
-    @Rule
-    public GrantPermissionRule permissionRule =
-            GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+  @Rule
+  public final ActivityTestRule<MainActivity> mainActivityTestRule =
+      new ActivityTestRule<MainActivity>(MainActivity.class) {
+        @Override
+        protected void beforeActivityLaunched() {
+          DependencyFactory.setCurrentFirebaseUser(
+              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+        }
+      };
 
-    @Before
-    public void setUP(){
-        Location mockLocation = createLocation(37  ,-122,3.0f);
-        fakeFavor = new Favor("Title","Desc","0",mockLocation,0);
-    }
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-   Location createLocation(double lat, double lng, float accuracy) {
-        // Create a new Location
-        Location newLocation = new Location("flp");
-        newLocation.setLatitude(lat);
-        newLocation.setLongitude(lng);
-        newLocation.setAccuracy(accuracy);
-        return newLocation;
-    }
+  @Before
+  public void setUP() {
+    Location mockLocation = createLocation(37, -122, 3.0f);
+    fakeFavor = new Favor("Title", "Desc", "0", mockLocation, 0);
+  }
 
-    @After
-    public void tearDown() {
-        DependencyFactory.setCurrentFirebaseUser(null);
-    }
+  Location createLocation(double lat, double lng, float accuracy) {
+    // Create a new Location
+    Location newLocation = new Location("flp");
+    newLocation.setLatitude(lat);
+    newLocation.setLongitude(lng);
+    newLocation.setAccuracy(accuracy);
+    return newLocation;
+  }
 
+  @After
+  public void tearDown() {
+    DependencyFactory.setCurrentFirebaseUser(null);
+  }
 
-    @Test
-    public void favorDetailViewIsLaunched(){
-        FavorDetailView fragment = FavorDetailView.newInstance(fakeFavor);
+  @Test
+  public void favorDetailViewIsLaunched() {
+    FavorDetailView fragment = FavorDetailView.newInstance(fakeFavor);
 
-        FragmentTransaction transaction = mainActivityTestRule.getActivity()
-                .getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.nav_host_fragment, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+    FragmentTransaction transaction =
+        mainActivityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+    transaction.replace(R.id.nav_host_fragment, fragment);
+    transaction.addToBackStack(null);
+    transaction.commit();
 
-        //check that detailed view is indeed opened
-        onView(allOf(withId(R.id.fragment_favor_accept_view), withParent(withId(R.id.nav_host_fragment))))
-                .check(matches(isDisplayed()));
+    // check that detailed view is indeed opened
+    onView(
+            allOf(
+                withId(R.id.fragment_favor_accept_view),
+                withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
 
-        //Check clicking on the button
-        onView(withId(R.id.accept_button)).check(matches(isDisplayed()))
-                .perform(click());
+    // Check clicking on the button
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
 
-        //check snackbar shows
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-                .check(matches(withText(R.string.favor_respond_success_msg)));
-    }
-
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_respond_success_msg)));
+  }
 }
