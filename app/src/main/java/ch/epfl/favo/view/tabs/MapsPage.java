@@ -163,31 +163,7 @@ public class MapsPage extends Fragment
       view.setText(snippetText);
     }
   }
-
-  /** utilities functions to help debug */
-  //    public void displayDebugInfo() {
-  //        Log.d("latitude", Double.toString(mLocation.getLatitude()));
-  //        Log.d("longitude", Double.toString(mLocation.getLongitude()));
-  //        Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));
-  //        Log.d("gpstime", convertTime(mLocation.getTime()));
-  //        Log.d("bearing", Float.toString(mLocation.getBearing()));
-  //    }
-
-  /**
-   * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
-   * @return human readable format of date and time
-   *     <p>public String convertTime(long time) { Date date = new Date(time); Format format = new
-   *     SimpleDateFormat("yyyy MM dd HH:mm:ss"); return format.format(date); }
-   */
-  /**
-   * utilities functions to help debug
-   *
-   * <p>public void displayDebugInfo() { Log.d("latitude",
-   * Double.toString(mLocation.getLatitude())); Log.d("longitude",
-   * Double.toString(mLocation.getLongitude())); Log.d("zoom",
-   * Float.toString(mMap.getMaxZoomLevel())); Log.d("gpstime", convertTime(mLocation.getTime()));
-   * Log.d("bearing", Float.toString(mLocation.getBearing())); }
-   */
+  
   @Override
   public View getInfoContents(Marker marker) {
     return null;
