@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-import org.threeten.bp.LocalDate;
+import java.util.Date;
 
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.NotImplementedException;
@@ -44,7 +44,7 @@ public class UserUnitTests {
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    LocalDate birthDate = LocalDate.of(1994, 11, 8);
+    Date birthDate = new Date();
     Location location = TestConstants.LOCATION;
     int acceptedFavors = 2;
     int requestedFavors = 3;

@@ -1,8 +1,7 @@
 package ch.epfl.favo.user;
 
 import android.location.Location;
-
-import org.threeten.bp.LocalDate;
+import java.util.Date;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 
@@ -17,7 +16,7 @@ public class User {
   private String email;
   private String deviceId;
   private String notificationId;
-  private LocalDate birthDate;
+  private Date birthDate;
   private Location location;
   private int activeAcceptingFavors;
   private int activeRequestingFavors;
@@ -28,7 +27,7 @@ public class User {
       String name,
       String email,
       String deviceId,
-      LocalDate birthDate,
+      Date birthDate,
       Location location,
       int activeAcceptingFavors,
       int activeRequestingFavors) {
@@ -68,7 +67,7 @@ public class User {
     this.notificationId = notificationId;
   }
 
-  public LocalDate getBirthDate() {
+  public Date getBirthDate() {
     return birthDate;
   }
 
