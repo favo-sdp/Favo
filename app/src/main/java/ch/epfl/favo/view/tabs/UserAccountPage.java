@@ -48,10 +48,6 @@ public class UserAccountPage extends Fragment {
     return view;
   }
 
-  private void setupView() {
-    ((ViewController) getActivity()).showBackIcon();
-    ((ViewController) getActivity()).hideBottomTabs();
-  }
 
   private void setupButtons() {
     Button signOutButton = view.findViewById(R.id.sign_out);
