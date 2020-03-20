@@ -163,7 +163,7 @@ public class MapsPage extends Fragment
       view.setText(snippetText);
     }
   }
-  
+
   @Override
   public View getInfoContents(Marker marker) {
     return null;
