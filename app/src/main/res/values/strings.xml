@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Favo</string>
 
+    <!-- General info about the app -->
+    <string name="app_site">https://github.com/favo-sdp/Favo</string>
+    <string name="app_site_issues">https://github.com/favo-sdp/Favo/issues</string>
+
     <!-- Auth UI - Signed in -->
     <string name="sign_out">Sign out</string>
     <string name="delete_account_label">Delete account</string>

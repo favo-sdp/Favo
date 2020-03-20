@@ -37,16 +37,20 @@ public class UserAccountPage extends Fragment {
   }
 
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-      // Inflate the layout for this fragment
-      view = inflater.inflate(R.layout.account_info, container, false);
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    // Inflate the layout for this fragment
+    view = inflater.inflate(R.layout.account_info, container, false);
 
-      setupButtons();
-      setupView();
-      displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
-      return view;
+    setupButtons();
+    setupView();
+    displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
+    return view;
+  }
 
+  private void setupView() {
+    ((ViewController) getActivity()).showBackIcon();
+    ((ViewController) getActivity()).hideBottomTabs();
   }
 
   private void setupButtons() {

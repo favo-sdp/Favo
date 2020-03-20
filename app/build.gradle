@@ -45,7 +45,7 @@ android {
         main {
             java {
                 srcDirs 'src/main/java'
-                res.srcDirs=
+                res.srcDirs =
                         [
                                 'src/main/res/layout/mainactivity',
                                 'src/main/res/layout',
@@ -83,6 +83,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-login:5.0.0'
 
     // Required --  JUnit 4 framework
+    implementation 'androidx.preference:preference:1.1.0-rc01'
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.mockito:mockito-core:3.3.0'
 
@@ -110,6 +111,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:rules:0.2'
     androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
     implementation 'androidx.navigation:navigation-runtime:2.2.1'
+
 }
 
 tasks.withType(Test) {

@@ -1,6 +1,5 @@
 package ch.epfl.favo.view.tabs;
 
-
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -24,7 +22,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +42,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
  * subclass.
  */
 
-
 public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
@@ -55,6 +51,10 @@ public class MapsPage extends Fragment
   private GpsTracker mGpsTracker;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
 
+  public MapsPage() {
+    // Required empty public constructor
+  }
+
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
@@ -62,19 +62,21 @@ public class MapsPage extends Fragment
     mMap.clear();
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
-    //throw new RuntimeException(
-      //  "This exception will " + "certainly be thrown out as long as Map is ready");
   }
 
-  public MapsPage() {
-    // Required empty public constructor
+  private void setupView() {
+    ((ViewController) getActivity()).setupViewTopDestTab();
+    ((ViewController) getActivity()).checkMapViewButton();
+  }
+
+  private void checkMapButton() {
+    ((ViewController) getActivity()).checkMapViewButton();
   }
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    // add a hidden button for testing
     setupView();
 
     return inflater.inflate(R.layout.tab1_map, container, false);
@@ -84,6 +86,7 @@ public class MapsPage extends Fragment
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
+    checkMapButton();
     mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -91,7 +94,6 @@ public class MapsPage extends Fragment
       mapFragment.getMapAsync(this);
     }
   }
-
 
   public List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
@@ -168,10 +170,6 @@ public class MapsPage extends Fragment
     }
   }
 
-    private void setupView(){
-        ((ViewController) getActivity()).setupViewTopDestTab();
-        ((ViewController) getActivity()).checkMapViewButton();
-    }
 
     /**
      * utilities functions to help debug
@@ -223,8 +221,7 @@ public class MapsPage extends Fragment
   public Favor queryFavor(double latitude, double longitude) {
     for (Favor favor : currentActiveLocalFavorList) {
       if (favor.getLocation().getLatitude() == latitude
-          && favor.getLocation().getLongitude() == longitude)
-        return favor;
+          && favor.getLocation().getLongitude() == longitude) return favor;
     }
     return null;
   }

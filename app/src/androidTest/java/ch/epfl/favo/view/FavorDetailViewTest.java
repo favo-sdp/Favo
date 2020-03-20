@@ -93,9 +93,4 @@ public class FavorDetailViewTest {
                 .check(matches(withText(R.string.favor_respond_success_msg)));
     }
 
-
-
-
-
-
 }

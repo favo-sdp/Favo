@@ -27,7 +27,7 @@ import ch.epfl.favo.util.LocationManagerDependencyFactory;
  * view. And when running on a virtual device, the position does not seems consist with expectation.
  * But this will not happen on a real phone.
  */
-public class GpsTracker extends FragmentActivity implements LocationListener {
+public class GpsTracker extends FragmentActivity implements LocationListener, Locator {
 
   private final Context context;
   protected LocationManager locationManager;
@@ -45,9 +45,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener {
    * @return the location of phone
    */
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    locationManager =
-        LocationManagerDependencyFactory.getCurrentLocationManager(
-                context);
+    locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context);
     isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -68,15 +66,14 @@ public class GpsTracker extends FragmentActivity implements LocationListener {
       if (location == null) {
         throw new NoPositionFoundException("Permission is granted, but no position is found");
       }
-    }
-    else throw new NoPermissionGrantedException("No location permission granted");
+    } else throw new NoPermissionGrantedException("No location permission granted");
     return location;
   }
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
 
-      // throw new NotImplementedException();
+    // throw new NotImplementedException();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {

@@ -22,21 +22,23 @@ public class FavorDetailView extends Fragment {
     private final static String FAVOR_ARGS = "FAVOR_ARGS";
     private Favor favor;
 
-    public static FavorDetailView newInstance(Favor favor){
-        FavorDetailView fragment = new FavorDetailView();
-        Bundle args = new Bundle();
-        args.putParcelable(FAVOR_ARGS,favor);
-        fragment.setArguments(args);
-        return fragment;
-    }
+  public static FavorDetailView newInstance(Favor favor) {
+    FavorDetailView fragment = new FavorDetailView();
+    Bundle args = new Bundle();
+    args.putParcelable(FAVOR_ARGS, favor);
+    fragment.setArguments(args);
+    return fragment;
+        }
 
-    public FavorDetailView() {
-        // create favor detail from a favor
-    }
+
+  public FavorDetailView() {
+    // create favor detail from a favor
+  }
+
+
 
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //hide bottom tabs and hamburger menu
         setupView();
         //inflate view
@@ -98,4 +100,3 @@ public class FavorDetailView extends Fragment {
     }
 
 }
-

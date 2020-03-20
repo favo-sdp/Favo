@@ -67,3 +67,4 @@ node_modules/
 # Intellij related files
 .idea/
 *.iml
+firebase.json

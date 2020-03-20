@@ -2,34 +2,20 @@ package ch.epfl.favo.view.tabs;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.Fragment;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import androidx.preference.PreferenceFragmentCompat;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.view.ViewController;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class FragmentSettings extends Fragment {
+public class FragmentSettings extends PreferenceFragmentCompat {
 
-    public FragmentSettings() {
-        // Required empty public constructor
-    }
+  private void setupView() {
+    ((ViewController) getActivity()).setupViewBotDestTab();
+  }
 
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        setupView();
-        return inflater.inflate(R.layout.fragment_settings, container, false);
-    }
-
-    private void setupView(){
-        ((ViewController) getActivity()).setupViewBotDestTab();
-    }
+  @Override
+  public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    setupView();
+    setPreferencesFromResource(R.xml.root_preferences, rootKey);
+  }
 }

@@ -11,11 +11,17 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 
     <style name="WarnButton" parent="Widget.AppCompat.Button.Colored">
         <item name="colorButtonNormal">@color/material_red_a200</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
     <style name="AppTheme.RadioButtonLikeBottomNavigationView" parent="@android:style/Widget.Button">
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:button">@null</item>
@@ -33,4 +39,6 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

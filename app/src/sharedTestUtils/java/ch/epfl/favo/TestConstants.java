@@ -2,11 +2,6 @@ package ch.epfl.favo;
 
 import android.location.Location;
 import android.net.Uri;
-import android.os.Bundle;
-
-import com.google.firebase.messaging.RemoteMessage;
-
-import java.util.UUID;
 
 public class TestConstants {
 
@@ -21,12 +16,11 @@ public class TestConstants {
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
   // Favor related test constants
-  public static final Location LOCATION = new Location("Dummy Provider");
+  public static final Location LOCATION = new Location(PROVIDER);
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
 
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";
   public static final String NOTIFICATION_BODY = "body";
-
 }
