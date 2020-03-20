@@ -1,5 +1,6 @@
 package ch.epfl.favo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -204,4 +205,11 @@ public class MainActivity extends AppCompatActivity
               // TODO send registration token to db
             });
   }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+  }
+
 }

@@ -1,6 +1,5 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,8 +41,8 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setupView();
-        View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
-        Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
+        View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
+        Button confirmFavorBtn = rootView.findViewById(R.id.accept_button);
         confirmFavorBtn.setOnClickListener(this);
         if (favor == null){
             favor = getArguments().getParcelable(FAVOR_ARGS);
@@ -65,19 +64,19 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
         String titleStr = favor.getTitle();
         String descriptionStr = favor.getDescription();
 
-        TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
+        TextView greeting = rootView.findViewById(R.id.favor_greeting_str2);
         greeting.setText(greetingStr);
 
-        TextView location = rootView.findViewById(R.id.location);
+        TextView location = rootView.findViewById(R.id.location2);
         location.setText(locationStr);
 
-        TextView time = rootView.findViewById(R.id.datetime);
+        TextView time = rootView.findViewById(R.id.datetime2);
         time.setText(timeStr);
 
-        TextView title = rootView.findViewById(R.id.title);
+        TextView title = rootView.findViewById(R.id.title2);
         title.setText(titleStr);
 
-        TextView details = rootView.findViewById(R.id.details);
+        TextView details = rootView.findViewById(R.id.details2);
         details.setText(descriptionStr);
     }
 
@@ -86,8 +85,8 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
         // The following inspection warning is suppressed. More cases will be added soon.
         // noinspection SwitchStatementWithTooFewBranches
         switch (view.getId()) {
-            case R.id.add_button:
-                CommonTools.showSnackbar(requireView().findViewById(R.id.fragment_favor),
+            case R.id.accept_button:
+                CommonTools.showSnackbar(requireView().findViewById(R.id.fragment_favor_accept_view),
                         getString(R.string.favor_respond_success_msg));
         }
     }

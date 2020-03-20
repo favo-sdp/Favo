@@ -27,7 +27,7 @@
     <string name="favor_location_hint">Where?</string>
     <string name="favor_datetime_hint">Now</string>
     <string name="favor_details_hint">Add more details?</string>
-    <string name="favor_confirm_button">Confirm Adding Favor</string>
+    <string name="favor_confirm_button">Request Favor</string>
     <string-array name="favor_list_spinner">
         <item>Active</item>
         <item>Past</item>

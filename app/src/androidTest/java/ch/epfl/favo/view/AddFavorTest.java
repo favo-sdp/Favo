@@ -63,7 +63,7 @@ public class AddFavorTest {
             .check(matches(isDisplayed()))
             .perform(click());
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.add_button))
+    onView(withId(R.id.request_button))
             .check(matches(isDisplayed()))
             .perform(click());
     getInstrumentation().waitForIdleSync();
@@ -71,6 +71,26 @@ public class AddFavorTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(matches(withText(R.string.favor_success_msg)));
 
+  }
+  @Test
+  public void upLoadPictureButtonWorks() {
+    //Click on fav list tab
+    onView(withId(R.id.nav_favor_list_button))
+            .check(matches(isDisplayed()))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.new_favor))
+            .check(matches(isDisplayed()))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.add_picture_button))
+            .check(matches(isDisplayed()))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+    pressBack();
+    pressBack();
+    pressBack();
 
   }
+
 }
