@@ -1,20 +1,19 @@
 package ch.epfl.favo.view;
 
 public interface ViewController {
-    void hideBottomTabs();
+  void hideBottomTabs();
 
-    void showBottomTabs();
+  void showBottomTabs();
 
-    void showBurgerIcon();
+  void showBurgerIcon();
 
-    void showBackIcon();
+  void showBackIcon();
 
-    void checkMapViewButton();
+  void checkMapViewButton();
 
-    void checkFavListViewButton();
+  void checkFavListViewButton();
 
-    void setupViewTopDestTab();
+  void setupViewTopDestTab();
 
-    void setupViewBotDestTab();
-
+  void setupViewBotDestTab();
 }

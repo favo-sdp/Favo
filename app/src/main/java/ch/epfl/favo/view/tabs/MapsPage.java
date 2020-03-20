@@ -41,7 +41,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
-
 public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
@@ -69,10 +68,6 @@ public class MapsPage extends Fragment
     ((ViewController) getActivity()).checkMapViewButton();
   }
 
-  private void checkMapButton() {
-    ((ViewController) getActivity()).checkMapViewButton();
-  }
-
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,7 +81,6 @@ public class MapsPage extends Fragment
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
-    checkMapButton();
     mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -170,18 +164,14 @@ public class MapsPage extends Fragment
     }
   }
 
-
-    /**
-     * utilities functions to help debug
-     */
-//    public void displayDebugInfo() {
-//        Log.d("latitude", Double.toString(mLocation.getLatitude()));
-//        Log.d("longitude", Double.toString(mLocation.getLongitude()));
-//        Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));
-//        Log.d("gpstime", convertTime(mLocation.getTime()));
-//        Log.d("bearing", Float.toString(mLocation.getBearing()));
-//    }
-
+  /** utilities functions to help debug */
+  //    public void displayDebugInfo() {
+  //        Log.d("latitude", Double.toString(mLocation.getLatitude()));
+  //        Log.d("longitude", Double.toString(mLocation.getLongitude()));
+  //        Log.d("zoom", Float.toString(mMap.getMaxZoomLevel()));
+  //        Log.d("gpstime", convertTime(mLocation.getTime()));
+  //        Log.d("bearing", Float.toString(mLocation.getBearing()));
+  //    }
 
   /**
    * @param time the UTC time of this fix, in milliseconds since January 1, 1970.
@@ -198,7 +188,6 @@ public class MapsPage extends Fragment
    * Float.toString(mMap.getMaxZoomLevel())); Log.d("gpstime", convertTime(mLocation.getTime()));
    * Log.d("bearing", Float.toString(mLocation.getBearing())); }
    */
-
   @Override
   public View getInfoContents(Marker marker) {
     return null;

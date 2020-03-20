@@ -35,7 +35,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     setupView();
 
-
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
     rootView.findViewById(R.id.new_favor).setOnClickListener(this);
 
@@ -63,7 +62,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     return rootView;
   }
 
-
   private void checkFavListButton() {
     ((ViewController) getActivity()).checkFavListViewButton();
   }
@@ -88,14 +86,12 @@ public class FavorPage extends Fragment implements View.OnClickListener {
         replaceFragment(fragment);
         break;
     }
-    }
+  }
 
-    private void setupView(){
-        ((ViewController) getActivity()).setupViewTopDestTab();
-        ((ViewController) getActivity()).checkFavListViewButton();
-    }
-
-
+  private void setupView() {
+    ((ViewController) getActivity()).setupViewTopDestTab();
+    ((ViewController) getActivity()).checkFavListViewButton();
+  }
 
   // Replace the current fragment with the new fragment.
   // Todo: Seems useful. Try to put this method in a util package and import it here.

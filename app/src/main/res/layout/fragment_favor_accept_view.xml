@@ -16,7 +16,7 @@
         android:padding="20dp">
 
         <TextView
-            android:id="@+id/favor_greeting_str2"
+            android:id="@+id/favor_greeting_text_accept"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/title2"
+            android:id="@+id/title_accept_view"
 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -44,10 +44,10 @@
 
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/favor_greeting_str2" />
+            app:layout_constraintTop_toBottomOf="@id/favor_greeting_text_accept" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/imageView_accept_view"
 
             android:layout_width="240dp"
             android:layout_height="160dp"
@@ -57,11 +57,11 @@
             app:layout_constraintLeft_toLeftOf="parent"
 
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title2"
+            app:layout_constraintTop_toBottomOf="@id/title_accept_view"
             app:srcCompat="@android:drawable/ic_menu_gallery" />
 
         <EditText
-            android:id="@+id/location2"
+            android:id="@+id/location_accept_view"
 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -73,10 +73,10 @@
 
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title2" />
+            app:layout_constraintTop_toBottomOf="@id/title_accept_view" />
 
         <EditText
-            android:id="@+id/datetime2"
+            android:id="@+id/datetime_accept_view"
 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -87,10 +87,10 @@
             android:inputType="datetime"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/location2" />
+            app:layout_constraintTop_toBottomOf="@id/location_accept_view" />
 
         <EditText
-            android:id="@+id/details2"
+            android:id="@+id/details_accept_view"
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
             android:minLines="8"
             android:scrollbars="vertical"
 
-            app:layout_constraintTop_toBottomOf="@id/datetime2" />
+            app:layout_constraintTop_toBottomOf="@id/datetime_accept_view" />
 
         <Button
             android:id="@+id/accept_button"

@@ -48,7 +48,6 @@ public class UserAccountPage extends Fragment {
     return view;
   }
 
-
   private void setupButtons() {
     Button signOutButton = view.findViewById(R.id.sign_out);
     signOutButton.setOnClickListener(this::signOut);
@@ -111,7 +110,7 @@ public class UserAccountPage extends Fragment {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
-  private void setupView(){
-      ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
+  private void setupView() {
+    ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
   }
 }
