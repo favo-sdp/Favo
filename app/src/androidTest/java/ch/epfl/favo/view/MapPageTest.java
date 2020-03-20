@@ -82,7 +82,7 @@ public class MapPageTest {
     Log.d("debug ", "w " + screenWidth);
     device.click(x, (int) (y * 0.8));
     waitFor(2000);
-    onView(withId(R.id.add_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(snackbar)));

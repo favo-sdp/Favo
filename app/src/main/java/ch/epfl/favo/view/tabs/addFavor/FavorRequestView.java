@@ -98,9 +98,9 @@ public class FavorRequestView extends Fragment {
 
 
   private void requestFavor() {
-    showSnackbar(getString(R.string.favor_respond_success_msg));
+    showSnackbar(getString(R.string.favor_request_success_msg));
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title);
-    EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.desc);
+    EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     Location loc = mGpsTracker.getLocation();
