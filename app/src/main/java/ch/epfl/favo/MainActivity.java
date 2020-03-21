@@ -178,6 +178,18 @@ public class MainActivity extends AppCompatActivity
   }
 
   @Override
+  public void setupViewTopDestTab() {
+    showBurgerIcon();
+    showBottomTabs();
+  }
+
+  @Override
+  public void setupViewBotDestTab() {
+    hideBottomTabs();
+    showBackIcon();
+  }
+
+  @Override
   public void onBackPressed() {
     getSupportFragmentManager().popBackStackImmediate();
   }
@@ -197,5 +209,10 @@ public class MainActivity extends AppCompatActivity
               Log.d(TAG, getString(R.string.msg_token_fmt, token));
               // TODO send registration token to db
             });
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
   }
 }

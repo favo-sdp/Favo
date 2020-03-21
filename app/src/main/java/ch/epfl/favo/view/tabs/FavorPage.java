@@ -34,7 +34,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     setupView();
-    checkFavListButton();
 
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
     rootView.findViewById(R.id.new_favor).setOnClickListener(this);
@@ -63,11 +62,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     return rootView;
   }
 
-  private void setupView() {
-    ((ViewController) getActivity()).showBurgerIcon();
-    ((ViewController) getActivity()).showBottomTabs();
-  }
-
   private void checkFavListButton() {
     ((ViewController) getActivity()).checkFavListViewButton();
   }
@@ -92,6 +86,11 @@ public class FavorPage extends Fragment implements View.OnClickListener {
         replaceFragment(fragment);
         break;
     }
+  }
+
+  private void setupView() {
+    ((ViewController) getActivity()).setupViewTopDestTab();
+    ((ViewController) getActivity()).checkFavListViewButton();
   }
 
   // Replace the current fragment with the new fragment.

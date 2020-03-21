@@ -10,8 +10,7 @@ import ch.epfl.favo.view.ViewController;
 public class FragmentSettings extends PreferenceFragmentCompat {
 
   private void setupView() {
-    ((ViewController) getActivity()).showBackIcon();
-    ((ViewController) getActivity()).hideBottomTabs();
+    ((ViewController) getActivity()).setupViewBotDestTab();
   }
 
   @Override

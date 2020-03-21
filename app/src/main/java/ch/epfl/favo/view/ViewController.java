@@ -12,4 +12,8 @@ public interface ViewController {
   void checkMapViewButton();
 
   void checkFavListViewButton();
+
+  void setupViewTopDestTab();
+
+  void setupViewBotDestTab();
 }

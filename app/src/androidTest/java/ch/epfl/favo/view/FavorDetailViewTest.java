@@ -26,6 +26,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
@@ -34,6 +35,8 @@ import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class FavorDetailViewTest {
+  private Favor fakeFavor;
+
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -47,8 +50,6 @@ public class FavorDetailViewTest {
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
-
-  private Favor fakeFavor;
 
   @Before
   public void setUP() {
@@ -81,10 +82,17 @@ public class FavorDetailViewTest {
     transaction.commit();
 
     // check that detailed view is indeed opened
-    onView(allOf(withId(R.id.fragment_favor), withParent(withId(R.id.nav_host_fragment))))
+    onView(
+            allOf(
+                withId(R.id.fragment_favor_accept_view),
+                withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
     // Check clicking on the button
-    onView(withId(R.id.add_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
+
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_respond_success_msg)));
   }
 }

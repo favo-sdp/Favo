@@ -45,7 +45,6 @@ public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
-
   private GoogleMap mMap;
   private Location mLocation;
   private GpsTracker mGpsTracker;
@@ -65,11 +64,7 @@ public class MapsPage extends Fragment
   }
 
   private void setupView() {
-    ((ViewController) getActivity()).showBurgerIcon();
-    ((ViewController) getActivity()).showBottomTabs();
-  }
-
-  private void checkMapButton() {
+    ((ViewController) getActivity()).setupViewTopDestTab();
     ((ViewController) getActivity()).checkMapViewButton();
   }
 
@@ -78,7 +73,6 @@ public class MapsPage extends Fragment
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     setupView();
-    checkMapButton();
 
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
@@ -87,7 +81,6 @@ public class MapsPage extends Fragment
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
-    checkMapButton();
     mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);

@@ -9,22 +9,16 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 
-/**
- * A simple {@link Fragment} subclass. Use the {@link FavorRequestView#newInstance} factory method
- * to create an instance of this fragment.
- */
-public class FavorDetailView extends Fragment implements View.OnClickListener {
+public class FavorDetailView extends Fragment {
   private static final String FAVOR_ARGS = "FAVOR_ARGS";
   private Favor favor;
-
-  public FavorDetailView() {
-    // create favor detail from a favor
-  }
 
   public static FavorDetailView newInstance(Favor favor) {
     FavorDetailView fragment = new FavorDetailView();
@@ -34,25 +28,32 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
     return fragment;
   }
 
-  private void setupView() {
-    ((ViewController) getActivity()).showBurgerIcon();
-    ((ViewController) getActivity()).showBottomTabs();
+  public FavorDetailView() {
+    // create favor detail from a favor
   }
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    // hide bottom tabs and hamburger menu
     setupView();
-    View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
-    Button confirmFavorBtn = rootView.findViewById(R.id.add_button);
-    confirmFavorBtn.setOnClickListener(this);
+    // inflate view
+    View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
+    Button confirmFavorBtn = rootView.findViewById(R.id.accept_button);
+
+    // Show snackbar when favor has been confirmed
+    confirmFavorBtn.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            showSnackbar(getString(R.string.favor_respond_success_msg));
+          }
+        });
+
     if (favor == null) {
       favor = getArguments().getParcelable(FAVOR_ARGS);
     }
-    if (favor != null) {
-      confirmFavorBtn.setText("Respond");
-      displayFromFavor(rootView, favor);
-    }
+    displayFromFavor(rootView, favor);
 
     return rootView;
   }
@@ -68,31 +69,31 @@ public class FavorDetailView extends Fragment implements View.OnClickListener {
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
 
-    TextView greeting = rootView.findViewById(R.id.favor_greeting_str);
+    TextView greeting = rootView.findViewById(R.id.favor_greeting_text_accept);
     greeting.setText(greetingStr);
 
-    TextView location = rootView.findViewById(R.id.location);
+    TextView location = rootView.findViewById(R.id.location_accept_view);
     location.setText(locationStr);
 
-    TextView time = rootView.findViewById(R.id.datetime);
+    TextView time = rootView.findViewById(R.id.datetime_accept_view);
     time.setText(timeStr);
 
-    TextView title = rootView.findViewById(R.id.title);
+    TextView title = rootView.findViewById(R.id.title_accept_view);
     title.setText(titleStr);
 
-    TextView details = rootView.findViewById(R.id.details);
+    TextView details = rootView.findViewById(R.id.details_accept_view);
     details.setText(descriptionStr);
   }
 
-  @Override
-  public void onClick(View view) {
-    // The following inspection warning is suppressed. More cases will be added soon.
-    // noinspection SwitchStatementWithTooFewBranches
-    switch (view.getId()) {
-      case R.id.add_button:
-        CommonTools.showSnackbar(
-            requireView().findViewById(R.id.fragment_favor),
-            getString(R.string.favor_respond_success_msg));
-    }
+  private void setupView() {
+    ((ViewController) getActivity()).setupViewBotDestTab();
+  }
+
+  private void showSnackbar(String errorMessageRes) {
+    Snackbar.make(
+            requireView().findViewById(R.id.fragment_favor_accept_view),
+            errorMessageRes,
+            Snackbar.LENGTH_LONG)
+        .show();
   }
 }
