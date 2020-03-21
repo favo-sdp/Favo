@@ -2,7 +2,7 @@ package ch.epfl.favo.common;
 
 import java.util.Map;
 
-public class CollectionWrapper {
+public class CollectionWrapper implements DatabaseUpdater{
 
   private static final String TAG = "DatabaseWrapper";
   private String collectionReference;
