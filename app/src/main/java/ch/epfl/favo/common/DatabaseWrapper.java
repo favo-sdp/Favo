@@ -1,11 +1,9 @@
 package ch.epfl.favo.common;
 
-import android.util.Log;
-
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,6 @@ import java.util.Map;
 
 public class DatabaseWrapper {
 
-  private static final String TAG = "DatabaseWrapper";
   private static DatabaseWrapper INSTANCE = null;
   private FirebaseFirestore firestore;
 
@@ -52,9 +49,7 @@ public class DatabaseWrapper {
 
   public static void addDocument(String key, Map document, String collection)
       throws RuntimeException {
-    DatabaseWrapper.getInstance()
-        .firestore
-        .collection(collection)
+    getCollectionReference(collection)
         .document(key)
         .set(document)
         .addOnSuccessListener(aVoid -> {})
@@ -65,9 +60,7 @@ public class DatabaseWrapper {
   }
 
   public static void removeDocument(String key, String collection) throws RuntimeException {
-    DatabaseWrapper.getInstance()
-        .firestore
-        .collection(collection)
+    getCollectionReference(collection)
         .document(key)
         .delete()
         .addOnSuccessListener(aVoid -> {})
@@ -79,9 +72,7 @@ public class DatabaseWrapper {
 
   public static void updateDocument(String key, Map<String, Object> updates, String collection)
       throws RuntimeException {
-    DatabaseWrapper.getInstance()
-        .firestore
-        .collection(collection)
+    getCollectionReference(collection)
         .document(key)
         .update(updates)
         .addOnSuccessListener(aVoid -> {})
@@ -93,9 +84,7 @@ public class DatabaseWrapper {
 
   public static void getDocument(String key, String collection, DocumentCallback callback)
       throws RuntimeException {
-    DatabaseWrapper.getInstance()
-        .firestore
-        .collection(collection)
+    getCollectionReference(collection)
         .document(key)
         .get()
         .addOnCompleteListener(
@@ -115,9 +104,7 @@ public class DatabaseWrapper {
 
   public static void getAllDocuments(String collection, MultipleDocumentsCallback callback)
       throws RuntimeException {
-    DatabaseWrapper.getInstance()
-        .firestore
-        .collection(collection)
+    getCollectionReference(collection)
         .get()
         .addOnCompleteListener(
             task -> {
@@ -131,5 +118,9 @@ public class DatabaseWrapper {
                 throw new RuntimeException(task.getException());
               }
             });
+  }
+
+  private static CollectionReference getCollectionReference(String collection) {
+    return getInstance().firestore.collection(collection);
   }
 }
