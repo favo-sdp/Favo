@@ -1,14 +1,20 @@
 package ch.epfl.favo.common;
 
+import android.annotation.SuppressLint;
+
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+@SuppressLint("NewApi")
 public class DatabaseWrapper {
 
   private static DatabaseWrapper INSTANCE = null;
@@ -47,77 +53,46 @@ public class DatabaseWrapper {
     return sb.toString();
   }
 
-  public static void addDocument(String key, Map document, String collection)
-      throws RuntimeException {
-    getCollectionReference(collection)
-        .document(key)
-        .set(document)
-        .addOnSuccessListener(aVoid -> {})
-        .addOnFailureListener(
-            e -> {
-              throw new RuntimeException(e);
-            });
+  public static void addDocument(String key, Map document, String collection) {
+    new TaskToFutureAdapter<>(getCollectionReference(collection).document(key).set(document));
   }
 
-  public static void removeDocument(String key, String collection) throws RuntimeException {
-    getCollectionReference(collection)
-        .document(key)
-        .delete()
-        .addOnSuccessListener(aVoid -> {})
-        .addOnFailureListener(
-            e -> {
-              throw new RuntimeException(e);
-            });
+  public static void removeDocument(String key, String collection) {
+    Task<Void> deleteTask = getCollectionReference(collection).document(key).delete();
+    new TaskToFutureAdapter<>(deleteTask);
   }
 
-  public static void updateDocument(String key, Map<String, Object> updates, String collection)
-      throws RuntimeException {
-    getCollectionReference(collection)
-        .document(key)
-        .update(updates)
-        .addOnSuccessListener(aVoid -> {})
-        .addOnFailureListener(
-            e -> {
-              throw new RuntimeException(e);
-            });
+  public static void updateDocument(String key, Map<String, Object> updates, String collection) {
+    Task<Void> updateTask = getCollectionReference(collection).document(key).update(updates);
+    new TaskToFutureAdapter<>(updateTask);
   }
 
-  public static void getDocument(String key, String collection, DocumentCallback callback)
-      throws RuntimeException {
-    getCollectionReference(collection)
-        .document(key)
-        .get()
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                DocumentSnapshot documentSnapshot = task.getResult();
-                if (documentSnapshot.exists()) {
-                  callback.onCallback(documentSnapshot.getData());
-                } else {
-                  throw new RuntimeException(String.format("Document %s does not exist ", key));
-                }
-              } else {
-                throw new RuntimeException(task.getException());
-              }
-            });
+  public static CompletableFuture<Map> getDocument(String key, String collection) {
+    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
+    CompletableFuture<DocumentSnapshot> future = new TaskToFutureAdapter<>(getTask);
+
+    return future.thenApply(
+        documentSnapshot -> {
+          if (documentSnapshot.exists()) {
+            return documentSnapshot.getData();
+          } else {
+            throw new RuntimeException(String.format("Document %s does not exist ", key));
+          }
+        });
   }
 
-  public static void getAllDocuments(String collection, MultipleDocumentsCallback callback)
-      throws RuntimeException {
-    getCollectionReference(collection)
-        .get()
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                List<Map> values = new ArrayList<>();
-                for (DocumentSnapshot documentSnapshot : task.getResult()) {
-                  values.add(documentSnapshot.getData());
-                }
-                callback.onCallback(values);
-              } else {
-                throw new RuntimeException(task.getException());
-              }
-            });
+  public static CompletableFuture<List<Map>> getAllDocuments(String collection) {
+    Task<QuerySnapshot> getTask = getCollectionReference(collection).get();
+    CompletableFuture<QuerySnapshot> future = new TaskToFutureAdapter<>(getTask);
+
+    return future.thenApply(
+        querySnapshot -> {
+          List<Map> values = new ArrayList<>();
+          for (DocumentSnapshot documentSnapshot : querySnapshot) {
+            values.add(documentSnapshot.getData());
+          }
+          return values;
+        });
   }
 
   private static CollectionReference getCollectionReference(String collection) {
