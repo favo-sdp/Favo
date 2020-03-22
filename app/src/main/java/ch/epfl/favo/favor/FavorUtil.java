@@ -118,4 +118,8 @@ public class FavorUtil {
 
     throw new NotImplementedException();
   }
+
+  public Favor retrieveFavor(String favorId){
+    return null;
+  }
 }

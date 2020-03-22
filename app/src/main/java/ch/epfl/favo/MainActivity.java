@@ -71,6 +71,11 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
+    Bundle extras = getIntent().getExtras();
+    if (extras!=null){
+      extras.getString("favor_ID");
+    }
+
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);

@@ -31,7 +31,9 @@ public class FirebaseMessagingService
   public static void showNotification(
       Context context, RemoteMessage.Notification notification, String channelId) {
     Intent intent = new Intent(context, MainActivity.class);
+    intent.putExtra("Favor_ID",notification.getTag());
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
     PendingIntent pendingIntent =
         PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
