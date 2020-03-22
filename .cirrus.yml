@@ -31,7 +31,7 @@
 #  - ./cc-test-reporter format-coverage ./app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
 #  - ./cc-test-reporter upload-coverage
 connected_check_task:
-  name: Run Android instrumented tests
+  name: Cirrus CI
   env:
     API_LEVEL: 28
     TARGET: default
