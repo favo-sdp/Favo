@@ -67,7 +67,8 @@ public class DatabaseWrapper {
     new TaskToFutureAdapter<>(updateTask);
   }
 
-  public static CompletableFuture<Map> getDocument(String key, String collection) {
+  public static CompletableFuture<Map> getDocument(String key, String collection)
+      throws RuntimeException {
     Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
     CompletableFuture<DocumentSnapshot> future = new TaskToFutureAdapter<>(getTask);
 
