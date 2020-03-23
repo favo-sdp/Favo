@@ -12,17 +12,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.core.Transaction;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Objects;
 
+import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
+import static ch.epfl.favo.favor.FavorUtil.getSingleInstance;
 // import static ch.epfl.favo.R.id.toolbar;
 
 /**
@@ -73,7 +80,12 @@ public class MainActivity extends AppCompatActivity
 
     Bundle extras = getIntent().getExtras();
     if (extras!=null){
-      extras.getString("favor_ID");
+      String favor_id = extras.getString("FavorId");
+      Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
+      Fragment frag  = FavorDetailView.newInstance(favor);
+      FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+      trans.replace(R.id.nav_host_fragment,frag);
+      trans.commit();
     }
 
     /*Activate if we want a toolbar */

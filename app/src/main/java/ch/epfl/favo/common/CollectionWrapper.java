@@ -2,7 +2,7 @@ package ch.epfl.favo.common;
 
 import java.util.Map;
 
-public class CollectionWrapper implements DatabaseUpdater{
+public class CollectionWrapper implements DatabaseUpdater {
 
   private static final String TAG = "DatabaseWrapper";
   private String collectionReference;
@@ -13,5 +13,10 @@ public class CollectionWrapper implements DatabaseUpdater{
 
   public void addDocument(String key, Map document) {
     DatabaseWrapper.addDocument(key, document, collectionReference);
+  }
+
+  @Override
+  public Map<String, Object> getDocument(String key) {
+    return DatabaseWrapper.getDocument(key, collectionReference);
   }
 }

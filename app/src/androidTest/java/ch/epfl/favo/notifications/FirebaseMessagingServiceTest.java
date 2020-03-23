@@ -1,6 +1,7 @@
 package ch.epfl.favo.notifications;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -27,12 +28,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
@@ -46,6 +50,25 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
+
+class MockDatabaseWrapper implements DatabaseUpdater {
+    @Override
+    public void addDocument(String key, Map document) {}
+
+    @Override
+    public Map<String, Object> getDocument(String key) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("title","test");
+        map.put("description","test_description");
+        Location loc = new Location("dummy");
+        loc.setLongitude(0.1);
+        loc.setLatitude(0.2);
+        map.put("location",loc);
+
+        return map;
+    }
+}
+
 @RunWith(AndroidJUnit4.class)
 public class FirebaseMessagingServiceTest {
 
@@ -56,6 +79,7 @@ public class FirebaseMessagingServiceTest {
         protected void beforeActivityLaunched() {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
         }
       };
 
@@ -101,10 +125,10 @@ public class FirebaseMessagingServiceTest {
         assertEquals(NOTIFICATION_TITLE, title.getText());
         assertEquals(NOTIFICATION_BODY, text.getText());
         title.click();
-
+        device.waitForIdle();
 //    // check that tab 2 is indeed opened
-//        onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
-//            .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.fragment_favor_accept_view), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
 
   }
 }

@@ -52,7 +52,7 @@ public class DependencyFactory {
   }
 
   public static DatabaseUpdater getCurrentDatabaseUpdater(String collectionReference) {
-    if (testMode && currentGpsTracker != null) {
+    if (testMode && currentDatabaseUpdater != null) {
       return currentDatabaseUpdater;
     }
     return new CollectionWrapper(collectionReference);

@@ -45,6 +45,11 @@ class MockGpsTracker implements Locator {
 class MockDatabaseWrapper implements DatabaseUpdater {
   @Override
   public void addDocument(String key, Map document) {}
+
+  @Override
+  public Map<String, Object> getDocument(String key) {
+    return null;
+  }
 }
 
 @RunWith(AndroidJUnit4.class)

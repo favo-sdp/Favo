@@ -119,7 +119,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public Favor retrieveFavor(String favorId){
-    return null;
+  public Favor retrieveFavor(String favorId) throws NotImplementedException {
+    return new Favor(collection.getDocument(favorId));
   }
 }
