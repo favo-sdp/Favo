@@ -78,15 +78,7 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    Bundle extras = getIntent().getExtras();
-    if (extras!=null){
-      String favor_id = extras.getString("FavorId");
-      Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag  = FavorDetailView.newInstance(favor);
-      FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-      trans.replace(R.id.nav_host_fragment,frag);
-      trans.commit();
-    }
+
 
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
@@ -204,6 +196,22 @@ public class MainActivity extends AppCompatActivity
   public void setupViewBotDestTab() {
     hideBottomTabs();
     showBackIcon();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    Bundle extras = intent.getExtras();
+    if (extras!=null){
+      String favor_id = extras.getString("FavorId");
+      Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
+      Fragment frag  = FavorDetailView.newInstance(favor);
+      FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+      trans.replace(R.id.nav_host_fragment,frag);
+      trans.commit();
+    }
+
+
   }
 
   @Override

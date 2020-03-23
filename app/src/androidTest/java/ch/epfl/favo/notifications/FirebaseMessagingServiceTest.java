@@ -90,6 +90,7 @@ public class FirebaseMessagingServiceTest {
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
+    DependencyFactory.setCurrentDatabaseUpdater(null);
     Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
     mainActivityTestRule.getActivity().sendBroadcast(closeIntent);
   }
@@ -125,7 +126,7 @@ public class FirebaseMessagingServiceTest {
         assertEquals(NOTIFICATION_TITLE, title.getText());
         assertEquals(NOTIFICATION_BODY, text.getText());
         title.click();
-        device.waitForIdle();
+        getInstrumentation().waitForIdleSync();
 //    // check that tab 2 is indeed opened
         onView(allOf(withId(R.id.fragment_favor_accept_view), withParent(withId(R.id.nav_host_fragment))))
             .check(matches(isDisplayed()));
