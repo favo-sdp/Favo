@@ -18,16 +18,16 @@ public class CollectionWrapper<T extends Document> {
     DatabaseWrapper.addDocument(document, collection);
   }
 
-  public void removeDocument(T document) {
-    DatabaseWrapper.removeDocument(document, collection);
+  public void removeDocument(String key) {
+    DatabaseWrapper.removeDocument(key, collection);
   }
 
-  public void updateDocument(T document, Map<String, Object> updates) {
-    DatabaseWrapper.updateDocument(document, updates, collection);
+  public void updateDocument(String key, Map<String, Object> updates) {
+    DatabaseWrapper.updateDocument(key, updates, collection);
   }
 
-  public CompletableFuture<T> getDocument(T document) {
-    return DatabaseWrapper.getDocument(document, cls, collection);
+  public CompletableFuture<T> getDocument(String key) {
+    return DatabaseWrapper.getDocument(key, cls, collection);
   }
 
   public CompletableFuture<List<T>> getAllDocuments() {

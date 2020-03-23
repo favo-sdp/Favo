@@ -57,19 +57,19 @@ public class DatabaseWrapper {
     getCollectionReference(collection).document(document.getId()).set(document);
   }
 
-  public static <T extends Document> void removeDocument(T document, String collection) {
-    getCollectionReference(collection).document(document.getId()).delete();
+  public static <T extends Document> void removeDocument(String key, String collection) {
+    getCollectionReference(collection).document(key).delete();
   }
 
   public static <T extends Document> void updateDocument(
-      T document, Map<String, Object> updates, String collection) {
-    getCollectionReference(collection).document(document.getId()).update(updates);
+      String key, Map<String, Object> updates, String collection) {
+    getCollectionReference(collection).document(key).update(updates);
   }
 
   public static <T extends Document> CompletableFuture<T> getDocument(
-      T document, Class<T> cls, String collection) throws RuntimeException {
+      String key, Class<T> cls, String collection) throws RuntimeException {
     Task<DocumentSnapshot> getTask =
-        getCollectionReference(collection).document(document.getId()).get();
+        getCollectionReference(collection).document(key).get();
     CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
 
     return getFuture.thenApply(
@@ -78,7 +78,7 @@ public class DatabaseWrapper {
             return documentSnapshot.toObject(cls);
           } else {
             throw new RuntimeException(
-                String.format("Document %s does not exist ", document.getId()));
+                String.format("Document %s does not exist ", key));
           }
         });
   }
