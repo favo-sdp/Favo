@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -26,8 +27,30 @@ import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
  */
 public class FavorPage extends Fragment implements View.OnClickListener {
 
+  private ArrayList<Favor> activeFavorArrayList;
+  private ArrayList<Favor> pastFavorArrayList;
+
   public FavorPage() {
     // Required empty public constructor
+  }
+
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+    if (savedInstanceState != null) {
+      activeFavorArrayList = savedInstanceState.getParcelableArrayList("activeFavorArrayList");
+      pastFavorArrayList = savedInstanceState.getParcelableArrayList("pastFavorArrayList");
+    } else {
+      activeFavorArrayList = new ArrayList<>();
+      pastFavorArrayList = new ArrayList<>();
+    }
+  }
+
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putParcelableArrayList("activeFavorArrayList", activeFavorArrayList);
+    outState.putParcelableArrayList("pastFavorArrayList", pastFavorArrayList);
   }
 
   @Override
@@ -47,10 +70,24 @@ public class FavorPage extends Fragment implements View.OnClickListener {
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             switch (position) {
               case 0: // default: active favors
-                listView.setAdapter(new FavorAdapter(getContext(), genFavor("active", 20)));
+                if (activeFavorArrayList.size() == 0) {
+                  TextView tipTextView = rootView.findViewById(R.id.tip);
+                  tipTextView.setText("You have no active favor  （・∀・）");
+                  tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                  tipTextView.setVisibility(View.VISIBLE);
+                } else {
+                  listView.setAdapter(new FavorAdapter(getContext(), activeFavorArrayList));
+                }
                 break;
               case 1: // past favors
-                listView.setAdapter(new FavorAdapter(getContext(), genFavor("past", 20)));
+                if (pastFavorArrayList.size() == 0) {
+                  TextView tipTextView = rootView.findViewById(R.id.tip);
+                  tipTextView.setText("You have no past favor   （・∀・）");
+                  tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                  tipTextView.setVisibility(View.VISIBLE);
+                } else {
+                  listView.setAdapter(new FavorAdapter(getContext(), pastFavorArrayList));
+                }
                 break;
             }
           }

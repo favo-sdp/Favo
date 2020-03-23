@@ -25,6 +25,7 @@ import java.util.Objects;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.FavorPage;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity
   /*Activate if we want a toolbar */
   // private Toolbar toolbar;
   private ImageButton backButton;
+
+  // favorList fragment
+  private Fragment favorListFgmt;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +82,20 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-
+    // restore fragment's instance
+    if (savedInstanceState != null) {
+      favorListFgmt = getSupportFragmentManager().getFragment(savedInstanceState, "favorListFgmt");
+    }
 
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
+  }
+
+  @Override
+  public void onSaveInstanceState(@NonNull Bundle outState) {
+    super.onSaveInstanceState(outState);
+    getSupportFragmentManager().putFragment(outState, "favorListFgmt", favorListFgmt);
   }
 
   private void setUpHamburgerMenuButton() {
