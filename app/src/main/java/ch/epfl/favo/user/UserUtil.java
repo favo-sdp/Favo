@@ -14,7 +14,7 @@ public class UserUtil {
   // Single private instance
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
-  private static final CollectionWrapper collection = new CollectionWrapper("users");
+  private static final CollectionWrapper collection = new CollectionWrapper("users", User.class);
 
   // Private constructor
   private UserUtil() {}

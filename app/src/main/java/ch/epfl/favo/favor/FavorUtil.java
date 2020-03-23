@@ -3,12 +3,7 @@ package ch.epfl.favo.favor;
 import android.location.Location;
 import android.util.Log;
 
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.GeoPoint;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
@@ -19,7 +14,7 @@ This models the favor request.
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static final CollectionWrapper collection = new CollectionWrapper("favors");
+  private static final CollectionWrapper collection = new CollectionWrapper("favors", Favor.class);
   private static boolean testUiMode = false;
   // Private Constructor
   private FavorUtil() {}
@@ -37,15 +32,9 @@ public class FavorUtil {
     if (testUiMode) {
       return;
     } // will skip if testing the UI
-    Map<String, Object> favor = new HashMap<>();
-    Location loc = f.getLocation();
-    favor.put("title", f.getTitle());
-    favor.put("description", f.getDescription());
-    favor.put("statusId", 0);
-    favor.put("location", new GeoPoint(loc.getLatitude(), loc.getLongitude()));
-    favor.put("postedTime", new Timestamp(f.getPostedTime()));
+
     try {
-      collection.addDocument(f.getId(), favor);
+      collection.addDocument(f);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }

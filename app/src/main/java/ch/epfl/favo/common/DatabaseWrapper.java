@@ -21,7 +21,7 @@ public class DatabaseWrapper {
   private FirebaseFirestore firestore;
 
   // final fields regarding ID generation
-  private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static final String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private static final int ID_LENGTH = 25;
 
   private DatabaseWrapper() {
@@ -53,44 +53,46 @@ public class DatabaseWrapper {
     return sb.toString();
   }
 
-  public static void addDocument(String key, Map document, String collection) {
-    new TaskToFutureAdapter<>(getCollectionReference(collection).document(key).set(document));
+  public static <T extends Document> void addDocument(T document, String collection) {
+    getCollectionReference(collection).document(document.getId()).set(document);
   }
 
-  public static void removeDocument(String key, String collection) {
-    Task<Void> deleteTask = getCollectionReference(collection).document(key).delete();
-    new TaskToFutureAdapter<>(deleteTask);
+  public static <T extends Document> void removeDocument(T document, String collection) {
+    getCollectionReference(collection).document(document.getId()).delete();
   }
 
-  public static void updateDocument(String key, Map<String, Object> updates, String collection) {
-    Task<Void> updateTask = getCollectionReference(collection).document(key).update(updates);
-    new TaskToFutureAdapter<>(updateTask);
+  public static <T extends Document> void updateDocument(
+      T document, Map<String, Object> updates, String collection) {
+    getCollectionReference(collection).document(document.getId()).update(updates);
   }
 
-  public static CompletableFuture<Map> getDocument(String key, String collection)
-      throws RuntimeException {
-    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
-    CompletableFuture<DocumentSnapshot> future = new TaskToFutureAdapter<>(getTask);
+  public static <T extends Document> CompletableFuture<T> getDocument(
+      T document, Class<T> cls, String collection) throws RuntimeException {
+    Task<DocumentSnapshot> getTask =
+        getCollectionReference(collection).document(document.getId()).get();
+    CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
 
-    return future.thenApply(
+    return getFuture.thenApply(
         documentSnapshot -> {
           if (documentSnapshot.exists()) {
-            return documentSnapshot.getData();
+            return documentSnapshot.toObject(cls);
           } else {
-            throw new RuntimeException(String.format("Document %s does not exist ", key));
+            throw new RuntimeException(
+                String.format("Document %s does not exist ", document.getId()));
           }
         });
   }
 
-  public static CompletableFuture<List<Map>> getAllDocuments(String collection) {
-    Task<QuerySnapshot> getTask = getCollectionReference(collection).get();
-    CompletableFuture<QuerySnapshot> future = new TaskToFutureAdapter<>(getTask);
+  public static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
+      Class<T> cls, String collection) {
+    Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
 
-    return future.thenApply(
+    return getAllFuture.thenApply(
         querySnapshot -> {
-          List<Map> values = new ArrayList<>();
+          List<T> values = new ArrayList<>();
           for (DocumentSnapshot documentSnapshot : querySnapshot) {
-            values.add(documentSnapshot.getData());
+            values.add(documentSnapshot.toObject(cls));
           }
           return values;
         });

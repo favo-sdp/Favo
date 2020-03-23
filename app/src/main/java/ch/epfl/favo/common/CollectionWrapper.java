@@ -1,32 +1,36 @@
 package ch.epfl.favo.common;
 
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-public class CollectionWrapper {
+public class CollectionWrapper<T extends Document> {
 
-  private String collectionReference;
+  private String collection;
+  private Class cls;
 
-  public CollectionWrapper(String collectionReference) {
-    this.collectionReference = collectionReference;
+  public CollectionWrapper(String collection, Class cls) {
+    this.collection = collection;
+    this.cls = cls;
   }
 
-  public void addDocument(String key, Map document) {
-    DatabaseWrapper.addDocument(key, document, collectionReference);
+  public void addDocument(T document) {
+    DatabaseWrapper.addDocument(document, collection);
   }
 
-  public void removeDocument(String key) {
-    DatabaseWrapper.removeDocument(key, collectionReference);
+  public void removeDocument(T document) {
+    DatabaseWrapper.removeDocument(document, collection);
   }
 
-  public void updateDocument(String key, Map<String, Object> updates) {
-    DatabaseWrapper.updateDocument(key, updates, collectionReference);
+  public void updateDocument(T document, Map<String, Object> updates) {
+    DatabaseWrapper.updateDocument(document, updates, collection);
   }
 
-  public void getDocument(String key) {
-    DatabaseWrapper.getDocument(key, collectionReference);
+  public CompletableFuture<T> getDocument(T document) {
+    return DatabaseWrapper.getDocument(document, cls, collection);
   }
 
-    public void getAllDocuments() {
-        DatabaseWrapper.getAllDocuments(collectionReference);
-    }
+  public CompletableFuture<List<T>> getAllDocuments() {
+    return DatabaseWrapper.getAllDocuments(cls, collection);
+  }
 }

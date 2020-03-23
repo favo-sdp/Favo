@@ -7,10 +7,10 @@ import com.google.android.gms.tasks.Task;
 import java.util.concurrent.CompletableFuture;
 
 @SuppressLint("NewApi")
-public class TaskToFutureAdapter<T> extends CompletableFuture {
+class TaskToFutureAdapter<T> extends CompletableFuture<T> {
   TaskToFutureAdapter(Task<T> task) {
     super();
-    task.addOnSuccessListener(value -> this.complete(value));
-    task.addOnFailureListener(failure -> this.completeExceptionally(failure));
+    task.addOnSuccessListener(this::complete);
+    task.addOnFailureListener(this::completeExceptionally);
   }
 }

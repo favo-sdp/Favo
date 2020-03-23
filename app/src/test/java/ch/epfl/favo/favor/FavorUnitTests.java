@@ -14,8 +14,7 @@ import ch.epfl.favo.util.TestUtil;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -62,7 +61,7 @@ public class FavorUnitTests {
   @Test
   public void favorSuccessfullyPostsToDB() {
     CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
-    Mockito.doNothing().when(mock).addDocument(anyString(), anyMap());
+    Mockito.doNothing().when(mock).addDocument(any(Favor.class));
 
     String title = "Sample Favor";
     String description = TestUtil.generateRandomString(305);
