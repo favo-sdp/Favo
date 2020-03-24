@@ -30,7 +30,7 @@ import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 public class FavorPage extends Fragment implements View.OnClickListener {
 
   private ArrayList<Favor> activeFavorArrayList;
-  private ArrayList<Favor> pastFavorArrayList;
+  private ArrayList<Favor> archivedFavorArrayList;
 
   public FavorPage() {
     // Required empty public constructor
@@ -41,7 +41,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     super.onCreate(bundle);
     MainActivity activity = (MainActivity) getActivity();
     activeFavorArrayList = activity.getActiveFavorArrayList();
-    pastFavorArrayList = activity.getPastFavorArrayList();
+    archivedFavorArrayList = activity.getarchivedFavorArrayList();
   }
 
   @Override
@@ -52,33 +52,33 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
     rootView.findViewById(R.id.new_favor).setOnClickListener(this);
 
-    // Todo: Cache results from getActiveFavorList() and getPastFavorList().
     Spinner spinner = rootView.findViewById(R.id.spinner);
     ListView listView = rootView.findViewById(R.id.favor_list);
     spinner.setOnItemSelectedListener(
         new AdapterView.OnItemSelectedListener() {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            TextView tipTextView = rootView.findViewById(R.id.tip);
+            tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
             switch (position) {
               case 0: // default: active favors
                 if (activeFavorArrayList.size() == 0) {
-                  TextView tipTextView = rootView.findViewById(R.id.tip);
-                  tipTextView.setText("You have no active favor  （・∀・）");
-                  tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                  tipTextView.setText(getString(R.string.favor_no_active_favor));
                   tipTextView.setVisibility(View.VISIBLE);
                 } else {
-                  listView.setAdapter(new FavorAdapter(getContext(), activeFavorArrayList));
+                  tipTextView.setVisibility(View.INVISIBLE);
                 }
+                listView.setAdapter(new FavorAdapter(getContext(), activeFavorArrayList));
                 break;
               case 1: // past favors
-                if (pastFavorArrayList.size() == 0) {
-                  TextView tipTextView = rootView.findViewById(R.id.tip);
-                  tipTextView.setText("You have no past favor   （・∀・）");
-                  tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                if (archivedFavorArrayList.size() == 0) {
+                  tipTextView.setText(getString(R.string.favor_no_archived_favor));
                   tipTextView.setVisibility(View.VISIBLE);
                 } else {
-                  listView.setAdapter(new FavorAdapter(getContext(), pastFavorArrayList));
+                  tipTextView.setVisibility(View.INVISIBLE);
                 }
+                listView.setAdapter(new FavorAdapter(getContext(), archivedFavorArrayList));
                 break;
             }
           }
@@ -89,7 +89,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
     return rootView;
   }
-  
+
   @SuppressLint("DefaultLocale")
   private ArrayList<Favor> genFavor(String s, int n) {
     ArrayList<Favor> favorList = new ArrayList<>();

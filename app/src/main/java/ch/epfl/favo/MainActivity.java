@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
   private ImageButton backButton;
 
   private ArrayList<Favor> activeFavorArrayList;
-  private ArrayList<Favor> pastFavorArrayList;
+  private ArrayList<Favor> archivedFavorArrayList;
 
   public ArrayList<Favor> getActiveFavorArrayList() {
     return activeFavorArrayList;
@@ -61,12 +61,12 @@ public class MainActivity extends AppCompatActivity
     activeFavorArrayList.add(favor);
   }
 
-  public ArrayList<Favor> getPastFavorArrayList() {
-    return pastFavorArrayList;
+  public ArrayList<Favor> getarchivedFavorArrayList() {
+    return archivedFavorArrayList;
   }
 
   public void addPastFavor(Favor favor) {
-    pastFavorArrayList.add(favor);
+    archivedFavorArrayList.add(favor);
   }
 
   @Override
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
     // setSupportActionBar(toolbar);
 
     activeFavorArrayList = new ArrayList<>();
-    pastFavorArrayList = new ArrayList<>();
+    archivedFavorArrayList = new ArrayList<>();
   }
 
   private void setUpHamburgerMenuButton() {
