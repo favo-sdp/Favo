@@ -49,21 +49,21 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 
 class MockDatabaseWrapper implements DatabaseUpdater {
-    @Override
-    public void addDocument(String key, Map document) {}
+  @Override
+  public void addDocument(String key, Map document) {}
 
-    @Override
-    public Map<String, Object> getDocument(String key) {
-        Map<String,Object> map = new HashMap<>();
-        map.put("title","test");
-        map.put("description","test_description");
-        Location loc = new Location("dummy");
-        loc.setLongitude(0.1);
-        loc.setLatitude(0.2);
-        map.put("location",loc);
+  @Override
+  public Map<String, Object> getDocument(String key) {
+    Map<String, Object> map = new HashMap<>();
+    map.put("title", "test");
+    map.put("description", "test_description");
+    Location loc = new Location("dummy");
+    loc.setLongitude(0.1);
+    loc.setLatitude(0.2);
+    map.put("location", loc);
 
-        return map;
-    }
+    return map;
+  }
 }
 
 @RunWith(AndroidJUnit4.class)
@@ -94,9 +94,9 @@ public class FirebaseMessagingServiceTest {
 
   @Test
   public void testNotifications() {
-      Bundle bundle = generateBundle();
+    Bundle bundle = generateBundle();
 
-      FirebaseMessagingService.showNotification(
+    FirebaseMessagingService.showNotification(
         mainActivityTestRule.getActivity(),
         Objects.requireNonNull(new RemoteMessage(bundle).getNotification()),
         "Default channel id");
@@ -120,18 +120,18 @@ public class FirebaseMessagingServiceTest {
         .check(matches(isDisplayed()));
   }
 
-    private Bundle generateBundle() {
-        Bundle bundle = new Bundle();
-        bundle.putString("google.delivered_priority", "high");
-        bundle.putLong("google.sent_time", (new Date()).getTime());
-        bundle.putLong("google.ttl", 2419200);
-        bundle.putString("google.original_priority", "high");
-        bundle.putString("google.message_id", UUID.randomUUID().toString());
-        bundle.putString("from", "533932732600");
-        bundle.putString("gcm.notification.title", NOTIFICATION_TITLE);
-        bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
-        bundle.putString("gcm.notification.e", "1");
-        bundle.putString("gcm.notification.tag", FAVOR_ID);
-        return bundle;
-    }
+  private Bundle generateBundle() {
+    Bundle bundle = new Bundle();
+    bundle.putString("google.delivered_priority", "high");
+    bundle.putLong("google.sent_time", (new Date()).getTime());
+    bundle.putLong("google.ttl", 2419200);
+    bundle.putString("google.original_priority", "high");
+    bundle.putString("google.message_id", UUID.randomUUID().toString());
+    bundle.putString("from", "533932732600");
+    bundle.putString("gcm.notification.title", NOTIFICATION_TITLE);
+    bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
+    bundle.putString("gcm.notification.e", "1");
+    bundle.putString("gcm.notification.tag", FAVOR_ID);
+    return bundle;
+  }
 }
