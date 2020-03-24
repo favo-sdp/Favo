@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.util.TaskToFutureAdapter;
+
 @SuppressLint("NewApi")
 public class DatabaseWrapper {
 
@@ -36,7 +38,7 @@ public class DatabaseWrapper {
     }
   }
 
-  public static DatabaseWrapper getInstance() {
+  private static DatabaseWrapper getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new DatabaseWrapper();
     }
@@ -53,21 +55,21 @@ public class DatabaseWrapper {
     return sb.toString();
   }
 
-  public static <T extends Document> void addDocument(T document, String collection) {
+  static <T extends Document> void addDocument(T document, String collection) {
     getCollectionReference(collection).document(document.getId()).set(document);
   }
 
-  public static <T extends Document> void removeDocument(String key, String collection) {
+  static <T extends Document> void removeDocument(String key, String collection) {
     getCollectionReference(collection).document(key).delete();
   }
 
-  public static <T extends Document> void updateDocument(
-      String key, Map<String, Object> updates, String collection) {
+  static <T extends Document> void updateDocument(
+    String key, Map<String, Object> updates, String collection) {
     getCollectionReference(collection).document(key).update(updates);
   }
 
-  public static <T extends Document> CompletableFuture<T> getDocument(
-      String key, Class<T> cls, String collection) throws RuntimeException {
+  static <T extends Document> CompletableFuture<T> getDocument(
+    String key, Class<T> cls, String collection) throws RuntimeException {
     Task<DocumentSnapshot> getTask =
         getCollectionReference(collection).document(key).get();
     CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
@@ -83,8 +85,8 @@ public class DatabaseWrapper {
         });
   }
 
-  public static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
-      Class<T> cls, String collection) {
+  static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
+    Class<T> cls, String collection) {
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
 

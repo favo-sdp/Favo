@@ -29,9 +29,9 @@ public class TestTask extends Task<String> {
   // task status
   private TaskStatus status = TaskStatus.PENDING;
   // value of the successful task, constant for testing
-  public final String value = "Hello world!";
+  final String value = "Hello world!";
   // exception to throw if task is not successful
-  public final RuntimeException exception =
+  final RuntimeException exception =
       new RuntimeException("Task was not finished successfully");
 
   @Override
@@ -120,7 +120,7 @@ public class TestTask extends Task<String> {
   }
 
   // force the success of the task
-  public void complete() {
+  void complete() {
     status = TaskStatus.SUCCESS;
     for (final OnSuccessListener success : successes) {
       success.onSuccess(value);
@@ -128,7 +128,7 @@ public class TestTask extends Task<String> {
   }
 
   // force failure of the task
-  public void fail() {
+  void fail() {
     status = TaskStatus.FAILURE;
     for (final OnFailureListener failure : failures) {
       failure.onFailure(exception);

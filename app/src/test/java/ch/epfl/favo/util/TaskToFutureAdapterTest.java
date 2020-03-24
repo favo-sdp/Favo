@@ -1,11 +1,9 @@
-package ch.epfl.favo.common;
+package ch.epfl.favo.util;
 
 import org.junit.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
-import ch.epfl.favo.util.TestTask;
 
 import static junit.framework.TestCase.assertEquals;
 
