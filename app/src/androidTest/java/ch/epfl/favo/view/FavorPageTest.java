@@ -71,8 +71,8 @@ public class FavorPageTest {
     onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
 
     onView(withId(R.id.spinner)).perform(click());
-    onData(allOf(is(instanceOf(String.class)), is("Past"))).perform(click());
-    onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Past"))));
+    onData(allOf(is(instanceOf(String.class)), is("Archived"))).perform(click());
+    onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Archived"))));
 
     getInstrumentation().waitForIdleSync();
 

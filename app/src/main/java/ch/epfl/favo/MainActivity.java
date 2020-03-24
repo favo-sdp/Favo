@@ -100,7 +100,9 @@ public class MainActivity extends AppCompatActivity
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
 
+//    activeFavorArrayList = FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
     activeFavorArrayList = new ArrayList<>();
+//    archivedFavorArrayList = FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
     archivedFavorArrayList = new ArrayList<>();
   }
 
