@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
@@ -101,14 +102,9 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
   @Override
   public void onClick(View view) {
-    Fragment fragment;
-
-    // The following inspection warning is suppressed. More cases will be added soon.
-    // noinspection SwitchStatementWithTooFewBranches
     switch (view.getId()) {
       case R.id.new_favor:
-        fragment = new FavorRequestView();
-        replaceFragment(fragment);
+        CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;
     }
   }
@@ -116,15 +112,5 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   private void setupView() {
     ((ViewController) getActivity()).setupViewTopDestTab();
     ((ViewController) getActivity()).checkFavListViewButton();
-  }
-
-  // Replace the current fragment with the new fragment.
-  // Todo: Seems useful. Try to put this method in a util package and import it here.
-  private void replaceFragment(Fragment newFragment) {
-    FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
-    transaction.replace(R.id.nav_host_fragment, newFragment);
-    transaction.addToBackStack(null);
-    transaction.commit();
-    // transaction.remove(this);
   }
 }
