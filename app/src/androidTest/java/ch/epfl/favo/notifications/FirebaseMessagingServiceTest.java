@@ -5,20 +5,12 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -39,6 +31,11 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.FAVOR_ID;
@@ -97,39 +94,44 @@ public class FirebaseMessagingServiceTest {
 
   @Test
   public void testNotifications() {
+      Bundle bundle = generateBundle();
 
-    Bundle bundle = new Bundle();
-    bundle.putString("google.delivered_priority", "high");
-    bundle.putLong("google.sent_time", (new Date()).getTime());
-    bundle.putLong("google.ttl", 2419200);
-    bundle.putString("google.original_priority", "high");
-    bundle.putString("google.message_id", UUID.randomUUID().toString());
-    bundle.putString("from", "533932732600");
-    bundle.putString("gcm.notification.title", NOTIFICATION_TITLE);
-    bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
-    bundle.putString("gcm.notification.e", "1");
-    bundle.putString("gcm.notification.tag",FAVOR_ID);
-
-
-    FirebaseMessagingService.showNotification(
+      FirebaseMessagingService.showNotification(
         mainActivityTestRule.getActivity(),
         Objects.requireNonNull(new RemoteMessage(bundle).getNotification()),
         "Default channel id");
 
-    // WORKS LOCALLY, NOT ON TRAVIS
-        UiDevice device = UiDevice.getInstance(getInstrumentation());
-        device.openNotification();
+    // WORKS LOCALLY, NOT ON TRAVIS... BUT WORKS ON CIRRUS :)
+    UiDevice device = UiDevice.getInstance(getInstrumentation());
+    device.openNotification();
 
-        device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT);
-        UiObject2 title = device.findObject(By.text(NOTIFICATION_TITLE));
-        UiObject2 text = device.findObject(By.text(NOTIFICATION_BODY));
-        assertEquals(NOTIFICATION_TITLE, title.getText());
-        assertEquals(NOTIFICATION_BODY, text.getText());
-        title.click();
-        getInstrumentation().waitForIdleSync();
-//    // check that tab 2 is indeed opened
-        onView(allOf(withId(R.id.fragment_favor_accept_view), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
-
+    device.wait(Until.hasObject(By.text(NOTIFICATION_TITLE)), TIMEOUT);
+    UiObject2 title = device.findObject(By.text(NOTIFICATION_TITLE));
+    UiObject2 text = device.findObject(By.text(NOTIFICATION_BODY));
+    assertEquals(NOTIFICATION_TITLE, title.getText());
+    assertEquals(NOTIFICATION_BODY, text.getText());
+    title.click();
+    getInstrumentation().waitForIdleSync();
+    //    // check that tab 2 is indeed opened
+    onView(
+            allOf(
+                withId(R.id.fragment_favor_accept_view),
+                withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
   }
+
+    private Bundle generateBundle() {
+        Bundle bundle = new Bundle();
+        bundle.putString("google.delivered_priority", "high");
+        bundle.putLong("google.sent_time", (new Date()).getTime());
+        bundle.putLong("google.ttl", 2419200);
+        bundle.putString("google.original_priority", "high");
+        bundle.putString("google.message_id", UUID.randomUUID().toString());
+        bundle.putString("from", "533932732600");
+        bundle.putString("gcm.notification.title", NOTIFICATION_TITLE);
+        bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
+        bundle.putString("gcm.notification.e", "1");
+        bundle.putString("gcm.notification.tag", FAVOR_ID);
+        return bundle;
+    }
 }
