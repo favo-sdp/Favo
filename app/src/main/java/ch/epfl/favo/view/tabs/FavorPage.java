@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import java.util.ArrayList;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.view.ViewController;
@@ -35,22 +37,11 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   }
 
   @Override
-  public void onActivityCreated(Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
-    if (savedInstanceState != null) {
-      activeFavorArrayList = savedInstanceState.getParcelableArrayList("activeFavorArrayList");
-      pastFavorArrayList = savedInstanceState.getParcelableArrayList("pastFavorArrayList");
-    } else {
-      activeFavorArrayList = new ArrayList<>();
-      pastFavorArrayList = new ArrayList<>();
-    }
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    outState.putParcelableArrayList("activeFavorArrayList", activeFavorArrayList);
-    outState.putParcelableArrayList("pastFavorArrayList", pastFavorArrayList);
+  public void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    MainActivity activity = (MainActivity) getActivity();
+    activeFavorArrayList = activity.getActiveFavorArrayList();
+    pastFavorArrayList = activity.getPastFavorArrayList();
   }
 
   @Override
@@ -98,8 +89,8 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
     return rootView;
   }
-
-
+  
+  @SuppressLint("DefaultLocale")
   private ArrayList<Favor> genFavor(String s, int n) {
     ArrayList<Favor> favorList = new ArrayList<>();
     for (int i = 0; i < n; ++i) {

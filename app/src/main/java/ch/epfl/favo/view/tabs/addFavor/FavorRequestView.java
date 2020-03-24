@@ -18,11 +18,11 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
-import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
@@ -105,10 +105,15 @@ public class FavorRequestView extends Fragment {
 
     Favor favor = new Favor(title, desc, null, loc, 0);
     FavorUtil.getSingleInstance().postFavor(favor);
+
+    // Add the favor to favorList
+    ((MainActivity) getActivity()).addActiveFavor(favor);
   }
+
   public void showSnackbar(String errorMessageRes){
     Snackbar.make(getView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
+
   private void setupView() {
     ((ViewController) getActivity()).setupViewBotDestTab();
   }

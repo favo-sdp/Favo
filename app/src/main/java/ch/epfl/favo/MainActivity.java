@@ -17,20 +17,18 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.firestore.core.Transaction;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.FavorPage;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
-import static ch.epfl.favo.favor.FavorUtil.getSingleInstance;
 // import static ch.epfl.favo.R.id.toolbar;
 
 /**
@@ -52,8 +50,24 @@ public class MainActivity extends AppCompatActivity
   // private Toolbar toolbar;
   private ImageButton backButton;
 
-  // favorList fragment
-  private Fragment favorListFgmt;
+  private ArrayList<Favor> activeFavorArrayList;
+  private ArrayList<Favor> pastFavorArrayList;
+
+  public ArrayList<Favor> getActiveFavorArrayList() {
+    return activeFavorArrayList;
+  }
+
+  public void addActiveFavor(Favor favor) {
+    activeFavorArrayList.add(favor);
+  }
+
+  public ArrayList<Favor> getPastFavorArrayList() {
+    return pastFavorArrayList;
+  }
+
+  public void addPastFavor(Favor favor) {
+    pastFavorArrayList.add(favor);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -82,20 +96,12 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    // restore fragment's instance
-    if (savedInstanceState != null) {
-      favorListFgmt = getSupportFragmentManager().getFragment(savedInstanceState, "favorListFgmt");
-    }
-
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
-  }
 
-  @Override
-  public void onSaveInstanceState(@NonNull Bundle outState) {
-    super.onSaveInstanceState(outState);
-    getSupportFragmentManager().putFragment(outState, "favorListFgmt", favorListFgmt);
+    activeFavorArrayList = new ArrayList<>();
+    pastFavorArrayList = new ArrayList<>();
   }
 
   private void setUpHamburgerMenuButton() {
