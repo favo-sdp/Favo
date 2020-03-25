@@ -50,9 +50,6 @@ public class MainActivity extends AppCompatActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    // retrieve current registration token for notifications
-    retrieveCurrentRegistrationToken();
-
     // Initialize Variables
     nav = findViewById(R.id.nav_view);
     drawerLayout = findViewById(drawer_layout);
@@ -192,23 +189,6 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onBackPressed() {
     getSupportFragmentManager().popBackStackImmediate();
-  }
-
-  // retrieve current registration token for the notification system
-  private void retrieveCurrentRegistrationToken() {
-    FirebaseInstanceId.getInstance()
-        .getInstanceId()
-        .addOnCompleteListener(
-            task -> {
-              if (!task.isSuccessful()) {
-                return;
-              }
-
-              // Get new Instance ID token
-              String token = Objects.requireNonNull(task.getResult()).getToken();
-              Log.d(TAG, getString(R.string.msg_token_fmt, token));
-              // TODO send registration token to db
-            });
   }
 
   @Override
