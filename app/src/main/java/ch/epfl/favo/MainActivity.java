@@ -231,8 +231,6 @@ public class MainActivity extends AppCompatActivity
       trans.replace(R.id.nav_host_fragment,frag);
       trans.commit();
     }
-
-
   }
 
   @Override

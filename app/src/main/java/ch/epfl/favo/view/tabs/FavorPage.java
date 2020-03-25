@@ -36,8 +36,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   private Spinner spinner;
   private ListView listView;
 
-  private enum Category { ACTIVE, ARCHIVED }
-
   public FavorPage() {
     // Required empty public constructor
   }
@@ -75,14 +73,10 @@ public class FavorPage extends Fragment implements View.OnClickListener {
       new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-          switch (position) {
-            case 0: // default: active favors
-              displayActiveFavors();
-              break;
-            case 1: // past favors
-              displayArchivedFavors();
-              break;
-          }
+          if (position == 0) {
+            displayFavorList(activeFavors, R.string.favor_no_active_favor);
+          } else
+            displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
         }
 
         @Override
@@ -100,20 +94,12 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     }
   }
 
-  private void displayActiveFavors() {
-    if (activeFavors.isEmpty())
-      showText(getString(R.string.favor_no_active_favor));
+  private void displayFavorList(ArrayList<Favor> favors, int textId) {
+    if (favors.isEmpty())
+      showText((getString(textId)));
     else
       tipTextView.setVisibility(View.INVISIBLE);
-    listView.setAdapter(new FavorAdapter(getContext(), activeFavors));
-  }
-
-  private void displayArchivedFavors() {
-    if (archivedFavors.isEmpty())
-      showText(getString(R.string.favor_no_archived_favor));
-    else
-      tipTextView.setVisibility(View.INVISIBLE);
-    listView.setAdapter(new FavorAdapter(getContext(), archivedFavors));
+    listView.setAdapter(new FavorAdapter(getContext(), favors));
   }
 
   private void showText(String text) {
