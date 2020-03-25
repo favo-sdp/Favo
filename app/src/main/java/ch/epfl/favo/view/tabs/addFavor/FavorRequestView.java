@@ -86,7 +86,7 @@ public class FavorRequestView extends Fragment {
     FavorUtil.getSingleInstance().postFavor(favor);
 
     // Save the favor to local favorList
-    ((MainActivity) Objects.requireNonNull(getActivity())).addActiveFavor(favor);
+    ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(favor);
 
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_request_success_msg));

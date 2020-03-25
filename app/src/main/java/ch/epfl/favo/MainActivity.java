@@ -50,24 +50,24 @@ public class MainActivity extends AppCompatActivity
   // private Toolbar toolbar;
   private ImageButton backButton;
 
-  private ArrayList<Favor> activeFavorArrayList;
-  private ArrayList<Favor> archivedFavorArrayList;
+  public ArrayList<Favor> activeFavorArrayList;
+  public ArrayList<Favor> archivedFavorArrayList;
 
-  public ArrayList<Favor> getActiveFavorArrayList() {
-    return activeFavorArrayList;
-  }
-
-  public void addActiveFavor(Favor favor) {
-    activeFavorArrayList.add(favor);
-  }
-
-  public ArrayList<Favor> getarchivedFavorArrayList() {
-    return archivedFavorArrayList;
-  }
-
-  public void addPastFavor(Favor favor) {
-    archivedFavorArrayList.add(favor);
-  }
+//  public ArrayList<Favor> getActiveFavorArrayList() {
+//    return activeFavorArrayList;
+//  }
+//
+//  public void addActiveFavor(Favor favor) {
+//    activeFavorArrayList.add(favor);
+//  }
+//
+//  public ArrayList<Favor> getarchivedFavorArrayList() {
+//    return archivedFavorArrayList;
+//  }
+//
+//  public void addPastFavor(Favor favor) {
+//    archivedFavorArrayList.add(favor);
+//  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
