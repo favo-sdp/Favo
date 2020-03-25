@@ -1,16 +1,11 @@
 package ch.epfl.favo.auth;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.wifi.WifiManager;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
@@ -20,28 +15,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static ch.epfl.favo.TestConstants.EMAIL;
-import static ch.epfl.favo.TestConstants.NAME;
-import static ch.epfl.favo.TestConstants.PHOTO_URI;
-import static ch.epfl.favo.TestConstants.PROVIDER;
 import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
-import static org.hamcrest.Matchers.anyOf;
-import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityTest {
@@ -124,6 +108,7 @@ public class SignInActivityTest {
 
     UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     mDevice.openQuickSettings();
+
     // remove connection
     mDevice.findObject(new UiSelector().text("AndroidWifi")).click();
     mDevice.findObject(new UiSelector().text("Mobile data")).click();
@@ -133,7 +118,8 @@ public class SignInActivityTest {
 
     // go back to the app
     mDevice.pressBack();
-    mDevice.pressBack();
+    if (!mDevice.findObject(new UiSelector().textContains("Sign in with google")).exists())
+      mDevice.pressBack();
 
     mDevice.wait(Until.hasObject(By.desc("Sign in with google")), TIMEOUT);
     getInstrumentation().waitForIdleSync();
@@ -145,13 +131,14 @@ public class SignInActivityTest {
     // should be still in the sign-in page because no connection
     onView(withId(R.id.logo)).check(matches(isDisplayed()));
 
-    // put connection back
     mDevice.openQuickSettings();
+
+    // put connection back
     mDevice.findObject(new UiSelector().text("Wi-Fi")).click();
     mDevice.findObject(new UiSelector().text("Mobile data")).click();
+
     mDevice.pressBack();
-    mDevice.pressBack();
+    if (!mDevice.findObject(new UiSelector().textContains("Sign in with google")).exists())
+      mDevice.pressBack();
   }
-
-
 }
