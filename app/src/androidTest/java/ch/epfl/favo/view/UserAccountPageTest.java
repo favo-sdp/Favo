@@ -56,6 +56,13 @@ public class UserAccountPageTest {
   }
 
   @Test
+  public void testUserNotLoggedIn() {
+    // just to test that sign-in activity handled by the library is correctly displayed without
+    // errors
+    mActivityRule.launchActivity(null);
+  }
+
+  @Test
   public void testUserAlreadyLoggedIn_displayUserData() {
 
     // set mock user
@@ -103,10 +110,7 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
-    onView(withId(R.id.sign_out)).perform(click());
-    getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.logo)).check(matches(isDisplayed()));
-  }
+    onView(withId(R.id.sign_out)).perform(click());}
 
   @Test
   public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_cancelOperation() {
