@@ -4,11 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
-import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObjectNotFoundException;
-import androidx.test.uiautomator.UiSelector;
-import androidx.test.uiautomator.Until;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -25,7 +21,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityTest {
@@ -101,44 +96,5 @@ public class SignInActivityTest {
 
     // check if we're back to sign-in screen
     onView(withId(R.id.logo)).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void testSignInOffline() throws UiObjectNotFoundException, InterruptedException {
-
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.openQuickSettings();
-
-    // remove connection
-    mDevice.findObject(new UiSelector().text("AndroidWifi")).click();
-    mDevice.findObject(new UiSelector().text("Mobile data")).click();
-
-    if (mDevice.findObject(new UiSelector().text("Turn off")).exists())
-      mDevice.findObject(new UiSelector().text("Turn off")).click();
-
-    // go back to the app
-    mDevice.pressBack();
-    if (!mDevice.findObject(new UiSelector().textContains("Sign in with google")).exists())
-      mDevice.pressBack();
-
-    mDevice.wait(Until.hasObject(By.desc("Sign in with google")), TIMEOUT);
-    getInstrumentation().waitForIdleSync();
-    onView(withText("Sign in with Google")).check(matches(isDisplayed()));
-    onView(withText("Sign in with Google")).perform(click());
-
-    getInstrumentation().waitForIdleSync();
-
-    // should be still in the sign-in page because no connection
-    onView(withId(R.id.logo)).check(matches(isDisplayed()));
-
-    mDevice.openQuickSettings();
-
-    // put connection back
-    mDevice.findObject(new UiSelector().text("Wi-Fi")).click();
-    mDevice.findObject(new UiSelector().text("Mobile data")).click();
-
-    mDevice.pressBack();
-    if (!mDevice.findObject(new UiSelector().textContains("Sign in with google")).exists())
-      mDevice.pressBack();
   }
 }
