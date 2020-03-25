@@ -62,9 +62,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     return rootView;
   }
 
-  private void checkFavListButton() {
-    ((ViewController) getActivity()).checkFavListViewButton();
-  }
 
   private ArrayList<Favor> genFavor(String s, int n) {
     ArrayList<Favor> favorList = new ArrayList<>();
