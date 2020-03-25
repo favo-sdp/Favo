@@ -10,8 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.util.DependencyFactory;
 
 /*
 This models the favor request.
@@ -19,8 +20,8 @@ This models the favor request.
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static final CollectionWrapper collection = new CollectionWrapper("favors");
-  private static boolean testUiMode = false;
+  private static DatabaseUpdater collection = DependencyFactory.getCurrentDatabaseUpdater("favors");
+
   // Private Constructor
   private FavorUtil() {}
 
@@ -34,9 +35,7 @@ public class FavorUtil {
    * @param f A favor object.
    */
   public void postFavor(Favor f) {
-    if (testUiMode) {
-      return;
-    } // will skip if testing the UI
+
     Map<String, Object> favor = new HashMap<>();
     Location loc = f.getLocation();
     favor.put("title", f.getTitle());
@@ -120,7 +119,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public void setTestUiMode(boolean testMode) {
-    testUiMode = testMode;
+  public Favor retrieveFavor(String favorId) throws NotImplementedException {
+    return new Favor(collection.getDocument(favorId));
   }
 }

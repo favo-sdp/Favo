@@ -8,12 +8,15 @@ import androidx.annotation.VisibleForTesting;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
 
 public class DependencyFactory {
   private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
+  private static DatabaseUpdater currentDatabaseUpdater;
   private static boolean testMode = false;
 
   public static FirebaseUser getCurrentFirebaseUser() {
@@ -40,5 +43,18 @@ public class DependencyFactory {
   public static void setCurrentGpsTracker(Locator gpsTrackerDependency) {
     testMode = true;
     currentGpsTracker = gpsTrackerDependency;
+  }
+
+  @VisibleForTesting
+  public static void setCurrentDatabaseUpdater(DatabaseUpdater dependency) {
+    testMode = true;
+    currentDatabaseUpdater = dependency;
+  }
+
+  public static DatabaseUpdater getCurrentDatabaseUpdater(String collectionReference) {
+    if (testMode && currentDatabaseUpdater != null) {
+      return currentDatabaseUpdater;
+    }
+    return new CollectionWrapper(collectionReference);
   }
 }

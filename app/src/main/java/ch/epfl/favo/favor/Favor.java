@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.Date;
+import java.util.Map;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 
@@ -36,6 +37,13 @@ public class Favor implements Parcelable {
   private int statusId;
 
   public Favor() {}
+
+  public Favor(Map<String, Object> map) {
+
+    this.title = map.get("title").toString();
+    this.description = map.get("description").toString();
+    this.location = (Location) map.get("location");
+  }
 
   public Favor(
       String title, String description, String requesterId, Location location, int statusId) {

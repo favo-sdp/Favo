@@ -23,4 +23,5 @@ public class TestConstants {
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";
   public static final String NOTIFICATION_BODY = "body";
+  public static final String FAVOR_ID = "WEZDZQD78A5SI5Q790SZAL7FW";
 }

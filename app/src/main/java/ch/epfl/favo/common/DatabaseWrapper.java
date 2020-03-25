@@ -58,4 +58,9 @@ public class DatabaseWrapper {
               throw new RuntimeException(e);
             });
   }
+
+  public static Map<String, Object> getDocument(String key, String collection) {
+    // asynchronously retrieve the document
+    throw new NotImplementedException();
+  }
 }

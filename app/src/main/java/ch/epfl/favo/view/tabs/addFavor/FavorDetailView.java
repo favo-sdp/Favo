@@ -9,8 +9,6 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
@@ -46,7 +44,7 @@ public class FavorDetailView extends Fragment {
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-            showSnackbar(getString(R.string.favor_respond_success_msg));
+            CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
           }
         });
 
@@ -87,13 +85,5 @@ public class FavorDetailView extends Fragment {
 
   private void setupView() {
     ((ViewController) getActivity()).setupViewBotDestTab();
-  }
-
-  private void showSnackbar(String errorMessageRes) {
-    Snackbar.make(
-            requireView().findViewById(R.id.fragment_favor_accept_view),
-            errorMessageRes,
-            Snackbar.LENGTH_LONG)
-        .show();
   }
 }
