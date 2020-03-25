@@ -27,16 +27,13 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
+import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 
 public class FavorRequestView extends Fragment {
-  private static final int PICK_IMAGE_REQUEST = 1;
-  private Button confirmFavorBtn;
-  private Button addPictureBtn;
-  private ImageView mImageView;
-  private Uri mImageUri; // path of image
 
+  private static final int PICK_IMAGE_REQUEST = 1;
+  private ImageView mImageView;
   private Locator mGpsTracker;
-  // TODO: Rename and change types of parameters
 
   public FavorRequestView() {
     // Required empty public constructor
@@ -44,33 +41,60 @@ public class FavorRequestView extends Fragment {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
     setupView();
     View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
 
-    confirmFavorBtn = rootView.findViewById(R.id.request_button);
-    addPictureBtn = rootView.findViewById(R.id.add_picture_button);
+    // Button: Request Favor
+    Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
+    confirmFavorBtn.setOnClickListener(v -> requestFavor());
+
+    // Button: Add Image
+    Button addPictureBtn = rootView.findViewById(R.id.add_picture_button);
+    addPictureBtn.setOnClickListener(v -> openFileChooser());
+
+    // Extract other elements
     mImageView = rootView.findViewById(R.id.imageView);
-
-    confirmFavorBtn.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            requestFavor();
-          }
-        });
-
-    addPictureBtn.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            openFileChooser();
-          }
-        });
-
-    mGpsTracker = DependencyFactory.getCurrentGpsTracker(getActivity().getApplicationContext());
+    mGpsTracker = DependencyFactory.getCurrentGpsTracker(
+            Objects.requireNonNull(getActivity()).getApplicationContext());
 
     return rootView;
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == PICK_IMAGE_REQUEST
+        && resultCode == RESULT_OK && data != null && data.getData() != null) {
+      Uri mImageUri = data.getData(); // path of image
+      mImageView.setImageURI(mImageUri);
+    } else {
+      showSnackbar("Try again!");
+    }
+  }
+
+  private void requestFavor() {
+    // Extract details and post favor to Firebase
+    EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title);
+    EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
+    String title = titleElem.getText().toString();
+    String desc = descElem.getText().toString();
+    Location loc = mGpsTracker.getLocation();
+    Favor favor = new Favor(title, desc, null, loc, 0);
+    FavorUtil.getSingleInstance().postFavor(favor);
+
+    // Save the favor to local favorList
+    ((MainActivity) Objects.requireNonNull(getActivity())).addActiveFavor(favor);
+
+    // Show confirmation and minimize keyboard
+    showSnackbar(getString(R.string.favor_request_success_msg));
+    hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
+
+    // Go back
+    assert getFragmentManager() != null;
+    getFragmentManager().popBackStack();
   }
 
   public void openFileChooser() {
@@ -80,41 +104,11 @@ public class FavorRequestView extends Fragment {
     startActivityForResult(intent, PICK_IMAGE_REQUEST);
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    if (requestCode == PICK_IMAGE_REQUEST
-        && resultCode == RESULT_OK
-        && data != null
-        && data.getData() != null) {
-      mImageUri = data.getData();
-      mImageView.setImageURI(mImageUri);
-    } else {
-      showSnackbar("Try again!");
-    }
-  }
-
-  private void requestFavor() {
-    showSnackbar(getString(R.string.favor_request_success_msg));
-    EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title);
-    EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
-    String title = titleElem.getText().toString();
-    String desc = descElem.getText().toString();
-    Location loc = mGpsTracker.getLocation();
-
-    Favor favor = new Favor(title, desc, null, loc, 0);
-    FavorUtil.getSingleInstance().postFavor(favor);
-
-    // Add the favor to favorList
-    ((MainActivity) getActivity()).addActiveFavor(favor);
-  }
-
   public void showSnackbar(String errorMessageRes){
-    Snackbar.make(getView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
+    Snackbar.make(Objects.requireNonNull(getView()), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
   private void setupView() {
-    ((ViewController) getActivity()).setupViewBotDestTab();
+    ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
   }
 }
