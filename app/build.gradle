@@ -77,13 +77,13 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
 
     // Add the SDKs for any other Firebase products you want to use in your app
-    implementation 'com.google.firebase:firebase-messaging:20.1.2'
+    implementation 'com.google.firebase:firebase-messaging:20.1.3'
 
     // Providers
     implementation 'com.facebook.android:facebook-login:5.0.0'
 
     // Required --  JUnit 4 framework
-    implementation 'androidx.preference:preference:1.1.0-rc01'
+    implementation 'androidx.preference:preference:1.1.0'
     testImplementation 'junit:junit:4.13'
     testImplementation 'org.mockito:mockito-core:3.3.0'
 
@@ -107,9 +107,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.google.googlejavaformat:google-java-format:1.7'
 
-    androidTestImplementation 'com.android.support.test:runner:0.2'
-    androidTestImplementation 'com.android.support.test:rules:0.2'
-    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
     implementation 'androidx.navigation:navigation-runtime:2.2.1'
 
 }

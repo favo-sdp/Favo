@@ -10,7 +10,6 @@ import ch.epfl.favo.util.DependencyFactory;
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.spy;
 
 public class SignInActivityTest {
@@ -27,7 +26,6 @@ public class SignInActivityTest {
 
   @Test
   public void testOnActivityResult_requestCodeCorrect() {
-    Mockito.doNothing().when(spy).showSnackbar(anyInt());
     spy.onActivityResult(123, 3, null);
   }
 
@@ -38,7 +36,6 @@ public class SignInActivityTest {
 
   @Test
   public void testOnActivityResult_resultNotOk() {
-    Mockito.doNothing().when(spy).showSnackbar(anyInt());
     spy.onActivityResult(123, 10, null);
   }
 

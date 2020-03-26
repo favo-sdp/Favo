@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-
-
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
@@ -191,16 +189,14 @@ public class MainActivity extends AppCompatActivity
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Bundle extras = intent.getExtras();
-    if (extras!=null){
+    if (extras != null) {
       String favor_id = extras.getString("FavorId");
       Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag  = FavorDetailView.newInstance(favor);
+      Fragment frag = FavorDetailView.newInstance(favor);
       FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-      trans.replace(R.id.nav_host_fragment,frag);
+      trans.replace(R.id.nav_host_fragment, frag);
       trans.commit();
     }
-
-
   }
 
   @Override
