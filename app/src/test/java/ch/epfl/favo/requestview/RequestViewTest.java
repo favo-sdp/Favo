@@ -6,10 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
-import static android.app.Activity.RESULT_OK;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
