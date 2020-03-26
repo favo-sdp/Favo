@@ -4,6 +4,7 @@ import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
@@ -108,7 +109,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public Favor retrieveFavor(String favorId) throws NotImplementedException {
-    throw new NotImplementedException();
+  public CompletableFuture<Favor> retrieveFavor(String favorId) throws NotImplementedException {
+    return collection.getDocument(favorId);
   }
 }

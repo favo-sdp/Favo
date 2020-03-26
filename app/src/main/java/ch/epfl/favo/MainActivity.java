@@ -21,6 +21,8 @@ import com.google.firebase.firestore.core.Transaction;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -204,8 +206,15 @@ public class MainActivity extends AppCompatActivity
     Bundle extras = intent.getExtras();
     if (extras!=null){
       String favor_id = extras.getString("FavorId");
-      Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag  = FavorDetailView.newInstance(favor);
+      CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
+      Fragment frag = null;
+      try {
+        frag = FavorDetailView.newInstance(favorFuture.get());
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
       FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
       trans.replace(R.id.nav_host_fragment,frag);
       trans.commit();
