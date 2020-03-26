@@ -33,7 +33,21 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
             app:layout_constraintBottom_toTopOf="@id/new_favor"
-            app:layout_constraintTop_toBottomOf="@id/spinner" />
+            app:layout_constraintTop_toBottomOf="@id/spinner" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/tip"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/favor_list"
+            app:layout_constraintBottom_toBottomOf="@id/favor_list"
+            android:textSize="20sp"
+            android:visibility="invisible"
+            android:textAlignment="center">
+        </TextView>
 
         <Spinner
             android:id="@+id/spinner"

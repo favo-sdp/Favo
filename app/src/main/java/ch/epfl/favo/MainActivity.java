@@ -17,6 +17,8 @@ import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.util.ArrayList;
+
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
@@ -31,7 +33,7 @@ import static ch.epfl.favo.R.id.drawer_layout;
  */
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
-  // Bottom tabs
+    // Bottom tabs
   public RadioButton mapButton;
   public RadioButton favListButton;
   // UI
@@ -42,6 +44,25 @@ public class MainActivity extends AppCompatActivity
   /*Activate if we want a toolbar */
   // private Toolbar toolbar;
   private ImageButton backButton;
+
+  public ArrayList<Favor> activeFavorArrayList;
+  public ArrayList<Favor> archivedFavorArrayList;
+
+//  public ArrayList<Favor> getActiveFavorArrayList() {
+//    return activeFavorArrayList;
+//  }
+//
+//  public void addActiveFavor(Favor favor) {
+//    activeFavorArrayList.add(favor);
+//  }
+//
+//  public ArrayList<Favor> getarchivedFavorArrayList() {
+//    return archivedFavorArrayList;
+//  }
+//
+//  public void addPastFavor(Favor favor) {
+//    archivedFavorArrayList.add(favor);
+//  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +91,11 @@ public class MainActivity extends AppCompatActivity
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
+
+//    activeFavorArrayList = FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
+    activeFavorArrayList = new ArrayList<>();
+//    archivedFavorArrayList = FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
+    archivedFavorArrayList = new ArrayList<>();
   }
 
   private void setUpHamburgerMenuButton() {
