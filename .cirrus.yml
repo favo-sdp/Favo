@@ -4,7 +4,7 @@ connected_check_task:
     API_LEVEL: 28
     TARGET: default
     ARCH: x86
-    CC_TEST_REPORTER_ID: "bc4464660f2cddebf28df2de0e6dfca705250d14d8cf7d982d90b40d2b632d03"
+    CC_TEST_REPORTER_ID: ENCRYPTED[75c75e88cda6a30e75aeb32a194ae23cf6f678de45dd202acdbafa43e3509e297d3c50c9a6fb3d5e56a3954886c503b5]
   container:
     image: reactivecircus/android-emulator-28:latest
     kvm: true
@@ -31,4 +31,3 @@ connected_check_task:
     - export JACOCO_SOURCE_PATH=app/src/main/java/
     - ./cc-test-reporter format-coverage ./app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml --input-type jacoco
     - ./cc-test-reporter upload-coverage
-  ​

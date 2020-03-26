@@ -22,6 +22,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
@@ -105,16 +106,9 @@ public class FavorRequestView extends Fragment {
     Favor favor = new Favor(title, desc, null, loc, 0);
     FavorUtil.getSingleInstance().postFavor(favor);
   }
-
-  // Todo: Implement the following functions to verify user input.
-
-  // Todo: Try to put this method in a util package and import it here.
-  public void showSnackbar(String errorMessageRes) {
-    Snackbar.make(
-            requireView().findViewById(R.id.fragment_favor), errorMessageRes, Snackbar.LENGTH_LONG)
-        .show();
+  public void showSnackbar(String errorMessageRes){
+    Snackbar.make(getView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
-
   private void setupView() {
     ((ViewController) getActivity()).setupViewBotDestTab();
   }

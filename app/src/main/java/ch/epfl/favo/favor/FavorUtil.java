@@ -5,8 +5,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.util.DependencyFactory;
 
 /*
 This models the favor request.
@@ -14,8 +15,9 @@ This models the favor request.
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static final CollectionWrapper collection = new CollectionWrapper("favors", Favor.class);
-  private static boolean testUiMode = false;
+  private static DatabaseUpdater collection =
+      DependencyFactory.getCurrentDatabaseUpdater("favors", Favor.class);
+
   // Private Constructor
   private FavorUtil() {}
 
@@ -26,15 +28,12 @@ public class FavorUtil {
   /**
    * Allows user to post a favor with a title, description and location.
    *
-   * @param f A favor object.
+   * @param favor A favor object.
    */
-  public void postFavor(Favor f) {
-    if (testUiMode) {
-      return;
-    } // will skip if testing the UI
+  public void postFavor(Favor favor) {
 
     try {
-      collection.addDocument(f);
+      collection.addDocument(favor);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }
@@ -109,7 +108,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public void setTestUiMode(boolean testMode) {
-    testUiMode = testMode;
+  public Favor retrieveFavor(String favorId) throws NotImplementedException {
+    throw new NotImplementedException();
   }
 }

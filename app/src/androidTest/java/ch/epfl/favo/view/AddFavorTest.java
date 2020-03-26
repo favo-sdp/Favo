@@ -11,12 +11,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Map;
+
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -28,6 +30,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
+import static ch.epfl.favo.TestConstants.LOCATION;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
@@ -35,6 +38,16 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 class MockGpsTracker implements Locator {
   @Override
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
+    return LOCATION;
+  }
+}
+
+class MockDatabaseWrapper implements DatabaseUpdater {
+  @Override
+  public void addDocument(String key, Map document) {}
+
+  @Override
+  public Map<String, Object> getDocument(String key) {
     return null;
   }
 }
@@ -50,7 +63,7 @@ public class AddFavorTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          FavorUtil.getSingleInstance().setTestUiMode(true);
+          DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
         }
       };
 
@@ -61,7 +74,8 @@ public class AddFavorTest {
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
-    FavorUtil.getSingleInstance().setTestUiMode(false);
+    DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentDatabaseUpdater(null);
   }
 
   @Test

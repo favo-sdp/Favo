@@ -173,4 +173,12 @@ public class FavorUnitTests {
     assertEquals(location, favors[0].getLocation());
     assertEquals(statusId, favors[0].getStatusId());
   }
+
+  @Test
+  public void getDocumentFunction() {
+    // get favor from database
+    String favorID = "WEZDZQD78A5SI5Q790SZAL7FW";
+    assertThrows(
+        NotImplementedException.class, () -> FavorUtil.getSingleInstance().retrieveFavor(favorID));
+  }
 }

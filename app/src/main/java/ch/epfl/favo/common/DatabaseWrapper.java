@@ -64,14 +64,13 @@ public class DatabaseWrapper {
   }
 
   static <T extends Document> void updateDocument(
-    String key, Map<String, Object> updates, String collection) {
+      String key, Map<String, Object> updates, String collection) {
     getCollectionReference(collection).document(key).update(updates);
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(
-    String key, Class<T> cls, String collection) throws RuntimeException {
-    Task<DocumentSnapshot> getTask =
-        getCollectionReference(collection).document(key).get();
+      String key, Class<T> cls, String collection) throws RuntimeException {
+    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
     CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
 
     return getFuture.thenApply(
@@ -79,14 +78,13 @@ public class DatabaseWrapper {
           if (documentSnapshot.exists()) {
             return documentSnapshot.toObject(cls);
           } else {
-            throw new RuntimeException(
-                String.format("Document %s does not exist ", key));
+            throw new RuntimeException(String.format("Document %s does not exist ", key));
           }
         });
   }
 
   static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
-    Class<T> cls, String collection) {
+      Class<T> cls, String collection) {
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
 

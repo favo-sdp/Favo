@@ -26,13 +26,13 @@ public class User implements Document {
   public User() {}
 
   public User(
-          String name,
-          String email,
-          String deviceId,
-          LocalDate birthDate,
-          Location location,
-          int activeAcceptingFavors,
-          int activeRequestingFavors) {
+      String name,
+      String email,
+      String deviceId,
+      LocalDate birthDate,
+      Location location,
+      int activeAcceptingFavors,
+      int activeRequestingFavors) {
     this.id = DatabaseWrapper.generateRandomId();
     this.name = name;
     this.email = email;
@@ -70,7 +70,9 @@ public class User implements Document {
     return birthDate;
   }
 
-  public Location getLocation() { return location; }
+  public Location getLocation() {
+    return location;
+  }
 
   public int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
@@ -89,10 +91,12 @@ public class User implements Document {
   }
 
   void setNotificationId(String notificationId) {
-    this.notificationId =  notificationId;
+    this.notificationId = notificationId;
   }
 
-  void setLocation(Location location) { this.location = location; }
+  void setLocation(Location location) {
+    this.location = location;
+  }
 
   // Can only accept or request favors
   boolean canAccept() {

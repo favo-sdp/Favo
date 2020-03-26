@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class CollectionWrapper<T extends Document> {
+public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T> {
 
   private String collection;
   private Class cls;
@@ -14,6 +14,7 @@ public class CollectionWrapper<T extends Document> {
     this.cls = cls;
   }
 
+  @Override
   public void addDocument(T document) {
     DatabaseWrapper.addDocument(document, collection);
   }
@@ -26,6 +27,7 @@ public class CollectionWrapper<T extends Document> {
     DatabaseWrapper.updateDocument(key, updates, collection);
   }
 
+  @Override
   public CompletableFuture<T> getDocument(String key) {
     return DatabaseWrapper.getDocument(key, cls, collection);
   }
