@@ -22,6 +22,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
@@ -57,7 +58,7 @@ public class FavorPageTest {
 
   @Test
   public void testFavorPageElements() {
-    // Click on favors tab
+    // click on favors tab
     onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
@@ -65,7 +66,6 @@ public class FavorPageTest {
     onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
-    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
 
     onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
@@ -79,5 +79,47 @@ public class FavorPageTest {
     onView(withId(R.id.spinner)).perform(click());
     onData(allOf(is(instanceOf(String.class)), is("Active"))).perform(click());
     onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Active"))));
+  }
+
+  @Test
+  public void testTextDisplayedWhenListEmpty() {
+    // click on favors tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
+
+    // check the tip text is displayed when active favor list is empty
+    onView(withId(R.id.tip)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.favor_no_active_favor)));
+
+    // go to archived list
+    onView(withId(R.id.spinner)).perform(click());
+    onData(allOf(is(instanceOf(String.class)), is("Archived"))).perform(click());
+    onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Archived"))));
+
+    // check the tip text is displayed when archived favor list is empty
+    onView(withId(R.id.tip)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.favor_no_archived_favor)));
+  }
+
+  @Test
+  public void testNewFavorButton() {
+    // Click on favors tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
+
+    // check that the new favor button is displayed and click on it
+    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check that the favor request fragment is displayed
+    onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
   }
 }
