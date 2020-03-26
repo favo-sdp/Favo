@@ -1,6 +1,7 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -200,6 +202,7 @@ public class MainActivity extends AppCompatActivity
     showBackIcon();
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
@@ -207,15 +210,13 @@ public class MainActivity extends AppCompatActivity
     if (extras!=null){
       String favor_id = extras.getString("FavorId");
       CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag = null;
-      try {
-        frag = FavorDetailView.newInstance(favorFuture.get());
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-      trans.replace(R.id.nav_host_fragment,frag);
-      trans.commit();
+
+      favorFuture.thenAccept(favor -> {
+        Fragment frag = FavorDetailView.newInstance(favor);
+        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+        trans.replace(R.id.nav_host_fragment,frag);
+        trans.commit();
+      });
     }
 
 

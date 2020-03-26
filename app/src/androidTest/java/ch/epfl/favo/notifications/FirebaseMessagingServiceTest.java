@@ -61,10 +61,8 @@ class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
     location.setLongitude(0.1);
     location.setLatitude(0.2);
 
-    Favor favor = new Favor("test", "test_description", "123", location, 0);
-
     CompletableFuture<Favor> future = new CompletableFuture<>();
-    future.supplyAsync(() -> favor);
+    future.supplyAsync(() -> new Favor("test", "test_description", "123", location, 0));
 
     return future;
   }
