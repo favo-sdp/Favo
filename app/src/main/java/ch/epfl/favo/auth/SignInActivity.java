@@ -1,6 +1,7 @@
 package ch.epfl.favo.auth;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,7 +9,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -130,7 +131,19 @@ public class SignInActivity extends AppCompatActivity {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
+
+      FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
+      String name = currentUser.getDisplayName();
+      String email = currentUser.getEmail();
+      Uri photo = currentUser.getPhotoUrl();
+      String deviceId = currentUser.getUid();
+
+      // TODO post user data to the db
+
+      retrieveCurrentRegistrationToken();
+
       startMainActivity();
+
     } else {
 
       if (idpResponse == null) {
@@ -139,6 +152,24 @@ public class SignInActivity extends AppCompatActivity {
       }
       showSnackbar(R.string.unknown_error);
     }
+  }
+
+  // retrieve current registration token for the notification system
+  private void retrieveCurrentRegistrationToken() {
+    FirebaseInstanceId.getInstance()
+        .getInstanceId()
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                return;
+              }
+
+              // Get new Instance ID token
+              String token = Objects.requireNonNull(task.getResult()).getToken();
+              //Log.d("SignInActivity", getString(R.string.msg_token_fmt, token));
+
+              // TODO post notificationId to the db: just set the notificationId property for the current user
+            });
   }
 
   public void showSnackbar(@StringRes int errorMessageRes) {
