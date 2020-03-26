@@ -6,6 +6,9 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
@@ -175,10 +178,11 @@ public class FavorUnitTests {
   }
 
   @Test
-  public void getDocumentFunction() {
+  public void getDocumentFunction() throws ExecutionException, InterruptedException {
     // get favor from database
     String favorID = "WEZDZQD78A5SI5Q790SZAL7FW";
     assertThrows(
-        NotImplementedException.class, () -> FavorUtil.getSingleInstance().retrieveFavor(favorID));
-  }
+      IllegalStateException.class,
+      () -> FavorUtil.getSingleInstance().retrieveFavor(favorID).get());
+    }
 }
