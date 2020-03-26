@@ -28,6 +28,7 @@ import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
+import static ch.epfl.favo.util.CommonTools.showSnackbar;
 
 public class FavorRequestView extends Fragment {
 
@@ -71,7 +72,7 @@ public class FavorRequestView extends Fragment {
       Uri mImageUri = data.getData(); // path of image
       mImageView.setImageURI(mImageUri);
     } else {
-      showSnackbar("Try again!");
+      showSnackbar(getView(), "Try again!");
     }
   }
 
@@ -89,7 +90,7 @@ public class FavorRequestView extends Fragment {
     ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(favor);
 
     // Show confirmation and minimize keyboard
-    showSnackbar(getString(R.string.favor_request_success_msg));
+    showSnackbar(getView(), getString(R.string.favor_request_success_msg));
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     // Go back
@@ -102,10 +103,6 @@ public class FavorRequestView extends Fragment {
     intent.setType("image/*");
     intent.setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(intent, PICK_IMAGE_REQUEST);
-  }
-
-  public void showSnackbar(String errorMessageRes){
-    Snackbar.make(Objects.requireNonNull(getView()), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
   private void setupView() {
