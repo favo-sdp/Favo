@@ -155,7 +155,7 @@ public class SignInActivity extends AppCompatActivity {
   }
 
   // retrieve current registration token for the notification system
-  private void retrieveCurrentRegistrationToken() {
+  void retrieveCurrentRegistrationToken() {
     FirebaseInstanceId.getInstance()
         .getInstanceId()
         .addOnCompleteListener(
