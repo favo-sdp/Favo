@@ -207,7 +207,12 @@ public class MainActivity extends AppCompatActivity
     if (extras!=null){
       String favor_id = extras.getString("FavorId");
       CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag = FavorDetailView.newInstance(new Favor());
+      Fragment frag = null;
+      try {
+        frag = FavorDetailView.newInstance(favorFuture.get());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
       FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
       trans.replace(R.id.nav_host_fragment,frag);
       trans.commit();
