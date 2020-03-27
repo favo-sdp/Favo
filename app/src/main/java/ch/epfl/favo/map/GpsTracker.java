@@ -30,10 +30,7 @@ import ch.epfl.favo.util.LocationManagerDependencyFactory;
 public class GpsTracker extends FragmentActivity implements LocationListener, Locator {
 
   private final Context context;
-  protected LocationManager locationManager;
-  boolean isGPSEnabled = false;
-  boolean isNetworkEnabled = false;
-  Location location;
+  private static Location mLastKnownLocation = null;
 
   public GpsTracker(Context context) {
     this.context = context;
@@ -44,10 +41,18 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
    * @throws RuntimeException Should check if location is finally found
    * @return the location of phone
    */
+
+  public static void setLastKnownLocation(Location location){
+    mLastKnownLocation = location;
+  }
+
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context);
-    isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    if(mLastKnownLocation != null)
+      return mLastKnownLocation;
+    Location location = null;
+    LocationManager locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context);
+    boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
@@ -57,11 +62,8 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
       if (isGPSEnabled) provider = LocationManager.GPS_PROVIDER;
       else if (isNetworkEnabled) provider = LocationManager.NETWORK_PROVIDER;
       if (provider != null) {
-        locationManager.requestLocationUpdates(provider, 10000, 10, this);
-        if (locationManager != null) {
-          location = locationManager.getLastKnownLocation(provider);
-          // Log.d("report", "position found by gps");
-        }
+         locationManager.requestLocationUpdates(provider, 10000, 10, this);
+         location = locationManager.getLastKnownLocation(provider);
       }
       if (location == null) {
         throw new NoPositionFoundException("Permission is granted, but no position is found");
@@ -72,7 +74,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
-
+    mLastKnownLocation = location;
     // throw new NotImplementedException();
   }
 
