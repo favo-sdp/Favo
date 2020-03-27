@@ -8,12 +8,13 @@ import java.util.Date;
 import java.util.Map;
 
 import ch.epfl.favo.common.DatabaseWrapper;
+import ch.epfl.favo.common.Document;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
  */
-public class Favor implements Parcelable {
+public class Favor implements Parcelable, Document {
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
@@ -71,6 +72,7 @@ public class Favor implements Parcelable {
     statusId = in.readInt();
   }
 
+  @Override
   public String getId() {
     return id;
   }

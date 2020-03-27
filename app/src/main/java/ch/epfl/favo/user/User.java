@@ -5,12 +5,13 @@ import android.location.Location;
 import java.time.LocalDate;
 
 import ch.epfl.favo.common.DatabaseWrapper;
+import ch.epfl.favo.common.Document;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
  * so that it can be injected in views
  */
-public class User {
+public class User implements Document {
 
   private String id;
   private String name;
@@ -44,6 +45,7 @@ public class User {
   }
 
   // Getters
+  @Override
   public String getId() {
     return id;
   }

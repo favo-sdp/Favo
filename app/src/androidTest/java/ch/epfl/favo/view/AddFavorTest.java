@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
@@ -19,6 +20,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -42,12 +44,12 @@ class MockGpsTracker implements Locator {
   }
 }
 
-class MockDatabaseWrapper implements DatabaseUpdater {
+class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
   @Override
-  public void addDocument(String key, Map document) {}
+  public void addDocument(Favor favor) {}
 
   @Override
-  public Map<String, Object> getDocument(String key) {
+  public CompletableFuture<Favor> getDocument(String key) {
     return null;
   }
 }

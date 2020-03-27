@@ -1,6 +1,7 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,6 +20,7 @@ import androidx.navigation.NavController;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -33,7 +36,7 @@ import static ch.epfl.favo.R.id.drawer_layout;
  */
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
-    // Bottom tabs
+  // Bottom tabs
   public RadioButton mapButton;
   public RadioButton favListButton;
   // UI
@@ -48,21 +51,21 @@ public class MainActivity extends AppCompatActivity
   public ArrayList<Favor> activeFavorArrayList;
   public ArrayList<Favor> archivedFavorArrayList;
 
-//  public ArrayList<Favor> getActiveFavorArrayList() {
-//    return activeFavorArrayList;
-//  }
-//
-//  public void addActiveFavor(Favor favor) {
-//    activeFavorArrayList.add(favor);
-//  }
-//
-//  public ArrayList<Favor> getarchivedFavorArrayList() {
-//    return archivedFavorArrayList;
-//  }
-//
-//  public void addPastFavor(Favor favor) {
-//    archivedFavorArrayList.add(favor);
-//  }
+  //  public ArrayList<Favor> getActiveFavorArrayList() {
+  //    return activeFavorArrayList;
+  //  }
+  //
+  //  public void addActiveFavor(Favor favor) {
+  //    activeFavorArrayList.add(favor);
+  //  }
+  //
+  //  public ArrayList<Favor> getarchivedFavorArrayList() {
+  //    return archivedFavorArrayList;
+  //  }
+  //
+  //  public void addPastFavor(Favor favor) {
+  //    archivedFavorArrayList.add(favor);
+  //  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -92,9 +95,11 @@ public class MainActivity extends AppCompatActivity
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
 
-//    activeFavorArrayList = FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
+    //    activeFavorArrayList =
+    // FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
     activeFavorArrayList = new ArrayList<>();
-//    archivedFavorArrayList = FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
+    //    archivedFavorArrayList =
+    // FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
     archivedFavorArrayList = new ArrayList<>();
   }
 
@@ -211,17 +216,22 @@ public class MainActivity extends AppCompatActivity
     showBackIcon();
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Bundle extras = intent.getExtras();
     if (extras != null) {
       String favor_id = extras.getString("FavorId");
-      Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag = FavorDetailView.newInstance(favor);
-      FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-      trans.replace(R.id.nav_host_fragment, frag);
-      trans.commit();
+      CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
+
+      favorFuture.thenAccept(
+          favor -> {
+            Fragment frag = FavorDetailView.newInstance(favor);
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+            trans.replace(R.id.nav_host_fragment, frag);
+            trans.commit();
+          });
     }
   }
 

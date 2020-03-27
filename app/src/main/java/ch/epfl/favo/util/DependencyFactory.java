@@ -51,10 +51,10 @@ public class DependencyFactory {
     currentDatabaseUpdater = dependency;
   }
 
-  public static DatabaseUpdater getCurrentDatabaseUpdater(String collectionReference) {
+  public static DatabaseUpdater getCurrentDatabaseUpdater(String collectionReference, Class cls) {
     if (testMode && currentDatabaseUpdater != null) {
       return currentDatabaseUpdater;
     }
-    return new CollectionWrapper(collectionReference);
+    return new CollectionWrapper(collectionReference, cls);
   }
 }

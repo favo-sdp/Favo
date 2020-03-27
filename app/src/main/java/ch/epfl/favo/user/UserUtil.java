@@ -4,8 +4,9 @@ import android.location.Location;
 
 import java.util.ArrayList;
 
-import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.util.DependencyFactory;
 
 public class UserUtil {
   /*
@@ -14,7 +15,8 @@ public class UserUtil {
   // Single private instance
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
-  private static final CollectionWrapper collection = new CollectionWrapper("users");
+  private static DatabaseUpdater collection =
+      DependencyFactory.getCurrentDatabaseUpdater("users", User.class);
 
   // Private constructor
   private UserUtil() {}

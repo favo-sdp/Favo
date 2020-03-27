@@ -1,9 +1,9 @@
 package ch.epfl.favo.common;
 
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
-public interface DatabaseUpdater {
-  void addDocument(String key, Map document);
+public interface DatabaseUpdater<T> {
+  void addDocument(T document);
 
-  Map<String, Object> getDocument(String key);
+  CompletableFuture<T> getDocument(String key);
 }

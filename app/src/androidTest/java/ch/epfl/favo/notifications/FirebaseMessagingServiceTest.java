@@ -20,15 +20,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -48,21 +48,21 @@ import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 
-class MockDatabaseWrapper implements DatabaseUpdater {
+class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
   @Override
-  public void addDocument(String key, Map document) {}
+  public void addDocument(Favor favor) {}
 
   @Override
-  public Map<String, Object> getDocument(String key) {
-    Map<String, Object> map = new HashMap<>();
-    map.put("title", "test");
-    map.put("description", "test_description");
-    Location loc = new Location("dummy");
-    loc.setLongitude(0.1);
-    loc.setLatitude(0.2);
-    map.put("location", loc);
+  public CompletableFuture<Favor> getDocument(String key) {
+    Location location = new Location("dummy");
+    location.setLongitude(0.1);
+    location.setLatitude(0.2);
 
-    return map;
+    CompletableFuture<Favor> future = new CompletableFuture<>();
+    Favor mockFavor = new Favor("test", "test_description", "123", location, 0);
+    future.supplyAsync(() -> mockFavor );
+    future.complete(mockFavor);
+    return future;
   }
 }
 

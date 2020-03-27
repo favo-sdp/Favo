@@ -1,20 +1,30 @@
 package ch.epfl.favo.common;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
 
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.util.TaskToFutureAdapter;
+
+@SuppressLint("NewApi")
 public class DatabaseWrapper {
 
-  private static final String TAG = "DatabaseWrapper";
   private static DatabaseWrapper INSTANCE = null;
-  // final fields regarding ID generation
-  private static final int ID_LENGTH = 25;
-  private static String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   private FirebaseFirestore firestore;
+
+  // final fields regarding ID generation
+  private static final String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static final int ID_LENGTH = 25;
 
   private DatabaseWrapper() {
     FirebaseFirestore.setLoggingEnabled(true);
@@ -24,11 +34,11 @@ public class DatabaseWrapper {
       firestore = FirebaseFirestore.getInstance();
       firestore.setFirestoreSettings(settings);
     } catch (Exception e) {
-      Log.d(TAG, e.toString());
+      throw e;
     }
   }
 
-  public static DatabaseWrapper getInstance() {
+  private static DatabaseWrapper getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new DatabaseWrapper();
     }
@@ -45,22 +55,50 @@ public class DatabaseWrapper {
     return sb.toString();
   }
 
-  public static void addDocument(String key, Map document, String collection)
-      throws RuntimeException {
-    DatabaseWrapper.getInstance()
-        .firestore
-        .collection(collection)
-        .document(key)
-        .set(document)
-        .addOnSuccessListener(aVoid -> {})
-        .addOnFailureListener(
-            e -> {
-              throw new RuntimeException(e);
-            });
+  static <T extends Document> void addDocument(T document, String collection) {
+    getCollectionReference(collection).document(document.getId()).set(document);
   }
 
-  public static Map<String, Object> getDocument(String key, String collection) {
-    // asynchronously retrieve the document
-    throw new NotImplementedException();
+  static <T extends Document> void removeDocument(String key, String collection) {
+    getCollectionReference(collection).document(key).delete();
+  }
+
+  static <T extends Document> void updateDocument(
+      String key, Map<String, Object> updates, String collection) {
+    getCollectionReference(collection).document(key).update(updates);
+  }
+
+  static <T extends Document> CompletableFuture<T> getDocument(
+      String key, Class<T> cls, String collection) throws RuntimeException {
+    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
+    CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
+
+    return getFuture.thenApply(
+        documentSnapshot -> {
+          if (documentSnapshot.exists()) {
+            return documentSnapshot.toObject(cls);
+          } else {
+            throw new RuntimeException(String.format("Document %s does not exist ", key));
+          }
+        });
+  }
+
+  static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
+      Class<T> cls, String collection) {
+    Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
+
+    return getAllFuture.thenApply(
+        querySnapshot -> {
+          List<T> values = new ArrayList<>();
+          for (DocumentSnapshot documentSnapshot : querySnapshot) {
+            values.add(documentSnapshot.toObject(cls));
+          }
+          return values;
+        });
+  }
+
+  private static CollectionReference getCollectionReference(String collection) {
+    return getInstance().firestore.collection(collection);
   }
 }

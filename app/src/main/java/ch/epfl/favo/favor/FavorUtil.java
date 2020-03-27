@@ -3,12 +3,8 @@ package ch.epfl.favo.favor;
 import android.location.Location;
 import android.util.Log;
 
-import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.GeoPoint;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
@@ -20,7 +16,8 @@ This models the favor request.
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static DatabaseUpdater collection = DependencyFactory.getCurrentDatabaseUpdater("favors");
+  private static DatabaseUpdater collection =
+      DependencyFactory.getCurrentDatabaseUpdater("favors", Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
@@ -32,19 +29,12 @@ public class FavorUtil {
   /**
    * Allows user to post a favor with a title, description and location.
    *
-   * @param f A favor object.
+   * @param favor A favor object.
    */
-  public void postFavor(Favor f) {
+  public void postFavor(Favor favor) {
 
-    Map<String, Object> favor = new HashMap<>();
-    Location loc = f.getLocation();
-    favor.put("title", f.getTitle());
-    favor.put("description", f.getDescription());
-    favor.put("statusId", 0);
-    favor.put("location", new GeoPoint(loc.getLatitude(), loc.getLongitude()));
-    favor.put("postedTime", new Timestamp(f.getPostedTime()));
     try {
-      collection.addDocument(f.getId(), favor);
+      collection.addDocument(favor);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }
@@ -119,7 +109,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public Favor retrieveFavor(String favorId) throws NotImplementedException {
-    return new Favor(collection.getDocument(favorId));
+  public CompletableFuture<Favor> retrieveFavor(String favorId) throws NotImplementedException {
+    return collection.getDocument(favorId);
   }
 }
