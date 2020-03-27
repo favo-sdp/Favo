@@ -15,22 +15,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.util.LocationManagerDependencyFactory;
+import ch.epfl.favo.util.DependencyFactory;
 
-/**
- * This will wrap the getting system location function with some permission checking, before using
- * this class, two lines need to be added to AndroidManifest.xml file: <uses-permission
- * android:name="android.permission.ACCESS_FINE_LOCATION" /> <uses-permission
- * android:name="android.permission.ACCESS_COARSE_LOCATION" /> Sometimes, the location permission is
- * not automatically granted when installing app on phone, you need to grant it on your phone
- * manually. When permission is not granted, app tends to close immediately after launching map
- * view. And when running on a virtual device, the position does not seems consist with expectation.
- * But this will not happen on a real phone.
- */
 public class GpsTracker extends FragmentActivity implements LocationListener, Locator {
 
   private final Context context;
   private static Location mLastKnownLocation = null;
+  private static long mLastUpdate = 0;
 
   public GpsTracker(Context context) {
     this.context = context;
@@ -43,14 +34,16 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
    */
 
   public static void setLastKnownLocation(Location location){
+    // update from mapPage, it has its own position request method based on callback
+    mLastUpdate = System.currentTimeMillis();
     mLastKnownLocation = location;
   }
 
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    if(mLastKnownLocation != null)
+    // if last update of location is less than 5 minutes, then return last result
+    if(mLastKnownLocation != null && ((System.currentTimeMillis() - mLastUpdate)/1000) < 300)
       return mLastKnownLocation;
-    Location location = null;
-    LocationManager locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context);
+    LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
     boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
@@ -63,19 +56,20 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
       else if (isNetworkEnabled) provider = LocationManager.NETWORK_PROVIDER;
       if (provider != null) {
          locationManager.requestLocationUpdates(provider, 10000, 10, this);
-         location = locationManager.getLastKnownLocation(provider);
+        mLastKnownLocation = locationManager.getLastKnownLocation(provider);
       }
-      if (location == null) {
+      if (mLastKnownLocation == null) {
         throw new NoPositionFoundException("Permission is granted, but no position is found");
       }
     } else throw new NoPermissionGrantedException("No location permission granted");
-    return location;
+    mLastUpdate = System.currentTimeMillis();
+    return mLastKnownLocation;
   }
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
     mLastKnownLocation = location;
-    // throw new NotImplementedException();
+    mLastUpdate = System.currentTimeMillis();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {
