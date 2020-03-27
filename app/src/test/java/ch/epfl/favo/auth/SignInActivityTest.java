@@ -4,8 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.util.DependencyFactory;
+
 import static android.app.Activity.RESULT_OK;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static ch.epfl.favo.TestConstants.EMAIL;
+import static ch.epfl.favo.TestConstants.NAME;
 import static org.mockito.Mockito.spy;
 
 public class SignInActivityTest {
@@ -22,7 +26,6 @@ public class SignInActivityTest {
 
   @Test
   public void testOnActivityResult_requestCodeCorrect() {
-    Mockito.doNothing().when(spy).showSnackbar(anyInt());
     spy.onActivityResult(123, 3, null);
   }
 
@@ -33,12 +36,13 @@ public class SignInActivityTest {
 
   @Test
   public void testOnActivityResult_resultNotOk() {
-    Mockito.doNothing().when(spy).showSnackbar(anyInt());
     spy.onActivityResult(123, 10, null);
   }
 
   @Test
   public void testOnActivityResult_resultOk() {
+    Mockito.doNothing().when(spy).retrieveCurrentRegistrationToken();
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, null));
     spy.onActivityResult(123, RESULT_OK, null);
   }
 }

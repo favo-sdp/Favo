@@ -110,23 +110,17 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
-    onView(withId(R.id.sign_out)).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // can't test that sign-in page is displayed because this is handled by the library
-    // automatically
-  }
+    onView(withId(R.id.sign_out)).perform(click());}
 
   @Test
-  public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_cancelOperation()
-      throws InterruptedException {
+  public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_cancelOperation() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
-    Thread.sleep(3000);
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.delete_account)).perform(click());
     // give time to display the dialog
-    Thread.sleep(3000);
+    getInstrumentation().waitForIdleSync();
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
@@ -134,6 +128,19 @@ public class UserAccountPageTest {
     onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
   }
 
-  // can't test confirm delete account because operation depends on too many internal
-  // calls of the FirebaseAuth library but the written code is simple so it should be correct
+  @Test
+  public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_confirmOperation() {
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    mActivityRule.launchActivity(null);
+    navigateToAccountTab();
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.delete_account)).perform(click());
+    // give time to display the dialog
+    getInstrumentation().waitForIdleSync();
+    onView(withText(endsWith("?"))).check(matches(isDisplayed()));
+    onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
+    onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
+    DependencyFactory.setCurrentFirebaseUser(null);
+    onView(withId(android.R.id.button1)).perform(click());
+  }
 }

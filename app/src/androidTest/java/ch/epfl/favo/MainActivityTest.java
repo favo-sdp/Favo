@@ -1,8 +1,10 @@
 package ch.epfl.favo;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -152,6 +154,26 @@ public class MainActivityTest {
   }
 
   @Test
+  public void testShareIntentIsLaunched() {
+
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    // Click on account icon
+    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+    // check that share intent is indeed opened
+    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
+
+    // click back button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.pressBack();
+  }
+
+  @Test
   public void testHomeTabIsLaunched_IsMap() {
 
     // Click on menu tab
@@ -188,6 +210,33 @@ public class MainActivityTest {
     // check that we're back on the main page
     onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testShareIntent() {
+
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    // click share
+    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    // check that share intent is indeed opened
+    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
+
+    // click back button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.pressBack();
+
+    getInstrumentation().waitForIdleSync();
+
+    // check that we're back on the main page
+    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
   }
 
   @Test

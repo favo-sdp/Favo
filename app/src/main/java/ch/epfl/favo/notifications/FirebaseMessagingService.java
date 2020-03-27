@@ -27,13 +27,12 @@ public class FirebaseMessagingService
   // private static final String TAG = "MyFirebaseMsgService";
   public static String CHANNEL_NAME = "Default channel name";
 
-
   // show notification received
   public static void showNotification(
       Context context, RemoteMessage.Notification notification, String channelId) {
     Intent intent = new Intent(context, MainActivity.class);
-    //add favor id as an argument to main activity
-    intent.putExtra("FavorId",notification.getTag());
+    // add favor id as an argument to main activity
+    intent.putExtra("FavorId", notification.getTag());
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
     PendingIntent pendingIntent =
@@ -67,10 +66,10 @@ public class FirebaseMessagingService
   public void onMessageReceived(RemoteMessage remoteMessage) {
 
     // Check if message contains a data payload.
-    //    if (remoteMessage.getData().size() > 0) {
-    //      Log.d(TAG, "Message data payload: " + remoteMessage.getData());
-    //      // do something with message data, like chat (TODO for later sprints)
-    //    }
+    //if (remoteMessage.getData().size() > 0) {
+      // Log.d("FirebaseMessagingService", "Message data payload: " + remoteMessage.getData());
+      // do something with message data, like chat (TODO for later sprints)
+    //}
 
     // Check if message contains a notification payload.
     if (remoteMessage.getNotification() != null) {
@@ -86,5 +85,6 @@ public class FirebaseMessagingService
   public void onNewToken(@NonNull String token) {
     // Log.d(TAG, "Refreshed token: " + token);
     // TODO send new refreshed token to db
+    // simply set the new notificationID for the current user and sync with the db
   }
 }

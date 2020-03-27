@@ -20,12 +20,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;

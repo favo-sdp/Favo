@@ -3,7 +3,6 @@ package ch.epfl.favo;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,12 +18,9 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.firestore.core.Transaction;
-import com.google.firebase.iid.FirebaseInstanceId;
 
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -33,8 +29,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
-import static ch.epfl.favo.favor.FavorUtil.getSingleInstance;
-// import static ch.epfl.favo.R.id.toolbar;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
@@ -42,7 +36,6 @@ import static ch.epfl.favo.favor.FavorUtil.getSingleInstance;
  */
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
-  private static final String TAG = "MainActivity";
   // Bottom tabs
   public RadioButton mapButton;
   public RadioButton favListButton;
@@ -55,14 +48,30 @@ public class MainActivity extends AppCompatActivity
   // private Toolbar toolbar;
   private ImageButton backButton;
 
+  public ArrayList<Favor> activeFavorArrayList;
+  public ArrayList<Favor> archivedFavorArrayList;
+
+  //  public ArrayList<Favor> getActiveFavorArrayList() {
+  //    return activeFavorArrayList;
+  //  }
+  //
+  //  public void addActiveFavor(Favor favor) {
+  //    activeFavorArrayList.add(favor);
+  //  }
+  //
+  //  public ArrayList<Favor> getarchivedFavorArrayList() {
+  //    return archivedFavorArrayList;
+  //  }
+  //
+  //  public void addPastFavor(Favor favor) {
+  //    archivedFavorArrayList.add(favor);
+  //  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    // retrieve current registration token for notifications
-    retrieveCurrentRegistrationToken();
 
     // Initialize Variables
     nav = findViewById(R.id.nav_view);
@@ -82,11 +91,16 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-
-
     /*Activate if we want a toolbar */
     // toolbar = findViewById(R.id.toolbar);
     // setSupportActionBar(toolbar);
+
+    //    activeFavorArrayList =
+    // FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
+    activeFavorArrayList = new ArrayList<>();
+    //    archivedFavorArrayList =
+    // FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
+    archivedFavorArrayList = new ArrayList<>();
   }
 
   private void setUpHamburgerMenuButton() {
@@ -207,41 +221,23 @@ public class MainActivity extends AppCompatActivity
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Bundle extras = intent.getExtras();
-    if (extras!=null){
+    if (extras != null) {
       String favor_id = extras.getString("FavorId");
       CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
 
-      favorFuture.thenAccept(favor -> {
-        Fragment frag = FavorDetailView.newInstance(favor);
-        FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-        trans.replace(R.id.nav_host_fragment,frag);
-        trans.commit();
-      });
+      favorFuture.thenAccept(
+          favor -> {
+            Fragment frag = FavorDetailView.newInstance(favor);
+            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
+            trans.replace(R.id.nav_host_fragment, frag);
+            trans.commit();
+          });
     }
-
-
   }
 
   @Override
   public void onBackPressed() {
     getSupportFragmentManager().popBackStackImmediate();
-  }
-
-  // retrieve current registration token for the notification system
-  private void retrieveCurrentRegistrationToken() {
-    FirebaseInstanceId.getInstance()
-        .getInstanceId()
-        .addOnCompleteListener(
-            task -> {
-              if (!task.isSuccessful()) {
-                return;
-              }
-
-              // Get new Instance ID token
-              String token = Objects.requireNonNull(task.getResult()).getToken();
-              Log.d(TAG, getString(R.string.msg_token_fmt, token));
-              // TODO send registration token to db
-            });
   }
 
   @Override

@@ -1,6 +1,9 @@
 package ch.epfl.favo.util;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -30,5 +33,10 @@ public class CommonTools {
     Date date = new Date(time);
     Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
     return format.format(date);
+  }
+
+  public static void hideKeyboardFrom(Context context, View view) {
+    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 }
