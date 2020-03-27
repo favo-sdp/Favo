@@ -138,7 +138,9 @@ public class MainActivity extends AppCompatActivity
 
     switch (itemId) {
       case R.id.nav_home:
-        navController.navigate(R.id.nav_map);
+        getSupportFragmentManager().popBackStackImmediate();
+        getSupportFragmentManager().popBackStackImmediate();
+        getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -163,7 +165,10 @@ public class MainActivity extends AppCompatActivity
 
   /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
-    mapButton.setOnClickListener(v -> navController.navigate(R.id.nav_map));
+    mapButton.setOnClickListener(v -> {        
+      getSupportFragmentManager().popBackStackImmediate();
+      getSupportFragmentManager().popBackStackImmediate();
+      getSupportFragmentManager().popBackStackImmediate();});
     favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
   }
 
@@ -227,6 +232,7 @@ public class MainActivity extends AppCompatActivity
 
       favorFuture.thenAccept(
           favor -> {
+            activeFavorArrayList.add(favor);
             Fragment frag = FavorDetailView.newInstance(favor);
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.nav_host_fragment, frag);
