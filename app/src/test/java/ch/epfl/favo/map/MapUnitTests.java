@@ -16,7 +16,7 @@ import org.junit.function.ThrowingRunnable;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.util.LocationManagerDependencyFactory;
+import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -32,7 +32,7 @@ public class MapUnitTests extends FragmentActivity {
 
   @Test
   public void NoLocationFoundTest() {
-    LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
+    DependencyFactory.setCurrentLocationManager(locationManagerMock);
     // Given a mocked Context injected into the object under test...
     when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(false);
     when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
@@ -41,7 +41,7 @@ public class MapUnitTests extends FragmentActivity {
 
   @Test
   public void NoPermissionTest() {
-    LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
+    DependencyFactory.setCurrentLocationManager(locationManagerMock);
     when(ContextCompat.checkSelfPermission(contextMock, Manifest.permission.ACCESS_FINE_LOCATION))
         .thenReturn(PackageManager.PERMISSION_DENIED);
     when(ContextCompat.checkSelfPermission(contextMock, Manifest.permission.ACCESS_COARSE_LOCATION))
@@ -52,7 +52,7 @@ public class MapUnitTests extends FragmentActivity {
 
   @Test
   public void FinePositionFoundTest() {
-    LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
+    DependencyFactory.setCurrentLocationManager(locationManagerMock);
     when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(true);
     when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
     Location mockLocation = mock(Location.class);
@@ -69,7 +69,7 @@ public class MapUnitTests extends FragmentActivity {
 
   @Test
   public void CoarsePositionFoundTest() {
-    LocationManagerDependencyFactory.setCurrentLocationManager(locationManagerMock);
+    DependencyFactory.setCurrentLocationManager(locationManagerMock);
     when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(false);
     when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(true);
     Location mockLocation = mock(Location.class);
