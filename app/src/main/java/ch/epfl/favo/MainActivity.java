@@ -2,7 +2,6 @@ package ch.epfl.favo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -17,10 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -29,7 +26,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
-// import static ch.epfl.favo.R.id.toolbar;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
@@ -37,8 +33,7 @@ import static ch.epfl.favo.R.id.drawer_layout;
  */
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
-  private static final String TAG = "MainActivity";
-  // Bottom tabs
+    // Bottom tabs
   public RadioButton mapButton;
   public RadioButton favListButton;
   // UI
@@ -74,9 +69,6 @@ public class MainActivity extends AppCompatActivity
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
-    // retrieve current registration token for notifications
-    retrieveCurrentRegistrationToken();
 
     // Initialize Variables
     nav = findViewById(R.id.nav_view);
@@ -223,12 +215,12 @@ public class MainActivity extends AppCompatActivity
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
     Bundle extras = intent.getExtras();
-    if (extras!=null){
+    if (extras != null) {
       String favor_id = extras.getString("FavorId");
       Favor favor = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-      Fragment frag  = FavorDetailView.newInstance(favor);
+      Fragment frag = FavorDetailView.newInstance(favor);
       FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-      trans.replace(R.id.nav_host_fragment,frag);
+      trans.replace(R.id.nav_host_fragment, frag);
       trans.commit();
     }
   }
@@ -236,23 +228,6 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onBackPressed() {
     getSupportFragmentManager().popBackStackImmediate();
-  }
-
-  // retrieve current registration token for the notification system
-  private void retrieveCurrentRegistrationToken() {
-    FirebaseInstanceId.getInstance()
-        .getInstanceId()
-        .addOnCompleteListener(
-            task -> {
-              if (!task.isSuccessful()) {
-                return;
-              }
-
-              // Get new Instance ID token
-              String token = Objects.requireNonNull(task.getResult()).getToken();
-              Log.d(TAG, getString(R.string.msg_token_fmt, token));
-              // TODO send registration token to db
-            });
   }
 
   @Override

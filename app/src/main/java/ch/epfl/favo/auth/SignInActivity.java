@@ -1,21 +1,19 @@
 package ch.epfl.favo.auth;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -104,8 +102,7 @@ public class SignInActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, intent);
 
     if (requestCode == RC_SIGN_IN) {
-      IdpResponse idpResponse = IdpResponse.fromResultIntent(intent);
-      handleSignInResponse(idpResponse, resultCode);
+      handleSignInResponse(resultCode);
     }
   }
 
@@ -126,28 +123,41 @@ public class SignInActivity extends AppCompatActivity {
     finish();
   }
 
-  private void handleSignInResponse(IdpResponse idpResponse, int resultCode) {
+  void handleSignInResponse(int resultCode) {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
+
+      FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
+      String name = currentUser.getDisplayName();
+      String email = currentUser.getEmail();
+      Uri photo = currentUser.getPhotoUrl();
+      String deviceId = currentUser.getUid();
+
+      // TODO post user data to the db
+
+      retrieveCurrentRegistrationToken();
+
       startMainActivity();
-    } else {
-
-      if (idpResponse == null) {
-        showSnackbar(R.string.sign_in_cancelled);
-        return;
-      }
-
-      if (Objects.requireNonNull(idpResponse.getError()).getErrorCode() == ErrorCodes.NO_NETWORK) {
-        showSnackbar(R.string.no_internet_connection);
-        return;
-      }
-
-      showSnackbar(R.string.unknown_error);
     }
   }
 
-  public void showSnackbar(@StringRes int errorMessageRes) {
-    Snackbar.make(findViewById(android.R.id.content), errorMessageRes, Snackbar.LENGTH_LONG).show();
+  // retrieve current registration token for the notification system
+  void retrieveCurrentRegistrationToken() {
+    FirebaseInstanceId.getInstance()
+        .getInstanceId()
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                return;
+              }
+
+              // Get new Instance ID token
+              String token = Objects.requireNonNull(task.getResult()).getToken();
+              // Log.d("SignInActivity", getString(R.string.msg_token_fmt, token));
+
+              // TODO post notificationId to the db
+              // just set the notificationId property for the current user and then sync the db
+            });
   }
 }
