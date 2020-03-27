@@ -11,11 +11,13 @@ import android.location.LocationProvider;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -29,6 +31,11 @@ public class MapUnitTests extends FragmentActivity {
 
   private Context contextMock = mock(Context.class);
   private LocationManager locationManagerMock = mock(LocationManager.class);
+
+  @Before
+  public void setUP() {
+    GpsTracker.setLastKnownLocation(null);
+  }
 
   @Test
   public void NoLocationFoundTest() {
@@ -80,8 +87,8 @@ public class MapUnitTests extends FragmentActivity {
     GpsTracker gpsTracker = new GpsTracker(contextMock);
     double latitude = gpsTracker.getLocation().getLatitude();
     double longitude = gpsTracker.getLocation().getLongitude();
-    assertEquals(latitude, 4.0, 0.01);
-    assertEquals(longitude, 5.0, 0.01);
+    assertEquals(4.0, latitude, 0.01);
+    assertEquals(5.0, longitude, 0.01);
   }
 
   @Test

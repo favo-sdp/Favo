@@ -60,15 +60,15 @@ public class DependencyFactory {
     return new CollectionWrapper(collectionReference, cls);
   }
 
+  @VisibleForTesting
+  public static void setCurrentLocationManager(LocationManager dependency) {
+    testMode = true;
+    currentLocationManager = dependency;
+  }
   public static LocationManager getCurrentLocationManager(Context context) {
     if (testMode && currentLocationManager != null) {
       return currentLocationManager;
     }
     return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-  }
-
-  public static void setCurrentLocationManager(LocationManager dependency) {
-    testMode = true;
-    currentLocationManager = dependency;
   }
 }
