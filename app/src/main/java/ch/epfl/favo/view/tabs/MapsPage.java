@@ -21,6 +21,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,7 +57,6 @@ public class MapsPage extends Fragment
         GoogleMap.InfoWindowAdapter {
   private GoogleMap mMap;
   private Location mLocation;
-  private GpsTracker mGpsTracker;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
   private boolean first=true;
   private boolean mLocationPermissionGranted = false;
@@ -86,7 +86,8 @@ public class MapsPage extends Fragment
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     setupView();
-
+    mFusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
+    getLocation();
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
 
@@ -94,8 +95,6 @@ public class MapsPage extends Fragment
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
-    mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
-    mLocation = mGpsTracker.getLocation();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null) {
