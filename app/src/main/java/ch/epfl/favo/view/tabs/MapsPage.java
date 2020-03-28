@@ -59,6 +59,7 @@ public class MapsPage extends Fragment
   private Location mLocation;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
   private boolean first=true;
+  private GpsTracker mGpsTracker;
   private boolean mLocationPermissionGranted = false;
   private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -97,6 +98,7 @@ public class MapsPage extends Fragment
     setupView();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+    mGpsTracker = new GpsTracker(getContext());
     if (mapFragment != null) {
       mapFragment.getMapAsync(this);
     }
@@ -182,6 +184,8 @@ public class MapsPage extends Fragment
 
   private void drawSelfLocationMarker() {
       // Add a marker at my location and move the camera
+    try{
+      mLocation = mGpsTracker.getLocation();
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =
           mMap.addMarker(
@@ -194,6 +198,10 @@ public class MapsPage extends Fragment
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
       mMap.setInfoWindowAdapter(this);
       mMap.setOnInfoWindowClickListener(this);
+    }
+    catch (Exception e){
+      CommonTools.showSnackbar(getView(), e.getMessage());
+    }
   }
 
   private void drawFavorMarker(List<Favor> favors) {
@@ -242,7 +250,7 @@ public class MapsPage extends Fragment
   @Override
   public void onInfoWindowClick(Marker marker) {
     // replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
-    if (marker.getTitle().equals("I am Here"))
+    if (marker.getTitle().equals(getString(R.string.self_location)))
       CommonTools.replaceFragment(
           R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
     else
