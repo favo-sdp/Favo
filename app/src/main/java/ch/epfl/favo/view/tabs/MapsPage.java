@@ -95,6 +95,7 @@ public class MapsPage extends Fragment
     super.onViewCreated(view, savedInstanceState);
     setupView();
     mGpsTracker = new GpsTracker(Objects.requireNonNull(getActivity()).getApplicationContext());
+    mLocation = mGpsTracker.getLocation();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null) {
@@ -181,8 +182,6 @@ public class MapsPage extends Fragment
   }
 
   private void drawSelfLocationMarker() {
-    try {
-      mLocation = mGpsTracker.getLocation();
       // Add a marker at my location and move the camera
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =
@@ -196,10 +195,6 @@ public class MapsPage extends Fragment
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
       mMap.setInfoWindowAdapter(this);
       mMap.setOnInfoWindowClickListener(this);
-
-    } catch (NoPermissionGrantedException | NoPositionFoundException e) {
-      CommonTools.showSnackbar(getView(), e.getMessage());
-    }
   }
 
   private void drawFavorMarker(List<Favor> favors) {
