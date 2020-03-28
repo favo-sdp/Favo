@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -22,8 +21,6 @@ import org.junit.runner.RunWith;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,6 +53,12 @@ class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
   public void addDocument(Favor favor) {}
 
   @Override
+  public void updateDocument(Favor document) {}
+
+  @Override
+  public void removeDocument(String key) {}
+
+  @Override
   public CompletableFuture<Favor> getDocument(String key) {
     Location location = new Location("dummy");
     location.setLongitude(0.1);
@@ -63,7 +66,7 @@ class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
 
     CompletableFuture<Favor> future = new CompletableFuture<>();
     Favor mockFavor = new Favor("test", "test_description", "123", location, 0);
-    future.supplyAsync(() -> mockFavor );
+    CompletableFuture.supplyAsync(() -> mockFavor);
     future.complete(mockFavor);
     return future;
   }
@@ -100,8 +103,7 @@ public class FirebaseMessagingServiceTest {
     Bundle bundle = generateBundle();
 
     FirebaseMessagingService.showNotification(
-        mainActivityTestRule.getActivity(), new RemoteMessage(bundle),
-        "Default channel id");
+        mainActivityTestRule.getActivity(), new RemoteMessage(bundle), "Default channel id");
 
     // WORKS LOCALLY, NOT ON TRAVIS... BUT WORKS ON CIRRUS :)
     UiDevice device = UiDevice.getInstance(getInstrumentation());
@@ -134,11 +136,13 @@ public class FirebaseMessagingServiceTest {
     bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
     bundle.putString("gcm.notification.e", "1");
     bundle.putString("gcm.notification.tag", FAVOR_ID);
-    bundle.putSerializable("gcm.notification.data",new HashMap<String,String>(){
-        {
-    put("FavorId",FAVOR_ID);
-    }
-    });
+    bundle.putSerializable(
+        "gcm.notification.data",
+        new HashMap<String, String>() {
+          {
+            put("FavorId", FAVOR_ID);
+          }
+        });
     return bundle;
   }
 }

@@ -42,6 +42,6 @@ public class FakeFavorList {
         "Description of favor " + number,
         "Requester" + number,
         location,
-        0);
+        Favor.Status.REQUESTED);
   }
 }

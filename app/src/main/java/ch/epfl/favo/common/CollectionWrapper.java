@@ -23,8 +23,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     DatabaseWrapper.removeDocument(key, collection);
   }
 
-  public void updateDocument(String key, Map<String, Object> updates) {
-    DatabaseWrapper.updateDocument(key, updates, collection);
+  public void updateDocument(T document) {
+    DatabaseWrapper.updateDocument(document.getId(),document.toMap(),collection);
   }
 
   @Override

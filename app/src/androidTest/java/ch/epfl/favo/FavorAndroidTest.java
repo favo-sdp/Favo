@@ -44,7 +44,7 @@ public class FavorAndroidTest {
     String description = "Tiire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    int statusId = 0;
+    Favor.Status statusId = 0;
 
     Favor favor = new Favor(title, description, requesterId, location, statusId);
     int flag = 0;

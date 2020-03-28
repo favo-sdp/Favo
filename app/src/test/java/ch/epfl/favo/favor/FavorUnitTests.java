@@ -33,7 +33,7 @@ public class FavorUnitTests {
     String description = "Tire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    int statusId = 0;
+    Favor.Status statusId = 0;
 
     Favor favor = new Favor(title, description, requesterId, location, statusId);
 
@@ -70,7 +70,7 @@ public class FavorUnitTests {
     String description = TestUtil.generateRandomString(305);
     Location location = new Location("dummy provider");
     String requesterId = "requester Id";
-    int statusId = 0;
+    Favor.Status statusId = 0;
 
     Favor f = new Favor(title, description, requesterId, location, statusId);
     FavorUtil.getSingleInstance().postFavor(f);
@@ -155,7 +155,7 @@ public class FavorUnitTests {
     String description = "Tiire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    int statusId = 0;
+    Favor.Status statusId = 0;
 
     Favor favor = new Favor(title, description, requesterId, location, statusId);
     assertEquals(favor.describeContents(), 0);
@@ -167,7 +167,7 @@ public class FavorUnitTests {
     String description = "Tiire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    int statusId = 0;
+    Favor.Status statusId = 0;
     Favor[] favors = Favor.CREATOR.newArray(3);
     favors[0] = new Favor(title, description, requesterId, location, statusId);
     assertEquals(title, favors[0].getTitle());
