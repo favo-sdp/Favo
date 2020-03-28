@@ -104,13 +104,7 @@ public class MapsPage extends Fragment
     }
   }
 
-  private void checkPlayServices() {
-    GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-    int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
-    if (resultCode != ConnectionResult.SUCCESS) {
-      gApi.makeGooglePlayServicesAvailable(getActivity());
-    }
-  }
+
 
   private void getLocationPermission() {
     /*
@@ -126,6 +120,16 @@ public class MapsPage extends Fragment
       ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
               new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
               PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+    }
+  }
+
+/*
+
+  private void checkPlayServices() {
+    GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+    int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
+    if (resultCode != ConnectionResult.SUCCESS) {
+      gApi.makeGooglePlayServicesAvailable(getActivity());
     }
   }
 
@@ -150,9 +154,7 @@ public class MapsPage extends Fragment
     }
   }
 
-  /**
-   * Handles the result of the request for location permissions.
-   */
+
   @Override
   public void onRequestPermissionsResult(int requestCode,
                                          @NonNull String[] permissions,
@@ -165,7 +167,7 @@ public class MapsPage extends Fragment
       }
     }
   }
-
+*/
 
   public List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
@@ -185,13 +187,14 @@ public class MapsPage extends Fragment
   private void drawSelfLocationMarker() {
       // Add a marker at my location and move the camera
     try{
+      getLocationPermission();
       mLocation = mGpsTracker.getLocation();
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =
           mMap.addMarker(
               new MarkerOptions()
                   .position(myLocation)
-                  .title("I am Here")
+                  .title("FavorRequest")
                   .draggable(true)
                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
