@@ -86,7 +86,7 @@ public class MapsPage extends Fragment
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     setupView();
-    mFusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
+   // mFusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     getLocation();
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
