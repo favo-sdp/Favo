@@ -87,7 +87,7 @@ public class MapsPage extends Fragment
     // Inflate the layout for this fragment
     setupView();
    // mFusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
-    getLocation();
+   // getLocation();
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
 
