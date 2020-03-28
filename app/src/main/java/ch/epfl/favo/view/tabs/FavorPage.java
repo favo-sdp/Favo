@@ -23,6 +23,8 @@ import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
+import static ch.epfl.favo.util.CommonTools.replaceFragment;
+
 /**
  * View will contain list of favors requested in the past. The list will contain clickable items
  * that will expand to give more information about them. This object is a simple {@link Fragment}
@@ -88,7 +90,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   public void onClick(View view) {
     switch (view.getId()) {
       case R.id.new_favor:
-        CommonTools.replaceFragment(
+        replaceFragment(
                 R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;
     }
@@ -100,6 +102,16 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     else
       tipTextView.setVisibility(View.INVISIBLE);
     listView.setAdapter(new FavorAdapter(getContext(), favors));
+    listView.setOnItemClickListener((parent, view, position, id) -> {
+      FavorDetailPage frag = new FavorDetailPage();
+      Bundle bundle = new Bundle();
+      bundle.putString("title", favors.get(position).getTitle());
+      bundle.putString("location", favors.get(position).getLocation().toString());
+      bundle.putString("datetime", favors.get(position).getPostedTime().toString());
+      bundle.putString("description", favors.get(position).getDescription());
+      frag.setArguments(bundle);
+      replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), frag);
+    });
   }
 
   private void showText(String text) {

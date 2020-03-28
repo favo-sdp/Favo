@@ -27,4 +27,7 @@
     <!-- Help preferences -->
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
