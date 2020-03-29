@@ -33,7 +33,7 @@ public class FavorUnitTests {
     String description = "Tire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    Favor.Status statusId = 0;
+    Favor.Status statusId = Favor.Status.EXPIRED;
 
     Favor favor = new Favor(title, description, requesterId, location, statusId);
 
@@ -49,10 +49,10 @@ public class FavorUnitTests {
   public void favorSettersCorrectlyUpdateValues() {
 
     Favor favor = new Favor();
-    int statusId = 3;
+    Favor.Status statusId = Favor.Status.CANCELLED_REQUESTER;
     Location location = new Location("Dummy provider 2");
     String accepterId = "2364652";
-    favor.setStatusId(3);
+    favor.setStatusId(statusId);
     favor.setLocation(location);
     favor.setAccepterID(accepterId);
 
@@ -70,7 +70,7 @@ public class FavorUnitTests {
     String description = TestUtil.generateRandomString(305);
     Location location = new Location("dummy provider");
     String requesterId = "requester Id";
-    Favor.Status statusId = 0;
+    Favor.Status statusId = Favor.Status.REQUESTED;
 
     Favor f = new Favor(title, description, requesterId, location, statusId);
     FavorUtil.getSingleInstance().postFavor(f);
@@ -155,7 +155,7 @@ public class FavorUnitTests {
     String description = "Tiire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    Favor.Status statusId = 0;
+    Favor.Status statusId = Favor.Status.REQUESTED;
 
     Favor favor = new Favor(title, description, requesterId, location, statusId);
     assertEquals(favor.describeContents(), 0);
@@ -167,7 +167,7 @@ public class FavorUnitTests {
     String description = "Tiire popped while turning left on Avenue Rhodanie";
     String requesterId = "2362489";
     Location location = new Location("Dummy provider");
-    Favor.Status statusId = 0;
+    Favor.Status statusId = Favor.Status.REQUESTED;
     Favor[] favors = Favor.CREATOR.newArray(3);
     favors[0] = new Favor(title, description, requesterId, location, statusId);
     assertEquals(title, favors[0].getTitle());

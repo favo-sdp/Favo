@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -102,8 +103,8 @@ public class FavorRequestView extends Fragment {
   }
 
   private void confirmUpdatedFavor() {
-    Favor favor = getFavorFromView();
-    FavorUtil.updateFavor(favor);
+    getFavorFromView();
+    FavorUtil.updateFavor(currentFavor);
     setFavorActivatedView();
   }
 
@@ -161,24 +162,28 @@ public class FavorRequestView extends Fragment {
   }
 
   private void requestFavor() {
-    Favor favor = getFavorFromView();
-    FavorUtil.getSingleInstance().postFavor(favor);
+    getFavorFromView();
+    FavorUtil.getSingleInstance().postFavor(currentFavor);
 
     // Save the favor to local favorList
-    ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(favor);
+    ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(currentFavor);
 
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_request_success_msg));
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     setFavorActivatedView();
+    ((TextView) getActivity().findViewById(R.id.favor_status_text))
+            .setText(currentFavor.getStatusId().toString());
+    ((TextView) getActivity().findViewById(R.id.favor_status_text))
+            .setBackgroundColor(getResources().getColor(R.color.colorAccent));
     // Go back
     // FragmentManager fragmentManager = getParentFragmentManager();
     // assert fragmentManager != null;
     // fragmentManager.popBackStack();
   }
 
-  private Favor getFavorFromView() {
+  private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
@@ -193,7 +198,7 @@ public class FavorRequestView extends Fragment {
     else{
       currentFavor.updateToOther(favor);
     }
-    return currentFavor;
+    return;
   }
 
   public void openFileChooser() {
