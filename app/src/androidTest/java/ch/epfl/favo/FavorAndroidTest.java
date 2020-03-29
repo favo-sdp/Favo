@@ -40,13 +40,9 @@ public class FavorAndroidTest {
 
   @Test
   public void favorGettersReturnCorrectValuesByParcelable() {
-    String title = "Flat tire";
-    String description = "Tiire popped while turning left on Avenue Rhodanie";
-    String requesterId = "2362489";
-    Location location = new Location("Dummy provider");
-    Favor.Status statusId = 0;
 
-    Favor favor = new Favor(title, description, requesterId, location, statusId);
+
+    Favor favor = FakeItemFactory.getFavor();
     int flag = 0;
     Parcel parcel = Parcel.obtain();
     favor.writeToParcel(parcel, flag);

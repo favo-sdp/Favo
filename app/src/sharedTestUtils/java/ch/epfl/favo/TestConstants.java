@@ -3,6 +3,9 @@ package ch.epfl.favo;
 import android.location.Location;
 import android.net.Uri;
 
+import ch.epfl.favo.common.DatabaseWrapper;
+import ch.epfl.favo.favor.Favor;
+
 public class TestConstants {
 
   // User related test constants
@@ -16,9 +19,13 @@ public class TestConstants {
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
   // Favor related test constants
+  public static final String TITLE = "fake test title";
+  public static final String DESCRIPTION = "fake test description";
+  public static final String REQUESTER_ID = DatabaseWrapper.generateRandomId();
   public static final Location LOCATION = new Location(PROVIDER);
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
+  public static final Favor.Status FAVOR_STATUS = Favor.Status.REQUESTED;
 
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";

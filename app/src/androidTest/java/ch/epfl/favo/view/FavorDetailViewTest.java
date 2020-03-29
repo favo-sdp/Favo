@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -54,7 +55,7 @@ public class FavorDetailViewTest {
   @Before
   public void setUP() {
     Location mockLocation = createLocation(37, -122, 3.0f);
-    fakeFavor = new Favor("Title", "Desc", "0", mockLocation, 0);
+    fakeFavor = FakeItemFactory.getFavor();
   }
 
   Location createLocation(double lat, double lng, float accuracy) {

@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseUpdater;
@@ -65,7 +66,7 @@ class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
     location.setLatitude(0.2);
 
     CompletableFuture<Favor> future = new CompletableFuture<>();
-    Favor mockFavor = new Favor("test", "test_description", "123", location, 0);
+    Favor mockFavor = FakeItemFactory.getFavor();
     CompletableFuture.supplyAsync(() -> mockFavor);
     future.complete(mockFavor);
     return future;
