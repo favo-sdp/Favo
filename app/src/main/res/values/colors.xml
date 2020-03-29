@@ -14,4 +14,9 @@
 
     <color name="material_purple_a700">#AA00FF</color>
     <color name="material_red_a200">#FF5252</color>
+
+    <!-- Favor Request View Status Text Colors -->
+    <color name="requested_status_bg">#F7FF00</color>
+    <color name="accepted_status_bg">#6ED172</color>
+    <color name="cancelled_status_bg">#F79790</color>
 </resources>

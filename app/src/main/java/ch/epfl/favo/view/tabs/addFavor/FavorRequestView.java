@@ -22,10 +22,10 @@ import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
@@ -35,15 +35,25 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 public class FavorRequestView extends Fragment {
 
   private static final int PICK_IMAGE_REQUEST = 1;
+  private static final String FAVOR_ARGS = "FAVOR_ARGS";
   private ImageView mImageView;
   private EditText mTitleView;
   private EditText mDescriptionView;
+  private TextView mStatusView;
   private Locator mGpsTracker;
   private Button confirmFavorBtn;
   private Button addPictureBtn;
   private Button cancelFavorBtn;
   private Button editFavorBtn;
   private Favor currentFavor;
+
+  public static FavorRequestView newInstance(Favor favor) {
+    FavorRequestView fragment = new FavorRequestView();
+    Bundle args = new Bundle();
+    args.putParcelable(FAVOR_ARGS, favor);
+    fragment.setArguments(args);
+    return fragment;
+  }
 
   public FavorRequestView() {
     // Required empty public constructor
@@ -53,13 +63,13 @@ public class FavorRequestView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    //TODO: inject current favor
     View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
 
     setupButtons(rootView);
-    // Edit text: Title
+    // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
     mDescriptionView = rootView.findViewById(R.id.details);
+    mStatusView = rootView.findViewById(R.id.favor_status_text);
     setupView();
     // Extract other elements
     mImageView = rootView.findViewById(R.id.imageView);
@@ -68,8 +78,20 @@ public class FavorRequestView extends Fragment {
     mGpsTracker =
         DependencyFactory.getCurrentGpsTracker(
             Objects.requireNonNull(getActivity()).getApplicationContext());
+    // Inject argument
 
+    if (getArguments() != null) {
+      currentFavor = getArguments().getParcelable(FAVOR_ARGS);
+      displayFavorInfo();
+      setFavorActivatedView(rootView);
+    }
     return rootView;
+  }
+
+  private void displayFavorInfo() {
+    mTitleView.setText(currentFavor.getTitle());
+    mDescriptionView.setText(currentFavor.getDescription());
+    mStatusView.setText(currentFavor.getStatusId().toString());
   }
 
   private void setupButtons(View rootView) {
@@ -105,16 +127,22 @@ public class FavorRequestView extends Fragment {
   private void confirmUpdatedFavor() {
     getFavorFromView();
     FavorUtil.updateFavor(currentFavor);
-    setFavorActivatedView();
+    // update lists
+    ((MainActivity) Objects.requireNonNull(getActivity()))
+        .activeFavors.put(currentFavor.getId(), currentFavor);
+    ((MainActivity) Objects.requireNonNull(getActivity()))
+        .archivedFavors.remove(currentFavor.getId());
+    setFavorActivatedView(getView());
   }
 
-  private void setFavorActivatedView() {
+  private void setFavorActivatedView(View v) {
     confirmFavorBtn.setVisibility(View.INVISIBLE);
     editFavorBtn.setVisibility(View.VISIBLE);
     editFavorBtn.setText(getString(R.string.edit_favor));
     cancelFavorBtn.setVisibility(View.VISIBLE);
-
     toggleTextViewsEditable(false);
+    setStatusTextColor();
+    CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()),v);
   }
 
   private void setFavorUpdatingView() {
@@ -139,11 +167,14 @@ public class FavorRequestView extends Fragment {
   }
 
   private void cancelFavor() {
-    // TODO: implement UI to
     currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
     FavorUtil.updateFavor(currentFavor);
-    ((MainActivity) getActivity()).onBackPressed();//go back
-
+    MainActivity mainActivity = (MainActivity) getActivity();
+    mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
+    mainActivity.activeFavors.remove(currentFavor.getId());
+    CommonTools.hideKeyboardFrom(
+              Objects.requireNonNull(getContext()), Objects.requireNonNull(getView()));
+    getActivity().onBackPressed(); // go back
   }
 
   @Override
@@ -166,21 +197,39 @@ public class FavorRequestView extends Fragment {
     FavorUtil.getSingleInstance().postFavor(currentFavor);
 
     // Save the favor to local favorList
-    ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(currentFavor);
+    ((MainActivity) Objects.requireNonNull(getActivity()))
+        .activeFavors.put(currentFavor.getId(), currentFavor);
 
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_request_success_msg));
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
-    setFavorActivatedView();
-    ((TextView) getActivity().findViewById(R.id.favor_status_text))
-            .setText(currentFavor.getStatusId().toString());
-    ((TextView) getActivity().findViewById(R.id.favor_status_text))
-            .setBackgroundColor(getResources().getColor(R.color.colorAccent));
-    // Go back
-    // FragmentManager fragmentManager = getParentFragmentManager();
-    // assert fragmentManager != null;
-    // fragmentManager.popBackStack();
+    setFavorActivatedView(getView());
+
+    setStatusTextColor();
+  }
+
+  private void setStatusTextColor() {
+    mStatusView.setText(currentFavor.getStatusId().toString());
+    switch (currentFavor.getStatusId()) {
+      case REQUESTED:
+        {
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          break;
+        }
+      case ACCEPTED:
+        {
+        }
+      case SUCCESSFULLY_FINISHED:
+        {
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          break;
+        }
+      default:
+        {
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+        }
+    }
   }
 
   private void getFavorFromView() {
@@ -192,10 +241,9 @@ public class FavorRequestView extends Fragment {
     String desc = descElem.getText().toString();
     Location loc = mGpsTracker.getLocation();
     Favor favor = new Favor(title, desc, null, loc, Favor.Status.REQUESTED);
-    if (currentFavor == null){
+    if (currentFavor == null) {
       currentFavor = favor;
-    }
-    else{
+    } else {
       currentFavor.updateToOther(favor);
     }
     return;

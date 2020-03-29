@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="@id/request_button"
             app:layout_constraintTop_toTopOf="@id/request_button"
-            android:layout_marginTop="72dp">
+            android:layout_marginTop="100dp">
 
             <Button
                 android:id="@+id/edit_favor_button"
