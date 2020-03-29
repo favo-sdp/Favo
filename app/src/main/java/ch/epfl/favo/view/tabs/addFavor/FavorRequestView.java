@@ -141,7 +141,7 @@ public class FavorRequestView extends Fragment {
     editFavorBtn.setText(getString(R.string.edit_favor));
     cancelFavorBtn.setVisibility(View.VISIBLE);
     toggleTextViewsEditable(false);
-    setStatusTextColor();
+    updateViewFromStatus();
     CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()),v);
   }
 
@@ -161,7 +161,8 @@ public class FavorRequestView extends Fragment {
   }
 
   private void startUpdatingActiveFavor() {
-
+    cancelFavorBtn.setEnabled(true);
+    addPictureBtn.setEnabled(true);
     setFavorUpdatingView();
     toggleTextViewsEditable(true);
   }
@@ -174,7 +175,7 @@ public class FavorRequestView extends Fragment {
     mainActivity.activeFavors.remove(currentFavor.getId());
     CommonTools.hideKeyboardFrom(
               Objects.requireNonNull(getContext()), Objects.requireNonNull(getView()));
-    getActivity().onBackPressed(); // go back
+    updateViewFromStatus();
   }
 
   @Override
@@ -206,15 +207,16 @@ public class FavorRequestView extends Fragment {
 
     setFavorActivatedView(getView());
 
-    setStatusTextColor();
+    updateViewFromStatus();
   }
 
-  private void setStatusTextColor() {
+  private void updateViewFromStatus() {
     mStatusView.setText(currentFavor.getStatusId().toString());
     switch (currentFavor.getStatusId()) {
       case REQUESTED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          addPictureBtn.setEnabled(false);
           break;
         }
       case ACCEPTED:
@@ -228,6 +230,9 @@ public class FavorRequestView extends Fragment {
       default:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+          editFavorBtn.setText(R.string.edit_favor);
+          cancelFavorBtn.setEnabled(false);
+          addPictureBtn.setEnabled(false);
         }
     }
   }
