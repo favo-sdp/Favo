@@ -15,9 +15,26 @@ import ch.epfl.favo.common.Document;
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
  */
-
 public class Favor implements Parcelable, Document {
-  public enum Status{REQUESTED,ACCEPTED,EXPIRED,CANCELLED_REQUESTER,CANCELLED_ACCEPTER,SUCCESSFULLY_FINISHED}
+  public enum Status {
+    REQUESTED("Requested"),
+    ACCEPTED("Accepted"),
+    EXPIRED("Expired"),
+    CANCELLED_REQUESTER("Cancelled by requester"),
+    CANCELLED_ACCEPTER("Cancelled by accepter"),
+    SUCCESSFULLY_COMPLETED("Completed succesfully");
+
+    private String customDisplay;
+
+    Status(String custom) {
+      this.customDisplay = custom;
+    }
+
+    public String getPrettyString() {
+      return customDisplay;
+    }
+  }
+
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
         @Override
@@ -48,7 +65,8 @@ public class Favor implements Parcelable, Document {
     this.location = (Location) map.get("location");
   }
 
-  public Favor(String title, String description, String requesterId, Location location, Status statusId) {
+  public Favor(
+      String title, String description, String requesterId, Location location, Status statusId) {
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
     this.description = description;
@@ -77,6 +95,7 @@ public class Favor implements Parcelable, Document {
   public String getId() {
     return id;
   }
+
   private void setId(String id) {
     this.id = id;
   }
@@ -98,6 +117,7 @@ public class Favor implements Parcelable, Document {
   public String getTitle() {
     return title;
   }
+
   public String getDescription() {
     return description;
   }
@@ -154,8 +174,9 @@ public class Favor implements Parcelable, Document {
     dest.writeParcelable(location, flags);
     dest.writeString(statusId.name());
   }
+
   public void updateToOther(Favor other) {
-    //we take all the values except for the ID
+    // we take all the values except for the ID
 
     this.title = other.getTitle();
     this.description = other.getDescription();
@@ -164,7 +185,8 @@ public class Favor implements Parcelable, Document {
     this.requesterId = other.getRequesterId();
     this.statusId = other.getStatusId();
   }
-  public void updateStatus(Status newStatus){
+
+  public void updateStatus(Status newStatus) {
     this.statusId = newStatus;
   }
 }

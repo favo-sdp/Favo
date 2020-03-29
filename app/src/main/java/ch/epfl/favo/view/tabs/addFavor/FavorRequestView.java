@@ -1,11 +1,13 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -70,7 +72,7 @@ public class FavorRequestView extends Fragment {
     mTitleView = rootView.findViewById(R.id.title_request_view);
     mDescriptionView = rootView.findViewById(R.id.details);
     mStatusView = rootView.findViewById(R.id.favor_status_text);
-    setupView();
+    setupView(rootView);
     // Extract other elements
     mImageView = rootView.findViewById(R.id.imageView);
 
@@ -133,6 +135,7 @@ public class FavorRequestView extends Fragment {
     ((MainActivity) Objects.requireNonNull(getActivity()))
         .archivedFavors.remove(currentFavor.getId());
     setFavorActivatedView(getView());
+    showSnackbar(getString(R.string.favor_edit_success_msg));
   }
 
   private void setFavorActivatedView(View v) {
@@ -176,6 +179,8 @@ public class FavorRequestView extends Fragment {
     CommonTools.hideKeyboardFrom(
               Objects.requireNonNull(getContext()), Objects.requireNonNull(getView()));
     updateViewFromStatus();
+    // Show confirmation and minimize keyboard
+    showSnackbar(getString(R.string.favor_cancel_success_msg));
   }
 
   @Override
@@ -211,7 +216,7 @@ public class FavorRequestView extends Fragment {
   }
 
   private void updateViewFromStatus() {
-    mStatusView.setText(currentFavor.getStatusId().toString());
+    mStatusView.setText(currentFavor.getStatusId().getPrettyString());
     switch (currentFavor.getStatusId()) {
       case REQUESTED:
         {
@@ -222,7 +227,7 @@ public class FavorRequestView extends Fragment {
       case ACCEPTED:
         {
         }
-      case SUCCESSFULLY_FINISHED:
+      case SUCCESSFULLY_COMPLETED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
@@ -265,7 +270,8 @@ public class FavorRequestView extends Fragment {
     Snackbar.make(Objects.requireNonNull(getView()), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
-  private void setupView() {
+  @SuppressLint("ClickableViewAccessibility")
+  private void setupView(View view) {
     ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
     if (mTitleView.getKeyListener() != null) {
       mTitleView.setTag(mTitleView.getKeyListener());
@@ -273,5 +279,12 @@ public class FavorRequestView extends Fragment {
     if (mDescriptionView.getKeyListener() != null) {
       mDescriptionView.setTag(mDescriptionView.getKeyListener());
     }
+    //ensure click on view will hide keyboard
+    view.findViewById(R.id.constraint_layout_req_view)
+            .setOnTouchListener((v, event) -> {
+              hideKeyboardFrom(Objects.requireNonNull(getContext()),v);
+              return false;
+            });
   }
+
 }
