@@ -1,6 +1,9 @@
 package ch.epfl.favo.view;
 
+import android.widget.EditText;
+
 import androidx.fragment.app.FragmentTransaction;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -21,8 +24,8 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -150,6 +153,7 @@ public class AddFavorTest {
     onView(withId(R.id.favor_status_text))
         .check(matches(withText(Favor.Status.CANCELLED_REQUESTER.getPrettyString())));
   }
+
 
   private void launchFragmentWithFakeFavor(Favor favor) {
     // Launch view
