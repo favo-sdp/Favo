@@ -88,7 +88,11 @@ public class Favor implements Parcelable, Document {
     requesterId = in.readString();
     accepterId = in.readString();
     location = in.readParcelable(Location.class.getClassLoader());
-    statusId = Status.valueOf(in.readString());
+    try {
+      statusId = Status.valueOf(in.readString());
+    } catch (Exception e) { // null pointer
+      statusId = null;
+    }
   }
 
   @Override
@@ -172,7 +176,7 @@ public class Favor implements Parcelable, Document {
     dest.writeString(requesterId);
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
-    dest.writeString(statusId.name());
+    dest.writeString(statusId.toString());
   }
 
   public void updateToOther(Favor other) {

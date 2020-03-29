@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -47,6 +48,7 @@ public class FavorAndroidTest {
     Parcel parcel = Parcel.obtain();
     favor.writeToParcel(parcel, flag);
     Favor favorNew = Favor.CREATOR.createFromParcel(parcel);
+    //Assert.assertEquals(F)
     // assertEquals(title, favorNew.getTitle());
     // assertEquals(description, favorNew.getDescription());
     // assertEquals(requesterId, favorNew.getRequesterId());
