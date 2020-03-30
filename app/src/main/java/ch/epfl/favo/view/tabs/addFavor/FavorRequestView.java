@@ -93,8 +93,7 @@ public class FavorRequestView extends Fragment {
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     // Go back
-    assert getFragmentManager() != null;
-    getFragmentManager().popBackStack();
+    Objects.requireNonNull(getActivity()).getSupportFragmentManager().popBackStack();
   }
 
   public void openFileChooser() {

@@ -1,6 +1,5 @@
 package ch.epfl.favo.view.tabs;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +17,12 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
+import static ch.epfl.favo.util.CommonTools.convertDateToString;
+import static ch.epfl.favo.util.CommonTools.convertLocationToString;
 import static ch.epfl.favo.util.CommonTools.replaceFragment;
 
 /**
@@ -105,10 +105,10 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     listView.setOnItemClickListener((parent, view, position, id) -> {
       FavorDetailPage frag = new FavorDetailPage();
       Bundle bundle = new Bundle();
-      bundle.putString("title", favors.get(position).getTitle());
-      bundle.putString("location", favors.get(position).getLocation().toString());
-      bundle.putString("datetime", favors.get(position).getPostedTime().toString());
-      bundle.putString("description", favors.get(position).getDescription());
+      bundle.putString("Title", favors.get(position).getTitle());
+      bundle.putString("Loc", convertLocationToString(favors.get(position).getLocation()));
+      bundle.putString("Time", convertDateToString(favors.get(position).getPostedTime()));
+      bundle.putString("Desc", favors.get(position).getDescription());
       frag.setArguments(bundle);
       replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), frag);
     });
