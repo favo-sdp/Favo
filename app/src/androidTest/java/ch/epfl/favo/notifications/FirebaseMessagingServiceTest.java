@@ -31,6 +31,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -49,29 +50,6 @@ import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 
-class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
-  @Override
-  public void addDocument(Favor favor) {}
-
-  @Override
-  public void updateDocument(Favor document) {}
-
-  @Override
-  public void removeDocument(String key) {}
-
-  @Override
-  public CompletableFuture<Favor> getDocument(String key) {
-    Location location = new Location("dummy");
-    location.setLongitude(0.1);
-    location.setLatitude(0.2);
-
-    CompletableFuture<Favor> future = new CompletableFuture<>();
-    Favor mockFavor = FakeItemFactory.getFavor();
-    CompletableFuture.supplyAsync(() -> mockFavor);
-    future.complete(mockFavor);
-    return future;
-  }
-}
 
 @RunWith(AndroidJUnit4.class)
 public class FirebaseMessagingServiceTest {
@@ -126,6 +104,7 @@ public class FirebaseMessagingServiceTest {
   }
 
   private Bundle generateBundle() {
+
     Bundle bundle = new Bundle();
     bundle.putString("google.delivered_priority", "high");
     bundle.putLong("google.sent_time", (new Date()).getTime());

@@ -1,11 +1,14 @@
 package ch.epfl.favo.view;
 
+import android.location.Location;
+
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.favor.Favor;
 
-class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
+public class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
   @Override
   public void addDocument(Favor favor) {}
 
@@ -21,6 +24,10 @@ class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
 
   @Override
   public CompletableFuture<Favor> getDocument(String key) {
-    return null;
+    CompletableFuture<Favor> future = new CompletableFuture<>();
+    Favor mockFavor = FakeItemFactory.getFavor();
+    CompletableFuture.supplyAsync(() -> mockFavor);
+    future.complete(mockFavor);
+    return future;
   }
 }

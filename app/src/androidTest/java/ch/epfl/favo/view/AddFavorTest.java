@@ -1,5 +1,11 @@
 package ch.epfl.favo.view;
 
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -11,6 +17,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
@@ -19,6 +32,8 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -27,6 +42,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
@@ -77,6 +93,45 @@ public class AddFavorTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_request_success_msg)));
   }
+
+  @Test
+  public void addPictureWorks() throws Throwable {
+    // Click on fav list tab
+    FavorRequestView currentFragment = new FavorRequestView();
+    FragmentTransaction ft =
+            activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+    ft.replace(R.id.nav_host_fragment, currentFragment);
+    ft.addToBackStack(null);
+    ft.commit();
+    //inject picture
+    Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+    Intent intent = new Intent();
+    intent.putExtra("data", bm);
+    runOnUiThread(() -> currentFragment.onActivityResult(2, RESULT_OK, intent));
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
+  }
+
+    @Test
+    public void loadSavedPicture() throws Throwable {
+        // Click on fav list tab
+        FavorRequestView currentFragment = new FavorRequestView();
+        FragmentTransaction ft =
+                activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.nav_host_fragment, currentFragment);
+        ft.addToBackStack(null);
+        ft.commit();
+        getInstrumentation().waitForIdleSync();
+        //inject picture
+        Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+        Uri filePath = saveImageToInternalStorage(currentFragment.getContext(),bm);
+        Intent intent = new Intent();
+        intent.setData(filePath);
+        runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
+        getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
+    }
+
 
   @Test
   public void requestedFavorViewIsUpdatedCorrectly() {
@@ -158,4 +213,37 @@ public class AddFavorTest {
     ft.addToBackStack(null);
     ft.commit();
   }
+
+    public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap){
+
+
+        String mImageName = "snap.jpg";
+
+        ContextWrapper wrapper = new ContextWrapper(mContext);
+
+        File file = wrapper.getDir("Images",MODE_PRIVATE);
+
+        file = new File(file, mImageName);
+
+        try{
+
+            OutputStream stream = null;
+
+            stream = new FileOutputStream(file);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
+
+            stream.flush();
+
+            stream.close();
+
+        }catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        Uri mImageUri = Uri.parse(file.getAbsolutePath());
+
+        return mImageUri;
+    }
 }

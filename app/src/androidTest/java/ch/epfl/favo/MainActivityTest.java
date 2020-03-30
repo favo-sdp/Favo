@@ -231,6 +231,7 @@ public class MainActivityTest {
     // click back button
     UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     mDevice.pressBack();
+    mDevice.pressBack();
 
     getInstrumentation().waitForIdleSync();
 
