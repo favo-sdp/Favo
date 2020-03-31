@@ -19,6 +19,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
@@ -76,7 +77,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
               CommonTools.replaceFragment(
                   R.id.nav_host_fragment,
                   getParentFragmentManager(),
-                  FavorRequestView.newInstance(favor));
+                      FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
             });
   }
 

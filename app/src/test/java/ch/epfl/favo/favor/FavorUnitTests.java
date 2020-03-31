@@ -6,9 +6,12 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
@@ -51,10 +54,12 @@ public class FavorUnitTests {
     Favor favor = new Favor();
     Favor.Status statusId = Favor.Status.CANCELLED_REQUESTER;
     Location location = new Location("Dummy provider 2");
+    String id = "1243";
     String accepterId = "2364652";
     favor.setStatusId(statusId);
     favor.setLocation(location);
     favor.setAccepterID(accepterId);
+
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
@@ -185,4 +190,19 @@ public class FavorUnitTests {
       IllegalStateException.class,
       () -> FavorUtil.getSingleInstance().retrieveFavor(favorID).get());
     }
+
+  @Test
+  public void favorGivesCorrectTransformationToMap(){
+    Favor favor = FakeItemFactory.getFavor();
+    Map<String,Object> favorMap = favor.toMap();
+    Favor favor2 = new Favor(favorMap);
+    assertEquals(favor.getTitle(),favor2.getTitle());
+    assertEquals(favor.getId(),favor2.getId());
+    assertEquals(favor.getDescription(),favor2.getDescription());
+    assertEquals(favor.getLocation(),favor2.getLocation());
+    assertEquals(favor.getRequesterId(),favor2.getRequesterId());
+    assertEquals(favor.getAccepterID(),favor2.getAccepterID());
+    assertEquals(favor.getPostedTime(),favor2.getPostedTime());
+    assertEquals(favor.getStatusId(),favor2.getStatusId());
+  }
 }

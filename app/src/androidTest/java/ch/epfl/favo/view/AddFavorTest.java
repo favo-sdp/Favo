@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.widget.Button;
 
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -21,8 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
@@ -32,6 +31,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
@@ -99,11 +99,11 @@ public class AddFavorTest {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
     FragmentTransaction ft =
-            activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, currentFragment);
     ft.addToBackStack(null);
     ft.commit();
-    //inject picture
+    // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Intent intent = new Intent();
     intent.putExtra("data", bm);
@@ -112,26 +112,62 @@ public class AddFavorTest {
     onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
   }
 
-    @Test
-    public void loadSavedPicture() throws Throwable {
-        // Click on fav list tab
-        FavorRequestView currentFragment = new FavorRequestView();
-        FragmentTransaction ft =
-                activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.nav_host_fragment, currentFragment);
-        ft.addToBackStack(null);
-        ft.commit();
-        getInstrumentation().waitForIdleSync();
-        //inject picture
-        Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
-        Uri filePath = saveImageToInternalStorage(currentFragment.getContext(),bm);
-        Intent intent = new Intent();
-        intent.setData(filePath);
-        runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
-        getInstrumentation().waitForIdleSync();
-        onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
-    }
+  @Test
+  public void cameraButtonCanBeClicked() throws Throwable {
+    FavorRequestView currentFragment = new FavorRequestView();
+    FragmentTransaction ft =
+        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+    ft.replace(R.id.nav_host_fragment, currentFragment);
+    ft.addToBackStack(null);
+    ft.commit();
+    getInstrumentation().waitForIdleSync();
+    Button cameraButton =
+        activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
+    runOnUiThread(() -> cameraButton.setEnabled(true));
+    Intent fakeIntent = new Intent();
+    DependencyFactory.setCurrentCameraIntent(fakeIntent);
+    onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
+    // nothing should happen
+    getInstrumentation().waitForIdleSync();
+  }
 
+  @Test
+  public void loadSavedPicture() throws Throwable {
+    // Click on fav list tab
+    FavorRequestView currentFragment = new FavorRequestView();
+    FragmentTransaction ft =
+        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+    ft.replace(R.id.nav_host_fragment, currentFragment);
+    ft.addToBackStack(null);
+    ft.commit();
+    getInstrumentation().waitForIdleSync();
+    // inject picture
+    Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+    Uri filePath = saveImageToInternalStorage(currentFragment.getContext(), bm);
+    Intent intent = new Intent();
+    intent.setData(filePath);
+    runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
+  }
+  @Test
+  public void snackbarShowsWhenIncorrectResultCodeOnImageUpload() throws Throwable {
+    // Click on fav list tab
+    FavorRequestView currentFragment = new FavorRequestView();
+    FragmentTransaction ft =
+            activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+    ft.replace(R.id.nav_host_fragment, currentFragment);
+    ft.addToBackStack(null);
+    ft.commit();
+    getInstrumentation().waitForIdleSync();
+    Intent intent = new Intent();
+    runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_CANCELED, intent));
+    getInstrumentation().waitForIdleSync();
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.error_msg_image_request_view)));
+
+  }
 
   @Test
   public void requestedFavorViewIsUpdatedCorrectly() {
@@ -149,7 +185,18 @@ public class AddFavorTest {
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
         .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
-    testEditFavorFlow();
+  }
+  @Test
+  public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted(){
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
+    launchFragmentWithFakeFavor(fakeFavor);
+    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.favor_status_text))
+            .check(matches(isDisplayed()))
+            .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
   }
 
   @Test
@@ -214,36 +261,34 @@ public class AddFavorTest {
     ft.commit();
   }
 
-    public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap){
+  public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap) {
 
+    String mImageName = "snap.jpg";
 
-        String mImageName = "snap.jpg";
+    ContextWrapper wrapper = new ContextWrapper(mContext);
 
-        ContextWrapper wrapper = new ContextWrapper(mContext);
+    File file = wrapper.getDir("Images", MODE_PRIVATE);
 
-        File file = wrapper.getDir("Images",MODE_PRIVATE);
+    file = new File(file, mImageName);
 
-        file = new File(file, mImageName);
+    try {
 
-        try{
+      OutputStream stream = null;
 
-            OutputStream stream = null;
+      stream = new FileOutputStream(file);
 
-            stream = new FileOutputStream(file);
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG,100,stream);
+      stream.flush();
 
-            stream.flush();
+      stream.close();
 
-            stream.close();
-
-        }catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-
-        Uri mImageUri = Uri.parse(file.getAbsolutePath());
-
-        return mImageUri;
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+
+    Uri mImageUri = Uri.parse(file.getAbsolutePath());
+
+    return mImageUri;
+  }
 }

@@ -1,6 +1,8 @@
 package ch.epfl.favo.util;
 
 import android.content.Context;
+import android.content.Intent;
+import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -17,6 +19,7 @@ public class DependencyFactory {
   private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
   private static DatabaseUpdater currentDatabaseUpdater;
+  private static Intent currentCameraIntent;
   private static boolean testMode = false;
 
   public static FirebaseUser getCurrentFirebaseUser() {
@@ -57,4 +60,20 @@ public class DependencyFactory {
     }
     return new CollectionWrapper(collectionReference, cls);
   }
+
+  @VisibleForTesting
+  public static void setCurrentCameraIntent(Intent dependency) {
+    testMode = true;
+    currentCameraIntent = dependency;
+  }
+
+  public static Intent getCurrentCameraIntent() {
+    if (testMode && currentCameraIntent != null) {
+      return currentCameraIntent;
+    }
+    return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+  }
+
+
+
 }

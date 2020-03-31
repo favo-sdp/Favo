@@ -8,7 +8,6 @@ import android.hardware.Camera;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.method.KeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +31,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
@@ -39,9 +39,8 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 
 public class FavorRequestView extends Fragment {
 
-  private static final int PICK_IMAGE_REQUEST = 1;
-  private static final int USE_CAMERA_REQUEST = 2;
-  private static final String FAVOR_ARGS = "FAVOR_ARGS";
+  public static final int PICK_IMAGE_REQUEST = 1;
+  public static final int USE_CAMERA_REQUEST = 2;
   private ImageView mImageView;
   private EditText mTitleView;
   private EditText mDescriptionView;
@@ -55,13 +54,6 @@ public class FavorRequestView extends Fragment {
 
   private Favor currentFavor;
 
-  public static FavorRequestView newInstance(Favor favor) {
-    FavorRequestView fragment = new FavorRequestView();
-    Bundle args = new Bundle();
-    args.putParcelable(FAVOR_ARGS, favor);
-    fragment.setArguments(args);
-    return fragment;
-  }
 
   public FavorRequestView() {
     // Required empty public constructor
@@ -89,19 +81,25 @@ public class FavorRequestView extends Fragment {
     // Inject argument
 
     if (getArguments() != null) {
-      currentFavor = getArguments().getParcelable(FAVOR_ARGS);
+      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
       displayFavorInfo();
       setFavorActivatedView(rootView);
     }
     return rootView;
   }
 
+  /** When fragment is launched with favor. */
   private void displayFavorInfo() {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(currentFavor.getStatusId().toString());
   }
 
+  /**
+   * Identifes buttons and sets onclick listeners.
+   *
+   * @param rootView
+   */
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -129,49 +127,18 @@ public class FavorRequestView extends Fragment {
         v -> {
           // if text is currently "Edit Request"
           if (editFavorBtn.getText().toString().equals(getString(R.string.edit_favor))) {
-            startUpdatingActiveFavor();
+            startUpdatingFavor();
           } else { // text is currently "Update Request"
             confirmUpdatedFavor();
           }
         });
   }
 
-  private boolean isCameraAvailable() {
-    boolean hasCamera =
-        Objects.requireNonNull(getActivity())
-            .getPackageManager()
-            .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    int numberOfCameras = Camera.getNumberOfCameras();
-    return (hasCamera && numberOfCameras != 0);
-  }
-
-  private void confirmUpdatedFavor() {
-    getFavorFromView();
-    FavorUtil.updateFavor(currentFavor);
-    // update lists
-    ((MainActivity) Objects.requireNonNull(getActivity()))
-        .activeFavors.put(currentFavor.getId(), currentFavor);
-    ((MainActivity) Objects.requireNonNull(getActivity()))
-        .archivedFavors.remove(currentFavor.getId());
-    setFavorActivatedView(getView());
-    showSnackbar(getString(R.string.favor_edit_success_msg));
-  }
-
-  private void setFavorActivatedView(View v) {
-    confirmFavorBtn.setVisibility(View.INVISIBLE);
-    editFavorBtn.setVisibility(View.VISIBLE);
-    editFavorBtn.setText(getString(R.string.edit_favor));
-    cancelFavorBtn.setVisibility(View.VISIBLE);
-    toggleTextViewsEditable(false);
-    updateViewFromStatus();
-    CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
-  }
-
-  private void setFavorUpdatingView() {
-    editFavorBtn.setText(R.string.confirm_favor_edit);
-    toggleTextViewsEditable(true);
-  }
-
+  /**
+   * Toggles edit text between editable/uneditable
+   *
+   * @param switchToEditable when true, will go from uneditable->editable
+   */
   private void toggleTextViewsEditable(boolean switchToEditable) {
     if (!switchToEditable) {
       mTitleView.setKeyListener(null);
@@ -182,26 +149,10 @@ public class FavorRequestView extends Fragment {
     }
   }
 
-  private void startUpdatingActiveFavor() {
-    cancelFavorBtn.setEnabled(true);
-    addPictureFromFilesBtn.setEnabled(true);
-    setFavorUpdatingView();
-    toggleTextViewsEditable(true);
-  }
-
-  private void cancelFavor() {
-    currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
-    FavorUtil.updateFavor(currentFavor);
-    MainActivity mainActivity = (MainActivity) getActivity();
-    mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
-    mainActivity.activeFavors.remove(currentFavor.getId());
-    CommonTools.hideKeyboardFrom(
-        Objects.requireNonNull(getContext()), Objects.requireNonNull(getView()));
-    updateViewFromStatus();
-    // Show confirmation and minimize keyboard
-    showSnackbar(getString(R.string.favor_cancel_success_msg));
-  }
-
+  /**
+   * Method is called when request favor button is clicked. It uploads favor request to the database
+   * and updates view so that favor is editable.
+   */
   private void requestFavor() {
     getFavorFromView();
     FavorUtil.getSingleInstance().postFavor(currentFavor);
@@ -218,7 +169,59 @@ public class FavorRequestView extends Fragment {
 
     updateViewFromStatus();
   }
+  /**
+   * Once favor has been requested.
+   *
+   * @param v rootview
+   */
+  private void setFavorActivatedView(View v) {
+    confirmFavorBtn.setVisibility(View.INVISIBLE);
+    editFavorBtn.setVisibility(View.VISIBLE);
+    editFavorBtn.setText(getString(R.string.edit_favor));
+    cancelFavorBtn.setVisibility(View.VISIBLE);
+    toggleTextViewsEditable(false);
+    updateViewFromStatus();
+    CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
+  }
 
+  /** When edit button is clicked */
+  private void startUpdatingFavor() {
+    cancelFavorBtn.setEnabled(true);
+    addPictureFromFilesBtn.setEnabled(true);
+    addPictureFromCameraBtn.setEnabled(true);
+    editFavorBtn.setText(R.string.confirm_favor_edit);
+    toggleTextViewsEditable(true);
+  }
+
+  /** Gets called once favor has been updated on view. */
+  private void confirmUpdatedFavor() {
+    getFavorFromView();
+    FavorUtil.updateFavor(currentFavor);
+    // update lists
+    ((MainActivity) Objects.requireNonNull(getActivity()))
+        .activeFavors.put(currentFavor.getId(), currentFavor);
+    ((MainActivity) Objects.requireNonNull(getActivity()))
+        .archivedFavors.remove(currentFavor.getId());
+    setFavorActivatedView(getView());
+    showSnackbar(getString(R.string.favor_edit_success_msg));
+  }
+
+  /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
+  private void cancelFavor() {
+    currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
+    FavorUtil.updateFavor(currentFavor);
+    MainActivity mainActivity = (MainActivity) getActivity();
+    assert mainActivity != null;
+    mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
+    mainActivity.activeFavors.remove(currentFavor.getId());
+    CommonTools.hideKeyboardFrom(
+        Objects.requireNonNull(getContext()), Objects.requireNonNull(getView()));
+    updateViewFromStatus();
+    // Show confirmation and minimize keyboard
+    showSnackbar(getString(R.string.favor_cancel_success_msg));
+  }
+
+  /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus() {
     mStatusView.setText(currentFavor.getStatusId().getPrettyString());
     switch (currentFavor.getStatusId()) {
@@ -226,14 +229,21 @@ public class FavorRequestView extends Fragment {
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           addPictureFromFilesBtn.setEnabled(false);
+          addPictureFromCameraBtn.setEnabled(false);
           break;
         }
       case ACCEPTED:
         {
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          editFavorBtn.setEnabled(false);
+          cancelFavorBtn.setEnabled(false);
+          addPictureFromFilesBtn.setEnabled(false);
+          addPictureFromCameraBtn.setEnabled(false);
           break;
         }
       default:
@@ -242,10 +252,12 @@ public class FavorRequestView extends Fragment {
           editFavorBtn.setText(R.string.edit_favor);
           cancelFavorBtn.setEnabled(false);
           addPictureFromFilesBtn.setEnabled(false);
+          addPictureFromCameraBtn.setEnabled(false);
         }
     }
   }
 
+  /** Extracts favor data from and assigns it to currentFavor. */
   private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
@@ -263,6 +275,10 @@ public class FavorRequestView extends Fragment {
     return;
   }
 
+  /**
+   * Called when upload file from storage button is clicked. Method calls external fileChooser
+   * intent.
+   */
   public void openFileChooser() {
     Intent openFileChooserIntent = new Intent();
     openFileChooserIntent.setType("image/*");
@@ -270,46 +286,68 @@ public class FavorRequestView extends Fragment {
     startActivityForResult(openFileChooserIntent, PICK_IMAGE_REQUEST);
   }
 
-  private void takePicture() {
-    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+  /** Called when camera button is clicked Method calls camera intent. */
+  public void takePicture() {
+    Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
     if (takePictureIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager())
         != null) {
       startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
     }
   }
 
+  private boolean isCameraAvailable() {
+    boolean hasCamera =
+        Objects.requireNonNull(getActivity())
+            .getPackageManager()
+            .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    int numberOfCameras = Camera.getNumberOfCameras();
+    return (hasCamera && numberOfCameras != 0);
+  }
+  /**
+   * This method is called when external intents are used to load data on view.
+   *
+   * @param requestCode integer value specifying which intent was launched
+   * @param resultCode integer indicating whether intent was successful
+   * @param data result from intent. In this case it contains picture data
+   */
   @Override
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
     super.onActivityResult(requestCode, resultCode, data);
-    if (resultCode == RESULT_OK && data != null) {
-      switch (requestCode) {
-        case PICK_IMAGE_REQUEST:
-          {
-            if (data.getData() != null) {
-              Uri mImageUri = data.getData();
-              mImageView.setImageURI(mImageUri);
-            }
-            break;
-          }
-        case USE_CAMERA_REQUEST:
-          {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-            break;
-          }
-        default:
-          {
-            showSnackbar("Try again!");
-          }
-      }
+
+    if (resultCode == RESULT_OK
+        && data != null
+        && requestCode == PICK_IMAGE_REQUEST
+        && data.getData() != null) {
+      Uri mImageUri = data.getData();
+      mImageView.setImageURI(mImageUri);
+    } else if (resultCode == RESULT_OK
+        && data != null
+        && requestCode == USE_CAMERA_REQUEST
+        && data.getExtras() != null) {
+      Bundle extras = data.getExtras();
+      Bitmap imageBitmap = (Bitmap) extras.get("data");
+      mImageView.setImageBitmap(imageBitmap);
+    } else {
+      showSnackbar(getString(R.string.error_msg_image_request_view));
     }
   }
 
+  /**
+   * Will display error message in the form of a snack bar. This method is wrapped for unit tests
+   *
+   * @param errorMessageRes error message.
+   */
   public void showSnackbar(String errorMessageRes) {
     Snackbar.make(Objects.requireNonNull(getView()), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
+  /**
+   * Saves the key listener for the edit text items. ensures keyboard hides when user clicks outside
+   * of edit texts.
+   *
+   * @param view corresponds to root view created during onCreate
+   */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
     ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();

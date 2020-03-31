@@ -26,9 +26,11 @@ public class TestConstants {
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
   public static final Favor.Status FAVOR_STATUS = Favor.Status.REQUESTED;
+  public static final String ACCEPTER_ID = "ASDFASDFASDF";
 
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";
   public static final String NOTIFICATION_BODY = "body";
   public static final String FAVOR_ID = "WEZDZQD78A5SI5Q790SZAL7FW";
+
 }

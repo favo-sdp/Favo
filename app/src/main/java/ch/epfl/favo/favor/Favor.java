@@ -35,6 +35,16 @@ public class Favor implements Parcelable, Document {
     }
   }
 
+  // String constants for Map conversion
+  public static final String ID = "ID";
+  public static final String TITLE = "Title";
+  public static final String DESCRIPTION = "Description";
+  public static final String REQUESTER_ID = "RequesterID";
+  public static final String ACCEPTER_ID = "AccepterID";
+  public static final String LOCATION = "Location";
+  public static final String POSTED_TIME = "Posted time";
+  public static final String STATUS_ID = "Status ID";
+
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
         @Override
@@ -58,16 +68,10 @@ public class Favor implements Parcelable, Document {
 
   public Favor() {}
 
-  public Favor(Map<String, Object> map) {
-    this.id = DatabaseWrapper.generateRandomId();
-    this.title = map.get("title").toString();
-    this.description = map.get("description").toString();
-    this.location = (Location) map.get("location");
-  }
-
   public Favor(
       String title, String description, String requesterId, Location location, Status statusId) {
-    this.id = DatabaseWrapper.generateRandomId();
+    String id = DatabaseWrapper.generateRandomId();
+    setId(id);
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -75,6 +79,22 @@ public class Favor implements Parcelable, Document {
     this.postedTime = new Date();
     this.statusId = statusId;
     this.accepterId = null;
+  }
+
+  /**
+   * Constructor from map
+   *
+   * @param map
+   */
+  public Favor(Map<String, Object> map) {
+    this.id = (String) map.get(ID);
+    this.title = (String) map.get(TITLE);
+    this.description = (String) map.get(DESCRIPTION);
+    this.requesterId = (String) map.get(REQUESTER_ID);
+    this.accepterId = (String) map.get(ACCEPTER_ID);
+    this.location = (Location) map.get(LOCATION);
+    this.postedTime = (Date) map.get(POSTED_TIME);
+    this.statusId = (Status) map.get(STATUS_ID);
   }
 
   /**
@@ -108,12 +128,14 @@ public class Favor implements Parcelable, Document {
   public Map<String, Object> toMap() {
     return new HashMap<String, Object>() {
       {
-        put("title", title);
-        put("description", description);
-        put("requesterId", requesterId);
-        put("accepterId", accepterId);
-        put("location", location);
-        put("statusId", statusId);
+        put(ID, id);
+        put(TITLE, title);
+        put(DESCRIPTION, description);
+        put(REQUESTER_ID, requesterId);
+        put(ACCEPTER_ID, accepterId);
+        put(LOCATION, location);
+        put(POSTED_TIME, postedTime);
+        put(STATUS_ID, statusId);
       }
     };
   }

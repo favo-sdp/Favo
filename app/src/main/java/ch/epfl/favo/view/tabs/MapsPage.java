@@ -34,6 +34,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FakeFavorList;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
@@ -175,12 +176,13 @@ public class MapsPage extends Fragment
     if (marker.getTitle().equals("I am Here"))
       CommonTools.replaceFragment(
           R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
-    else
+    else {
+      Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude);
       CommonTools.replaceFragment(
           R.id.nav_host_fragment,
           getParentFragmentManager(),
-          FavorDetailView.newInstance(
-              queryFavor(marker.getPosition().latitude, marker.getPosition().longitude)));
+          FavorFragmentFactory.instantiate(favor, new FavorDetailView()));
+    }
   }
 
   public Favor queryFavor(double latitude, double longitude) {

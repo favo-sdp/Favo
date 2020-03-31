@@ -65,4 +65,6 @@
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
     <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+
+    <string name="error_msg_image_request_view">Try again!</string>
 </resources>
