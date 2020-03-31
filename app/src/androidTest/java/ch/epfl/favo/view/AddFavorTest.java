@@ -29,6 +29,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -256,7 +257,7 @@ public class AddFavorTest {
     activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, FavorRequestView.newInstance(favor));
+    ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
     ft.addToBackStack(null);
     ft.commit();
   }

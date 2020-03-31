@@ -19,6 +19,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -74,7 +75,8 @@ public class FavorDetailViewTest {
 
   @Test
   public void favorDetailViewIsLaunched() {
-    FavorDetailView fragment = FavorDetailView.newInstance(fakeFavor);
+    FavorDetailView fragment =
+        (FavorDetailView) FavorFragmentFactory.instantiate(fakeFavor, new FavorDetailView());
 
     FragmentTransaction transaction =
         mainActivityTestRule.getActivity().getSupportFragmentManager().beginTransaction();

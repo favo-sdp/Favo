@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
@@ -229,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 
       favorFuture.thenAccept(
           favor -> {
-            Fragment frag = FavorDetailView.newInstance(favor);
+            Fragment frag = FavorFragmentFactory.instantiate(favor,new FavorDetailView());
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.nav_host_fragment, frag);
             trans.commit();
