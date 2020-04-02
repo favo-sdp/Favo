@@ -50,18 +50,16 @@ public class MapPageTest {
   }
 
   @Test
-  public void InfoWindowClickSelfTest() throws UiObjectNotFoundException {
+  public void InfoWindowClickSelfTest() throws UiObjectNotFoundException, InterruptedException {
     MapsPage mapsPage = new MapsPage();
     mapsPage.updateFavorlist();
     mapsPage.queryFavor(TestConstants.LATITUDE, TestConstants.LONGITUDE);
-    // onView(withId(R.id.hiddenButton)).check(matches(isCompletelyDisplayed())).perform(scrollTo(),click());
-    // CheckContent("I am Here", R.string.favor_success_msg);
+    //CheckContent("FavorRequest", R.string.favor_request_success_msg);
   }
 
   @Test
   public void InfoWindowClickOtherTest() throws InterruptedException, UiObjectNotFoundException {
-
-    // CheckContent("Title of Favor 0", R.string.favor_respond_success_msg);
+    //CheckContent("Title of Favor 0", R.string.favor_respond_success_msg);
   }
 
   public void CheckContent(String MarkerTitle, int snackbar)

@@ -1,6 +1,7 @@
 package ch.epfl.favo.util;
 
 import android.content.Context;
+import android.location.LocationManager;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -17,6 +18,7 @@ public class DependencyFactory {
   private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
   private static DatabaseUpdater currentDatabaseUpdater;
+  private static LocationManager currentLocationManager;
   private static boolean testMode = false;
 
   public static FirebaseUser getCurrentFirebaseUser() {
@@ -56,5 +58,17 @@ public class DependencyFactory {
       return currentDatabaseUpdater;
     }
     return new CollectionWrapper(collectionReference, cls);
+  }
+
+  @VisibleForTesting
+  public static void setCurrentLocationManager(LocationManager dependency) {
+    testMode = true;
+    currentLocationManager = dependency;
+  }
+  public static LocationManager getCurrentLocationManager(Context context) {
+    if (testMode && currentLocationManager != null) {
+      return currentLocationManager;
+    }
+    return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
   }
 }

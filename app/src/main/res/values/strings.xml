@@ -23,6 +23,8 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb616130435602635</string>
 
     <!-- TODO: Remove or change this placeholder text -->
+    <!-- TAB 1 (Huajian) -->
+    <string name="self_location">FavorRequest</string>
 
     <!-- TAB 2 (David) -->
     <string name="favor_greeting_str">Hello!</string>
