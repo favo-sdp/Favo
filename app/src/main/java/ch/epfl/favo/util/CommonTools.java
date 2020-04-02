@@ -2,6 +2,10 @@ package ch.epfl.favo.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -38,5 +42,29 @@ public class CommonTools {
   public static void hideKeyboardFrom(Context context, View view) {
     InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  }
+
+  public static boolean isNetworkConnected(Context context) {
+    boolean connected = false;
+    ConnectivityManager cm =
+            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+    if (cm != null) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+        if (capabilities != null
+                && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
+          connected = true;
+        }
+      } else {
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null
+                && (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI
+                || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)) {
+          connected = true;
+        }
+      }
+    }
+    return connected;
   }
 }

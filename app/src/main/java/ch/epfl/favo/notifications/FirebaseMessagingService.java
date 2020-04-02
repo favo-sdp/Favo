@@ -29,10 +29,10 @@ public class FirebaseMessagingService
 
   // show notification received
   public static void showNotification(
-      Context context, RemoteMessage.Notification notification, String channelId) {
+          Context context, RemoteMessage notification, String channelId) {
     Intent intent = new Intent(context, MainActivity.class);
     // add favor id as an argument to main activity
-    intent.putExtra("FavorId", notification.getTag());
+    intent.putExtra("FavorId", notification.getData().get("favorID"));
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
     PendingIntent pendingIntent =
@@ -42,8 +42,8 @@ public class FirebaseMessagingService
     NotificationCompat.Builder notificationBuilder =
         new NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.logo)
-            .setContentTitle(notification.getTitle())
-            .setContentText(notification.getBody())
+            .setContentTitle(Objects.requireNonNull(notification.getNotification()).getTitle())
+            .setContentText(notification.getNotification().getBody())
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent);
@@ -75,7 +75,7 @@ public class FirebaseMessagingService
     if (remoteMessage.getNotification() != null) {
       showNotification(
           this,
-          remoteMessage.getNotification(),
+          remoteMessage,
           getString(R.string.default_notification_channel_id));
     }
   }

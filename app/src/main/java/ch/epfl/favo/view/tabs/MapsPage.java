@@ -1,10 +1,12 @@
 package ch.epfl.favo.view.tabs;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,6 +26,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +64,19 @@ public class MapsPage extends Fragment
     setupView();
     mMap = googleMap;
     mMap.clear();
+
+    if (!CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+      Snackbar snackbar= Snackbar.make(getView(), "Click to see instructions for offline map support", Snackbar.LENGTH_LONG);
+      View sbView = snackbar.getView();
+      sbView.setClickable(true);
+      sbView.setFocusable(true);
+      sbView.setBackgroundColor(Color.parseColor("#ffffff"));
+      CoordinatorLayout.LayoutParams params=(CoordinatorLayout.LayoutParams)sbView.getLayoutParams();
+      params.gravity = Gravity.TOP;
+      sbView.setLayoutParams(params);
+      snackbar.show();
+    }
+
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
   }

@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
@@ -23,6 +25,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
@@ -49,6 +52,9 @@ public class FavorRequestView extends Fragment {
     // Button: Request Favor
     Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
     confirmFavorBtn.setOnClickListener(v -> requestFavor());
+    if (!CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+      confirmFavorBtn.setText(R.string.request_favor_draft);
+    }
 
     // Button: Add Image
     Button addPictureBtn = rootView.findViewById(R.id.add_picture_button);
@@ -71,7 +77,7 @@ public class FavorRequestView extends Fragment {
       Uri mImageUri = data.getData(); // path of image
       mImageView.setImageURI(mImageUri);
     } else {
-      showSnackbar("Try again!");
+      CommonTools.showSnackbar(getView(), "Try again!");
     }
   }
 
@@ -89,7 +95,11 @@ public class FavorRequestView extends Fragment {
     ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(favor);
 
     // Show confirmation and minimize keyboard
-    showSnackbar(getString(R.string.favor_request_success_msg));
+    if (!CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+      CommonTools.showSnackbar(getView(), "Draft saved: favor will be published as soon as connection returns");
+    } else {
+      CommonTools.showSnackbar(getView(), getString(R.string.favor_request_success_msg));
+    }
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     // Go back
@@ -102,10 +112,6 @@ public class FavorRequestView extends Fragment {
     intent.setType("image/*");
     intent.setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(intent, PICK_IMAGE_REQUEST);
-  }
-
-  public void showSnackbar(String errorMessageRes){
-    Snackbar.make(Objects.requireNonNull(getView()), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
   private void setupView() {
