@@ -17,10 +17,10 @@ public class DependencyFactory {
   private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
   private static DatabaseUpdater currentDatabaseUpdater;
-  private static boolean testMode = false;
+  public static boolean testMode = false;
 
   public static FirebaseUser getCurrentFirebaseUser() {
-    if (testMode && currentUser != null) {
+    if (testMode) {
       return currentUser;
     }
     return FirebaseAuth.getInstance().getCurrentUser();

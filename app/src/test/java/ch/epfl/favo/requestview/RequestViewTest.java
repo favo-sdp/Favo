@@ -30,10 +30,10 @@ public class RequestViewTest {
     spy.openFileChooser();
   }
 
-  @Test
-  public void testOnActivityResult_requestCodeNotCorrect() {
-    Mockito.doNothing().when(spy).showSnackbar(anyString());
-    spy.onActivityResult(123, 0, null);
-  }
+//  @Test
+//  public void testOnActivityResult_requestCodeNotCorrect() {
+//    Mockito.doNothing().when(spy).showSnackbar(anyString());
+//    spy.onActivityResult(123, 0, null);
+//  }
 
 }

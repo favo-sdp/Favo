@@ -112,8 +112,7 @@ public class SignInActivity extends AppCompatActivity {
 
     checkPlayServices();
 
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
+    if (DependencyFactory.getCurrentFirebaseUser() != null && getIntent().getExtras() == null) {
       startMainActivity();
     }
   }
