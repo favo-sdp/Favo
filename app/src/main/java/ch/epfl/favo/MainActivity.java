@@ -21,10 +21,12 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
@@ -33,6 +35,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
+import static java.security.AccessController.getContext;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
@@ -95,6 +98,11 @@ public class MainActivity extends AppCompatActivity
 
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+    // check connection
+    if (DependencyFactory.isOfflineMode(this)) {
+      CommonTools.showSnackbar(findViewById(R.id.nav_view), "No internet connection");
+    }
 
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();

@@ -59,8 +59,7 @@ public class MainActivityTest {
     onView(withId(R.id.nav_map_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     // Check that the current fragment is the map tab
-    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -186,8 +185,7 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -208,8 +206,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
-    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -236,8 +233,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
-    onView(allOf(withId(R.id.map), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test

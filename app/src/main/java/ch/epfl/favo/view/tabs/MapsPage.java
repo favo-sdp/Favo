@@ -11,6 +11,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +63,6 @@ public class MapsPage extends Fragment
   private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
-  public static boolean firstTime = true;
-
   public MapsPage() {
     // Required empty public constructor
   }
@@ -73,18 +73,21 @@ public class MapsPage extends Fragment
     mMap = googleMap;
     mMap.clear();
 
-    if (firstTime && DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
-      displayOfflineMapSupport();
-      firstTime = false;
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+      Objects.requireNonNull(getView())
+          .findViewById(R.id.offline_map_button)
+          .setVisibility(View.VISIBLE);
+    } else {
+      Objects.requireNonNull(getView())
+              .findViewById(R.id.offline_map_button)
+              .setVisibility(View.INVISIBLE);
     }
 
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
   }
 
-  // warn the user if it's offline and show how to enable offline maps only the first time
-  private void displayOfflineMapSupport() {
-
+  private void onOfflineMapClick(View view) {
     new AlertDialog.Builder(Objects.requireNonNull(getContext()))
         .setTitle(R.string.offline_mode_dialog_title)
         .setMessage(R.string.offline_mode_instructions)
@@ -100,32 +103,6 @@ public class MapsPage extends Fragment
               startActivity(browserIntent);
             })
         .show();
-
-    //    Snackbar snackbar =
-    //        Snackbar.make(
-    //            Objects.requireNonNull(Objects.requireNonNull(getView())),
-    // R.string.offline_mode_snack, Snackbar.LENGTH_LONG);
-    //
-    //    snackbar.setAction(
-    //        R.string.offline_mode_action,
-    //        view ->
-    //            new AlertDialog.Builder(Objects.requireNonNull(getContext()))
-    //                .setTitle(R.string.offline_mode_dialog_title)
-    //                .setMessage(R.string.offline_mode_instructions)
-    //                .setPositiveButton(android.R.string.yes, null)
-    //                .setNeutralButton(
-    //                    R.string.offline_mode_dialog_link,
-    //                    (dialogInterface, i) -> {
-    //                      Intent browserIntent =
-    //                          new Intent(
-    //                              Intent.ACTION_VIEW,
-    //                              Uri.parse(
-    //
-    // "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
-    //                      startActivity(browserIntent);
-    //                    })
-    //                .show());
-    //    snackbar.show();
   }
 
   private void setupView() {
@@ -141,7 +118,12 @@ public class MapsPage extends Fragment
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
-    return inflater.inflate(R.layout.tab1_map, container, false);
+    View view = inflater.inflate(R.layout.tab1_map, container, false);
+
+    FloatingActionButton button = view.findViewById(R.id.offline_map_button);
+    button.setOnClickListener(this::onOfflineMapClick);
+
+    return view;
   }
 
   @Override

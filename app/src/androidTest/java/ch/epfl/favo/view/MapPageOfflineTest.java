@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -17,12 +18,13 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.MapsPage;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
@@ -41,7 +43,6 @@ public class MapPageOfflineTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setOfflineMode(true);
-          MapsPage.firstTime = true;
         }
       };
 
@@ -56,10 +57,17 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport() throws InterruptedException {
+  public void testOfflineMapSupport() {
     getInstrumentation().waitForIdleSync();
 
-    Thread.sleep(5000);
+    // check button is visible
+    onView(withId(R.id.offline_map_button)).check(matches(isDisplayed()));
+
+    // click on button
+    onView(withId(R.id.offline_map_button)).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
     // check dialog is shown
     onView(withText(R.string.offline_mode_dialog_title)).check(matches(isDisplayed()));
 
@@ -68,10 +76,17 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport_ClickLink() throws InterruptedException {
+  public void testOfflineMapSupport_ClickLink() {
     getInstrumentation().waitForIdleSync();
 
-    Thread.sleep(5000);
+    // check button is visible
+    onView(withId(R.id.offline_map_button)).check(matches(isDisplayed()));
+
+    // click on button
+    onView(withId(R.id.offline_map_button)).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
     // check dialog is shown
     onView(withText(R.string.offline_mode_dialog_title)).check(matches(isDisplayed()));
 

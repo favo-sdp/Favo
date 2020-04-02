@@ -13,7 +13,6 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.MapsPage;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -40,7 +39,6 @@ public class AddFavorOfflineTest {
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
           DependencyFactory.setOfflineMode(true);
-          MapsPage.firstTime = true;
         }
       };
 
@@ -57,15 +55,7 @@ public class AddFavorOfflineTest {
   @Test
   public void testAddFavorOffline() throws InterruptedException {
 
-    // check dialog is shown
-    //onView(withText(R.string.offline_mode_dialog_title)).check(matches(isDisplayed()));
-
-    getInstrumentation().waitForIdleSync();
-
     Thread.sleep(5000);
-
-    // click on ok button to dismiss the dialog
-    onView(withText(android.R.string.yes)).perform(click());
 
     // Click on fav list tab
     onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
@@ -84,6 +74,5 @@ public class AddFavorOfflineTest {
     // check snackbar shows with the different message
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.save_draft_message)));
-
   }
 }
