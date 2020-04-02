@@ -314,15 +314,22 @@ public class FavorRequestView extends Fragment {
 
     super.onActivityResult(requestCode, resultCode, data);
 
-    boolean baseRequirement = (resultCode == RESULT_OK && data != null);
-
-    if (baseRequirement && requestCode == PICK_IMAGE_REQUEST) {
-      Uri mImageUri = data.getData();
-      mImageView.setImageURI(mImageUri);
-    } else if (baseRequirement && requestCode == USE_CAMERA_REQUEST) {
-      Bundle extras = data.getExtras();
-      Bitmap imageBitmap = (Bitmap) extras.get("data");
-      mImageView.setImageBitmap(imageBitmap);
+    if (resultCode == RESULT_OK && data != null) {
+      switch (requestCode) {
+        case PICK_IMAGE_REQUEST:
+          {
+            Uri mImageUri = data.getData();
+            mImageView.setImageURI(mImageUri);
+            break;
+          }
+        case USE_CAMERA_REQUEST:
+          {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+            break;
+          }
+      }
     } else {
       showSnackbar(getString(R.string.error_msg_image_request_view));
     }
