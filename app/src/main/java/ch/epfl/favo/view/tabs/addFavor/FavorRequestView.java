@@ -313,9 +313,13 @@ public class FavorRequestView extends Fragment {
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
     super.onActivityResult(requestCode, resultCode, data);
+    //If intent was not succesful
+    if (resultCode != RESULT_OK || data == null){
+      showSnackbar(getString(R.string.error_msg_image_request_view));
+      return;
+    }
 
-    if (resultCode == RESULT_OK && data != null) {
-      switch (requestCode) {
+    switch (requestCode) {
         case PICK_IMAGE_REQUEST:
           {
             Uri mImageUri = data.getData();
@@ -330,9 +334,6 @@ public class FavorRequestView extends Fragment {
             break;
           }
       }
-    } else {
-      showSnackbar(getString(R.string.error_msg_image_request_view));
-    }
   }
 
   /**
