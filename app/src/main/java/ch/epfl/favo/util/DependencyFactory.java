@@ -2,6 +2,7 @@ package ch.epfl.favo.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.provider.MediaStore;
 
 import androidx.annotation.Nullable;
@@ -20,6 +21,7 @@ public class DependencyFactory {
   private static FirebaseUser currentUser;
   private static DatabaseUpdater currentDatabaseUpdater;
   private static Intent currentCameraIntent;
+  private static LocationManager currentLocationManager;
   private static boolean testMode = false;
 
   public static FirebaseUser getCurrentFirebaseUser() {
@@ -74,6 +76,15 @@ public class DependencyFactory {
     return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
   }
 
+  public static void setCurrentLocationManager(LocationManager dependency) {
+    testMode = true;
+    currentLocationManager = dependency;
+  }
 
-
+  public static LocationManager getCurrentLocationManager(Context context) {
+    if (testMode && currentLocationManager != null) {
+      return currentLocationManager;
+    }
+    return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+  }
 }

@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
@@ -52,6 +51,7 @@ public class MainActivity extends AppCompatActivity
   private ImageButton backButton;
 
   public Map<String, Favor> activeFavors;
+  public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
 
   //  public ArrayList<Favor> getActiveFavorArrayList() {
@@ -94,16 +94,9 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    /*Activate if we want a toolbar */
-    // toolbar = findViewById(R.id.toolbar);
-    // setSupportActionBar(toolbar);
-
-    //    activeFavorArrayList =
-    // FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
     activeFavors = new HashMap<>();
-    //    archivedFavorArrayList =
-    // FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
     archivedFavors = new HashMap<>();
+    otherActiveFavorsAround = new HashMap<>();
   }
 
   private void setUpHamburgerMenuButton() {
@@ -141,7 +134,9 @@ public class MainActivity extends AppCompatActivity
 
     switch (itemId) {
       case R.id.nav_home:
-        navController.navigate(R.id.nav_map);
+        getSupportFragmentManager().popBackStackImmediate();
+        getSupportFragmentManager().popBackStackImmediate();
+        getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -166,7 +161,12 @@ public class MainActivity extends AppCompatActivity
 
   /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
-    mapButton.setOnClickListener(v -> navController.navigate(R.id.nav_map));
+    mapButton.setOnClickListener(
+        v -> {
+          getSupportFragmentManager().popBackStackImmediate();
+          getSupportFragmentManager().popBackStackImmediate();
+          getSupportFragmentManager().popBackStackImmediate();
+        });
     favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
   }
 
@@ -230,7 +230,8 @@ public class MainActivity extends AppCompatActivity
 
       favorFuture.thenAccept(
           favor -> {
-            Fragment frag = FavorFragmentFactory.instantiate(favor,new FavorDetailView());
+            otherActiveFavorsAround.put(favor.getId(), favor);
+            Fragment frag = FavorFragmentFactory.instantiate(favor, new FavorDetailView());
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.nav_host_fragment, frag);
             trans.commit();
