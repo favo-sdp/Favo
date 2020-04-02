@@ -54,7 +54,6 @@ public class FavorRequestView extends Fragment {
 
   private Favor currentFavor;
 
-
   public FavorRequestView() {
     // Required empty public constructor
   }
@@ -315,16 +314,12 @@ public class FavorRequestView extends Fragment {
 
     super.onActivityResult(requestCode, resultCode, data);
 
-    if (resultCode == RESULT_OK
-        && data != null
-        && requestCode == PICK_IMAGE_REQUEST
-        && data.getData() != null) {
+    boolean baseRequirement = (resultCode == RESULT_OK && data != null);
+
+    if (baseRequirement && requestCode == PICK_IMAGE_REQUEST && data.getData() != null) {
       Uri mImageUri = data.getData();
       mImageView.setImageURI(mImageUri);
-    } else if (resultCode == RESULT_OK
-        && data != null
-        && requestCode == USE_CAMERA_REQUEST
-        && data.getExtras() != null) {
+    } else if (baseRequirement && requestCode == USE_CAMERA_REQUEST && data.getExtras() != null) {
       Bundle extras = data.getExtras();
       Bitmap imageBitmap = (Bitmap) extras.get("data");
       mImageView.setImageBitmap(imageBitmap);
