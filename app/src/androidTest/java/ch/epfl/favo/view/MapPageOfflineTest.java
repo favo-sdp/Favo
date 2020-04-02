@@ -61,8 +61,7 @@ public class MapPageOfflineTest {
     Thread.sleep(500);
 
     // check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.offline_mode_snack)));
+    onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
 
     // click on snackbar action button
     onView(withText(R.string.offline_mode_action)).perform(click());
@@ -81,8 +80,7 @@ public class MapPageOfflineTest {
     Thread.sleep(500);
 
     // check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.offline_mode_snack)));
+    onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
 
     // click on snackbar action button
     onView(withText(R.string.offline_mode_action)).perform(click());
