@@ -10,13 +10,12 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.spy;
 
 public class RequestViewTest {
 
   // These tests just want to make sure that no exception is thrown when
-  // the result action of the sign-in is handled
+  // the result action of the favor request view is handled
 
   private FavorRequestView spy;
 
@@ -24,9 +23,10 @@ public class RequestViewTest {
   public void setup() {
     spy = spy(FavorRequestView.class);
   }
+
   @Test
-  public void testFileChooser(){
-    Mockito.doNothing().when(spy).startActivityForResult(any(Intent.class),anyInt());
+  public void testFileChooser() {
+    Mockito.doNothing().when(spy).startActivityForResult(any(Intent.class), anyInt());
     spy.openFileChooser();
   }
 

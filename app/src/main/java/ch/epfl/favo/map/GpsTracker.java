@@ -15,25 +15,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.util.LocationManagerDependencyFactory;
+import ch.epfl.favo.util.DependencyFactory;
 
-/**
- * This will wrap the getting system location function with some permission checking, before using
- * this class, two lines need to be added to AndroidManifest.xml file: <uses-permission
- * android:name="android.permission.ACCESS_FINE_LOCATION" /> <uses-permission
- * android:name="android.permission.ACCESS_COARSE_LOCATION" /> Sometimes, the location permission is
- * not automatically granted when installing app on phone, you need to grant it on your phone
- * manually. When permission is not granted, app tends to close immediately after launching map
- * view. And when running on a virtual device, the position does not seems consist with expectation.
- * But this will not happen on a real phone.
- */
 public class GpsTracker extends FragmentActivity implements LocationListener, Locator {
 
   private final Context context;
-  protected LocationManager locationManager;
-  boolean isGPSEnabled = false;
-  boolean isNetworkEnabled = false;
-  Location location;
+  private static Location mLastKnownLocation = null;
+  private static long mLastUpdate = 0;
 
   public GpsTracker(Context context) {
     this.context = context;
@@ -44,10 +32,20 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
    * @throws RuntimeException Should check if location is finally found
    * @return the location of phone
    */
+
+  public static void setLastKnownLocation(Location location){
+    // update from mapPage, it has its own position request method based on callback
+    mLastUpdate = System.currentTimeMillis();
+    mLastKnownLocation = location;
+  }
+
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    locationManager = LocationManagerDependencyFactory.getCurrentLocationManager(context);
-    isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-    isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    // if last update of location is less than 5 minutes, then return last result
+    if(mLastKnownLocation != null && ((System.currentTimeMillis() - mLastUpdate)/1000) < 300)
+      return mLastKnownLocation;
+    LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
+    boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
     if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
@@ -57,23 +55,21 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
       if (isGPSEnabled) provider = LocationManager.GPS_PROVIDER;
       else if (isNetworkEnabled) provider = LocationManager.NETWORK_PROVIDER;
       if (provider != null) {
-        locationManager.requestLocationUpdates(provider, 10000, 10, this);
-        if (locationManager != null) {
-          location = locationManager.getLastKnownLocation(provider);
-          // Log.d("report", "position found by gps");
-        }
+         locationManager.requestLocationUpdates(provider, 10000, 10, this);
+        mLastKnownLocation = locationManager.getLastKnownLocation(provider);
       }
-      if (location == null) {
+      if (mLastKnownLocation == null) {
         throw new NoPositionFoundException("Permission is granted, but no position is found");
       }
     } else throw new NoPermissionGrantedException("No location permission granted");
-    return location;
+    mLastUpdate = System.currentTimeMillis();
+    return mLastKnownLocation;
   }
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
-
-    // throw new NotImplementedException();
+    mLastKnownLocation = location;
+    mLastUpdate = System.currentTimeMillis();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {
