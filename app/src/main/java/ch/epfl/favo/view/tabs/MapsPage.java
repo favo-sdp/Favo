@@ -84,13 +84,7 @@ public class MapsPage extends Fragment
   private void displayOfflineMapSupport() {
     Snackbar snackbar =
         Snackbar.make(
-            Objects.requireNonNull(Objects.requireNonNull(getView()).getRootView()), R.string.offline_mode_snack, Snackbar.LENGTH_LONG);
-
-    View v = snackbar.getView();
-    snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
-    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)v.getLayoutParams();
-    params.gravity = Gravity.TOP;
-    v.setLayoutParams(params);
+            Objects.requireNonNull(Objects.requireNonNull(getView())), R.string.offline_mode_snack, Snackbar.LENGTH_LONG);
 
     snackbar.setAction(
         R.string.offline_mode_action,

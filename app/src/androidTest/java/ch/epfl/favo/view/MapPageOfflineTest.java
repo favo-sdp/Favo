@@ -58,8 +58,7 @@ public class MapPageOfflineTest {
 
   @Test
   public void testOfflineMapSupport() throws InterruptedException {
-    getInstrumentation().waitForIdleSync();
-    Thread.sleep(1000);
+    Thread.sleep(500);
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -79,8 +78,7 @@ public class MapPageOfflineTest {
 
   @Test
   public void testOfflineMapSupport_ClickLink() throws InterruptedException {
-    getInstrumentation().waitForIdleSync();
-    Thread.sleep(1000);
+    Thread.sleep(500);
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))

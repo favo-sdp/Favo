@@ -57,8 +57,7 @@ public class AddFavorOfflineTest {
   @Test
   public void testAddFavorOffline() throws InterruptedException {
 
-    Thread.sleep(3000);
-    getInstrumentation().waitForIdleSync();
+    Thread.sleep(5000);
 
     // Click on fav list tab
     onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
