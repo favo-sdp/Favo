@@ -24,8 +24,10 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
+import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
@@ -237,11 +239,16 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public void onBackPressed() {
-    getSupportFragmentManager().popBackStackImmediate();
+    getSupportFragmentManager().popBackStack();
   }
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  public void onFABClick(View view) {
+    CommonTools.replaceFragment(
+        R.id.nav_host_fragment, getSupportFragmentManager(), new FavorRequestView());
   }
 }

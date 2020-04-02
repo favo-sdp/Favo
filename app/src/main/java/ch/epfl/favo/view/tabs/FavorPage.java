@@ -56,7 +56,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     setupView();
 
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
-    rootView.findViewById(R.id.new_favor).setOnClickListener(this);
+    rootView.findViewById(R.id.floatingActionButton).setOnClickListener(this);
 
     tipTextView = rootView.findViewById(R.id.tip);
     tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -87,7 +87,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   @Override
   public void onClick(View view) {
     switch (view.getId()) {
-      case R.id.new_favor:
+      case R.id.floatingActionButton:
         CommonTools.replaceFragment(
                 R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;

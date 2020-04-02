@@ -17,7 +17,18 @@ public class DependencyFactory {
   private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
   private static DatabaseUpdater currentDatabaseUpdater;
-  public static boolean testMode = false;
+  private static boolean offlineMode = false;
+  private static boolean testMode = false;
+
+
+  public static boolean isOfflineMode(Context context) {
+    return offlineMode || CommonTools.isOffline(context);
+  }
+
+  @VisibleForTesting
+  public static void setOfflineMode(boolean value) {
+    offlineMode = value;
+  }
 
   public static FirebaseUser getCurrentFirebaseUser() {
     if (testMode) {

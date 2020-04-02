@@ -15,16 +15,34 @@
         android:padding="20dp"
         android:text="@string/tab2_description">
 
-        <Button
-            android:id="@+id/new_favor"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="55dp"
-            android:onClick="onClick"
-            android:text="@string/new_favor"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+<!--        <Button-->
+<!--            android:id="@+id/new_favor"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginBottom="55dp"-->
+<!--            android:onClick="onClick"-->
+<!--            android:text="@string/new_favor"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintLeft_toLeftOf="parent"-->
+<!--            app:layout_constraintRight_toRightOf="parent" />-->
+
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_gravity="bottom|end"-->
+<!--            android:layout_marginStart="16dp"-->
+<!--            android:layout_marginTop="16dp"-->
+<!--            android:layout_marginEnd="33dp"-->
+<!--            android:layout_marginBottom="99dp"-->
+<!--            android:clickable="true"-->
+<!--            android:focusable="true"-->
+<!--            android:gravity="bottom|end"-->
+<!--            android:onClick="onClick"-->
+<!--            app:backgroundTint="#4CAF50"-->
+<!--            app:srcCompat="@drawable/ic_add_black_24dp" />-->
 
         <ListView
             android:id="@+id/favor_list"
@@ -32,7 +50,6 @@
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toTopOf="@id/new_favor"
             app:layout_constraintTop_toBottomOf="@id/spinner" >
         </ListView>
 
@@ -56,6 +73,20 @@
             android:entries="@array/favor_list_spinner"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="65dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="onClick"
+            android:src="@drawable/ic_add_black_24dp"
+            app:backgroundTint="#4CAF50"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

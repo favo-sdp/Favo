@@ -24,6 +24,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 @RunWith(AndroidJUnit4.class)
 public class LoginFlowTest {
@@ -41,9 +42,11 @@ public class LoginFlowTest {
   public void testFacebookLogin()
       throws UiObjectNotFoundException, InterruptedException, RemoteException {
 
-    DependencyFactory.testMode = false;
     UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     mDevice.wakeUp();
+
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(5000);
 
     // wait to be in the login page
     if (!mDevice.findObject(new UiSelector().textContains("Sign in with Facebook")).exists()) {
@@ -75,6 +78,6 @@ public class LoginFlowTest {
     if (mDevice.findObject(new UiSelector().clickable(true).textContains("Continue")).exists())
       mDevice.findObject(new UiSelector().clickable(true).textContains("Continue")).click();
 
-    Thread.sleep(5000);
+    Thread.sleep(1000);
   }
 }

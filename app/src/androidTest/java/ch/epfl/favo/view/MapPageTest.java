@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.Display;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
@@ -87,51 +86,5 @@ public class MapPageTest {
 
   private void waitFor(int t) throws InterruptedException {
     Thread.sleep(t);
-  }
-
-  @Test
-  public void testOfflineMapSupport() throws UiObjectNotFoundException {
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.openQuickSettings();
-
-    // remove connection
-    mDevice.findObject(new UiSelector().text("AndroidWifi")).click();
-    mDevice.findObject(new UiSelector().text("Mobile data")).click();
-
-    if (mDevice.findObject(new UiSelector().text("Turn off")).exists())
-      mDevice.findObject(new UiSelector().text("Turn off")).click();
-
-    // go back to the app
-    mDevice.pressBack();
-    if (!mDevice.findObject(new UiSelector().textContains("Sign in with google")).exists())
-      mDevice.pressBack();
-  }
-
-  public void turnOffConnection() throws UiObjectNotFoundException {
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.openQuickSettings();
-
-    // remove connection
-    mDevice.findObject(new UiSelector().text("AndroidWifi")).click();
-    mDevice.findObject(new UiSelector().text("Mobile data")).click();
-
-    if (mDevice.findObject(new UiSelector().text("Turn off")).exists())
-      mDevice.findObject(new UiSelector().text("Turn off")).click();
-
-    // go back to the app
-    mDevice.pressBack();
-    mDevice.pressBack();
-  }
-
-  public void turnOnConnection() throws UiObjectNotFoundException {
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.openQuickSettings();
-
-    // put connection back
-    mDevice.findObject(new UiSelector().text("Wi-Fi")).click();
-    mDevice.findObject(new UiSelector().text("Mobile data")).click();
-
-    mDevice.pressBack();
-    mDevice.pressBack();
   }
 }

@@ -40,25 +40,27 @@ public class CommonTools {
   }
 
   public static void hideKeyboardFrom(Context context, View view) {
-    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    InputMethodManager imm =
+        (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
   public static boolean isOffline(Context context) {
     ConnectivityManager connectivity =
-            (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     if (connectivity != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        NetworkCapabilities network = connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
+        NetworkCapabilities network =
+            connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
         if (network != null
-                && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
                 || network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
           return false;
         }
       } else {
         NetworkInfo network = connectivity.getActiveNetworkInfo();
         if (network != null
-                && (network.getType() == ConnectivityManager.TYPE_WIFI
+            && (network.getType() == ConnectivityManager.TYPE_WIFI
                 || network.getType() == ConnectivityManager.TYPE_MOBILE)) {
           return false;
         }

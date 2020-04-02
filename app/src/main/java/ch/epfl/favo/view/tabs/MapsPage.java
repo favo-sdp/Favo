@@ -7,14 +7,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -37,6 +41,7 @@ import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
@@ -54,7 +59,7 @@ public class MapsPage extends Fragment
   private GpsTracker mGpsTracker;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
 
-  private static boolean firstTime = true;
+  public static boolean firstTime = true;
 
   public MapsPage() {
     // Required empty public constructor
@@ -66,7 +71,7 @@ public class MapsPage extends Fragment
     mMap = googleMap;
     mMap.clear();
 
-    if (firstTime && CommonTools.isOffline(Objects.requireNonNull(getContext()))) {
+    if (firstTime && DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
       displayOfflineMapSupport();
       firstTime = false;
     }
@@ -79,19 +84,23 @@ public class MapsPage extends Fragment
   private void displayOfflineMapSupport() {
     Snackbar snackbar =
         Snackbar.make(
-            Objects.requireNonNull(getView()),
-            "No internet connection: offline map support can be enabled",
-            Snackbar.LENGTH_LONG);
+            Objects.requireNonNull(Objects.requireNonNull(getView()).getRootView()), R.string.offline_mode_snack, Snackbar.LENGTH_LONG);
+
+    View v = snackbar.getView();
+    snackbar.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
+    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)v.getLayoutParams();
+    params.gravity = Gravity.TOP;
+    v.setLayoutParams(params);
+
     snackbar.setAction(
-        "Details",
+        R.string.offline_mode_action,
         view ->
-            new AlertDialog.Builder(getContext())
-                .setTitle("Offline map support")
-                .setMessage(
-                    "You can enable offline map support by downloading offline maps from the Google Maps app")
+            new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+                .setTitle(R.string.offline_mode_dialog_title)
+                .setMessage(R.string.offline_mode_instructions)
                 .setPositiveButton(android.R.string.yes, null)
                 .setNeutralButton(
-                    "Show me how",
+                    R.string.offline_mode_dialog_link,
                     (dialogInterface, i) -> {
                       Intent browserIntent =
                           new Intent(

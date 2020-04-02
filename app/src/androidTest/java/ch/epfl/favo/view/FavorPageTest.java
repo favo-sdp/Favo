@@ -49,8 +49,6 @@ public class FavorPageTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-  private MainActivity mActivity;
-
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
@@ -66,7 +64,7 @@ public class FavorPageTest {
     onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
-    onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed()));
 
     onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
 
@@ -89,11 +87,12 @@ public class FavorPageTest {
 
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
 
     // check the tip text is displayed when active favor list is empty
-    onView(withId(R.id.tip)).check(matches(isDisplayed()))
-            .check(matches(withText(R.string.favor_no_active_favor)));
+    onView(withId(R.id.tip))
+        .check(matches(isDisplayed()))
+        .check(matches(withText(R.string.favor_no_active_favor)));
 
     // go to archived list
     onView(withId(R.id.spinner)).perform(click());
@@ -101,8 +100,9 @@ public class FavorPageTest {
     onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Archived"))));
 
     // check the tip text is displayed when archived favor list is empty
-    onView(withId(R.id.tip)).check(matches(isDisplayed()))
-            .check(matches(withText(R.string.favor_no_archived_favor)));
+    onView(withId(R.id.tip))
+        .check(matches(isDisplayed()))
+        .check(matches(withText(R.string.favor_no_archived_favor)));
   }
 
   @Test
@@ -113,10 +113,10 @@ public class FavorPageTest {
 
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
 
     // check that the new favor button is displayed and click on it
-    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check that the favor request fragment is displayed

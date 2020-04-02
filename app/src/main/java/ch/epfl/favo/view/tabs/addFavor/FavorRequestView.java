@@ -48,7 +48,7 @@ public class FavorRequestView extends Fragment {
     // Button: Request Favor
     Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
     confirmFavorBtn.setOnClickListener(v -> requestFavor());
-    if (CommonTools.isOffline(Objects.requireNonNull(getContext()))) {
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
       confirmFavorBtn.setText(R.string.request_favor_draft);
     }
 
@@ -91,16 +91,15 @@ public class FavorRequestView extends Fragment {
     ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(favor);
 
     // Show confirmation and minimize keyboard
-    if (CommonTools.isOffline(Objects.requireNonNull(getContext()))) {
-      CommonTools.showSnackbar(getView(), "Draft saved: favor will be published as soon as connection returns");
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+      CommonTools.showSnackbar(getView(), getString(R.string.save_draft_message));
     } else {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_request_success_msg));
     }
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     // Go back
-    assert getFragmentManager() != null;
-    getFragmentManager().popBackStack();
+    getActivity().onBackPressed();
   }
 
   public void openFileChooser() {
