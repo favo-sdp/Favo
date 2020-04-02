@@ -3,10 +3,10 @@ package ch.epfl.favo.view.tabs;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -55,6 +54,8 @@ public class MapsPage extends Fragment
   private GpsTracker mGpsTracker;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
 
+  private static boolean firstTime = true;
+
   public MapsPage() {
     // Required empty public constructor
   }
@@ -65,20 +66,42 @@ public class MapsPage extends Fragment
     mMap = googleMap;
     mMap.clear();
 
-    if (!CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
-      Snackbar snackbar= Snackbar.make(getView(), "Click to see instructions for offline map support", Snackbar.LENGTH_LONG);
-      View sbView = snackbar.getView();
-      sbView.setClickable(true);
-      sbView.setFocusable(true);
-      sbView.setBackgroundColor(Color.parseColor("#ffffff"));
-      CoordinatorLayout.LayoutParams params=(CoordinatorLayout.LayoutParams)sbView.getLayoutParams();
-      params.gravity = Gravity.TOP;
-      sbView.setLayoutParams(params);
-      snackbar.show();
+    if (firstTime && !CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+      displayOfflineMapSupport();
+      firstTime = false;
     }
 
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
+  }
+
+  // warn the user if it's offline and show how to enable offline maps only the first time
+  private void displayOfflineMapSupport() {
+    Snackbar snackbar =
+        Snackbar.make(
+            Objects.requireNonNull(getView()),
+            "No internet connection: offline map support can be enabled",
+            Snackbar.LENGTH_LONG);
+    snackbar.setAction(
+        "Details",
+        view ->
+            new AlertDialog.Builder(getContext())
+                .setTitle("Offline map support")
+                .setMessage(
+                    "You can enable offline map support by downloading offline maps from the Google Maps app")
+                .setPositiveButton(android.R.string.yes, null)
+                .setNeutralButton(
+                    "Show me how",
+                    (dialogInterface, i) -> {
+                      Intent browserIntent =
+                          new Intent(
+                              Intent.ACTION_VIEW,
+                              Uri.parse(
+                                  "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
+                      startActivity(browserIntent);
+                    })
+                .show());
+    snackbar.show();
   }
 
   private void setupView() {
