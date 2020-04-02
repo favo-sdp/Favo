@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.widget.Button;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -151,12 +152,13 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
   }
+
   @Test
   public void snackbarShowsWhenIncorrectResultCodeOnImageUpload() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
     FragmentTransaction ft =
-            activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
+        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, currentFragment);
     ft.addToBackStack(null);
     ft.commit();
@@ -166,14 +168,13 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.error_msg_image_request_view)));
-
+        .check(matches(withText(R.string.error_msg_image_request_view)));
   }
 
   @Test
   public void requestedFavorViewIsUpdatedCorrectly() {
     Favor fakeFavor = FakeItemFactory.getFavor();
-    launchFragmentWithFakeFavor(fakeFavor);
+    launchFragmentWithFakeFavor(new FavorRequestView(), fakeFavor);
     getInstrumentation().waitForIdleSync();
     // Check request button is gone
     onView(withId(R.id.request_button))
@@ -187,35 +188,41 @@ public class AddFavorTest {
         .check(matches(isDisplayed()))
         .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
   }
+
   @Test
-  public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted(){
+  public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
     Favor fakeFavor = FakeItemFactory.getFavor();
-    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
-    launchFragmentWithFakeFavor(fakeFavor);
-    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.favor_status_text))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
-  }
-  @Test
-  public void testViewIsCorrectlyUpdatedWhenFavorHasBeenAccepted(){
-    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
     fakeFavor.updateStatus(Favor.Status.ACCEPTED);
-    launchFragmentWithFakeFavor(fakeFavor);
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
+    onView(withId(R.id.favor_status_text))
+        .check(matches(isDisplayed()))
+        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
+    runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            fragment.displayFavorInfo();
+          }
+        });
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
   }
 
   @Test
   public void testEditFavorFlow() {
     Favor fakeFavor = FakeItemFactory.getFavor();
-    launchFragmentWithFakeFavor(fakeFavor);
+    launchFragmentWithFakeFavor(new FavorRequestView(), fakeFavor);
     getInstrumentation().waitForIdleSync();
     // Click on edit
     onView(withId(R.id.edit_favor_button))
@@ -238,7 +245,7 @@ public class AddFavorTest {
   @Test
   public void cancelActiveFavorUpdatesViewCorrectly() {
     Favor fakeFavor = FakeItemFactory.getFavor();
-    launchFragmentWithFakeFavor(fakeFavor);
+    launchFragmentWithFakeFavor(new FavorRequestView(), fakeFavor);
     getInstrumentation().waitForIdleSync();
 
     // Click on cancel
@@ -264,12 +271,12 @@ public class AddFavorTest {
         .check(matches(withText(Favor.Status.CANCELLED_REQUESTER.getPrettyString())));
   }
 
-  private void launchFragmentWithFakeFavor(Favor favor) {
+  private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
     // Launch view
     activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
+    ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor, fragment));
     ft.addToBackStack(null);
     ft.commit();
   }

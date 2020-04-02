@@ -88,10 +88,11 @@ public class FavorRequestView extends Fragment {
   }
 
   /** When fragment is launched with favor. */
-  private void displayFavorInfo() {
+  public void displayFavorInfo() {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(currentFavor.getStatusId().toString());
+    updateViewFromStatus();
   }
 
   /**
@@ -234,6 +235,10 @@ public class FavorRequestView extends Fragment {
       case ACCEPTED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          editFavorBtn.setEnabled(false);
+          cancelFavorBtn.setEnabled(true);
+          addPictureFromFilesBtn.setEnabled(false);
+          addPictureFromCameraBtn.setEnabled(false);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
@@ -313,27 +318,27 @@ public class FavorRequestView extends Fragment {
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
     super.onActivityResult(requestCode, resultCode, data);
-    //If intent was not succesful
-    if (resultCode != RESULT_OK || data == null){
+    // If intent was not succesful
+    if (resultCode != RESULT_OK || data == null) {
       showSnackbar(getString(R.string.error_msg_image_request_view));
       return;
     }
 
     switch (requestCode) {
-        case PICK_IMAGE_REQUEST:
-          {
-            Uri mImageUri = data.getData();
-            mImageView.setImageURI(mImageUri);
-            break;
-          }
-        case USE_CAMERA_REQUEST:
-          {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-            break;
-          }
-      }
+      case PICK_IMAGE_REQUEST:
+        {
+          Uri mImageUri = data.getData();
+          mImageView.setImageURI(mImageUri);
+          break;
+        }
+      case USE_CAMERA_REQUEST:
+        {
+          Bundle extras = data.getExtras();
+          Bitmap imageBitmap = (Bitmap) extras.get("data");
+          mImageView.setImageBitmap(imageBitmap);
+          break;
+        }
+    }
   }
 
   /**
