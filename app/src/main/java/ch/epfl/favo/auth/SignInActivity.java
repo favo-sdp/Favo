@@ -1,7 +1,6 @@
 package ch.epfl.favo.auth;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,13 +10,10 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
@@ -127,36 +123,36 @@ public class SignInActivity extends AppCompatActivity {
     if (resultCode == RESULT_OK) {
       // Successfully signed in
 
-      FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
-      String name = currentUser.getDisplayName();
-      String email = currentUser.getEmail();
-      Uri photo = currentUser.getPhotoUrl();
-      String deviceId = currentUser.getUid();
-
-      // TODO post user data to the db
-
-      retrieveCurrentRegistrationToken();
+//      FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
+//      String name = currentUser.getDisplayName();
+//      String email = currentUser.getEmail();
+//      Uri photo = currentUser.getPhotoUrl();
+//      String deviceId = currentUser.getUid();
+//
+//      // TODO post user data to the db
+//
+//      retrieveCurrentRegistrationToken();
 
       startMainActivity();
     }
   }
 
   // retrieve current registration token for the notification system
-  void retrieveCurrentRegistrationToken() {
-    FirebaseInstanceId.getInstance()
-        .getInstanceId()
-        .addOnCompleteListener(
-            task -> {
-              if (!task.isSuccessful()) {
-                return;
-              }
-
-              // Get new Instance ID token
-              String token = Objects.requireNonNull(task.getResult()).getToken();
-              // Log.d("SignInActivity", getString(R.string.msg_token_fmt, token));
-
-              // TODO post notificationId to the db
-              // just set the notificationId property for the current user and then sync the db
-            });
-  }
+//  void retrieveCurrentRegistrationToken() {
+//    FirebaseInstanceId.getInstance()
+//        .getInstanceId()
+//        .addOnCompleteListener(
+//            task -> {
+//              if (!task.isSuccessful()) {
+//                return;
+//              }
+//
+//              // Get new Instance ID token
+//              String token = Objects.requireNonNull(task.getResult()).getToken();
+//              // Log.d("SignInActivity", getString(R.string.msg_token_fmt, token));
+//
+//              // TODO post notificationId to the db
+//              // just set the notificationId property for the current user and then sync the db
+//            });
+//  }
 }

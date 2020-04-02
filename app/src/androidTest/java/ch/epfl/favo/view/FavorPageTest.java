@@ -66,7 +66,9 @@ public class FavorPageTest {
 
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
+    getInstrumentation().waitForIdleSync();
+
+    //onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
 
     onView(withId(R.id.spinner)).perform(click());
     onData(allOf(is(instanceOf(String.class)), is("Archived"))).perform(click());
