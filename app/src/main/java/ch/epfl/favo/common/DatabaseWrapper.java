@@ -63,9 +63,11 @@ public class DatabaseWrapper {
     getCollectionReference(collection).document(key).delete();
   }
 
-  static <T extends Document> void updateDocument(
+  static void updateDocument(
       String key, Map<String, Object> updates, String collection) {
     getCollectionReference(collection).document(key).update(updates);
+
+
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(

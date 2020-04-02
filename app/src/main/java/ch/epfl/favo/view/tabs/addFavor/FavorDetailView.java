@@ -12,19 +12,12 @@ import androidx.fragment.app.Fragment;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 
 public class FavorDetailView extends Fragment {
-  private static final String FAVOR_ARGS = "FAVOR_ARGS";
   private Favor favor;
 
-  public static FavorDetailView newInstance(Favor favor) {
-    FavorDetailView fragment = new FavorDetailView();
-    Bundle args = new Bundle();
-    args.putParcelable(FAVOR_ARGS, favor);
-    fragment.setArguments(args);
-    return fragment;
-  }
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -49,7 +42,7 @@ public class FavorDetailView extends Fragment {
         });
 
     if (favor == null) {
-      favor = getArguments().getParcelable(FAVOR_ARGS);
+      favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
     }
     displayFromFavor(rootView, favor);
 
