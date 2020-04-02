@@ -56,9 +56,10 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport() {
+  public void testOfflineMapSupport() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
 
+    Thread.sleep(5000);
     // check dialog is shown
     onView(withText(R.string.offline_mode_dialog_title)).check(matches(isDisplayed()));
 
@@ -67,9 +68,10 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport_ClickLink() {
+  public void testOfflineMapSupport_ClickLink() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
 
+    Thread.sleep(5000);
     // check dialog is shown
     onView(withText(R.string.offline_mode_dialog_title)).check(matches(isDisplayed()));
 
