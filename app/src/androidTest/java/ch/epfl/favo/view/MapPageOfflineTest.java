@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -23,6 +24,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
@@ -56,12 +58,12 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport() throws InterruptedException {
+  public void testOfflineMapSupport() {
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500);
 
     // check snackbar shows
-    //onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
+    onView(withText(R.string.offline_mode_snack))
+        .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
     // click on snackbar action button
     onView(withText(R.string.offline_mode_action)).perform(click());
@@ -76,12 +78,12 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport_ClickLink() throws InterruptedException {
+  public void testOfflineMapSupport_ClickLink() {
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500);
 
     // check snackbar shows
-    //onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
+    onView(withText(R.string.offline_mode_snack))
+        .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
     // click on snackbar action button
     onView(withText(R.string.offline_mode_action)).perform(click());
