@@ -55,9 +55,13 @@ public class AddFavorOfflineTest {
   }
 
   @Test
-  public void testAddFavorOffline() throws InterruptedException {
+  public void testAddFavorOffline() {
 
-    Thread.sleep(5000);
+    // check dialog is shown
+    onView(withText(R.string.offline_mode_dialog_title)).check(matches(isDisplayed()));
+
+    // click on ok button to dismiss the dialog
+    onView(withText(android.R.string.yes)).perform(click());
 
     // Click on fav list tab
     onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());

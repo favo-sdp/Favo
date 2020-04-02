@@ -8,19 +8,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,8 +29,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,29 +84,48 @@ public class MapsPage extends Fragment
 
   // warn the user if it's offline and show how to enable offline maps only the first time
   private void displayOfflineMapSupport() {
-    Snackbar snackbar =
-        Snackbar.make(
-            Objects.requireNonNull(Objects.requireNonNull(getView())), R.string.offline_mode_snack, Snackbar.LENGTH_LONG);
 
-    snackbar.setAction(
-        R.string.offline_mode_action,
-        view ->
-            new AlertDialog.Builder(Objects.requireNonNull(getContext()))
-                .setTitle(R.string.offline_mode_dialog_title)
-                .setMessage(R.string.offline_mode_instructions)
-                .setPositiveButton(android.R.string.yes, null)
-                .setNeutralButton(
-                    R.string.offline_mode_dialog_link,
-                    (dialogInterface, i) -> {
-                      Intent browserIntent =
-                          new Intent(
-                              Intent.ACTION_VIEW,
-                              Uri.parse(
-                                  "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
-                      startActivity(browserIntent);
-                    })
-                .show());
-    snackbar.show();
+    new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+        .setTitle(R.string.offline_mode_dialog_title)
+        .setMessage(R.string.offline_mode_instructions)
+        .setPositiveButton(android.R.string.yes, null)
+        .setNeutralButton(
+            R.string.offline_mode_dialog_link,
+            (dialogInterface, i) -> {
+              Intent browserIntent =
+                  new Intent(
+                      Intent.ACTION_VIEW,
+                      Uri.parse(
+                          "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
+              startActivity(browserIntent);
+            })
+        .show();
+
+    //    Snackbar snackbar =
+    //        Snackbar.make(
+    //            Objects.requireNonNull(Objects.requireNonNull(getView())),
+    // R.string.offline_mode_snack, Snackbar.LENGTH_LONG);
+    //
+    //    snackbar.setAction(
+    //        R.string.offline_mode_action,
+    //        view ->
+    //            new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+    //                .setTitle(R.string.offline_mode_dialog_title)
+    //                .setMessage(R.string.offline_mode_instructions)
+    //                .setPositiveButton(android.R.string.yes, null)
+    //                .setNeutralButton(
+    //                    R.string.offline_mode_dialog_link,
+    //                    (dialogInterface, i) -> {
+    //                      Intent browserIntent =
+    //                          new Intent(
+    //                              Intent.ACTION_VIEW,
+    //                              Uri.parse(
+    //
+    // "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
+    //                      startActivity(browserIntent);
+    //                    })
+    //                .show());
+    //    snackbar.show();
   }
 
   private void setupView() {

@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -45,25 +45,17 @@ public class CommonTools {
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
-  public static boolean isOffline(Context context) {
+  @RequiresApi(api = Build.VERSION_CODES.M)
+  static boolean isOffline(Context context) {
     ConnectivityManager connectivity =
         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
     if (connectivity != null) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        NetworkCapabilities network =
-            connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
-        if (network != null
-            && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                || network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
-          return false;
-        }
-      } else {
-        NetworkInfo network = connectivity.getActiveNetworkInfo();
-        if (network != null
-            && (network.getType() == ConnectivityManager.TYPE_WIFI
-                || network.getType() == ConnectivityManager.TYPE_MOBILE)) {
-          return false;
-        }
+      NetworkCapabilities network =
+          connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
+      if (network != null
+          && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+              || network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
+        return false;
       }
     }
     return true;
