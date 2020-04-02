@@ -316,10 +316,10 @@ public class FavorRequestView extends Fragment {
 
     boolean baseRequirement = (resultCode == RESULT_OK && data != null);
 
-    if (baseRequirement && requestCode == PICK_IMAGE_REQUEST && data.getData() != null) {
+    if (baseRequirement && requestCode == PICK_IMAGE_REQUEST) {
       Uri mImageUri = data.getData();
       mImageView.setImageURI(mImageUri);
-    } else if (baseRequirement && requestCode == USE_CAMERA_REQUEST && data.getExtras() != null) {
+    } else if (baseRequirement && requestCode == USE_CAMERA_REQUEST) {
       Bundle extras = data.getExtras();
       Bitmap imageBitmap = (Bitmap) extras.get("data");
       mImageView.setImageBitmap(imageBitmap);
