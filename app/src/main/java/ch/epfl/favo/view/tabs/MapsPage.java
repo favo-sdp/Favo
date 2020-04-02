@@ -17,11 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,16 +26,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.NoPermissionGrantedException;
-import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
@@ -59,7 +51,7 @@ public class MapsPage extends Fragment
   private GoogleMap mMap;
   private Location mLocation;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
-  private boolean first=true;
+  private boolean first = true;
   private GpsTracker mGpsTracker;
   private boolean mLocationPermissionGranted = false;
   private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -88,8 +80,9 @@ public class MapsPage extends Fragment
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     setupView();
-   // mFusedLocationProviderClient =  LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
-   // getLocation();
+    // mFusedLocationProviderClient =
+    // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
+    // getLocation();
     return inflater.inflate(R.layout.tab1_map, container, false);
   }
 
@@ -105,70 +98,70 @@ public class MapsPage extends Fragment
     }
   }
 
-
-
   private void getLocationPermission() {
     /*
      * Request location permission, so that we can get the location of the
      * device. The result of the permission request is handled by a callback,
      * onRequestPermissionsResult.
      */
-    if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()).getApplicationContext(),
+    if (ContextCompat.checkSelfPermission(
+            Objects.requireNonNull(getActivity()).getApplicationContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION)
-            == PackageManager.PERMISSION_GRANTED) {
+        == PackageManager.PERMISSION_GRANTED) {
       mLocationPermissionGranted = true;
     } else {
-      ActivityCompat.requestPermissions(Objects.requireNonNull(getActivity()),
-              new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-              PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+      ActivityCompat.requestPermissions(
+          Objects.requireNonNull(getActivity()),
+          new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
+          PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
     }
   }
 
-/*
+  /*
 
-  private void checkPlayServices() {
-    GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-    int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
-    if (resultCode != ConnectionResult.SUCCESS) {
-      gApi.makeGooglePlayServicesAvailable(getActivity());
-    }
-  }
-
-  public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    getLocationPermission();
-    if (mLocationPermissionGranted) {
-      LocationRequest request = new LocationRequest();
-      request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-      request.setInterval(15 * 60 * 1000);
-      request.setMaxWaitTime(30 * 60 * 1000);
-      Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-      locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
-        @Override
-        public void onComplete(@NonNull Task<Location> task) {
-          if (task.isSuccessful()) {
-            // Set the map's camera position to the current location of the device.
-            mLocation = task.getResult();
-            GpsTracker.setLastKnownLocation(mLocation);
-          }
-        }
-      });
-    }
-  }
-
-
-  @Override
-  public void onRequestPermissionsResult(int requestCode,
-                                         @NonNull String[] permissions,
-                                         @NonNull int[] grantResults) {
-    mLocationPermissionGranted = false;
-    if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
-      if (grantResults.length > 0
-              && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        mLocationPermissionGranted = true;
+    private void checkPlayServices() {
+      GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+      int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
+      if (resultCode != ConnectionResult.SUCCESS) {
+        gApi.makeGooglePlayServicesAvailable(getActivity());
       }
     }
-  }
-*/
+
+    public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
+      getLocationPermission();
+      if (mLocationPermissionGranted) {
+        LocationRequest request = new LocationRequest();
+        request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        request.setInterval(15 * 60 * 1000);
+        request.setMaxWaitTime(30 * 60 * 1000);
+        Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+        locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
+          @Override
+          public void onComplete(@NonNull Task<Location> task) {
+            if (task.isSuccessful()) {
+              // Set the map's camera position to the current location of the device.
+              mLocation = task.getResult();
+              GpsTracker.setLastKnownLocation(mLocation);
+            }
+          }
+        });
+      }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+      mLocationPermissionGranted = false;
+      if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          mLocationPermissionGranted = true;
+        }
+      }
+    }
+  */
 
   public List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
@@ -186,8 +179,8 @@ public class MapsPage extends Fragment
   }
 
   private void drawSelfLocationMarker() {
-      // Add a marker at my location and move the camera
-    try{
+    // Add a marker at my location and move the camera
+    try {
       getLocationPermission();
       mLocation = mGpsTracker.getLocation();
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
@@ -202,8 +195,7 @@ public class MapsPage extends Fragment
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
       mMap.setInfoWindowAdapter(this);
       mMap.setOnInfoWindowClickListener(this);
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       CommonTools.showSnackbar(getView(), e.getMessage());
     }
   }
