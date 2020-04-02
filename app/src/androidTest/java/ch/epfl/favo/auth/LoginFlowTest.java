@@ -57,17 +57,17 @@ public class LoginFlowTest {
     Thread.sleep(5000);
 
     // click on login
-    // if (mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).exists()) {
-    // insert email
-    UiObject2 editText = mDevice.findObject(By.clazz("android.widget.EditText"));
-    editText.setText("vhnwqbiihe_1583436753@tfbnw.net");
+    if (mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).exists()) {
+      // insert email
+      UiObject2 editText = mDevice.findObject(By.clazz("android.widget.EditText"));
+      editText.setText("vhnwqbiihe_1583436753@tfbnw.net");
 
-    // insert password
-    UiObject input = mDevice.findObject(new UiSelector().instance(1).className(EditText.class));
-    input.setText("favo123");
+      // insert password
+      UiObject input = mDevice.findObject(new UiSelector().instance(1).className(EditText.class));
+      input.setText("favo123");
 
-    mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).click();
-    // }
+      mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).click();
+    }
 
     Thread.sleep(5000);
 
