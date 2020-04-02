@@ -66,7 +66,7 @@ public class MapsPage extends Fragment
     mMap = googleMap;
     mMap.clear();
 
-    if (firstTime && !CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+    if (firstTime && CommonTools.isOffline(Objects.requireNonNull(getContext()))) {
       displayOfflineMapSupport();
       firstTime = false;
     }

@@ -10,13 +10,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -52,7 +48,7 @@ public class FavorRequestView extends Fragment {
     // Button: Request Favor
     Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
     confirmFavorBtn.setOnClickListener(v -> requestFavor());
-    if (!CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+    if (CommonTools.isOffline(Objects.requireNonNull(getContext()))) {
       confirmFavorBtn.setText(R.string.request_favor_draft);
     }
 
@@ -95,7 +91,7 @@ public class FavorRequestView extends Fragment {
     ((MainActivity) Objects.requireNonNull(getActivity())).activeFavorArrayList.add(favor);
 
     // Show confirmation and minimize keyboard
-    if (!CommonTools.isNetworkConnected(Objects.requireNonNull(getContext()))) {
+    if (CommonTools.isOffline(Objects.requireNonNull(getContext()))) {
       CommonTools.showSnackbar(getView(), "Draft saved: favor will be published as soon as connection returns");
     } else {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_request_success_msg));

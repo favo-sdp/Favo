@@ -42,14 +42,12 @@ public class LoginFlowTest {
       throws UiObjectNotFoundException, InterruptedException, RemoteException {
 
     DependencyFactory.testMode = false;
-
     UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-
     mDevice.wakeUp();
 
     // wait to be in the login page
-    while (!mDevice.findObject(new UiSelector().textContains("Sign in with Facebook")).exists()) {
-      Thread.sleep(3000);
+    if (!mDevice.findObject(new UiSelector().textContains("Sign in with Facebook")).exists()) {
+      Thread.sleep(5000);
     }
 
     // click on sign in with facebook
@@ -59,24 +57,24 @@ public class LoginFlowTest {
     Thread.sleep(5000);
 
     // click on login
-    if (mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).exists()) {
-      // insert email
-      UiObject2 editText = mDevice.findObject(By.clazz("android.widget.EditText"));
-      editText.setText("vhnwqbiihe_1583436753@tfbnw.net");
+    // if (mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).exists()) {
+    // insert email
+    UiObject2 editText = mDevice.findObject(By.clazz("android.widget.EditText"));
+    editText.setText("vhnwqbiihe_1583436753@tfbnw.net");
 
-      // insert password
-      UiObject input = mDevice.findObject(new UiSelector().instance(1).className(EditText.class));
-      input.setText("favo123");
+    // insert password
+    UiObject input = mDevice.findObject(new UiSelector().instance(1).className(EditText.class));
+    input.setText("favo123");
 
-      mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).click();
-    }
+    mDevice.findObject(new UiSelector().clickable(true).textContains("Log In")).click();
+    // }
 
-    Thread.sleep(3000);
+    Thread.sleep(5000);
 
     // click on continue if present (when already logged in)
     if (mDevice.findObject(new UiSelector().clickable(true).textContains("Continue")).exists())
       mDevice.findObject(new UiSelector().clickable(true).textContains("Continue")).click();
 
-    Thread.sleep(3000);
+    Thread.sleep(5000);
   }
 }

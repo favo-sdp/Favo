@@ -35,10 +35,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 public class MapPageTest {
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
-      new ActivityTestRule<MainActivity>(MainActivity.class) {
-        @Override
-        protected void beforeActivityLaunched() {}
-      };
+      new ActivityTestRule<MainActivity>(MainActivity.class);
 
   @Rule
   public GrantPermissionRule permissionRule =
@@ -50,7 +47,7 @@ public class MapPageTest {
   }
 
   @Test
-  public void InfoWindowClickSelfTest() throws UiObjectNotFoundException {
+  public void InfoWindowClickSelfTest() {
     MapsPage mapsPage = new MapsPage();
     mapsPage.updateFavorlist();
     mapsPage.queryFavor(TestConstants.LATITUDE, TestConstants.LONGITUDE);
@@ -59,8 +56,7 @@ public class MapPageTest {
   }
 
   @Test
-  public void InfoWindowClickOtherTest() throws InterruptedException, UiObjectNotFoundException {
-
+  public void InfoWindowClickOtherTest() {
     // CheckContent("Title of Favor 0", R.string.favor_respond_success_msg);
   }
 
@@ -91,4 +87,10 @@ public class MapPageTest {
   private void waitFor(int t) throws InterruptedException {
     Thread.sleep(t);
   }
+
+  @Test
+  public void testOfflineMode() {
+    // CheckContent("Title of Favor 0", R.string.favor_respond_success_msg);
+  }
+
 }

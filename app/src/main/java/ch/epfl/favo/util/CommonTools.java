@@ -44,27 +44,26 @@ public class CommonTools {
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 
-  public static boolean isNetworkConnected(Context context) {
-    boolean connected = false;
-    ConnectivityManager cm =
+  public static boolean isOffline(Context context) {
+    ConnectivityManager connectivity =
             (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-    if (cm != null) {
+    if (connectivity != null) {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
-        if (capabilities != null
-                && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
-          connected = true;
+        NetworkCapabilities network = connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
+        if (network != null
+                && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+                || network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
+          return false;
         }
       } else {
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        if (activeNetwork != null
-                && (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI
-                || activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE)) {
-          connected = true;
+        NetworkInfo network = connectivity.getActiveNetworkInfo();
+        if (network != null
+                && (network.getType() == ConnectivityManager.TYPE_WIFI
+                || network.getType() == ConnectivityManager.TYPE_MOBILE)) {
+          return false;
         }
       }
     }
-    return connected;
+    return true;
   }
 }
