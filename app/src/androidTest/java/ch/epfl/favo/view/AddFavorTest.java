@@ -199,6 +199,18 @@ public class AddFavorTest {
             .check(matches(isDisplayed()))
             .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
   }
+  @Test
+  public void testViewIsCorrectlyUpdatedWhenFavorHasBeenAccepted(){
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.updateStatus(Favor.Status.ACCEPTED);
+    launchFragmentWithFakeFavor(fakeFavor);
+    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.favor_status_text))
+            .check(matches(isDisplayed()))
+            .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+  }
 
   @Test
   public void testEditFavorFlow() {
