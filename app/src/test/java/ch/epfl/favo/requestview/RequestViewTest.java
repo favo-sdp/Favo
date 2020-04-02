@@ -10,6 +10,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.spy;
 
 public class RequestViewTest {
@@ -30,10 +31,10 @@ public class RequestViewTest {
     spy.openFileChooser();
   }
 
-//  @Test
-//  public void testOnActivityResult_requestCodeNotCorrect() {
-//    Mockito.doNothing().when(spy).showSnackbar(anyString());
-//    spy.onActivityResult(123, 0, null);
-//  }
+  @Test
+  public void testOnActivityResult_requestCodeNotCorrect() {
+    Mockito.doNothing().when(spy).showSnackbar(anyString());
+    spy.onActivityResult(123, 0, null);
+  }
 
 }
