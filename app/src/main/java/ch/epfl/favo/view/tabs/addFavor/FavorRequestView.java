@@ -240,8 +240,9 @@ public class FavorRequestView extends Fragment {
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           editFavorBtn.setEnabled(false);
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+
           cancelFavorBtn.setEnabled(false);
           break;
         }
