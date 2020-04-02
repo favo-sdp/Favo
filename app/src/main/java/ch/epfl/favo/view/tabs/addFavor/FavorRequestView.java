@@ -224,12 +224,11 @@ public class FavorRequestView extends Fragment {
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus() {
     mStatusView.setText(currentFavor.getStatusId().getPrettyString());
+    enableUploadImageButtons(false); // should move this to somewhere else
     switch (currentFavor.getStatusId()) {
       case REQUESTED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          addPictureFromFilesBtn.setEnabled(false);
-          addPictureFromCameraBtn.setEnabled(false);
           break;
         }
       case ACCEPTED:
@@ -237,17 +236,13 @@ public class FavorRequestView extends Fragment {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           editFavorBtn.setEnabled(false);
           cancelFavorBtn.setEnabled(true);
-          addPictureFromFilesBtn.setEnabled(false);
-          addPictureFromCameraBtn.setEnabled(false);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           editFavorBtn.setEnabled(false);
           cancelFavorBtn.setEnabled(false);
-          addPictureFromFilesBtn.setEnabled(false);
-          addPictureFromCameraBtn.setEnabled(false);
           break;
         }
       default:
@@ -255,9 +250,14 @@ public class FavorRequestView extends Fragment {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
           editFavorBtn.setText(R.string.edit_favor);
           cancelFavorBtn.setEnabled(false);
-          addPictureFromFilesBtn.setEnabled(false);
-          addPictureFromCameraBtn.setEnabled(false);
         }
+    }
+  }
+
+  private void enableUploadImageButtons(boolean setEnabled) {
+    addPictureFromFilesBtn.setEnabled(setEnabled);
+    if (isCameraAvailable()) {
+      addPictureFromCameraBtn.setEnabled(setEnabled);
     }
   }
 

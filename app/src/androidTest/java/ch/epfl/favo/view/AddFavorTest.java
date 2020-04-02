@@ -196,26 +196,28 @@ public class AddFavorTest {
     fakeFavor.updateStatus(Favor.Status.ACCEPTED);
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
+    checkAcceptedView(fakeFavor);
+    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
+    runOnUiThread(() -> fragment.displayFavorInfo());
+    getInstrumentation().waitForIdleSync();
+    checkCompletedView(fakeFavor);
+  }
+
+  public void checkCompletedView(Favor fakeFavor) {
+    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.favor_status_text))
+        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+  }
+
+  public void checkAcceptedView(Favor fakeFavor) {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
-    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
-    runOnUiThread(
-        new Runnable() {
-          @Override
-          public void run() {
-            fragment.displayFavorInfo();
-          }
-        });
-    getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.favor_status_text))
         .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
   }
 
