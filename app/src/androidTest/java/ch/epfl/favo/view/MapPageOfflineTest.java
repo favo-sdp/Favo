@@ -57,10 +57,11 @@ public class MapPageOfflineTest {
 
   @Test
   public void testOfflineMapSupport() throws InterruptedException {
-    Thread.sleep(2000);
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
 
     // check snackbar shows
-    onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
+    //onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
 
     // click on snackbar action button
     onView(withText(R.string.offline_mode_action)).perform(click());
@@ -76,10 +77,11 @@ public class MapPageOfflineTest {
 
   @Test
   public void testOfflineMapSupport_ClickLink() throws InterruptedException {
-    Thread.sleep(2000);
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
 
     // check snackbar shows
-    onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
+    //onView(withText(R.string.offline_mode_snack)).check(matches(isDisplayed()));
 
     // click on snackbar action button
     onView(withText(R.string.offline_mode_action)).perform(click());
