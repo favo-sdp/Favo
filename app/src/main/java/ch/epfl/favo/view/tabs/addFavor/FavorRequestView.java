@@ -163,7 +163,7 @@ public class FavorRequestView extends Fragment {
     FavorUtil.getSingleInstance().postFavor(currentFavor);
 
     // Save the favor to local favorList
-    updateMainActivityLists();
+    updateMainActivityLists(true);
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
@@ -196,7 +196,7 @@ public class FavorRequestView extends Fragment {
   private void confirmUpdatedFavor() {
     getFavorFromView(Favor.Status.REQUESTED);
     // update lists
-    updateMainActivityLists();
+    updateMainActivityLists(true);
     updateViewFromStatus(getView());
     // TODO: add db call
     showSnackbar(getString(R.string.favor_edit_success_msg));
@@ -205,33 +205,23 @@ public class FavorRequestView extends Fragment {
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
-    updateMainActivityLists();
+    updateMainActivityLists(false);
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_cancel_success_msg));
     // TODO: insert db call
   }
 
-  private void updateMainActivityLists() {
+  private void updateMainActivityLists(boolean favorIsActive) {
     MainActivity mainActivity = (MainActivity) getActivity();
     assert mainActivity != null;
-    switch (currentFavor.getStatusId()) {
-      case EDIT:
-        break;
-      case ACCEPTED:
-        {
-        }
-      case REQUESTED:
-        {
-          mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
-          mainActivity.archivedFavors.remove(currentFavor.getId());
-          break;
-        }
-      default:
-        {
-          mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
-          mainActivity.activeFavors.remove(currentFavor.getId());
-        }
+    if (favorIsActive){
+      mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
+      mainActivity.activeFavors.remove(currentFavor.getId());
+    }
+    else{
+      mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
+      mainActivity.archivedFavors.remove(currentFavor.getId());
     }
   }
 
