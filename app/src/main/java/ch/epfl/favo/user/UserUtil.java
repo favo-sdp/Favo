@@ -1,14 +1,8 @@
 package ch.epfl.favo.user;
 
 import android.location.Location;
-import android.util.Log;
-
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
@@ -33,15 +27,18 @@ public class UserUtil {
   }
 
   /**
-   * @param user A user object.
-   * @throws RuntimeException Unable to post to DB.
+   * @param user Corresponds to user in db.
+   * @param pw Corresponds to their password in db.
+   * @throws IllegalArgumentException Should check for invalid inputs.
+   * @throws NotImplementedException Temporary exception while we implement.
    */
-  public void postAccount(User user) throws RuntimeException {
-    try {
-      collection.addDocument(user);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to add document to db.");
-    }
+  public void createAccount(String user, String pw)
+      throws IllegalArgumentException, NotImplementedException {
+    /*
+    TODO: Use Firebase API to fetch user data. \
+     Upload it to DB and return to welcome screen for login
+     */
+    throw new NotImplementedException();
   }
 
   /**
@@ -74,27 +71,5 @@ public class UserUtil {
   public ArrayList<User> retrieveOtherUsersInGivenRadius(Location loc, double radius) {
 
     throw new NotImplementedException();
-  }
-
-  /**
-   * Retrieves current registration token for the notification system.
-   *
-   * @param user A user object.
-   */
-  public void retrieveUserRegistrationToken(User user) {
-    FirebaseInstanceId.getInstance()
-        .getInstanceId()
-        .addOnCompleteListener(
-            task -> {
-              if (!task.isSuccessful()) {
-                return;
-              }
-              String token = Objects.requireNonNull(task.getResult()).getToken();
-              user.setNotificationId(token);
-
-              Map<String, String> notifMap = new HashMap<String, String>();
-              notifMap.put("notificationId", token);
-              collection.updateDocument(user.getId(), notifMap);
-            });
   }
 }

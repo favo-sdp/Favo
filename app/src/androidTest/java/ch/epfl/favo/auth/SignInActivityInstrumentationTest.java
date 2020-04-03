@@ -27,4 +27,9 @@ public class SignInActivityInstrumentationTest {
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
   }
+
+  @Test
+  public void testGenerateNotificationToken() {
+    mActivityRule.getActivity().retrieveCurrentRegistrationToken();
+  }
 }

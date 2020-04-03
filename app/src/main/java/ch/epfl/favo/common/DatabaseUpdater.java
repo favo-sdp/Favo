@@ -1,6 +1,5 @@
 package ch.epfl.favo.common;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public interface DatabaseUpdater<T> {

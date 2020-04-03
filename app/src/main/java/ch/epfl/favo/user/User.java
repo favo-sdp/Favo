@@ -27,7 +27,14 @@ public class User implements Document {
 
   public User() {}
 
-  public User(String name, String email, String deviceId, LocalDate birthDate, Location location) {
+  public User(
+      String name,
+      String email,
+      String deviceId,
+      LocalDate birthDate,
+      Location location,
+      int activeAcceptingFavors,
+      int activeRequestingFavors) {
     this.id = DatabaseWrapper.generateRandomId();
     this.name = name;
     this.email = email;
@@ -35,8 +42,8 @@ public class User implements Document {
     this.notificationId = null;
     this.birthDate = birthDate;
     this.location = location;
-    this.activeAcceptingFavors = 0;
-    this.activeRequestingFavors = 0;
+    this.activeAcceptingFavors = activeAcceptingFavors;
+    this.activeRequestingFavors = activeRequestingFavors;
   }
 
   // Getters
