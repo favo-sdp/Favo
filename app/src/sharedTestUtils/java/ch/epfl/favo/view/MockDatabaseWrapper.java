@@ -10,7 +10,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   private T mockDocument;
 
-  MockDatabaseWrapper() {}
+  public MockDatabaseWrapper() {}
 
   @Override
   public void addDocument(T favor) {}

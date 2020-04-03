@@ -5,18 +5,22 @@ import android.location.Location;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 
 import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.TestUtil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -99,16 +103,19 @@ public class UserUnitTests {
   }
 
   @Test
-  public void userNameIsValid() {
-    User user = new User();
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            UserUtil.getSingleInstance().postAccount(user);
-          }
-        });
+  public void userSuccessfullyPostsToDB() {
+    CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
+    Mockito.doNothing().when(mock).addDocument(any(User.class));
+
+    String name = TestConstants.NAME;
+    String email = TestConstants.EMAIL;
+    String deviceId = TestConstants.DEVICE_ID;
+    Location location = TestConstants.LOCATION;
+
+    User user = new User(name, email, deviceId, null, location);
+    UserUtil.getSingleInstance().postAccount(user);
+
+    assertNotNull(user);
   }
 
   @Test
