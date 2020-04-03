@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
