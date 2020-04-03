@@ -30,27 +30,14 @@ public class FavorUtil {
    * Allows user to post a favor with a title, description and location.
    *
    * @param favor A favor object.
+   * @throws RuntimeException Unable to post to DB.
    */
-  public void postFavor(Favor favor) {
+  public void postFavor(Favor favor) throws RuntimeException {
 
     try {
       collection.addDocument(favor);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
-    }
-  }
-  public static void updateFavor(Favor favor){
-    try{
-      collection.updateDocument(favor);
-    } catch(RuntimeException e){
-      Log.d(TAG,"unable to update document to db");
-    }
-  }
-  public static void removeFavor(Favor favor){
-    try{
-      collection.removeDocument(favor.getId());
-    } catch (RuntimeException e){
-      Log.d(TAG,"unable to remove document from db");
     }
   }
 
