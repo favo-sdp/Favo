@@ -96,11 +96,7 @@ public class FirebaseMessagingServiceTest {
     title.click();
     getInstrumentation().waitForIdleSync();
     //    // check that tab 2 is indeed opened
-    onView(
-            allOf(
-                withId(R.id.fragment_favor_accept_view),
-                withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   private Bundle generateBundle() {
