@@ -5,13 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.fragment.app.Fragment;
 
@@ -27,7 +25,6 @@ import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
-
 /**
  * View will contain list of favors requested in the past. The list will contain clickable items
  * that will expand to give more information about them. This object is a simple {@link Fragment}
@@ -72,41 +69,54 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
     setupSpinner();
 
-
     SearchView searchView = rootView.findViewById(R.id.searchView);
-    searchView.setOnClickListener(this);
+    searchView.setOnSearchClickListener(this);
+    searchView.setSubmitButtonEnabled(true);
+    searchView.setOnCloseListener(new onCloseListener());
     searchView.bringToFront();
     CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), rootView);
-    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-      @Override
-      public boolean onQueryTextSubmit(String query) {
-        ArrayList<Favor> favorsFound = new ArrayList<>();
-        for(Favor favor : activeFavors.values()){
-          if(favor.getTitle().contains(query) || favor.getDescription().contains(query))
-            favorsFound.add(favor);
-        }
-        for(Favor favor : archivedFavors.values()){
-          if(favor.getTitle().contains(query) || favor.getDescription().contains(query))
-            favorsFound.add(favor);
-        }
-        listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
-        //if(!favorsFound.isEmpty())
-        //  listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
-        if(favorsFound.isEmpty())
-          Toast.makeText(getActivity(), "No Match found",Toast.LENGTH_LONG).show();
-        return false;
-      }
-
-      @Override
-      public boolean onQueryTextChange(String newText) {
-        //    adapter.getFilter().filter(newText);
-        ArrayList<Favor> favorsFound = new ArrayList<>();
-        listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
-        return false;
-      }
-    });
+    searchView.setOnQueryTextListener(new onQuery());
     return rootView;
+  }
+
+  private ArrayList<Favor> doQuery(String query, Map<String, Favor> searchScope){
+    ArrayList<Favor> favorsFound = new ArrayList<>();
+    for(Favor favor : searchScope.values()){
+      if(favor.getTitle().contains(query) || favor.getDescription().contains(query))
+        favorsFound.add(favor);
+    }
+    return favorsFound;
+  }
+
+
+  private class onCloseListener implements SearchView.OnCloseListener{
+
+    @Override
+    public boolean onClose() {
+      
+      return false;
+    }
+  }
+
+  private class onQuery implements SearchView.OnQueryTextListener {
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+      ArrayList<Favor> favorsFound;
+      favorsFound = doQuery(query, activeFavors);
+      favorsFound.addAll(doQuery(query, archivedFavors));
+      listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
+      if(favorsFound.isEmpty())
+        Toast.makeText(getActivity(), "No Match found",Toast.LENGTH_LONG).show();
+      return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+      //    adapter.getFilter().filter(newText);
+      ArrayList<Favor> favorsFound = new ArrayList<>();
+      listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
+      return false;
+    }
   }
 
 
