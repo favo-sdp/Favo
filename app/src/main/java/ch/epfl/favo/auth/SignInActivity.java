@@ -1,6 +1,7 @@
 package ch.epfl.favo.auth;
 
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -13,7 +14,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,11 +22,15 @@ import java.util.Objects;
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class SignInActivity extends AppCompatActivity {
 
   private static final int RC_SIGN_IN = 123;
+  private Locator mGpsTracker;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,10 @@ public class SignInActivity extends AppCompatActivity {
 
     // check for google play services and make request if not present
     checkPlayServices();
+
+    // initialize location library
+    mGpsTracker =
+        DependencyFactory.getCurrentGpsTracker(Objects.requireNonNull(getApplicationContext()));
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
@@ -132,32 +140,14 @@ public class SignInActivity extends AppCompatActivity {
       String name = currentUser.getDisplayName();
       String email = currentUser.getEmail();
       Uri photo = currentUser.getPhotoUrl();
+      Location loc = mGpsTracker.getLocation();
       String deviceId = currentUser.getUid();
+      User user = new User(name, email, deviceId, null, loc);
 
-      // TODO post user data to the db
-
-      retrieveCurrentRegistrationToken();
+      UserUtil.getSingleInstance().postAccount(user);
+      UserUtil.getSingleInstance().retrieveUserRegistrationToken(user);
 
       startMainActivity();
     }
-  }
-
-  // retrieve current registration token for the notification system
-  void retrieveCurrentRegistrationToken() {
-    FirebaseInstanceId.getInstance()
-        .getInstanceId()
-        .addOnCompleteListener(
-            task -> {
-              if (!task.isSuccessful()) {
-                return;
-              }
-
-              // Get new Instance ID token
-              String token = Objects.requireNonNull(task.getResult()).getToken();
-              // Log.d("SignInActivity", getString(R.string.msg_token_fmt, token));
-
-              // TODO post notificationId to the db
-              // just set the notificationId property for the current user and then sync the db
-            });
   }
 }

@@ -30,8 +30,9 @@ public class FavorUtil {
    * Allows user to post a favor with a title, description and location.
    *
    * @param favor A favor object.
+   * @throws RuntimeException Unable to post to DB.
    */
-  public void postFavor(Favor favor) {
+  public void postFavor(Favor favor) throws RuntimeException {
 
     try {
       collection.addDocument(favor);
