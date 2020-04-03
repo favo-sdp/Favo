@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -40,17 +41,14 @@ public class FavorAndroidTest {
 
   @Test
   public void favorGettersReturnCorrectValuesByParcelable() {
-    String title = "Flat tire";
-    String description = "Tiire popped while turning left on Avenue Rhodanie";
-    String requesterId = "2362489";
-    Location location = new Location("Dummy provider");
-    int statusId = 0;
 
-    Favor favor = new Favor(title, description, requesterId, location, statusId);
+
+    Favor favor = FakeItemFactory.getFavor();
     int flag = 0;
     Parcel parcel = Parcel.obtain();
     favor.writeToParcel(parcel, flag);
     Favor favorNew = Favor.CREATOR.createFromParcel(parcel);
+    //Assert.assertEquals(F)
     // assertEquals(title, favorNew.getTitle());
     // assertEquals(description, favorNew.getDescription());
     // assertEquals(requesterId, favorNew.getRequesterId());

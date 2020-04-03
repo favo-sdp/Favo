@@ -3,9 +3,11 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
+import ch.epfl.favo.common.NotImplementedException;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -41,6 +43,11 @@ public class User implements Document {
   @Override
   public String getId() {
     return id;
+  }
+
+  @Override
+  public Map<String, Object> toMap() {
+    return null;
   }
 
   public String getName() {
