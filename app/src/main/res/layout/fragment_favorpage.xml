@@ -19,7 +19,7 @@
             android:id="@+id/new_favor"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="55dp"
+            android:layout_marginBottom="@dimen/margin_bottom_button"
             android:onClick="onClick"
             android:text="@string/new_favor"
             app:layout_constraintBottom_toBottomOf="parent"
