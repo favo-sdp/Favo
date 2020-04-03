@@ -12,12 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:backgroundTint="#FFFFFF"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:backgroundTint="#4CAF50"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/ic_about"
+        android:src="@drawable/ic_info_outline_24dp"
         android:visibility="invisible"
-        app:backgroundTint="#FFFFFF" />
+        app:backgroundTint="#4CAF50" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
