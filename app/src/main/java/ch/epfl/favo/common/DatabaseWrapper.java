@@ -2,6 +2,9 @@ package ch.epfl.favo.common;
 
 import android.annotation.SuppressLint;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -70,17 +73,39 @@ public class DatabaseWrapper {
 
   static <T extends Document> CompletableFuture<T> getDocument(
       String key, Class<T> cls, String collection) throws RuntimeException {
-    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
-    CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
 
-    return getFuture.thenApply(
-        documentSnapshot -> {
+    CompletableFuture<T> future = new CompletableFuture<>();
+
+    getCollectionReference(collection)
+      .document(key)
+      .get()
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          DocumentSnapshot documentSnapshot = task.getResult();
           if (documentSnapshot.exists()) {
-            return documentSnapshot.toObject(cls);
+            future.complete(documentSnapshot.toObject(cls));
           } else {
-            throw new RuntimeException(String.format("Document %s does not exist ", key));
+            future.completeExceptionally(new RuntimeException("document does not exist"));
           }
-        });
+        } else {
+          future.completeExceptionally(new RuntimeException("firebase error"));
+        }
+
+      });
+
+    return future;
+
+//    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
+//    CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask);
+//
+//    return getFuture.thenApply(
+//        documentSnapshot -> {
+//          if (documentSnapshot.exists()) {
+//            return documentSnapshot.toObject(cls);
+//          } else {
+//            throw new RuntimeException(String.format("Document %s does not exist ", key));
+//          }
+//        });
   }
 
   static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
@@ -100,5 +125,28 @@ public class DatabaseWrapper {
 
   private static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);
+  }
+
+  public interface DocumentCallback<T> {
+    void onCallback(T value);
+  }
+
+  public static <T extends Document> void getDocumentCallback(
+    String key, Class<T> cls, String collection, DocumentCallback callback) throws RuntimeException {
+    getCollectionReference(collection)
+      .document(key)
+      .get()
+      .addOnCompleteListener(task -> {
+        if (task.isSuccessful()) {
+          DocumentSnapshot documentSnapshot = task.getResult();
+          if (documentSnapshot.exists()) {
+            callback.onCallback(documentSnapshot.toObject(cls));
+          } else {
+            throw new RuntimeException("document does not exist");
+          }
+        } else {
+          throw new RuntimeException("firebase error");
+        }
+      });
   }
 }
