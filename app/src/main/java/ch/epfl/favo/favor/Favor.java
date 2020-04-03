@@ -10,6 +10,7 @@ import java.util.Map;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
+import ch.epfl.favo.common.FavoLocation;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
@@ -62,14 +63,14 @@ public class Favor implements Parcelable, Document {
   private String description;
   private String requesterId;
   private String accepterId;
-  private Location location;
+  private FavoLocation location;
   private Date postedTime;
   private Status statusId;
 
   public Favor() {}
 
   public Favor(
-      String title, String description, String requesterId, Location location, Status statusId) {
+      String title, String description, String requesterId, FavoLocation location, Status statusId) {
     String id = DatabaseWrapper.generateRandomId();
     setId(id);
     this.title = title;
@@ -92,7 +93,7 @@ public class Favor implements Parcelable, Document {
     this.description = (String) map.get(DESCRIPTION);
     this.requesterId = (String) map.get(REQUESTER_ID);
     this.accepterId = (String) map.get(ACCEPTER_ID);
-    this.location = (Location) map.get(LOCATION);
+    this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
     this.statusId = (Status) map.get(STATUS_ID);
   }
@@ -178,11 +179,11 @@ public class Favor implements Parcelable, Document {
     this.statusId = statusId;
   }
 
-  public Location getLocation() {
+  public FavoLocation getLocation() {
     return location;
   }
 
-  void setLocation(Location location) {
+  void setLocation(FavoLocation location) {
     this.location = location;
   }
 

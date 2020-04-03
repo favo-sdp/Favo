@@ -34,7 +34,8 @@ public class DatabaseWrapper {
       firestore = FirebaseFirestore.getInstance();
       firestore.setFirestoreSettings(settings);
     } catch (Exception e) {
-      throw e;
+      e.printStackTrace();
+      throw new RuntimeException("Failed to initialize FirebaseFirestore");
     }
   }
 

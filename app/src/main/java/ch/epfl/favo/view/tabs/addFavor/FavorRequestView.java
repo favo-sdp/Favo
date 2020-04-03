@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.KeyListener;
@@ -26,6 +25,7 @@ import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
@@ -277,7 +277,7 @@ public class FavorRequestView extends Fragment {
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
-    Location loc = mGpsTracker.getLocation();
+    FavoLocation loc = (FavoLocation) mGpsTracker.getLocation();
     Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
     if (currentFavor == null) {
       currentFavor = favor;
