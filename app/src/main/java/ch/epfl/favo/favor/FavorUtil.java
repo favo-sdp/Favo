@@ -40,20 +40,6 @@ public class FavorUtil {
       Log.d(TAG, "unable to add document to db.");
     }
   }
-  public static void updateFavor(Favor favor){
-    try{
-      collection.updateDocument(favor);
-    } catch(RuntimeException e){
-      Log.d(TAG,"unable to update document to db");
-    }
-  }
-  public static void removeFavor(Favor favor){
-    try{
-      collection.removeDocument(favor.getId());
-    } catch (RuntimeException e){
-      Log.d(TAG,"unable to remove document from db");
-    }
-  }
 
   /**
    * Returns all the favors for a given user (accepted + requested)

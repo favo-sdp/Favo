@@ -196,7 +196,6 @@ public class FavorRequestView extends Fragment {
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
     getFavorFromView();
-    FavorUtil.updateFavor(currentFavor);
     // update lists
     ((MainActivity) Objects.requireNonNull(getActivity()))
         .activeFavors.put(currentFavor.getId(), currentFavor);
@@ -209,7 +208,6 @@ public class FavorRequestView extends Fragment {
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
-    FavorUtil.updateFavor(currentFavor);
     MainActivity mainActivity = (MainActivity) getActivity();
     assert mainActivity != null;
     mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
