@@ -101,27 +101,31 @@ public class MainActivity extends AppCompatActivity
 
     // check connection
     if (DependencyFactory.isOfflineMode(this)) {
-      Snackbar snack =
-          Snackbar.make(
-              findViewById(android.R.id.content).getRootView(),
-              "No internet connection",
-              Snackbar.LENGTH_LONG);
-      View view = snack.getView();
-      snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
-      FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-      params.gravity = Gravity.TOP;
-      params.setMargins(
-          params.leftMargin,
-          params.topMargin + 60,
-          params.rightMargin,
-          params.bottomMargin);
-      view.setLayoutParams(params);
-      snack.show();
+      showNoConnectionSnackbar();
     }
 
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
+  }
+
+  private void showNoConnectionSnackbar() {
+    Snackbar snack =
+        Snackbar.make(
+            findViewById(android.R.id.content).getRootView(),
+            "No internet connection",
+            Snackbar.LENGTH_LONG);
+    View view = snack.getView();
+    snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
+    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+    params.gravity = Gravity.TOP;
+    params.setMargins(
+        params.leftMargin,
+        params.topMargin + 60,
+        params.rightMargin,
+        params.bottomMargin);
+    view.setLayoutParams(params);
+    snack.show();
   }
 
   private void setUpHamburgerMenuButton() {
