@@ -22,7 +22,6 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
