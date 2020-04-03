@@ -21,10 +21,8 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.view.ViewController;
@@ -70,6 +68,7 @@ public class MainActivity extends AppCompatActivity
   //    archivedFavorArrayList.add(favor);
   //  }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -105,21 +104,6 @@ public class MainActivity extends AppCompatActivity
     // FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
     archivedFavorArrayList = new ArrayList<>();
 
-//    DatabaseWrapper.getDocumentCallback(
-//      "1NRRZCJUVHHG71RJTNPGDLIBV",
-//      Favor.class,
-//      "favors",
-//      value -> {
-//        System.out.println(((Favor) value).getTitle());
-//      });
-
-    CollectionWrapper<Favor> collection = new CollectionWrapper<>("favors", Favor.class);
-    try {
-      Favor favor = collection.getDocument("1NRRZCJUVHHG71RJTNPGDLIBV").get();
-      System.out.println(favor.getTitle());
-    } catch (ExecutionException | InterruptedException e) {
-      e.printStackTrace();
-    }
   }
 
   private void setUpHamburgerMenuButton() {
