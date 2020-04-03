@@ -17,7 +17,7 @@
         android:backgroundTint="#4CAF50"
         android:clickable="true"
         android:focusable="true"
-        android:src="@drawable/ic_info_outline_24dp"
+        android:src="@drawable/ic_sync_problem_48dp"
         android:visibility="invisible"
         app:backgroundTint="#4CAF50" />
 
