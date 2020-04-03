@@ -57,11 +57,13 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport() {
+  public void testOfflineMapSupport() throws InterruptedException {
     //getInstrumentation().waitForIdleSync();
 
     // check button is visible
     //onView(withId(R.id.offline_map_button)).check(matches(isDisplayed()));
+
+    Thread.sleep(5000);
 
     // click on button
     onView(withId(R.id.offline_map_button)).perform(click());
@@ -76,11 +78,13 @@ public class MapPageOfflineTest {
   }
 
   @Test
-  public void testOfflineMapSupport_ClickLink() {
+  public void testOfflineMapSupport_ClickLink() throws InterruptedException {
     //getInstrumentation().waitForIdleSync();
 
     // check button is visible
     //onView(withId(R.id.offline_map_button)).check(matches(isDisplayed()));
+
+    Thread.sleep(5000);
 
     // click on button
     onView(withId(R.id.offline_map_button)).perform(click());
