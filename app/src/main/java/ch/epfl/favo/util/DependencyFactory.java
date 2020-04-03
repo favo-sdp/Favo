@@ -22,10 +22,21 @@ public class DependencyFactory {
   private static DatabaseUpdater currentDatabaseUpdater;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
+  private static boolean offlineMode = false;
   private static boolean testMode = false;
 
+
+  public static boolean isOfflineMode(Context context) {
+    return offlineMode || CommonTools.isOffline(context);
+  }
+
+  @VisibleForTesting
+  public static void setOfflineMode(boolean value) {
+    offlineMode = value;
+  }
+
   public static FirebaseUser getCurrentFirebaseUser() {
-    if (testMode && currentUser != null) {
+    if (testMode) {
       return currentUser;
     }
     return FirebaseAuth.getInstance().getCurrentUser();

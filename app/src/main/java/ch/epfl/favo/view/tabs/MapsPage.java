@@ -1,18 +1,22 @@
 package ch.epfl.favo.view.tabs;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -26,6 +30,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +40,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
@@ -66,8 +72,37 @@ public class MapsPage extends Fragment
     setupView();
     mMap = googleMap;
     mMap.clear();
+
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+      Objects.requireNonNull(getView())
+          .findViewById(R.id.offline_map_button)
+          .setVisibility(View.VISIBLE);
+    } else {
+      Objects.requireNonNull(getView())
+              .findViewById(R.id.offline_map_button)
+              .setVisibility(View.INVISIBLE);
+    }
+
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
+  }
+
+  private void onOfflineMapClick(View view) {
+    new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+        .setTitle(R.string.offline_mode_dialog_title)
+        .setMessage(R.string.offline_mode_instructions)
+        .setPositiveButton(android.R.string.yes, null)
+        .setNeutralButton(
+            R.string.offline_mode_dialog_link,
+            (dialogInterface, i) -> {
+              Intent browserIntent =
+                  new Intent(
+                      Intent.ACTION_VIEW,
+                      Uri.parse(
+                          "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
+              startActivity(browserIntent);
+            })
+        .show();
   }
 
   private void setupView() {
@@ -83,7 +118,12 @@ public class MapsPage extends Fragment
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
-    return inflater.inflate(R.layout.tab1_map, container, false);
+    View view = inflater.inflate(R.layout.tab1_map, container, false);
+
+    FloatingActionButton button = view.findViewById(R.id.offline_map_button);
+    button.setOnClickListener(this::onOfflineMapClick);
+
+    return view;
   }
 
   @Override

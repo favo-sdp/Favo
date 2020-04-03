@@ -41,7 +41,7 @@ public class SignInActivityTest {
 
   @Test
   public void testOnActivityResult_resultOk() {
-    Mockito.doNothing().when(spy).retrieveCurrentRegistrationToken();
+//    Mockito.doNothing().when(spy).retrieveCurrentRegistrationToken();
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, null));
     spy.onActivityResult(123, RESULT_OK, null);
   }

@@ -3,8 +3,10 @@ package ch.epfl.favo;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 
@@ -18,6 +20,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +29,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
@@ -94,9 +99,33 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
+    // check connection
+    if (DependencyFactory.isOfflineMode(this)) {
+      showNoConnectionSnackbar();
+    }
+
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
+  }
+
+  private void showNoConnectionSnackbar() {
+    Snackbar snack =
+        Snackbar.make(
+            findViewById(android.R.id.content).getRootView(),
+            "No internet connection",
+            Snackbar.LENGTH_LONG);
+    View view = snack.getView();
+    snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
+    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+    params.gravity = Gravity.TOP;
+    params.setMargins(
+        params.leftMargin,
+        params.topMargin + 60,
+        params.rightMargin,
+        params.bottomMargin);
+    view.setLayoutParams(params);
+    snack.show();
   }
 
   private void setUpHamburgerMenuButton() {

@@ -35,7 +35,6 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -56,8 +55,6 @@ public class FavorPageTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-  private MainActivity mActivity;
-
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
@@ -75,9 +72,11 @@ public class FavorPageTest {
     onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
-    onView(withId(R.id.new_favor)).check(matches(isDisplayed()));
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
+    getInstrumentation().waitForIdleSync();
+
+    // onView(withId(R.id.favor_list)).check(matches(isDisplayed()));
 
     onView(withId(R.id.spinner)).perform(click());
     onData(allOf(is(instanceOf(String.class)), is("Archived"))).perform(click());
@@ -127,7 +126,7 @@ public class FavorPageTest {
         .check(matches(isDisplayed()));
 
     // check that the new favor button is displayed and click on it
-    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check that the favor request fragment is displayed
@@ -141,7 +140,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on new favor tab
-    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Fill in text views with fake favor
@@ -169,7 +168,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on new favor tab
-    onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Fill in text views with fake favor
