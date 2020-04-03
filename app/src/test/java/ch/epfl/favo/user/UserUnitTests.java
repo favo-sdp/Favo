@@ -46,18 +46,15 @@ public class UserUnitTests {
     String deviceId = TestConstants.DEVICE_ID;
     LocalDate birthDate = LocalDate.of(1994, 11, 8);
     Location location = TestConstants.LOCATION;
-    int acceptedFavors = 2;
-    int requestedFavors = 3;
 
-    User user =
-        new User(name, email, deviceId, birthDate, location, acceptedFavors, requestedFavors);
+    User user = new User(name, email, deviceId, birthDate, location);
 
     assertEquals(name, user.getName());
     assertEquals(email, user.getEmail());
     assertEquals(deviceId, user.getDeviceId());
     assertEquals(birthDate, user.getBirthDate());
-    assertEquals(acceptedFavors, user.getActiveAcceptingFavors());
-    assertEquals(requestedFavors, user.getActiveRequestingFavors());
+    assertEquals(0, user.getActiveAcceptingFavors());
+    assertEquals(0, user.getActiveRequestingFavors());
 
     // field should initialize null and populate later
     assertNull(user.getNotificationId());
@@ -103,14 +100,13 @@ public class UserUnitTests {
 
   @Test
   public void userNameIsValid() {
-    String username = TestConstants.USERNAME;
-    String pw = TestConstants.PASSWORD;
+    User user = new User();
     assertThrows(
         NotImplementedException.class,
         new ThrowingRunnable() {
           @Override
           public void run() throws Throwable {
-            UserUtil.getSingleInstance().createAccount(username, pw);
+            UserUtil.getSingleInstance().postAccount(user);
           }
         });
   }
