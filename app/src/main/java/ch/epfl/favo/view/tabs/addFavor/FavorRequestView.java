@@ -106,6 +106,10 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn = rootView.findViewById(R.id.request_button);
     confirmFavorBtn.setOnClickListener(v -> requestFavor());
 
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+      confirmFavorBtn.setText(R.string.request_favor_draft);
+    }
+
     // Button: Add Image from files
     addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
     addPictureFromFilesBtn.setOnClickListener(v -> openFileChooser());
@@ -162,7 +166,11 @@ public class FavorRequestView extends Fragment {
         .activeFavors.put(currentFavor.getId(), currentFavor);
 
     // Show confirmation and minimize keyboard
-    showSnackbar(getString(R.string.favor_request_success_msg));
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+      showSnackbar(getString(R.string.save_draft_message));
+    } else {
+      showSnackbar(getString(R.string.favor_request_success_msg));
+    }
     hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     setFavorActivatedView(getView());
@@ -275,7 +283,6 @@ public class FavorRequestView extends Fragment {
     } else {
       currentFavor.updateToOther(favor);
     }
-    return;
   }
 
   /**

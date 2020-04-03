@@ -12,12 +12,10 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
@@ -120,8 +118,7 @@ public class SignInActivity extends AppCompatActivity {
 
     checkPlayServices();
 
-    FirebaseAuth auth = FirebaseAuth.getInstance();
-    if (auth.getCurrentUser() != null && getIntent().getExtras() == null) {
+    if (DependencyFactory.getCurrentFirebaseUser() != null && getIntent().getExtras() == null) {
       startMainActivity();
     }
   }
@@ -135,6 +132,7 @@ public class SignInActivity extends AppCompatActivity {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
+
 
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String name = currentUser.getDisplayName();

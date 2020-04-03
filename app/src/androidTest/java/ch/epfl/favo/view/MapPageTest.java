@@ -35,10 +35,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 public class MapPageTest {
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
-      new ActivityTestRule<MainActivity>(MainActivity.class) {
-        @Override
-        protected void beforeActivityLaunched() {}
-      };
+      new ActivityTestRule<MainActivity>(MainActivity.class);
 
   @Rule
   public GrantPermissionRule permissionRule =

@@ -1,4 +1,5 @@
 package ch.epfl.favo.notifications;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -7,14 +8,19 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
 import com.google.firebase.messaging.RemoteMessage;
+
 import java.util.Objects;
 import java.util.Random;
+
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+
 public class FirebaseMessagingService
         extends com.google.firebase.messaging.FirebaseMessagingService {
     // private static final String TAG = "MyFirebaseMsgService";
