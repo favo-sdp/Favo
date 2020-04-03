@@ -18,6 +18,9 @@ public class UserUtil {
   /*
   TODO: Design singleton constructor and logic
    */
+  // Expose current logged in user id
+  public static String currentUserId = "currentUserId";
+
   // Single private instance
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
@@ -39,6 +42,7 @@ public class UserUtil {
   public void postAccount(User user) throws RuntimeException {
     try {
       collection.addDocument(user);
+      currentUserId = user.getId();
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }
