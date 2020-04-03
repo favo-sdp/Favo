@@ -30,7 +30,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
-import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
@@ -82,18 +81,17 @@ public class FavorRequestView extends Fragment {
 
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
-      displayFavorInfo();
+      displayFavorInfo(rootView);
       setFavorActivatedView(rootView);
     }
     return rootView;
   }
 
   /** When fragment is launched with favor. */
-  public void displayFavorInfo() {
+  public void displayFavorInfo(View v) {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(currentFavor.getStatusId().toString());
-    updateViewFromStatus();
   }
 
   /**
@@ -130,11 +128,11 @@ public class FavorRequestView extends Fragment {
     editFavorBtn = rootView.findViewById(R.id.edit_favor_button);
     editFavorBtn.setOnClickListener(
         v -> {
-          // if text is currently "Edit Request"
-          if (editFavorBtn.getText().toString().equals(getString(R.string.edit_favor))) {
-            startUpdatingFavor();
-          } else { // text is currently "Update Request"
+          // if text is currently "Update Request"
+          if (currentFavor.getStatusId() == Favor.Status.EDIT) {
             confirmUpdatedFavor();
+          } else { // text is currently "Edit Request"
+            startUpdatingFavor();
           }
         });
   }
@@ -159,12 +157,13 @@ public class FavorRequestView extends Fragment {
    * and updates view so that favor is editable.
    */
   private void requestFavor() {
-    getFavorFromView();
+    // update currentFavor
+    getFavorFromView(Favor.Status.REQUESTED);
+    // post to DB
     FavorUtil.getSingleInstance().postFavor(currentFavor);
 
     // Save the favor to local favorList
-    ((MainActivity) Objects.requireNonNull(getActivity()))
-        .activeFavors.put(currentFavor.getId(), currentFavor);
+    updateMainActivityLists();
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
@@ -172,11 +171,8 @@ public class FavorRequestView extends Fragment {
     } else {
       showSnackbar(getString(R.string.favor_request_success_msg));
     }
-    hideKeyboardFrom(Objects.requireNonNull(getContext()), getView());
 
     setFavorActivatedView(getView());
-
-    updateViewFromStatus();
   }
   /**
    * Once favor has been requested.
@@ -186,79 +182,111 @@ public class FavorRequestView extends Fragment {
   private void setFavorActivatedView(View v) {
     confirmFavorBtn.setVisibility(View.INVISIBLE);
     editFavorBtn.setVisibility(View.VISIBLE);
-    editFavorBtn.setText(getString(R.string.edit_favor));
     cancelFavorBtn.setVisibility(View.VISIBLE);
-    toggleTextViewsEditable(false);
-    updateViewFromStatus();
-    CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
+    updateViewFromStatus(v);
   }
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    cancelFavorBtn.setEnabled(true);
-    addPictureFromFilesBtn.setEnabled(true);
-    addPictureFromCameraBtn.setEnabled(true);
-    editFavorBtn.setText(R.string.confirm_favor_edit);
-    toggleTextViewsEditable(true);
+    currentFavor.updateStatus(Favor.Status.EDIT);
+    updateViewFromStatus(getView());
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
-    getFavorFromView();
+    getFavorFromView(Favor.Status.REQUESTED);
     // update lists
-    ((MainActivity) Objects.requireNonNull(getActivity()))
-        .activeFavors.put(currentFavor.getId(), currentFavor);
-    ((MainActivity) Objects.requireNonNull(getActivity()))
-        .archivedFavors.remove(currentFavor.getId());
-    setFavorActivatedView(getView());
+    updateMainActivityLists();
+    updateViewFromStatus(getView());
+    // TODO: add db call
     showSnackbar(getString(R.string.favor_edit_success_msg));
   }
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
-    MainActivity mainActivity = (MainActivity) getActivity();
-    assert mainActivity != null;
-    mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
-    mainActivity.activeFavors.remove(currentFavor.getId());
-    CommonTools.hideKeyboardFrom(
-        Objects.requireNonNull(getContext()), Objects.requireNonNull(getView()));
-    updateViewFromStatus();
+    updateMainActivityLists();
+    updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_cancel_success_msg));
+    // TODO: insert db call
+  }
+
+  private void updateMainActivityLists() {
+    MainActivity mainActivity = (MainActivity) getActivity();
+    assert mainActivity != null;
+    switch (currentFavor.getStatusId()) {
+      case EDIT:
+        break;
+      case ACCEPTED:
+        {
+        }
+      case REQUESTED:
+        {
+          mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
+          mainActivity.archivedFavors.remove(currentFavor.getId());
+          break;
+        }
+      default:
+        {
+          mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
+          mainActivity.activeFavors.remove(currentFavor.getId());
+        }
+    }
   }
 
   /** Updates status text and button visibility on favor status changes. */
-  private void updateViewFromStatus() {
+  private void updateViewFromStatus(View view) {
     mStatusView.setText(currentFavor.getStatusId().getPrettyString());
-    enableUploadImageButtons(false); // should move this to somewhere else
     switch (currentFavor.getStatusId()) {
       case REQUESTED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          editFavorBtn.setText(R.string.edit_favor);
+          updateViewFromParameters(view, false, true, false, true, true);
+          break;
+        }
+      case EDIT:
+        {
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.edit_status_bg));
+          editFavorBtn.setText(R.string.confirm_favor_edit);
+          updateViewFromParameters(view, true, false, true, true, true);
           break;
         }
       case ACCEPTED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
-          editFavorBtn.setEnabled(false);
-          cancelFavorBtn.setEnabled(true);
+          updateViewFromParameters(view, false, true, false, false, true);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          editFavorBtn.setEnabled(false);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
-
-          cancelFavorBtn.setEnabled(false);
+          updateViewFromParameters(view, false, true, false, false, false);
           break;
         }
-      default:
+      default: // cancelled
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
           editFavorBtn.setText(R.string.edit_favor);
-          cancelFavorBtn.setEnabled(false);
+          updateViewFromParameters(view, false, true, false, true, false);
         }
+    }
+  }
+
+  private void updateViewFromParameters(
+      View view,
+      boolean enableImageButtons,
+      boolean hideKeyboard,
+      boolean textEditable,
+      boolean editButtonEnabled,
+      boolean cancelButtonEnabled) {
+    enableUploadImageButtons(enableImageButtons);
+    toggleTextViewsEditable(textEditable);
+    editFavorBtn.setEnabled(editButtonEnabled);
+    cancelFavorBtn.setEnabled(cancelButtonEnabled);
+    if (hideKeyboard) {
+      hideKeyboardFrom(getContext(), view);
     }
   }
 
@@ -270,7 +298,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
-  private void getFavorFromView() {
+  private void getFavorFromView(Favor.Status status) {
 
     // Extract details and post favor to Firebase
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
@@ -278,7 +306,7 @@ public class FavorRequestView extends Fragment {
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     Location loc = mGpsTracker.getLocation();
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
+    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, status);
     if (currentFavor == null) {
       currentFavor = favor;
     } else {

@@ -18,6 +18,7 @@ import ch.epfl.favo.common.Document;
 public class Favor implements Parcelable, Document {
   public enum Status {
     REQUESTED("Requested"),
+    EDIT("Edit mode"), // temporary state used for logic in the request view
     ACCEPTED("Accepted"),
     EXPIRED("Expired"),
     CANCELLED_REQUESTER("Cancelled by requester"),
