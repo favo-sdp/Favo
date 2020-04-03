@@ -10,7 +10,7 @@ public interface DatabaseUpdater<T> {
 
   void updateDocument(String key, Map<String, Object> updates);
 
-  void removeDocument(String key, String collection);
+  void removeDocument(String key);
 
   CompletableFuture<T> getDocument(String key);
 }
