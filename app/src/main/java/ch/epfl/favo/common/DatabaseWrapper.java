@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
 @SuppressLint("NewApi")
@@ -31,7 +32,7 @@ public class DatabaseWrapper {
     FirebaseFirestoreSettings settings =
         new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
     try {
-      firestore = FirebaseFirestore.getInstance();
+      firestore = DependencyFactory.getCurrentFirestore();
       firestore.setFirestoreSettings(settings);
     } catch (Exception e) {
       throw e;

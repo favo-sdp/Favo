@@ -92,6 +92,7 @@ public class FavorRequestView extends Fragment {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(currentFavor.getStatusId().toString());
+    updateViewFromStatus(v);
   }
 
   /**
@@ -171,7 +172,6 @@ public class FavorRequestView extends Fragment {
     } else {
       showSnackbar(getString(R.string.favor_request_success_msg));
     }
-
     setFavorActivatedView(getView());
   }
   /**
@@ -183,7 +183,6 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn.setVisibility(View.INVISIBLE);
     editFavorBtn.setVisibility(View.VISIBLE);
     cancelFavorBtn.setVisibility(View.VISIBLE);
-    updateViewFromStatus(v);
   }
 
   /** When edit button is clicked */

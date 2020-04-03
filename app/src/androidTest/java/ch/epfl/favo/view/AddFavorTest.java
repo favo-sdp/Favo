@@ -5,6 +5,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
@@ -198,7 +199,11 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     checkAcceptedView(fakeFavor);
     fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
-    runOnUiThread(() -> fragment.displayFavorInfo());
+    View v = activityTestRule.getActivity().getCurrentFocus();
+    runOnUiThread(
+        () -> {
+          fragment.displayFavorInfo(v);
+        });
     getInstrumentation().waitForIdleSync();
     checkCompletedView(fakeFavor);
   }
