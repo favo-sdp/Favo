@@ -5,9 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 
 import androidx.fragment.app.Fragment;
 
@@ -44,7 +48,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   @Override
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
-
+    setHasOptionsMenu(true);
     // Extract two arrayLists from the main activity
     MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
     activeFavors = activity.activeFavors;
@@ -67,8 +71,44 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     setupListView();
 
     setupSpinner();
+
+
+    SearchView searchView = rootView.findViewById(R.id.searchView);
+    searchView.setOnClickListener(this);
+    searchView.bringToFront();
+    CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), rootView);
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+      @Override
+      public boolean onQueryTextSubmit(String query) {
+        ArrayList<Favor> favorsFound = new ArrayList<>();
+        for(Favor favor : activeFavors.values()){
+          if(favor.getTitle().contains(query) || favor.getDescription().contains(query))
+            favorsFound.add(favor);
+        }
+        for(Favor favor : archivedFavors.values()){
+          if(favor.getTitle().contains(query) || favor.getDescription().contains(query))
+            favorsFound.add(favor);
+        }
+        listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
+        //if(!favorsFound.isEmpty())
+        //  listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
+        if(favorsFound.isEmpty())
+          Toast.makeText(getActivity(), "No Match found",Toast.LENGTH_LONG).show();
+        return false;
+      }
+
+      @Override
+      public boolean onQueryTextChange(String newText) {
+        //    adapter.getFilter().filter(newText);
+        ArrayList<Favor> favorsFound = new ArrayList<>();
+        listView.setAdapter(new FavorAdapter(getContext(), favorsFound));
+        return false;
+      }
+    });
     return rootView;
   }
+
 
   private void setupListView() {
     listView.setOnItemClickListener(
@@ -102,6 +142,9 @@ public class FavorPage extends Fragment implements View.OnClickListener {
       case R.id.floatingActionButton:
         CommonTools.replaceFragment(
             R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
+        break;
+      case R.id.searchView:
+        ((ViewController) Objects.requireNonNull(getActivity())).hideBottomTabs();
         break;
     }
   }

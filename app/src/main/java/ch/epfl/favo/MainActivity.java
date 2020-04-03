@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity
     backButton = findViewById(R.id.back_button);
     mapButton = findViewById(R.id.nav_map_button);
     favListButton = findViewById(R.id.nav_favor_list_button);
-
     // Setup Controllers
     setUpHamburgerMenuButton();
     setUpBackButton();
@@ -107,6 +106,9 @@ public class MainActivity extends AppCompatActivity
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
+
+    //Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+    //setSupportActionBar(myToolbar);
   }
 
   private void showNoConnectionSnackbar() {
@@ -177,6 +179,7 @@ public class MainActivity extends AppCompatActivity
     drawerLayout.closeDrawer(GravityCompat.START);
     return true;
   }
+
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
