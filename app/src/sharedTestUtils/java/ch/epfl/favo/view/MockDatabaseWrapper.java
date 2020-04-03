@@ -8,11 +8,9 @@ import ch.epfl.favo.common.Document;
 
 public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<T> {
 
-  T mockDocument;
+  private T mockDocument;
 
-  MockDatabaseWrapper(T mockDocument) {
-    this.mockDocument = mockDocument;
-  }
+  MockDatabaseWrapper() {}
 
   @Override
   public void addDocument(T favor) {}
