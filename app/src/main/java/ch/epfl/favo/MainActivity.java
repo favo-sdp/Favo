@@ -68,7 +68,6 @@ public class MainActivity extends AppCompatActivity
   //    archivedFavorArrayList.add(favor);
   //  }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -103,7 +102,6 @@ public class MainActivity extends AppCompatActivity
     //    archivedFavorArrayList =
     // FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
     archivedFavorArrayList = new ArrayList<>();
-
   }
 
   private void setUpHamburgerMenuButton() {

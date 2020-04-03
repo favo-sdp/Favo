@@ -2,9 +2,6 @@ package ch.epfl.favo.common;
 
 import android.annotation.SuppressLint;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,7 +34,8 @@ public class DatabaseWrapper {
       firestore = FirebaseFirestore.getInstance();
       firestore.setFirestoreSettings(settings);
     } catch (Exception e) {
-      throw e;
+      e.printStackTrace();
+      throw new RuntimeException("Failed to initialize FirebaseFirestore");
     }
   }
 
