@@ -6,14 +6,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/material_green_50"
-    android:clickable="true"
-    android:focusable="true"
     tools:context="view.tabs.addFavor.FavorRequestView">
+
     <!-- add above: android:background="@color/material_green_50"-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp">
+        android:paddingTop="20dp"
+        android:paddingHorizontal="20dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        android:id="@+id/constraint_layout_req_view">
+
+        <LinearLayout
+            android:id="@+id/edit_buttons_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="@dimen/margin_bottom_button"
+            >
+
+            <Button
+                android:id="@+id/edit_favor_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/edit_favor"
+                android:visibility="invisible"
+                app:layout_constraintRight_toLeftOf="@id/request_button"
+                app:layout_constraintTop_toTopOf="parent"
+                android:drawableRight="@drawable/ic_edit_24dp"/>
+
+            <Button
+                android:id="@+id/cancel_favor_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cancel_request"
+                android:visibility="invisible"
+                app:layout_constraintLeft_toRightOf="@id/edit_favor_button"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@color/fui_transparent"
+                android:drawableEnd="@drawable/ic_cancel_24dp"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/request_button"
@@ -25,9 +65,8 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-
         <EditText
-            android:id="@+id/title"
+            android:id="@+id/title_request_view"
 
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -44,7 +83,6 @@
 
         <EditText
             android:id="@+id/details"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints=""
@@ -52,33 +90,61 @@
             android:hint="@string/favor_details_hint"
             android:inputType="textMultiLine"
             android:lines="5"
-            android:maxLines="5"
+            android:maxLines="7"
             android:minLines="5"
             android:scrollbars="vertical"
 
-            app:layout_constraintTop_toBottomOf="@id/title" />
+            app:layout_constraintTop_toBottomOf="@id/title_request_view" />
 
-
-        <Button
-            android:id="@+id/add_picture_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/upload_image"
-            android:paddingTop="20dp"
-            app:layout_constraintTop_toBottomOf="@id/details"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"/>
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/details"
+            android:id="@+id/picture_buttons">
+
+            <Button
+                android:id="@+id/add_picture_button"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:text="Upload"
+                android:drawableRight="@drawable/ic_image_24dp"                />
+            <Button
+                android:id="@+id/add_camera_picture_button"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:text="Take"
+                android:drawableRight="@drawable/ic_photo_camera_24dp" />
+
+        </LinearLayout>
+
+
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="240dp"
-            android:layout_height="160dp"
+            android:id="@+id/image_view_request_view"
+            android:layout_width="300dp"
+            android:layout_height="200dp"
             android:layout_marginTop="22dp"
             android:contentDescription="@string/favor_img_content_desc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
 
-            app:layout_constraintTop_toBottomOf="@id/add_picture_button"
-            />
+            app:layout_constraintTop_toBottomOf="@id/picture_buttons"/>
+
+        <TextView
+            android:id="@+id/favor_status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="15dp"
+            app:layout_constraintTop_toTopOf="@id/request_button"/>
+
         <TextView
             android:id="@+id/errorText"
             android:layout_width="wrap_content"

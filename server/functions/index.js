@@ -73,3 +73,41 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                 console.log('Error getting documents', err);
             });
     });
+
+// send notification to the user who accepted the favor for any update
+exports.sendNotificationOnUpdate = functions.firestore
+    .document('/favors/{favorId}')
+    .onWrite((change) => {
+
+        // get new favor that has just been posted
+        const newFavor = change.data();
+        var accepterID = newFavor.accepter;
+        var favorTitle = newFavor.title;
+        var usersIds = [];
+
+        const message = {
+            notification: {
+                title: 'Favor + ' + favorTitle + ' has been updated',
+                body: 'Check out the new details',
+            },
+            tokens: usersIds
+        };
+
+        // go through all the users
+        db.collection('/users').get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    var user = doc.data();
+                    var userID = user.id;
+                    if (userID === accepterID) {
+                        usersIds.push(user.notificationId);
+                    }
+                });
+
+                sendMessage(message, usersIds);
+
+            })
+            .catch((err) => {
+                console.log('Error getting documents', err);
+            });
+    });

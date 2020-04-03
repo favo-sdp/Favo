@@ -20,16 +20,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Date;
-import java.util.Objects;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -48,23 +50,6 @@ import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 
-class MockDatabaseWrapper implements DatabaseUpdater<Favor> {
-  @Override
-  public void addDocument(Favor favor) {}
-
-  @Override
-  public CompletableFuture<Favor> getDocument(String key) {
-    Location location = new Location("dummy");
-    location.setLongitude(0.1);
-    location.setLatitude(0.2);
-
-    CompletableFuture<Favor> future = new CompletableFuture<>();
-    Favor mockFavor = new Favor("test", "test_description", "123", location, 0);
-    future.supplyAsync(() -> mockFavor );
-    future.complete(mockFavor);
-    return future;
-  }
-}
 
 @RunWith(AndroidJUnit4.class)
 public class FirebaseMessagingServiceTest {
@@ -97,9 +82,7 @@ public class FirebaseMessagingServiceTest {
     Bundle bundle = generateBundle();
 
     FirebaseMessagingService.showNotification(
-        mainActivityTestRule.getActivity(),
-        Objects.requireNonNull(new RemoteMessage(bundle).getNotification()),
-        "Default channel id");
+        mainActivityTestRule.getActivity(), new RemoteMessage(bundle), "Default channel id");
 
     // WORKS LOCALLY, NOT ON TRAVIS... BUT WORKS ON CIRRUS :)
     UiDevice device = UiDevice.getInstance(getInstrumentation());
@@ -113,14 +96,11 @@ public class FirebaseMessagingServiceTest {
     title.click();
     getInstrumentation().waitForIdleSync();
     //    // check that tab 2 is indeed opened
-    onView(
-            allOf(
-                withId(R.id.fragment_favor_accept_view),
-                withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   private Bundle generateBundle() {
+
     Bundle bundle = new Bundle();
     bundle.putString("google.delivered_priority", "high");
     bundle.putLong("google.sent_time", (new Date()).getTime());
@@ -132,6 +112,13 @@ public class FirebaseMessagingServiceTest {
     bundle.putString("gcm.notification.body", NOTIFICATION_BODY);
     bundle.putString("gcm.notification.e", "1");
     bundle.putString("gcm.notification.tag", FAVOR_ID);
+    bundle.putSerializable(
+        "gcm.notification.data",
+        new HashMap<String, String>() {
+          {
+            put("FavorId", FAVOR_ID);
+          }
+        });
     return bundle;
   }
 }

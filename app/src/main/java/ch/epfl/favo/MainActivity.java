@@ -3,8 +3,10 @@ package ch.epfl.favo;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 
@@ -18,12 +20,17 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
@@ -48,8 +55,9 @@ public class MainActivity extends AppCompatActivity
   // private Toolbar toolbar;
   private ImageButton backButton;
 
-  public ArrayList<Favor> activeFavorArrayList;
-  public ArrayList<Favor> archivedFavorArrayList;
+  public Map<String, Favor> activeFavors;
+  public Map<String, Favor> otherActiveFavorsAround;
+  public Map<String, Favor> archivedFavors;
 
   //  public ArrayList<Favor> getActiveFavorArrayList() {
   //    return activeFavorArrayList;
@@ -91,16 +99,33 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    /*Activate if we want a toolbar */
-    // toolbar = findViewById(R.id.toolbar);
-    // setSupportActionBar(toolbar);
+    // check connection
+    if (DependencyFactory.isOfflineMode(this)) {
+      showNoConnectionSnackbar();
+    }
 
-    //    activeFavorArrayList =
-    // FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser();
-    activeFavorArrayList = new ArrayList<>();
-    //    archivedFavorArrayList =
-    // FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser();
-    archivedFavorArrayList = new ArrayList<>();
+    activeFavors = new HashMap<>();
+    archivedFavors = new HashMap<>();
+    otherActiveFavorsAround = new HashMap<>();
+  }
+
+  private void showNoConnectionSnackbar() {
+    Snackbar snack =
+        Snackbar.make(
+            findViewById(android.R.id.content).getRootView(),
+            "No internet connection",
+            Snackbar.LENGTH_LONG);
+    View view = snack.getView();
+    snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
+    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+    params.gravity = Gravity.TOP;
+    params.setMargins(
+        params.leftMargin,
+        params.topMargin + 60,
+        params.rightMargin,
+        params.bottomMargin);
+    view.setLayoutParams(params);
+    snack.show();
   }
 
   private void setUpHamburgerMenuButton() {
@@ -138,7 +163,9 @@ public class MainActivity extends AppCompatActivity
 
     switch (itemId) {
       case R.id.nav_home:
-        navController.navigate(R.id.nav_map);
+        getSupportFragmentManager().popBackStackImmediate();
+        getSupportFragmentManager().popBackStackImmediate();
+        getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -163,7 +190,12 @@ public class MainActivity extends AppCompatActivity
 
   /** Will control the bottom navigation tabs */
   private void setupBottomNavigation() {
-    mapButton.setOnClickListener(v -> navController.navigate(R.id.nav_map));
+    mapButton.setOnClickListener(
+        v -> {
+          getSupportFragmentManager().popBackStackImmediate();
+          getSupportFragmentManager().popBackStackImmediate();
+          getSupportFragmentManager().popBackStackImmediate();
+        });
     favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
   }
 
@@ -227,7 +259,8 @@ public class MainActivity extends AppCompatActivity
 
       favorFuture.thenAccept(
           favor -> {
-            Fragment frag = FavorDetailView.newInstance(favor);
+            otherActiveFavorsAround.put(favor.getId(), favor);
+            Fragment frag = FavorFragmentFactory.instantiate(favor, new FavorDetailView());
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.nav_host_fragment, frag);
             trans.commit();

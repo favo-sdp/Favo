@@ -27,4 +27,12 @@
     <!-- Help preferences -->
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
+    <string name="request_favor_draft">Save favor draft</string>
+    <string name="edit_favor">Edit Request</string>
+    <string name="cancel_request">Cancel Request</string>
+    <string name="confirm_favor_edit">Confirm Update</string>
+    <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
+    <string name="favor_edit_success_msg">Favor successfully updated</string>
+
+
 </resources>

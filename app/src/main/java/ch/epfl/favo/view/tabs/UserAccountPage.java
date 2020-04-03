@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
@@ -102,12 +103,8 @@ public class UserAccountPage extends Fragment {
     if (task.isSuccessful()) {
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
-      showSnackbar(errorMessage);
+      CommonTools.showSnackbar(getView(), getString(errorMessage));
     }
-  }
-
-  private void showSnackbar(@StringRes int errorMessageRes) {
-    Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
   private void setupView() {

@@ -3,9 +3,11 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
+import ch.epfl.favo.common.NotImplementedException;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -25,14 +27,7 @@ public class User implements Document {
 
   public User() {}
 
-  public User(
-      String name,
-      String email,
-      String deviceId,
-      LocalDate birthDate,
-      Location location,
-      int activeAcceptingFavors,
-      int activeRequestingFavors) {
+  public User(String name, String email, String deviceId, LocalDate birthDate, Location location) {
     this.id = DatabaseWrapper.generateRandomId();
     this.name = name;
     this.email = email;
@@ -40,14 +35,19 @@ public class User implements Document {
     this.notificationId = null;
     this.birthDate = birthDate;
     this.location = location;
-    this.activeAcceptingFavors = activeAcceptingFavors;
-    this.activeRequestingFavors = activeRequestingFavors;
+    this.activeAcceptingFavors = 0;
+    this.activeRequestingFavors = 0;
   }
 
   // Getters
   @Override
   public String getId() {
     return id;
+  }
+
+  @Override
+  public Map<String, Object> toMap() {
+    return null;
   }
 
   public String getName() {
