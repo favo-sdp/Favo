@@ -97,7 +97,7 @@ public class Favor implements Parcelable, Document {
       String requesterId,
       FavoLocation location,
       Status statusId) {
-    setId(id);
+    this.id = id;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -144,10 +144,6 @@ public class Favor implements Parcelable, Document {
   @Override
   public String getId() {
     return id;
-  }
-
-  private void setId(String id) {
-    this.id = id;
   }
 
   @Override
@@ -200,7 +196,7 @@ public class Favor implements Parcelable, Document {
     return statusId;
   }
 
-  void setStatusId(Status statusId) {
+  public void setStatusId(Status statusId) {
     this.statusId = statusId;
   }
 
@@ -236,9 +232,5 @@ public class Favor implements Parcelable, Document {
     this.postedTime = other.getPostedTime();
     this.requesterId = other.getRequesterId();
     this.statusId = other.getStatusId();
-  }
-
-  public void updateStatus(Status newStatus) {
-    this.statusId = newStatus;
   }
 }

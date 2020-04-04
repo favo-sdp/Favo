@@ -194,11 +194,11 @@ public class AddFavorTest {
   public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
     Favor fakeFavor = FakeItemFactory.getFavor();
     FavorRequestView fragment = new FavorRequestView();
-    fakeFavor.updateStatus(Favor.Status.ACCEPTED);
+    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
     checkAcceptedView(fakeFavor);
-    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
+    fakeFavor.setStatusId(Favor.Status.SUCCESSFULLY_COMPLETED);
     View v = activityTestRule.getActivity().getCurrentFocus();
     runOnUiThread(
         () -> {

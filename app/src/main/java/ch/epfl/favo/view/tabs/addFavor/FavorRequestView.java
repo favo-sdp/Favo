@@ -192,7 +192,7 @@ public class FavorRequestView extends Fragment {
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    currentFavor.updateStatus(Favor.Status.EDIT);
+    currentFavor.setStatusId(Favor.Status.EDIT);
     updateViewFromStatus(getView());
   }
 
@@ -208,7 +208,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
-    currentFavor.updateStatus(Favor.Status.CANCELLED_REQUESTER);
+    currentFavor.setStatusId(Favor.Status.CANCELLED_REQUESTER);
     updateMainActivityLists(false);
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
@@ -219,12 +219,11 @@ public class FavorRequestView extends Fragment {
   private void updateMainActivityLists(boolean favorIsActive) {
     MainActivity mainActivity = (MainActivity) getActivity();
     assert mainActivity != null;
-    if (favorIsActive){
+    if (favorIsActive) {
       mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
       mainActivity.archivedFavors.remove(currentFavor.getId());
 
-    }
-    else{
+    } else {
       mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
       mainActivity.activeFavors.remove(currentFavor.getId());
     }
@@ -236,8 +235,8 @@ public class FavorRequestView extends Fragment {
     switch (currentFavor.getStatusId()) {
       case REQUESTED:
         {
-          mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           editFavorBtn.setText(R.string.edit_favor);
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           updateViewFromParameters(view, false, true, false, true, true);
           break;
         }
@@ -256,8 +255,8 @@ public class FavorRequestView extends Fragment {
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           updateViewFromParameters(view, false, true, false, false, false);
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           break;
         }
       default: // cancelled
