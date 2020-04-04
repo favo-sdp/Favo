@@ -9,7 +9,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -64,11 +63,8 @@ public class DatabaseWrapper {
     getCollectionReference(collection).document(key).delete();
   }
 
-  static void updateDocument(
-      String key, Map<String, Object> updates, String collection) {
+  static void updateDocument(String key, Map<String, Object> updates, String collection) {
     getCollectionReference(collection).document(key).update(updates);
-
-
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(
@@ -91,14 +87,7 @@ public class DatabaseWrapper {
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
 
-    return getAllFuture.thenApply(
-        querySnapshot -> {
-          List<T> values = new ArrayList<>();
-          for (DocumentSnapshot documentSnapshot : querySnapshot) {
-            values.add(documentSnapshot.toObject(cls));
-          }
-          return values;
-        });
+    return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
   private static CollectionReference getCollectionReference(String collection) {
