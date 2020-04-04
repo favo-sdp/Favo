@@ -11,6 +11,7 @@ import android.text.method.KeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -64,10 +66,10 @@ public class FavorRequestView extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
     View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
-
     setupButtons(rootView);
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
+    mTitleView.requestFocus();
     mDescriptionView = rootView.findViewById(R.id.details);
     mStatusView = rootView.findViewById(R.id.favor_status_text);
     setupView(rootView);
@@ -84,6 +86,7 @@ public class FavorRequestView extends Fragment {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
       displayFavorInfo();
       setFavorActivatedView(rootView);
+
     }
     return rootView;
   }
@@ -190,7 +193,6 @@ public class FavorRequestView extends Fragment {
     cancelFavorBtn.setVisibility(View.VISIBLE);
     toggleTextViewsEditable(false);
     updateViewFromStatus();
-    CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
   }
 
   /** When edit button is clicked */

@@ -1,11 +1,13 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity
   /*Activate if we want a toolbar */
   // private Toolbar toolbar;
   private ImageButton backButton;
+  private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
@@ -129,6 +132,54 @@ public class MainActivity extends AppCompatActivity
     view.setLayoutParams(params);
     snack.show();
   }
+
+  /**
+  *  This is used to hide navigation bar when input contents in search bar,
+  *  and recover the navigation bar when soft keyboard displays.
+  *  It only works when the current view is SearchView, for sake of, if possible, unnecessary slowing down.
+  *
+  * */
+  @Override
+  protected void onResume() {
+    super.onResume();
+    findViewById(android.R.id.content).getViewTreeObserver()
+            .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    findViewById(android.R.id.content).getViewTreeObserver()
+            .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+  }
+
+  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
+          () -> {
+            View view = getCurrentFocus();
+            if(view == null || !view.toString().startsWith("android.widget.SearchView"))
+              return;
+            final Rect rectangle = new Rect();
+            final View contentView = findViewById(android.R.id.content);
+            contentView.getWindowVisibleDisplayFrame(rectangle);
+            int screenHeight = contentView.getRootView().getHeight();
+
+            // r.bottom is the position above soft keypad or device button.
+            // If keypad is shown, the rectangle.bottom is smaller than that before.
+            int keypadHeight = screenHeight - rectangle.bottom;
+            // 0.15 ratio is perhaps enough to determine keypad height.
+            boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
+
+            if (mKeyboardVisible != isKeyboardNowVisible) {
+              if (isKeyboardNowVisible) {
+                // onKeyboardShown
+                hideBottomTabs();
+              } else {
+                // onKeyboardHidden
+                showBottomTabs();
+              }
+            }
+            mKeyboardVisible = isKeyboardNowVisible;
+          };
 
   private void setUpHamburgerMenuButton() {
     hambMenuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));

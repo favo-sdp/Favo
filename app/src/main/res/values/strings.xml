@@ -55,7 +55,9 @@
     <string name="detail">descriptions</string>
 
     <!--Favor search bar -->
-    <string name='search_hint'>search favor…</string>
+    <string name="search_hint">search title/description</string>
+    <string name="query_failed"> No match found</string>>
+    <string name="empty"> </string>
 
     <!--Favor Accepting View -->
     <string name="accept_favor">Accept Favor</string>

@@ -72,7 +72,6 @@ public class MapsPage extends Fragment
     setupView();
     mMap = googleMap;
     mMap.clear();
-
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
       Objects.requireNonNull(getView())
           .findViewById(R.id.offline_map_button)
@@ -82,7 +81,7 @@ public class MapsPage extends Fragment
               .findViewById(R.id.offline_map_button)
               .setVisibility(View.INVISIBLE);
     }
-
+    mMap.setMyLocationEnabled(true);
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
   }
@@ -115,11 +114,10 @@ public class MapsPage extends Fragment
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     setupView();
-    setHasOptionsMenu(true);
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
-    View view = inflater.inflate(R.layout.tab1_map, container, false);
+    View view = inflater.inflate(R.layout.fragment_map, container, false);
 
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
@@ -232,8 +230,10 @@ public class MapsPage extends Fragment
                   .title("FavorRequest")
                   .draggable(true)
                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
+      if(first){
+        first = false;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
+      }
       mMap.setInfoWindowAdapter(this);
       mMap.setOnInfoWindowClickListener(this);
     } catch (Exception e) {
@@ -293,9 +293,9 @@ public class MapsPage extends Fragment
     else {
       Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude);
       CommonTools.replaceFragment(
-          R.id.nav_host_fragment,
-          getParentFragmentManager(),
-          FavorFragmentFactory.instantiate(favor, new FavorDetailView()));
+              R.id.nav_host_fragment,
+              getParentFragmentManager(),
+              FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
     }
   }
 
