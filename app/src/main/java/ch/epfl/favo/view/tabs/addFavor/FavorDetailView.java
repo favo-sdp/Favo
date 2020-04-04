@@ -49,7 +49,7 @@ public class FavorDetailView extends Fragment {
     return rootView;
   }
 
-  public void displayFromFavor(View rootView, Favor favor) {
+  private void displayFromFavor(View rootView, Favor favor) {
     String greetingStr = "favor of " + favor.getRequesterId();
     String locationStr =
         "latitude: "
@@ -60,20 +60,17 @@ public class FavorDetailView extends Fragment {
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
 
-    TextView greeting = rootView.findViewById(R.id.favor_greeting_text_accept);
-    greeting.setText(greetingStr);
+    setupTextView(rootView, R.id.favor_greeting_text_accept, greetingStr);
+    setupTextView(rootView, R.id.location_accept_view, locationStr);
+    setupTextView(rootView, R.id.datetime_accept_view, timeStr);
+    setupTextView(rootView, R.id.title_accept_view, titleStr);
+    setupTextView(rootView, R.id.details_accept_view, descriptionStr);
+  }
 
-    TextView location = rootView.findViewById(R.id.location_accept_view);
-    location.setText(locationStr);
-
-    TextView time = rootView.findViewById(R.id.datetime_accept_view);
-    time.setText(timeStr);
-
-    TextView title = rootView.findViewById(R.id.title_accept_view);
-    title.setText(titleStr);
-
-    TextView details = rootView.findViewById(R.id.details_accept_view);
-    details.setText(descriptionStr);
+  private void setupTextView(View rootView, int id, String text){
+    TextView textView = rootView.findViewById(id);
+    textView.setText(text);
+    textView.setKeyListener(null);
   }
 
   private void setupView() {

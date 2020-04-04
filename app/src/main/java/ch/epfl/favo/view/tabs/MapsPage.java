@@ -295,7 +295,7 @@ public class MapsPage extends Fragment
       CommonTools.replaceFragment(
               R.id.nav_host_fragment,
               getParentFragmentManager(),
-              FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
+              FavorFragmentFactory.instantiate(favor,new FavorDetailView()));
     }
   }
 

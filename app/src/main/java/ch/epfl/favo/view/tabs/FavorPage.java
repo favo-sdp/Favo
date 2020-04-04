@@ -113,6 +113,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     public boolean onClose() {
       // clear last query results and recover last listView
       favorsFound.clear();
+      spinner.setVisibility(View.VISIBLE);
       ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
       if(lastPosition == 0)
         displayFavorList(activeFavors, R.string.favor_no_active_favor);
@@ -186,6 +187,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
             R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;
       case R.id.searchView:
+        spinner.setVisibility(View.INVISIBLE);
         displayFavorList(favorsFound, R.string.empty);
         break;
     }
