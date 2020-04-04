@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -58,6 +60,7 @@ public class FavorRequestView extends Fragment {
     // Required empty public constructor
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,6 +103,7 @@ public class FavorRequestView extends Fragment {
    *
    * @param rootView
    */
+  @RequiresApi(api = Build.VERSION_CODES.M)
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -157,12 +161,12 @@ public class FavorRequestView extends Fragment {
    * Method is called when request favor button is clicked. It uploads favor request to the database
    * and updates view so that favor is editable.
    */
+  @RequiresApi(api = Build.VERSION_CODES.M)
   private void requestFavor() {
     // update currentFavor
     getFavorFromView(Favor.Status.REQUESTED);
     // post to DB
     FavorUtil.getSingleInstance().postFavor(currentFavor);
-
     // Save the favor to local favorList
     updateMainActivityLists(true);
 
@@ -173,6 +177,7 @@ public class FavorRequestView extends Fragment {
       showSnackbar(getString(R.string.favor_request_success_msg));
     }
     setFavorActivatedView(getView());
+    updateViewFromStatus(getView());
   }
   /**
    * Once favor has been requested.
@@ -215,12 +220,13 @@ public class FavorRequestView extends Fragment {
     MainActivity mainActivity = (MainActivity) getActivity();
     assert mainActivity != null;
     if (favorIsActive){
-      mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
-      mainActivity.activeFavors.remove(currentFavor.getId());
-    }
-    else{
       mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
       mainActivity.archivedFavors.remove(currentFavor.getId());
+
+    }
+    else{
+      mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
+      mainActivity.activeFavors.remove(currentFavor.getId());
     }
   }
 

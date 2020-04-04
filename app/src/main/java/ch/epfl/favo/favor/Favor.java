@@ -69,9 +69,29 @@ public class Favor implements Parcelable, Document {
 
   public Favor() {}
 
-  public Favor(
+  public Favor( // not including id
       String title, String description, String requesterId, Location location, Status statusId) {
     String id = DatabaseWrapper.generateRandomId();
+    setParameters(id, title, description, requesterId, location, statusId);
+  }
+
+  public Favor( //includes id
+      String id,
+      String title,
+      String description,
+      String requesterId,
+      Location location,
+      Status statusId) {
+    setParameters(id, title, description, requesterId, location, statusId);
+  }
+
+  private void setParameters(
+      String id,
+      String title,
+      String description,
+      String requesterId,
+      Location location,
+      Status statusId) {
     setId(id);
     this.title = title;
     this.description = description;

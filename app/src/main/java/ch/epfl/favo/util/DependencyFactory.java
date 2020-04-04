@@ -14,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.concurrent.CompletableFuture;
+
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.map.GpsTracker;
@@ -22,19 +24,25 @@ import ch.epfl.favo.map.Locator;
 public class DependencyFactory {
   private static Locator currentGpsTracker;
   private static FirebaseUser currentUser;
-  private static DatabaseUpdater currentDatabaseUpdater;
+  private static DatabaseUpdater currentCollectionWrapper;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
   private static FirebaseFirestore currentFirestore;
   private static boolean offlineMode = false;
   private static boolean testMode = false;
-
+  private static CompletableFuture currentCompletableFuture;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
     return offlineMode || CommonTools.isOffline(context);
   }
-
+  public static boolean isTestMode() {
+    return testMode;
+  }
+  @VisibleForTesting
+  public static void setTestMode(boolean value){
+    testMode = value;
+  }
   @VisibleForTesting
   public static void setOfflineMode(boolean value) {
     offlineMode = value;
@@ -67,14 +75,14 @@ public class DependencyFactory {
   }
 
   @VisibleForTesting
-  public static void setCurrentDatabaseUpdater(DatabaseUpdater dependency) {
+  public static void setCurrentCollectionWrapper(DatabaseUpdater dependency) {
     testMode = true;
-    currentDatabaseUpdater = dependency;
+    currentCollectionWrapper = dependency;
   }
 
-  public static DatabaseUpdater getCurrentDatabaseUpdater(String collectionReference, Class cls) {
-    if (testMode && currentDatabaseUpdater != null) {
-      return currentDatabaseUpdater;
+  public static DatabaseUpdater getCurrentCollectionWrapper(String collectionReference, Class cls) {
+    if (testMode && currentCollectionWrapper != null) {
+      return currentCollectionWrapper;
     }
     return new CollectionWrapper(collectionReference, cls);
   }
@@ -91,6 +99,7 @@ public class DependencyFactory {
     }
     return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
   }
+
   @VisibleForTesting
   public static void setCurrentLocationManager(LocationManager dependency) {
     testMode = true;
@@ -103,15 +112,26 @@ public class DependencyFactory {
     }
     return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
   }
+
   @VisibleForTesting
   public static void setCurrentFirestore(FirebaseFirestore dependency) {
     testMode = true;
     currentFirestore = dependency;
   }
+
   public static FirebaseFirestore getCurrentFirestore() {
     if (testMode && currentFirestore != null) {
       return currentFirestore;
     }
     return FirebaseFirestore.getInstance();
+  }
+
+  public static <T> CompletableFuture<T> getCurrentCompletableFuture() {
+    return currentCompletableFuture;
+  }
+
+  public static void setCurrentCompletableFuture(CompletableFuture currentCompletableFuture) {
+    testMode = true;
+    DependencyFactory.currentCompletableFuture = currentCompletableFuture;
   }
 }
