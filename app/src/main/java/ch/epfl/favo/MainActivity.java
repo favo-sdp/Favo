@@ -322,13 +322,4 @@ public class MainActivity extends AppCompatActivity
     }
   }
 
-  @Override
-  public void onBackPressed() {
-    getSupportFragmentManager().popBackStackImmediate();
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-  }
 }

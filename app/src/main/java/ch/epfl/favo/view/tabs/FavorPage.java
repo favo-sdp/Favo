@@ -90,16 +90,17 @@ public class FavorPage extends Fragment implements View.OnClickListener {
       searchView.clearFocus();
     }
     searchView.setOnSearchClickListener(this);
-    //searchView.setSubmitButtonEnabled(true);
+    searchView.setMaxWidth(600);
     searchView.setOnCloseListener(new onCloseListener());
     searchView.setOnQueryTextListener(new onQuery());
   }
 
 
-  private Map<String, Favor>doQuery(String query, Map<String, Favor> searchScope){
+  private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope){
     Map<String, Favor> favorsFound = new HashMap<>();
+    query = query.toLowerCase();
     for(Favor favor : searchScope.values()){
-      if(favor.getTitle().contains(query) || favor.getDescription().contains(query))
+      if(favor.getTitle().toLowerCase().contains(query) || favor.getDescription().toLowerCase().contains(query))
         favorsFound.put(favor.getId(),favor);
     }
     return favorsFound;
