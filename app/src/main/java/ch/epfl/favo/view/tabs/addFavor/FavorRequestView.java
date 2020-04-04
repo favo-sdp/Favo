@@ -300,7 +300,6 @@ public class FavorRequestView extends Fragment {
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, status);
     FavoLocation loc = (FavoLocation) mGpsTracker.getLocation();
     Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
     if (currentFavor == null) {
