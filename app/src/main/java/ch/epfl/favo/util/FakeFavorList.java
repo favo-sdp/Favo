@@ -4,6 +4,7 @@ import android.location.Location;
 
 import java.util.ArrayList;
 
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 
 public class FakeFavorList {
@@ -33,7 +34,7 @@ public class FakeFavorList {
   }
 
   public Favor retrieveFavor(int number, double latitudeOffset, double longitudeOffset) {
-    Location location = new Location("provider name");
+    FavoLocation location = new FavoLocation("provider name");
     location.setLatitude(latitude + latitudeOffset);
     location.setLongitude(longitude + longitudeOffset);
     location.setTime(time);

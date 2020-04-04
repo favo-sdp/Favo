@@ -1,12 +1,12 @@
 package ch.epfl.favo.favor;
 
-import android.location.Location;
-
 import org.junit.Test;
 
 import java.util.Map;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.common.FavoLocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,30 +21,25 @@ public class FavorUnitTests {
   @Test
   public void favorGettersReturnCorrectValues() {
 
-    String title = "Flat tire";
-    String description = "Tire popped while turning left on Avenue Rhodanie";
-    String requesterId = "2362489";
-    Location location = new Location("Dummy provider");
-    Favor.Status statusId = Favor.Status.EXPIRED;
+    Favor favor = FakeItemFactory.getFavor();
 
-    Favor favor = new Favor(title, description, requesterId, location, statusId);
-
-    assertEquals(title, favor.getTitle());
-    assertEquals(description, favor.getDescription());
-    assertEquals(requesterId, favor.getRequesterId());
-    assertEquals(location, favor.getLocation());
-    assertEquals(statusId, favor.getStatusId());
+    assertEquals(TestConstants.TITLE, favor.getTitle());
+    assertEquals(TestConstants.DESCRIPTION, favor.getDescription());
+    assertEquals(TestConstants.REQUESTER_ID, favor.getRequesterId());
+    assertEquals(TestConstants.LOCATION, favor.getLocation());
+    assertEquals(TestConstants.FAVOR_STATUS, favor.getStatusId());
     assertNotNull(favor.getPostedTime());
   }
 
   @Test
   public void favorSettersCorrectlyUpdateValues() {
 
-    Favor favor = new Favor();
+    Favor favor = FakeItemFactory.getFavor();
+
     Favor.Status statusId = Favor.Status.CANCELLED_REQUESTER;
-    Location location = new Location("Dummy provider 2");
-    String id = "1243";
+    FavoLocation location = new FavoLocation("Dummy provider 2");
     String accepterId = "2364652";
+
     favor.setStatusId(statusId);
     favor.setLocation(location);
     favor.setAccepterID(accepterId);
@@ -56,30 +51,23 @@ public class FavorUnitTests {
 
   @Test
   public void describeContentsCorrect() {
-    String title = "Flat tire";
-    String description = "Tiire popped while turning left on Avenue Rhodanie";
-    String requesterId = "2362489";
-    Location location = new Location("Dummy provider");
-    Favor.Status statusId = Favor.Status.REQUESTED;
 
-    Favor favor = new Favor(title, description, requesterId, location, statusId);
+    Favor favor = FakeItemFactory.getFavor();
+
     assertEquals(favor.describeContents(), 0);
   }
 
   @Test
   public void CreatorArrayCorrect() {
-    String title = "Flat tire";
-    String description = "Tiire popped while turning left on Avenue Rhodanie";
-    String requesterId = "2362489";
-    Location location = new Location("Dummy provider");
-    Favor.Status statusId = Favor.Status.REQUESTED;
+
     Favor[] favors = Favor.CREATOR.newArray(3);
-    favors[0] = new Favor(title, description, requesterId, location, statusId);
-    assertEquals(title, favors[0].getTitle());
-    assertEquals(description, favors[0].getDescription());
-    assertEquals(requesterId, favors[0].getRequesterId());
-    assertEquals(location, favors[0].getLocation());
-    assertEquals(statusId, favors[0].getStatusId());
+    favors[0] = FakeItemFactory.getFavor();
+
+    assertEquals(TestConstants.TITLE, favors[0].getTitle());
+    assertEquals(TestConstants.DESCRIPTION, favors[0].getDescription());
+    assertEquals(TestConstants.REQUESTER_ID, favors[0].getRequesterId());
+    assertEquals(TestConstants.LOCATION, favors[0].getLocation());
+    assertEquals(TestConstants.FAVOR_STATUS, favors[0].getStatusId());
   }
 
   @Test
