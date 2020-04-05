@@ -52,6 +52,14 @@ public class FavorUtilTest {
         FavorUtil.getSingleInstance().retrieveFavor(TestConstants.FAVOR_ID);
     assertEquals(fakeFavor, obtainedFutureFavor.get());
   }
+  @Test
+  public void testGetSingleFavorThrowsRuntimeException() throws ExecutionException, InterruptedException {
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    Mockito.doThrow(new RuntimeException()).when(mockDatabaseWrapper).addDocument(Mockito.any(Favor.class));;
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    FavorUtil.getSingleInstance().postFavor(fakeFavor);
+  }
+
 
   @Test
   public void retrieveAllFavorsForGivenUser() {
