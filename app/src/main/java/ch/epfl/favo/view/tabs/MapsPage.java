@@ -70,6 +70,7 @@ public class MapsPage extends Fragment
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
+    getLocationPermission();
     mMap = googleMap;
     mMap.clear();
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
@@ -220,7 +221,6 @@ public class MapsPage extends Fragment
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
     try {
-      getLocationPermission();
       mLocation = mGpsTracker.getLocation();
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =

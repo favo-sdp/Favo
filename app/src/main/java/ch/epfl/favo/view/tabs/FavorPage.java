@@ -88,6 +88,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     if(!favorsFound.isEmpty()){
       searchView.setIconified(false);
       searchView.clearFocus();
+      setupSearchMode();
     }
     searchView.setOnSearchClickListener(this);
     searchView.setMaxWidth(600);
@@ -106,19 +107,31 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     return favorsFound;
   }
 
+  private void setupSearchMode(){
+    spinner.setVisibility(View.INVISIBLE);
+    displayFavorList(favorsFound, R.string.empty);
+    ((MainActivity)(Objects.requireNonNull(getActivity()))).onBackPressedListener =
+            () -> { searchView.setIconified(true);
+              if(getView()!=null) CommonTools.hideKeyboardFrom(getContext(), getView()); };
+  }
+
+  private void quitSearchMode(){
+    favorsFound.clear();
+    ((MainActivity)(Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
+    spinner.setVisibility(View.VISIBLE);
+    ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
+    if(lastPosition == 0)
+      displayFavorList(activeFavors, R.string.favor_no_active_favor);
+    else
+      displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
+  }
 
   private class onCloseListener implements SearchView.OnCloseListener{
 
     @Override
     public boolean onClose() {
       // clear last query results and recover last listView
-      favorsFound.clear();
-      spinner.setVisibility(View.VISIBLE);
-      ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
-      if(lastPosition == 0)
-        displayFavorList(activeFavors, R.string.favor_no_active_favor);
-      else
-        displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
+      quitSearchMode();
       return false;
     }
   }
@@ -136,7 +149,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     @Override
     public boolean onQueryTextChange(String newText) {
       // replace irrelevant items on listView with last query results or empty view
-      displayFavorList(favorsFound, R.string.empty);
+      displayFavorList(new HashMap<String, Favor>(), R.string.empty);
       return false;
     }
   }
@@ -145,6 +158,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   private void setupListView() {
     listView.setOnItemClickListener(
             (parent, view, position, id) -> {
+              ((MainActivity)(Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
               Favor favor = (Favor) parent.getItemAtPosition(position);
               CommonTools.replaceFragment(
                   R.id.nav_host_fragment,
@@ -187,8 +201,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
             R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;
       case R.id.searchView:
-        spinner.setVisibility(View.INVISIBLE);
-        displayFavorList(favorsFound, R.string.empty);
+        setupSearchMode();
         break;
     }
   }

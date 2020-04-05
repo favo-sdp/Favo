@@ -62,6 +62,11 @@ public class MainActivity extends AppCompatActivity
   public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
 
+  public OnBackPressedListener onBackPressedListener;
+
+  public interface OnBackPressedListener {
+    void doBack();
+  }
   //  public ArrayList<Favor> getActiveFavorArrayList() {
   //    return activeFavorArrayList;
   //  }
@@ -142,7 +147,7 @@ public class MainActivity extends AppCompatActivity
   @Override
   protected void onResume() {
     super.onResume();
-    findViewById(android.R.id.content).getViewTreeObserver()
+   findViewById(android.R.id.content).getViewTreeObserver()
             .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
   }
 
@@ -324,6 +329,9 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public void onBackPressed() {
-    getSupportFragmentManager().popBackStackImmediate();
+    if(onBackPressedListener!=null)
+      onBackPressedListener.doBack();
+    else
+      getSupportFragmentManager().popBackStackImmediate();
   }
 }
