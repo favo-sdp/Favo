@@ -23,6 +23,10 @@ public class FavorUtil {
   // Private Constructor
   private FavorUtil() {}
 
+  public void updateCollectionWrapper(DatabaseUpdater collectionWrapper) {
+    collection = collectionWrapper;
+  }
+
   public static FavorUtil getSingleInstance() {
     return SINGLE_INSTANCE;
   }
@@ -111,7 +115,7 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  public CompletableFuture<Favor> retrieveFavor(String favorId) throws NotImplementedException {
+  public CompletableFuture<Favor> retrieveFavor(String favorId) {
     return collection.getDocument(favorId);
   }
 }

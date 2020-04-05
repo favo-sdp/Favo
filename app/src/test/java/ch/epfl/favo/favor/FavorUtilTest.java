@@ -7,12 +7,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 /** Unit tests for favor util class */
@@ -34,6 +38,19 @@ public class FavorUtilTest {
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().postFavor(favor);
+  }
+
+  @Test
+  public void testGetSingleFavor() throws ExecutionException, InterruptedException {
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    CompletableFuture<Favor> futureFavor = new CompletableFuture<>();
+    futureFavor.complete(fakeFavor);
+    Mockito.doReturn(futureFavor).when(mockDatabaseWrapper).getDocument(Mockito.anyString());
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+
+    CompletableFuture<Favor> obtainedFutureFavor =
+        FavorUtil.getSingleInstance().retrieveFavor(TestConstants.FAVOR_ID);
+    assertEquals(fakeFavor, obtainedFutureFavor.get());
   }
 
   @Test
