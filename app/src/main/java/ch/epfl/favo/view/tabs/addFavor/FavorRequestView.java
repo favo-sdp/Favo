@@ -11,7 +11,6 @@ import android.text.method.KeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,7 +18,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -279,7 +277,7 @@ public class FavorRequestView extends Fragment {
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
-    FavoLocation loc = (FavoLocation) mGpsTracker.getLocation();
+    FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
     if (currentFavor == null) {
       currentFavor = favor;

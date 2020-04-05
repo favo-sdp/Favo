@@ -7,6 +7,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
@@ -36,12 +38,17 @@ public class SearchViewTest {
             new ActivityTestRule<MainActivity>(MainActivity.class) {
                 @Override
                 protected void beforeActivityLaunched() {
+                    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
             }
     };
 
     @Rule
     public GrantPermissionRule permissionRule =
             GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+    @After
+    public void tearDown() {
+        DependencyFactory.setCurrentGpsTracker(null);
+    }
 
     private void typeFavors(){
         // Click on favors tab
@@ -49,7 +56,7 @@ public class SearchViewTest {
         getInstrumentation().waitForIdleSync();
 
         // Click on new favor tab
-        onView(withId(R.id.new_favor)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
 
         // Fill in text views with fake favor

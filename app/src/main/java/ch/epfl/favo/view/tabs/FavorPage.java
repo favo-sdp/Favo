@@ -1,8 +1,10 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +48,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   private SearchView searchView;
   private int lastPosition;
   private String lastQuery;
+  private int screenWidth;
   private Map<String, Favor> favorsFound = new HashMap<>();
 
   public FavorPage() {
@@ -59,6 +62,10 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
     activeFavors = activity.activeFavors;
     archivedFavors = activity.archivedFavors;
+    Display display = getActivity().getWindowManager().getDefaultDisplay();
+    Point size = new Point();
+    display.getSize(size);
+    screenWidth = size.x;
   }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
@@ -91,7 +98,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
       setupSearchMode();
     }
     searchView.setOnSearchClickListener(this);
-    searchView.setMaxWidth(600);
+    searchView.setMaxWidth((int)(screenWidth*0.85));
     searchView.setOnCloseListener(new onCloseListener());
     searchView.setOnQueryTextListener(new onQuery());
   }

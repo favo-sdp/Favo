@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
@@ -203,9 +204,14 @@ public class MapsPage extends Fragment
     }
   */
 
-  public List<Favor> updateFavorlist() {
+  private List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
     // return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
+    currentActiveLocalFavorList = new ArrayList<>(
+            ((MainActivity) Objects.requireNonNull(getActivity())).activeFavors.values());
+    if(!currentActiveLocalFavorList.isEmpty())
+      return currentActiveLocalFavorList;
+
     if (mLocation != null) {
       FakeFavorList fakeFavorList =
           new FakeFavorList(mLocation.getLatitude(), mLocation.getLongitude(), mLocation.getTime());

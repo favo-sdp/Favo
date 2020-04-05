@@ -34,6 +34,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.MapsPage;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
