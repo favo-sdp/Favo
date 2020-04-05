@@ -217,8 +217,7 @@ public class FavorRequestView extends Fragment {
   }
 
   private void updateMainActivityLists(boolean favorIsActive) {
-    MainActivity mainActivity = (MainActivity) getActivity();
-    assert mainActivity != null;
+    MainActivity mainActivity =Objects.requireNonNull((MainActivity) getActivity());
     if (favorIsActive) {
       mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
       mainActivity.archivedFavors.remove(currentFavor.getId());

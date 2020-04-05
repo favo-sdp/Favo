@@ -110,7 +110,7 @@ public class DatabaseWrapperTest {
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
     CompletableFuture<Favor> actualFuture = mockCollectionWrapper.getDocument("fish");
     Favor obtained = actualFuture.get(2, TimeUnit.SECONDS);
-    assert (obtained.equals(testFavor));
+    assertEquals(testFavor,obtained);
   }
 
   @Test
@@ -138,6 +138,6 @@ public class DatabaseWrapperTest {
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
     CompletableFuture<List<Favor>> obtainedFuture = mockCollectionWrapper.getAllDocuments();
     List<Favor> obtainedFavors = obtainedFuture.get();
-    assert (obtainedFavors.equals(expectedFavors));
+    assertEquals(expectedFavors,obtainedFavors);
   }
 }

@@ -76,8 +76,16 @@ public class Favor implements Parcelable, Document {
       String requesterId,
       FavoLocation location,
       Status statusId) {
+
     String id = DatabaseWrapper.generateRandomId();
-    setParameters(id, title, description, requesterId, location, statusId);
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.requesterId = requesterId;
+    this.location = location;
+    this.postedTime = new Date();
+    this.statusId = statusId;
+    this.accepterId = null;
   }
 
   public Favor( // includes id
@@ -87,24 +95,8 @@ public class Favor implements Parcelable, Document {
       String requesterId,
       FavoLocation location,
       Status statusId) {
-    setParameters(id, title, description, requesterId, location, statusId);
-  }
-
-  private void setParameters(
-      String id,
-      String title,
-      String description,
-      String requesterId,
-      FavoLocation location,
-      Status statusId) {
+    this(title, description, requesterId, location, statusId);
     this.id = id;
-    this.title = title;
-    this.description = description;
-    this.requesterId = requesterId;
-    this.location = location;
-    this.postedTime = new Date();
-    this.statusId = statusId;
-    this.accepterId = null;
   }
 
   /**
