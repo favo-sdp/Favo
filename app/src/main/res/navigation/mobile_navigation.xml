@@ -40,19 +40,6 @@
                 android:defaultValue="@null"
                 app:argType="ch.epfl.favo.favor.Favor" />
         </action>
-        <action
-            android:id="@+id/action_nav_map_to_nav_about"
-            app:destination="@id/nav_about"
-            app:launchSingleTop="true" />
-        <action
-            android:id="@+id/action_nav_map_to_nav_account2"
-            app:destination="@id/nav_account" />
-        <action
-            android:id="@+id/action_nav_map_to_nav_share"
-            app:destination="@id/nav_share" />
-        <action
-            android:id="@+id/action_nav_map_to_nav_settings2"
-            app:destination="@id/nav_settings" />
 
     </fragment>
     <fragment
@@ -92,4 +79,8 @@
             android:defaultValue="@null"
             app:argType="ch.epfl.favo.favor.Favor" />
     </action>
+    <action android:id="@+id/action_global_nav_account"
+        app:destination="@id/nav_account"
+        app:launchSingleTop="true" />
+    <action android:id="@+id/action_global_nav_share" app:destination="@id/nav_share" />
 </navigation>
