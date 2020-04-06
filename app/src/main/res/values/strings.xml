@@ -53,6 +53,12 @@
     <string name="map_icon_label">Map</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="detail">descriptions</string>
+
+    <!--Favor search bar -->
+    <string name="search_hint">search title/description</string>
+    <string name="query_failed"> No match found</string>>
+    <string name="empty"> </string>
+
     <!--Favor Accepting View -->
     <string name="accept_favor">Accept Favor</string>
     <string name="favor_respond_success_msg">Favor responded successfully.</string>

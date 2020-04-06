@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
@@ -70,9 +71,9 @@ public class MapsPage extends Fragment
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
+    getLocationPermission();
     mMap = googleMap;
     mMap.clear();
-
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
       Objects.requireNonNull(getView())
           .findViewById(R.id.offline_map_button)
@@ -82,7 +83,7 @@ public class MapsPage extends Fragment
               .findViewById(R.id.offline_map_button)
               .setVisibility(View.INVISIBLE);
     }
-
+    mMap.setMyLocationEnabled(true);
     drawSelfLocationMarker();
     drawFavorMarker(updateFavorlist());
   }
@@ -118,7 +119,7 @@ public class MapsPage extends Fragment
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
-    View view = inflater.inflate(R.layout.tab1_map, container, false);
+    View view = inflater.inflate(R.layout.fragment_map, container, false);
 
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
@@ -203,9 +204,14 @@ public class MapsPage extends Fragment
     }
   */
 
-  public List<Favor> updateFavorlist() {
+  private List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
     // return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
+    currentActiveLocalFavorList = new ArrayList<>(
+            ((MainActivity) Objects.requireNonNull(getActivity())).activeFavors.values());
+    if(!currentActiveLocalFavorList.isEmpty())
+      return currentActiveLocalFavorList;
+
     if (mLocation != null) {
       FakeFavorList fakeFavorList =
           new FakeFavorList(mLocation.getLatitude(), mLocation.getLongitude(), mLocation.getTime());
@@ -221,7 +227,6 @@ public class MapsPage extends Fragment
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
     try {
-      getLocationPermission();
       mLocation = mGpsTracker.getLocation();
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =
@@ -231,8 +236,10 @@ public class MapsPage extends Fragment
                   .title("FavorRequest")
                   .draggable(true)
                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-
-      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
+      if(first){
+        first = false;
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
+      }
       mMap.setInfoWindowAdapter(this);
       mMap.setOnInfoWindowClickListener(this);
     } catch (Exception e) {
@@ -292,9 +299,9 @@ public class MapsPage extends Fragment
     else {
       Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude);
       CommonTools.replaceFragment(
-          R.id.nav_host_fragment,
-          getParentFragmentManager(),
-          FavorFragmentFactory.instantiate(favor, new FavorDetailView()));
+              R.id.nav_host_fragment,
+              getParentFragmentManager(),
+              FavorFragmentFactory.instantiate(favor,new FavorDetailView()));
     }
   }
 

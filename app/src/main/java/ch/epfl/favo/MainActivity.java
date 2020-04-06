@@ -1,11 +1,13 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
@@ -32,6 +34,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.MapsPage;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -54,11 +57,17 @@ public class MainActivity extends AppCompatActivity
   /*Activate if we want a toolbar */
   // private Toolbar toolbar;
   private ImageButton backButton;
+  private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
 
+  public OnBackPressedListener onBackPressedListener;
+
+  public interface OnBackPressedListener {
+    void doBack();
+  }
   //  public ArrayList<Favor> getActiveFavorArrayList() {
   //    return activeFavorArrayList;
   //  }
@@ -88,7 +97,6 @@ public class MainActivity extends AppCompatActivity
     backButton = findViewById(R.id.back_button);
     mapButton = findViewById(R.id.nav_map_button);
     favListButton = findViewById(R.id.nav_favor_list_button);
-
     // Setup Controllers
     setUpHamburgerMenuButton();
     setUpBackButton();
@@ -107,6 +115,9 @@ public class MainActivity extends AppCompatActivity
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
+
+    //Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+    //setSupportActionBar(myToolbar);
   }
 
   private void showNoConnectionSnackbar() {
@@ -127,6 +138,54 @@ public class MainActivity extends AppCompatActivity
     view.setLayoutParams(params);
     snack.show();
   }
+
+  /**
+  *  This is used to hide navigation bar when input contents in search bar,
+  *  and recover the navigation bar when soft keyboard displays.
+  *  It only works when the current view is SearchView, for sake of, if possible, unnecessary slowing down.
+  *
+  * */
+  @Override
+  protected void onResume() {
+    super.onResume();
+   findViewById(android.R.id.content).getViewTreeObserver()
+            .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    findViewById(android.R.id.content).getViewTreeObserver()
+            .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+  }
+
+  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
+          () -> {
+            View view = getCurrentFocus();
+            if(view == null || !view.toString().startsWith("android.widget.SearchView"))
+              return;
+            final Rect rectangle = new Rect();
+            final View contentView = findViewById(android.R.id.content);
+            contentView.getWindowVisibleDisplayFrame(rectangle);
+            int screenHeight = contentView.getRootView().getHeight();
+
+            // r.bottom is the position above soft keypad or device button.
+            // If keypad is shown, the rectangle.bottom is smaller than that before.
+            int keypadHeight = screenHeight - rectangle.bottom;
+            // 0.15 ratio is perhaps enough to determine keypad height.
+            boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
+
+            if (mKeyboardVisible != isKeyboardNowVisible) {
+              if (isKeyboardNowVisible) {
+                // onKeyboardShown
+                hideBottomTabs();
+              } else {
+                // onKeyboardHidden
+                showBottomTabs();
+              }
+            }
+            mKeyboardVisible = isKeyboardNowVisible;
+          };
 
   private void setUpHamburgerMenuButton() {
     hambMenuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
@@ -177,6 +236,7 @@ public class MainActivity extends AppCompatActivity
     drawerLayout.closeDrawer(GravityCompat.START);
     return true;
   }
+
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -270,11 +330,9 @@ public class MainActivity extends AppCompatActivity
 
   @Override
   public void onBackPressed() {
-    getSupportFragmentManager().popBackStackImmediate();
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
+    if(onBackPressedListener!=null)
+      onBackPressedListener.doBack();
+    else
+      getSupportFragmentManager().popBackStackImmediate();
   }
 }
