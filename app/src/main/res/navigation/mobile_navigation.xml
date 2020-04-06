@@ -28,7 +28,8 @@
         tools:layout="@layout/tab1_map">
         <action
             android:id="@+id/action_nav_map_to_nav_favorlist"
-            app:destination="@id/nav_favorlist" />
+            app:destination="@id/nav_favorlist"
+            app:launchSingleTop="true"/>
         <action
             android:id="@+id/action_nav_map_to_favorRequestView"
             app:destination="@id/favorRequestView" />
