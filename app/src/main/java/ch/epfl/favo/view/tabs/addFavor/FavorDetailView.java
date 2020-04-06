@@ -18,7 +18,6 @@ import ch.epfl.favo.view.ViewController;
 public class FavorDetailView extends Fragment {
   private Favor favor;
 
-
   public FavorDetailView() {
     // create favor detail from a favor
   }
@@ -67,7 +66,7 @@ public class FavorDetailView extends Fragment {
     setupTextView(rootView, R.id.details_accept_view, descriptionStr);
   }
 
-  private void setupTextView(View rootView, int id, String text){
+  private void setupTextView(View rootView, int id, String text) {
     TextView textView = rootView.findViewById(id);
     textView.setText(text);
     textView.setKeyListener(null);

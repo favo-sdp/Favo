@@ -160,6 +160,19 @@ public class FavorPageTest {
     // check favor is displayed in active favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
+  @Test
+  public void testKeyboardIsHiddenOnClick(){
+    // Click on favors tab
+    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    //Click on search bar
+    onView(withId(R.id.searchView)).check(matches(isDisplayed())).perform(typeText("bla"));
+    //Click on list view
+    onView(withId(R.id.favor_list)).perform(click());
+    //TODO: check if keyboard is hidden
+
+  }
 
   @Test
   public void testFavorCancelUpdatesActiveAndArchivedListView() {

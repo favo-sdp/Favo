@@ -26,6 +26,7 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
@@ -73,7 +74,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
     rootView.findViewById(R.id.floatingActionButton).setOnClickListener(this);
-    setupView(rootView);
+
     tipTextView = rootView.findViewById(R.id.tip);
     tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
@@ -83,6 +84,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     setupListView();
     setupSpinner();
     setupSearchView();
+    setupView(rootView);
     return rootView;
   }
 
@@ -229,12 +231,10 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     ((ViewController) Objects.requireNonNull(getActivity())).setupViewTopDestTab();
     ((ViewController) Objects.requireNonNull(getActivity())).checkFavListViewButton();
     // ensure click on view will hide keyboard
-    assert view != null;
-    view.findViewById(R.id.constraint_layout_favor_view)
-        .setOnTouchListener(
-            (v, event) -> {
-              hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
-              return false;
-            });
+    listView.setOnTouchListener(
+        (v, event) -> {
+          hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
+          return false;
+        });
   }
 }
