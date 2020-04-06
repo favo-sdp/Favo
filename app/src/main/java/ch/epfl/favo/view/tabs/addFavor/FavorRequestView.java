@@ -68,10 +68,10 @@ public class FavorRequestView extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
     View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
-
     setupButtons(rootView);
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
+    mTitleView.requestFocus();
     mDescriptionView = rootView.findViewById(R.id.details);
     mStatusView = rootView.findViewById(R.id.favor_status_text);
     setupView(rootView);
@@ -88,6 +88,7 @@ public class FavorRequestView extends Fragment {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
       displayFavorInfo(rootView);
       setFavorActivatedView(rootView);
+
     }
     return rootView;
   }
@@ -190,6 +191,8 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn.setVisibility(View.INVISIBLE);
     editFavorBtn.setVisibility(View.VISIBLE);
     cancelFavorBtn.setVisibility(View.VISIBLE);
+    toggleTextViewsEditable(false);
+    updateViewFromStatus(v);
   }
 
   /** When edit button is clicked */
