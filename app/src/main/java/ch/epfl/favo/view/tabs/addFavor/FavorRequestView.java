@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -217,7 +219,7 @@ public class FavorRequestView extends Fragment {
   }
 
   private void updateMainActivityLists(boolean favorIsActive) {
-    MainActivity mainActivity =Objects.requireNonNull((MainActivity) getActivity());
+    MainActivity mainActivity = Objects.requireNonNull((MainActivity) getActivity());
     if (favorIsActive) {
       mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
       mainActivity.archivedFavors.remove(currentFavor.getId());
@@ -298,7 +300,7 @@ public class FavorRequestView extends Fragment {
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
-    FavoLocation loc = (FavoLocation) mGpsTracker.getLocation();
+    FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
     if (currentFavor == null) {
       currentFavor = favor;
@@ -319,11 +321,21 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Called when camera button is clicked Method calls camera intent. */
+  @RequiresApi(api = Build.VERSION_CODES.M)
   public void takePicture() {
-    Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
-    if (takePictureIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager())
-        != null) {
-      startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
+    if (ContextCompat.checkSelfPermission(
+            Objects.requireNonNull(getContext()), Manifest.permission.CAMERA)
+        != PackageManager.PERMISSION_GRANTED) {
+      Objects.requireNonNull(getActivity())
+          .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
+    } else {
+      Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
+
+      if (takePictureIntent.resolveActivity(
+              Objects.requireNonNull(getActivity()).getPackageManager())
+          != null) {
+        startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
+      }
     }
   }
 

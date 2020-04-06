@@ -10,6 +10,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -18,10 +19,7 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.util.CommonTools;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
 /**
@@ -72,13 +70,17 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
   private void setupListView() {
     listView.setOnItemClickListener(
-            (parent, view, position, id) -> {
-              Favor favor = (Favor) parent.getItemAtPosition(position);
-              CommonTools.replaceFragment(
-                  R.id.nav_host_fragment,
-                  getParentFragmentManager(),
-                      FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
-            });
+        (parent, view, position, id) -> {
+          Favor favor = (Favor) parent.getItemAtPosition(position);
+          Bundle favorBundle = new Bundle();
+          favorBundle.putParcelable("FAVOR_ARGS", favor);
+          Navigation.findNavController(getView())
+              .navigate(R.id.action_nav_favorlist_to_favorRequestView, favorBundle);
+          // CommonTools.replaceFragment(
+          //    R.id.nav_host_fragment,
+          //    getParentFragmentManager(),
+          //        FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
+        });
   }
 
   private void setupSpinner() {
@@ -100,8 +102,9 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   public void onClick(View view) {
     switch (view.getId()) {
       case R.id.floatingActionButton:
-        CommonTools.replaceFragment(
-            R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
+        Navigation.findNavController(view).navigate(R.id.action_nav_favorlist_to_favorRequestView);
+        // CommonTools.replaceFragment(
+        //    R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;
     }
   }

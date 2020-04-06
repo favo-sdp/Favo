@@ -15,8 +15,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
@@ -30,9 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
@@ -75,6 +71,7 @@ public class MainActivity extends AppCompatActivity
   //    archivedFavorArrayList.add(favor);
   //  }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -120,10 +117,7 @@ public class MainActivity extends AppCompatActivity
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
     params.gravity = Gravity.TOP;
     params.setMargins(
-        params.leftMargin,
-        params.topMargin + 60,
-        params.rightMargin,
-        params.bottomMargin);
+        params.leftMargin, params.topMargin + 60, params.rightMargin, params.bottomMargin);
     view.setLayoutParams(params);
     snack.show();
   }
@@ -163,9 +157,11 @@ public class MainActivity extends AppCompatActivity
 
     switch (itemId) {
       case R.id.nav_home:
-        getSupportFragmentManager().popBackStackImmediate();
-        getSupportFragmentManager().popBackStackImmediate();
-        getSupportFragmentManager().popBackStackImmediate();
+        navController.popBackStack(R.id.nav_map, false);
+        // navController.navigate(R.id.action_global_nav_map);
+        // getSupportFragmentManager().popBackStackImmediate();
+        // getSupportFragmentManager().popBackStackImmediate();
+        // getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -175,7 +171,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     drawerLayout.closeDrawer(GravityCompat.START);
-    return true;
+    return false;
   }
 
   private void startShareIntent() {
@@ -192,9 +188,7 @@ public class MainActivity extends AppCompatActivity
   private void setupBottomNavigation() {
     mapButton.setOnClickListener(
         v -> {
-          getSupportFragmentManager().popBackStackImmediate();
-          getSupportFragmentManager().popBackStackImmediate();
-          getSupportFragmentManager().popBackStackImmediate();
+          navController.popBackStack(R.id.nav_map, false);
         });
     favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
   }
@@ -260,17 +254,17 @@ public class MainActivity extends AppCompatActivity
       favorFuture.thenAccept(
           favor -> {
             otherActiveFavorsAround.put(favor.getId(), favor);
-            Fragment frag = FavorFragmentFactory.instantiate(favor, new FavorDetailView());
-            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.nav_host_fragment, frag);
-            trans.commit();
+            Bundle favorBundle = new Bundle();
+            favorBundle.putParcelable("FAVOR_ARGS", favor);
+            navController.navigate(R.id.action_global_favorDetailView, favorBundle);
           });
     }
   }
 
   @Override
   public void onBackPressed() {
-    getSupportFragmentManager().popBackStackImmediate();
+    // getSupportFragmentManager().popBackStackImmediate();
+    navController.popBackStack();
   }
 
   @Override

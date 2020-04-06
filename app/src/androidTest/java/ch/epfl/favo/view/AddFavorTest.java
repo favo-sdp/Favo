@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -12,8 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiSelector;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -47,6 +51,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static androidx.test.uiautomator.Until.findObject;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
@@ -83,7 +88,6 @@ public class AddFavorTest {
   public void addFavorShowsSnackBar() {
     // Click on fav list tab
     onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
-
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
 
@@ -98,14 +102,29 @@ public class AddFavorTest {
   }
 
   @Test
+  public void cameraPermissionTest() throws Throwable {
+
+    launchFragment(new FavorRequestView());
+    getInstrumentation().waitForIdleSync();
+    InstrumentationRegistry.getInstrumentation()
+            .getUiAutomation().revokeRuntimePermission(
+            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
+            Manifest.permission.CAMERA);
+    Button cameraButton =
+            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
+    runOnUiThread(() -> cameraButton.setEnabled(true));
+    onView(withId(R.id.add_camera_picture_button)).perform(click());
+    //launches permission intent
+    // click allow button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
+  }
+
+  @Test
   public void addPictureWorks() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, currentFragment);
-    ft.addToBackStack(null);
-    ft.commit();
+    launchFragment(currentFragment);
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Intent intent = new Intent();
@@ -115,14 +134,18 @@ public class AddFavorTest {
     onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
   }
 
-  @Test
-  public void cameraButtonCanBeClicked() throws Throwable {
-    FavorRequestView currentFragment = new FavorRequestView();
+  public void launchFragment(FavorRequestView currentFragment) {
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, currentFragment);
     ft.addToBackStack(null);
     ft.commit();
+  }
+
+  @Test
+  public void cameraButtonCanBeClicked() throws Throwable {
+    FavorRequestView currentFragment = new FavorRequestView();
+    launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     Button cameraButton =
         activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
@@ -138,11 +161,7 @@ public class AddFavorTest {
   public void loadSavedPicture() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, currentFragment);
-    ft.addToBackStack(null);
-    ft.commit();
+    launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
@@ -158,11 +177,7 @@ public class AddFavorTest {
   public void snackbarShowsWhenIncorrectResultCodeOnImageUpload() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, currentFragment);
-    ft.addToBackStack(null);
-    ft.commit();
+    launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     Intent intent = new Intent();
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_CANCELED, intent));
