@@ -135,7 +135,7 @@ public class SearchViewTest {
 
         //Click on upper left screen corner
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        device.click(10,50 );
+        device.click(50,70 );
 
         // if keyboard displayed, one time of pressBack will return to Favor List view
         pressBack();
