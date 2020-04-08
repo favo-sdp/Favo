@@ -14,16 +14,22 @@ public class ChatModel {
   private String mName;
   private String mMessage;
   private String mUid;
+  private String mFavorId;
   private Date mTimestamp;
 
   public ChatModel() {
     // Needed for Firebase
   }
 
-  public ChatModel(@Nullable String name, @Nullable String message, @NonNull String uid) {
+  public ChatModel(
+      @Nullable String name,
+      @Nullable String message,
+      @NonNull String uid,
+      @NonNull String favorId) {
     mName = name;
     mMessage = message;
     mUid = uid;
+    mFavorId = favorId;
   }
 
   @Nullable
@@ -53,6 +59,15 @@ public class ChatModel {
     mUid = uid;
   }
 
+  @NonNull
+  public String getFavorId() {
+    return mFavorId;
+  }
+
+  public void setFavorId(String mFavorId) {
+    this.mFavorId = mFavorId;
+  }
+
   @ServerTimestamp
   @Nullable
   public Date getTimestamp() {
@@ -72,6 +87,7 @@ public class ChatModel {
 
     return mTimestamp.equals(chatModel.mTimestamp)
         && mUid.equals(chatModel.mUid)
+        && mFavorId.equals(chatModel.mFavorId)
         && (Objects.equals(mName, chatModel.mName))
         && (Objects.equals(mMessage, chatModel.mMessage));
   }
@@ -81,6 +97,7 @@ public class ChatModel {
     int result = mName == null ? 0 : mName.hashCode();
     result = 31 * result + (mMessage == null ? 0 : mMessage.hashCode());
     result = 31 * result + mUid.hashCode();
+    result = 31 * result + mFavorId.hashCode();
     result = 31 * result + mTimestamp.hashCode();
     return result;
   }
@@ -97,6 +114,9 @@ public class ChatModel {
         + '\''
         + ", mUid='"
         + mUid
+        + '\''
+        + ", mFavorId='"
+        + mFavorId
         + '\''
         + ", mTimestamp="
         + mTimestamp

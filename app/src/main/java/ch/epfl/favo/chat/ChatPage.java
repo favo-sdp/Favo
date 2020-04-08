@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -23,6 +22,9 @@ import com.google.firebase.firestore.Query;
 import java.util.Objects;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 
 public class ChatPage extends Fragment {
@@ -30,16 +32,19 @@ public class ChatPage extends Fragment {
   private static final CollectionReference sChatCollection =
       FirebaseFirestore.getInstance().collection("chats");
 
-  private static final Query sChatQuery =
-      sChatCollection.orderBy("timestamp", Query.Direction.DESCENDING).limit(50);
-
   private View view;
+  private Favor favor;
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     view = inflater.inflate(R.layout.fragment_chat, container, false);
     setupView();
+
+    if (getArguments() != null) {
+      favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+    }
+
     return view;
   }
 
@@ -55,7 +60,6 @@ public class ChatPage extends Fragment {
     manager.setStackFromEnd(true);
 
     RecyclerView mRecyclerView = view.findViewById(R.id.messagesList);
-
     mRecyclerView.setHasFixedSize(true);
     mRecyclerView.setLayoutManager(manager);
 
@@ -90,33 +94,42 @@ public class ChatPage extends Fragment {
   }
 
   private void onSendClick() {
-    String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
-    String name = "User " + uid.substring(0, 6);
-
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
-    onAddMessage(new ChatModel(name, mMessageEdit.getText().toString(), uid));
+    onAddMessage(
+        new ChatModel(
+            DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
+            mMessageEdit.getText().toString(),
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            favor.getId()));
     mMessageEdit.setText("");
   }
 
   @NonNull
   private RecyclerView.Adapter newAdapter() {
+
+    Query sChatQuery =
+        sChatCollection
+            .whereEqualTo("favorId", favor.getId())
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .limit(50);
+
     FirestoreRecyclerOptions<ChatModel> options =
         new FirestoreRecyclerOptions.Builder<ChatModel>()
             .setQuery(sChatQuery, ChatModel.class)
             .setLifecycleOwner(this)
             .build();
 
-    return new FirestoreRecyclerAdapter<ChatModel, MessageView>(options) {
+    return new FirestoreRecyclerAdapter<ChatModel, ChatViewHolder>(options) {
       @NonNull
       @Override
-      public MessageView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new MessageView(
+      public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ChatViewHolder(
             LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false));
       }
 
       @Override
       protected void onBindViewHolder(
-              @NonNull MessageView holder, int position, @NonNull ChatModel model) {
+          @NonNull ChatViewHolder holder, int position, @NonNull ChatModel model) {
         holder.bind(model);
       }
 

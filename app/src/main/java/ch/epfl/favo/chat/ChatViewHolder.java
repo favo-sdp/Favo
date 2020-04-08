@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import ch.epfl.favo.R;
 
-class MessageView extends RecyclerView.ViewHolder {
+class ChatViewHolder extends RecyclerView.ViewHolder {
   private final TextView mNameField;
   private final TextView mTextField;
   private final FrameLayout mLeftArrow;
@@ -33,7 +33,7 @@ class MessageView extends RecyclerView.ViewHolder {
   private final int mGreen300;
   private final int mGray300;
 
-  MessageView(@NonNull View itemView) {
+  ChatViewHolder(@NonNull View itemView) {
     super(itemView);
     mNameField = itemView.findViewById(R.id.name_text);
     mTextField = itemView.findViewById(R.id.message_text);

@@ -53,7 +53,6 @@ public class FavorRequestView extends Fragment {
   private Button addPictureFromCameraBtn;
   private Button cancelFavorBtn;
   private Button editFavorBtn;
-  private Button startChatBtn;
 
   private Favor currentFavor;
 
@@ -86,7 +85,6 @@ public class FavorRequestView extends Fragment {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
       displayFavorInfo();
       setFavorActivatedView(rootView);
-
     }
     return rootView;
   }
@@ -142,11 +140,13 @@ public class FavorRequestView extends Fragment {
         });
 
     // Button: Start chat
-    startChatBtn = rootView.findViewById(R.id.chat_button);
-    startChatBtn.setOnClickListener(v -> {
-      CommonTools.replaceFragment(
-              R.id.nav_host_fragment, getParentFragmentManager(), new ChatPage());
-    });
+    Button startChatBtn = rootView.findViewById(R.id.chat_button);
+    startChatBtn.setOnClickListener(
+        v ->
+            CommonTools.replaceFragment(
+                R.id.nav_host_fragment,
+                getParentFragmentManager(),
+                FavorFragmentFactory.instantiate(currentFavor, new ChatPage())));
   }
 
   /**
