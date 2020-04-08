@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.chat.ChatPage;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -52,6 +53,7 @@ public class FavorRequestView extends Fragment {
   private Button addPictureFromCameraBtn;
   private Button cancelFavorBtn;
   private Button editFavorBtn;
+  private Button startChatBtn;
 
   private Favor currentFavor;
 
@@ -138,6 +140,13 @@ public class FavorRequestView extends Fragment {
             confirmUpdatedFavor();
           }
         });
+
+    // Button: Start chat
+    startChatBtn = rootView.findViewById(R.id.chat_button);
+    startChatBtn.setOnClickListener(v -> {
+      CommonTools.replaceFragment(
+              R.id.nav_host_fragment, getParentFragmentManager(), new ChatPage());
+    });
   }
 
   /**

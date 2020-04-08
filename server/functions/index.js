@@ -41,13 +41,18 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
         const newFavor = change.data();
         var latFav = newFavor.location.latitude;
         var longFav = newFavor.location.longitude;
+        var posterId = newFavor.requesterId;
+        var title = newFavor.title;
         var usersIds = [];
         var maxDistance = 100.0; // in km
 
         const message = {
+            data: {
+                FavorId: newFavor.id,
+            },
             notification: {
-                title: 'New favor nearby',
-                body: 'Check out the post in the map',
+                title: 'New favor nearby: ' + title,
+                body: 'Click to check out the post details',
             },
             tokens: usersIds
         };

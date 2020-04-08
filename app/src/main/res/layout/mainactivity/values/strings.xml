@@ -21,8 +21,8 @@
     <string name="notification_join_title">Enable join notification</string>
     <string name="notification_join_summary">Be notified when a user joins a favor you posted</string>
 
-    <string name="notification_chat_title">Enable chat notifications</string>
-    <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
+    <string name="notification_chat_title">Enable chatModel notifications</string>
+    <string name="notification_chat_summary">Be notified when someone writes a messages in a chatModel of the posts you joined or created</string>
 
     <!-- Help preferences -->
     <string name="help_title">Send feedback</string>
@@ -33,6 +33,7 @@
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
+    <string name="open_chat">Open chat</string>
 
 
 </resources>

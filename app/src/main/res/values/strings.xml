@@ -89,4 +89,9 @@
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
 
 
+    <!-- Chat -->
+    <string name="start_chatting">No messages</string>
+    <string name="hint_message">Write message</string>
+    <string name="send">Send</string>
+
 </resources>
