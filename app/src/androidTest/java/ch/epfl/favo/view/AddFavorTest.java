@@ -99,25 +99,25 @@ public class AddFavorTest {
         .check(matches(withText(R.string.favor_request_success_msg)));
   }
 
-  @Test
-  public void cameraPermissionTest() throws Throwable {
-
-    launchFragment(new FavorRequestView());
-    getInstrumentation().waitForIdleSync();
-    InstrumentationRegistry.getInstrumentation()
-            .getUiAutomation().revokeRuntimePermission(
-            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
-            Manifest.permission.CAMERA);
-    Button cameraButton =
-            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
-    runOnUiThread(() -> cameraButton.setEnabled(true));
-    onView(withId(R.id.add_camera_picture_button)).perform(click());
-    sleep(1000);
-    //launches permission intent
-    // click allow button
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
-  }
+//  @Test
+//  public void cameraPermissionTest() throws Throwable {
+//
+//    launchFragment(new FavorRequestView());
+//    getInstrumentation().waitForIdleSync();
+//    InstrumentationRegistry.getInstrumentation()
+//            .getUiAutomation().revokeRuntimePermission(
+//            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
+//            Manifest.permission.CAMERA);
+//    Button cameraButton =
+//            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
+//    runOnUiThread(() -> cameraButton.setEnabled(true));
+//    onView(withId(R.id.add_camera_picture_button)).perform(click());
+//    sleep(1000);
+//    //launches permission intent
+//    // click allow button
+//    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+//    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
+//  }
 
   @Test
   public void addPictureWorks() throws Throwable {
