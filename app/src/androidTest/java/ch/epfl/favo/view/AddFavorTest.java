@@ -142,18 +142,28 @@ public class AddFavorTest {
   }
 
   @Test
-  public void cameraButtonCanBeClicked() throws Throwable {
+  public void cameraButtonCanBeClickedAfterPermissionGrant() throws Throwable {
     FavorRequestView currentFragment = new FavorRequestView();
     launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     Button cameraButton =
         activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
     runOnUiThread(() -> cameraButton.setEnabled(true));
+    InstrumentationRegistry.getInstrumentation()
+            .getUiAutomation().revokeRuntimePermission(
+            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
+            Manifest.permission.CAMERA);
     Intent fakeIntent = new Intent();
     DependencyFactory.setCurrentCameraIntent(fakeIntent);
     onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
-    // nothing should happen
+    sleep(1000);
+    //launches permission intent
+    // click allow button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
     getInstrumentation().waitForIdleSync();
+    // click on button
+    onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
   }
 
   @Test
