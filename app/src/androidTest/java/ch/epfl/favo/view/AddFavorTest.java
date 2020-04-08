@@ -1,6 +1,5 @@
 package ch.epfl.favo.view;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -13,11 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiSelector;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -51,12 +47,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static androidx.test.uiautomator.Until.findObject;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static java.lang.Thread.sleep;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -74,6 +68,9 @@ public class AddFavorTest {
         }
       };
 
+  @Rule
+  public GrantPermissionRule permissionRule =
+      GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
 
   @After
   public void tearDown() {
@@ -99,25 +96,25 @@ public class AddFavorTest {
         .check(matches(withText(R.string.favor_request_success_msg)));
   }
 
-//  @Test
-//  public void cameraPermissionTest() throws Throwable {
-//
-//    launchFragment(new FavorRequestView());
-//    getInstrumentation().waitForIdleSync();
-//    InstrumentationRegistry.getInstrumentation()
-//            .getUiAutomation().revokeRuntimePermission(
-//            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
-//            Manifest.permission.CAMERA);
-//    Button cameraButton =
-//            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
-//    runOnUiThread(() -> cameraButton.setEnabled(true));
-//    onView(withId(R.id.add_camera_picture_button)).perform(click());
-//    sleep(1000);
-//    //launches permission intent
-//    // click allow button
-//    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-//    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
-//  }
+  //  @Test
+  //  public void cameraPermissionTest() throws Throwable {
+  //
+  //    launchFragment(new FavorRequestView());
+  //    getInstrumentation().waitForIdleSync();
+  //    InstrumentationRegistry.getInstrumentation()
+  //            .getUiAutomation().revokeRuntimePermission(
+  //            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
+  //            Manifest.permission.CAMERA);
+  //    Button cameraButton =
+  //            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
+  //    runOnUiThread(() -> cameraButton.setEnabled(true));
+  //    onView(withId(R.id.add_camera_picture_button)).perform(click());
+  //    sleep(1000);
+  //    //launches permission intent
+  //    // click allow button
+  //    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+  //    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
+  //  }
 
   @Test
   public void addPictureWorks() throws Throwable {
@@ -142,25 +139,18 @@ public class AddFavorTest {
   }
 
   @Test
-  public void cameraButtonCanBeClickedAfterPermissionGrant() throws Throwable {
+  public void cameraButtonCanBeClicked() throws Throwable {
+
     FavorRequestView currentFragment = new FavorRequestView();
     launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     Button cameraButton =
         activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
     runOnUiThread(() -> cameraButton.setEnabled(true));
-    InstrumentationRegistry.getInstrumentation()
-            .getUiAutomation().revokeRuntimePermission(
-            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
-            Manifest.permission.CAMERA);
+
     Intent fakeIntent = new Intent();
     DependencyFactory.setCurrentCameraIntent(fakeIntent);
-    onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
-    sleep(1000);
-    //launches permission intent
-    // click allow button
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
+
     getInstrumentation().waitForIdleSync();
     // click on button
     onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
