@@ -39,7 +39,7 @@ public class DependencyFactory {
   public static boolean isTestMode() {
     return testMode;
   }
-  
+
   @VisibleForTesting
   public static void setOfflineMode(boolean value) {
     offlineMode = value;
