@@ -135,9 +135,9 @@ public class SearchViewTest {
 
         //Click on upper left screen corner
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        device.click(50,70 );
+        device.click(device.getDisplayWidth()/2,device.getDisplayHeight()/2 );
 
-        // if keyboard displayed, one time of pressBack will return to Favor List view
+        // if keyboard hidden, one time of pressBack will return to Favor List view
         pressBack();
         Favor favor = FakeItemFactory.getFavor();
         // check favor is displayed in active favor list view
