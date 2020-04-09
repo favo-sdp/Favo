@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -39,6 +41,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -71,6 +74,10 @@ public class AddFavorTest {
   @Rule
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
+
+  @Rule
+  public GrantPermissionRule permissionRule2 =
+      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
   @After
   public void tearDown() {
@@ -154,6 +161,23 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // click on button
     onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
+  }
+
+  @Test
+  public void testCanHideKeyboardOnClickOutsideOfTextView() {
+    FavorRequestView currentFragment = new FavorRequestView();
+    launchFragment(currentFragment);
+    onView(withId(R.id.title_request_view)).perform(typeText("bla"));
+    onView(withId(R.id.request_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.edit_favor_button)).perform(click());
+    onView(withId(R.id.title_request_view)).perform(typeText("ble"));
+
+    // click outside of text view
+    UiDevice device = UiDevice.getInstance(getInstrumentation());
+    device.click(10, device.getDisplayHeight() / 2);
+    // check button is visible
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed()));
   }
 
   @Test

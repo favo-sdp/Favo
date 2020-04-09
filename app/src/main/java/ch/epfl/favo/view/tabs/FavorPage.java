@@ -184,7 +184,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
             if (!favorsFound.isEmpty()) {
               // if stay in search mode, show the last query text and display last query results
               // favorsFound will be automatically cleared if quit from search mode
-              searchView.setQuery(lastQuery, false);
+              searchView.setQuery(lastQuery, false); // this block is unreachable?
               displayFavorList(favorsFound, R.string.query_failed);
             } else if (position == 0) {
               lastPosition = 0;
