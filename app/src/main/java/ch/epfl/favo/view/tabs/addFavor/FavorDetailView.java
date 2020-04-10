@@ -14,6 +14,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
+import ch.epfl.favo.view.tabs.MapsPage;
 
 public class FavorDetailView extends Fragment {
   private Favor favor;
@@ -44,8 +45,16 @@ public class FavorDetailView extends Fragment {
       favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
     }
     displayFromFavor(rootView, favor);
-
+    setupLocationSwitch(rootView);
     return rootView;
+  }
+
+  private void setupLocationSwitch(View rootView){
+    TextView textView = rootView.findViewById(R.id.location_accept_view);
+    textView.setClickable(true);
+    textView.setOnClickListener((v)->{CommonTools.replaceFragment(R.id.fragment_favor_accept_view, getParentFragmentManager(),
+            new MapsPage());});
+
   }
 
   private void displayFromFavor(View rootView, Favor favor) {

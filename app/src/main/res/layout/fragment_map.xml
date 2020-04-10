@@ -6,7 +6,8 @@
     xmlns:map="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.MapsPage">
+    tools:context=".view.tabs.MapsPage"
+    android:id="@+id/fragment_map">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/offline_map_button"
@@ -30,6 +31,24 @@
         android:layout_marginBottom="64dp"
         map:uiCompass="true"
         map:uiZoomControls="true"
-        tools:context=".view.tabs.MapsPage" />
+        tools:context=".view.tabs.MapsPage" >
+    </androidx.fragment.app.FragmentContainerView>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/map_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="118dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="100dp"
+            android:layout_marginEnd="15dp"
+            android:backgroundTint="#4CAF50"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_sync_problem_48dp"
+            android:visibility="visible"
+            app:backgroundTint="#4CAF50" />
+
+
 
 </FrameLayout>

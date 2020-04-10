@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,6 +59,7 @@ public class MapsPage extends Fragment
   private Location mLocation;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
   private boolean first = true;
+  private boolean listMode = false;
   private GpsTracker mGpsTracker;
   private boolean mLocationPermissionGranted = false;
   private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -106,6 +108,11 @@ public class MapsPage extends Fragment
         .show();
   }
 
+  private void onToggleClick(View view){
+    Log.d("ViewList", "click");
+    CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new NearbyFavorList());
+  }
+
   private void setupView() {
     ((ViewController) getActivity()).setupViewTopDestTab();
     ((ViewController) getActivity()).checkMapViewButton();
@@ -123,6 +130,9 @@ public class MapsPage extends Fragment
 
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
+
+    FloatingActionButton toggle = view.findViewById(R.id.map_toggle);
+     toggle.setOnClickListener(this::onToggleClick);
 
     return view;
   }
