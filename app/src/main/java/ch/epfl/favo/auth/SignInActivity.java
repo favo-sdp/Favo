@@ -161,7 +161,7 @@ public class SignInActivity extends AppCompatActivity {
               }
             }
 
-            UserUtil.getSingleInstance().postAccount(user);
+            UserUtil.getSingleInstance().postUser(user);
             UserUtil.getSingleInstance().retrieveUserRegistrationToken(user);
           });
 

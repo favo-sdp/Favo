@@ -41,7 +41,7 @@ public class UserUtil {
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public void postAccount(User user) throws RuntimeException {
+  public void postUser(User user) throws RuntimeException {
     try {
       collection.addDocument(user);
       currentUserId = user.getId();
