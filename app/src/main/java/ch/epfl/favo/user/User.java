@@ -2,7 +2,6 @@ package ch.epfl.favo.user;
 
 import android.location.Location;
 
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 
