@@ -7,10 +7,11 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.TestUtil;
 
@@ -48,8 +49,8 @@ public class UserUnitTests {
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    LocalDate birthDate = LocalDate.of(1994, 11, 8);
-    Location location = TestConstants.LOCATION;
+    Date birthDate = new Date();
+    FavoLocation location = TestConstants.LOCATION;
 
     User user = new User(name, email, deviceId, birthDate, location);
 
@@ -110,7 +111,7 @@ public class UserUnitTests {
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    Location location = TestConstants.LOCATION;
+    FavoLocation location = TestConstants.LOCATION;
 
     User user = new User(name, email, deviceId, null, location);
     UserUtil.getSingleInstance().postAccount(user);

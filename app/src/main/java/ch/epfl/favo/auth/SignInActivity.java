@@ -21,6 +21,7 @@ import java.util.Objects;
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
@@ -139,7 +140,7 @@ public class SignInActivity extends AppCompatActivity {
       String name = currentUser.getDisplayName();
       String email = currentUser.getEmail();
       Uri photo = currentUser.getPhotoUrl();
-      Location loc = mGpsTracker.getLocation();
+      FavoLocation loc = (FavoLocation) mGpsTracker.getLocation();
       String deviceId = currentUser.getUid();
       User user = new User(name, email, deviceId, null, loc);
 
