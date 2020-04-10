@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
 
-import java.time.LocalDate;
+import java.util.Date;
 
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
@@ -29,17 +29,10 @@ import static org.mockito.ArgumentMatchers.any;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class UserUnitTests {
-  private User user;
-
-  @Before
-  public void setup() {
-    user = new User();
-  }
 
   @Test
   public void userCanRemoveDetailsFromDatabase() {
 
-    String userId = TestConstants.USER_ID;
     assertThrows(NotImplementedException.class, () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
@@ -50,7 +43,7 @@ public class UserUnitTests {
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    LocalDate birthDate = LocalDate.of(1994, 11, 8);
+    Date birthDate = new Date();
     FavoLocation location = TestConstants.LOCATION;
 
     User user = new User(id, name, email, deviceId, birthDate, location);
@@ -74,8 +67,7 @@ public class UserUnitTests {
     int activeRequestingFavors = 4;
     String temporaryNotificationId = "temporaryNotificationId";
     String temporaryDeviceId = "temporaryDeviceId";
-    String providerName = "newProvider";
-    FavoLocation newLoc = new FavoLocation(providerName);
+    FavoLocation newLoc = new FavoLocation();
 
     user.setActiveAcceptingFavors(activeAcceptingFavors);
     user.setActiveRequestingFavors(activeRequestingFavors);
@@ -85,7 +77,6 @@ public class UserUnitTests {
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
-    assertEquals(providerName, newLoc.getProvider());
     assertEquals(temporaryNotificationId, user.getNotificationId());
     assertEquals(temporaryDeviceId, user.getDeviceId());
   }

@@ -27,13 +27,19 @@ public class User implements Document {
 
   public User() {}
 
-  public User(String id, String name, String email, String deviceId, LocalDate birthDate, FavoLocation location) {
+  public User(
+      String id,
+      String name,
+      String email,
+      String deviceId,
+      Date birthDate,
+      FavoLocation location) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.deviceId = deviceId;
     this.notificationId = null;
-    this.birthDate = new Date();;
+    this.birthDate = birthDate;
     this.location = location;
     this.activeAcceptingFavors = 0;
     this.activeRequestingFavors = 0;
@@ -94,7 +100,9 @@ public class User implements Document {
     this.notificationId = notificationId;
   }
 
-  public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
+  public void setDeviceId(String deviceId) {
+    this.deviceId = deviceId;
+  }
 
   void setLocation(FavoLocation location) {
     this.location = location;
