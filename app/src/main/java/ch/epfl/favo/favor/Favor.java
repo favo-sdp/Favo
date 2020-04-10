@@ -19,6 +19,7 @@ import ch.epfl.favo.common.FavoLocation;
 public class Favor implements Parcelable, Document {
   public enum Status {
     REQUESTED("Requested"),
+    EDIT("Edit mode"), // temporary state used for logic in the request view
     ACCEPTED("Accepted"),
     EXPIRED("Expired"),
     CANCELLED_REQUESTER("Cancelled by requester"),
@@ -70,9 +71,14 @@ public class Favor implements Parcelable, Document {
   public Favor() {}
 
   public Favor(
-      String title, String description, String requesterId, FavoLocation location, Status statusId) {
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      Status statusId) {
+
     String id = DatabaseWrapper.generateRandomId();
-    setId(id);
+    this.id = id;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -80,6 +86,17 @@ public class Favor implements Parcelable, Document {
     this.postedTime = new Date();
     this.statusId = statusId;
     this.accepterId = null;
+  }
+
+  public Favor( // includes id
+      String id,
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      Status statusId) {
+    this(title, description, requesterId, location, statusId);
+    this.id = id;
   }
 
   /**
@@ -119,10 +136,6 @@ public class Favor implements Parcelable, Document {
   @Override
   public String getId() {
     return id;
-  }
-
-  private void setId(String id) {
-    this.id = id;
   }
 
   @Override
@@ -175,7 +188,7 @@ public class Favor implements Parcelable, Document {
     return statusId;
   }
 
-  void setStatusId(Status statusId) {
+  public void setStatusId(Status statusId) {
     this.statusId = statusId;
   }
 
@@ -211,9 +224,5 @@ public class Favor implements Parcelable, Document {
     this.postedTime = other.getPostedTime();
     this.requesterId = other.getRequesterId();
     this.statusId = other.getStatusId();
-  }
-
-  public void updateStatus(Status newStatus) {
-    this.statusId = newStatus;
   }
 }

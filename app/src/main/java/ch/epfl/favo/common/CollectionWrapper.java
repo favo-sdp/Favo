@@ -15,7 +15,7 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
 
   @Override
-  public void addDocument(T document) {
+  public void addDocument(T document) throws RuntimeException {
     DatabaseWrapper.addDocument(document, collection);
   }
 
