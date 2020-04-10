@@ -17,8 +17,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 
 import com.google.android.material.navigation.NavigationView;
@@ -32,10 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.MapsPage;
-import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.R.id.drawer_layout;
@@ -84,6 +79,7 @@ public class MainActivity extends AppCompatActivity
   //    archivedFavorArrayList.add(favor);
   //  }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -116,8 +112,8 @@ public class MainActivity extends AppCompatActivity
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
 
-    //Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-    //setSupportActionBar(myToolbar);
+    // Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+    // setSupportActionBar(myToolbar);
   }
 
   private void showNoConnectionSnackbar() {
@@ -131,61 +127,58 @@ public class MainActivity extends AppCompatActivity
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
     params.gravity = Gravity.TOP;
     params.setMargins(
-        params.leftMargin,
-        params.topMargin + 60,
-        params.rightMargin,
-        params.bottomMargin);
+        params.leftMargin, params.topMargin + 60, params.rightMargin, params.bottomMargin);
     view.setLayoutParams(params);
     snack.show();
   }
 
   /**
-  *  This is used to hide navigation bar when input contents in search bar,
-  *  and recover the navigation bar when soft keyboard displays.
-  *  It only works when the current view is SearchView, for sake of, if possible, unnecessary slowing down.
-  *
-  * */
+   * This is used to hide navigation bar when input contents in search bar, and recover the
+   * navigation bar when soft keyboard displays. It only works when the current view is SearchView,
+   * for sake of, if possible, unnecessary slowing down.
+   */
   @Override
   protected void onResume() {
     super.onResume();
-   findViewById(android.R.id.content).getViewTreeObserver()
-            .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+    findViewById(android.R.id.content)
+        .getViewTreeObserver()
+        .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
   }
 
   @Override
   protected void onPause() {
     super.onPause();
-    findViewById(android.R.id.content).getViewTreeObserver()
-            .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+    findViewById(android.R.id.content)
+        .getViewTreeObserver()
+        .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
   }
 
   private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
-          () -> {
-            View view = getCurrentFocus();
-            if(view == null || !view.toString().startsWith("android.widget.SearchView"))
-              return;
-            final Rect rectangle = new Rect();
-            final View contentView = findViewById(android.R.id.content);
-            contentView.getWindowVisibleDisplayFrame(rectangle);
-            int screenHeight = contentView.getRootView().getHeight();
+      () -> {
+        View view = getCurrentFocus();
+        if (view == null || !view.toString().startsWith("android.widget.SearchView")) return;
+        final Rect rectangle = new Rect();
+        final View contentView = findViewById(android.R.id.content);
+        contentView.getWindowVisibleDisplayFrame(rectangle);
+        int screenHeight = contentView.getRootView().getHeight();
 
-            // r.bottom is the position above soft keypad or device button.
-            // If keypad is shown, the rectangle.bottom is smaller than that before.
-            int keypadHeight = screenHeight - rectangle.bottom;
-            // 0.15 ratio is perhaps enough to determine keypad height.
-            boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
+        // r.bottom is the position above soft keypad or device button.
+        // If keypad is shown, the rectangle.bottom is smaller than that before.
+        int keypadHeight = screenHeight - rectangle.bottom;
+        // 0.15 ratio is perhaps enough to determine keypad height.
+        boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
 
-            if (mKeyboardVisible != isKeyboardNowVisible) {
-              if (isKeyboardNowVisible) {
-                // onKeyboardShown
-                hideBottomTabs();
-              } else {
-                // onKeyboardHidden
-                showBottomTabs();
-              }
-            }
-            mKeyboardVisible = isKeyboardNowVisible;
-          };
+        if (mKeyboardVisible != isKeyboardNowVisible) {
+          if (isKeyboardNowVisible) {
+            // onKeyboardShown
+            hideBottomTabs();
+          } else {
+            // onKeyboardHidden
+            showBottomTabs();
+          }
+        }
+        mKeyboardVisible = isKeyboardNowVisible;
+      };
 
   private void setUpHamburgerMenuButton() {
     hambMenuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
@@ -222,9 +215,11 @@ public class MainActivity extends AppCompatActivity
 
     switch (itemId) {
       case R.id.nav_home:
-        getSupportFragmentManager().popBackStackImmediate();
-        getSupportFragmentManager().popBackStackImmediate();
-        getSupportFragmentManager().popBackStackImmediate();
+        navController.popBackStack(R.id.nav_map, false);
+        // navController.navigate(R.id.action_global_nav_map);
+        // getSupportFragmentManager().popBackStackImmediate();
+        // getSupportFragmentManager().popBackStackImmediate();
+        // getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -234,9 +229,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     drawerLayout.closeDrawer(GravityCompat.START);
-    return true;
+    return false;
   }
-
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -252,9 +246,7 @@ public class MainActivity extends AppCompatActivity
   private void setupBottomNavigation() {
     mapButton.setOnClickListener(
         v -> {
-          getSupportFragmentManager().popBackStackImmediate();
-          getSupportFragmentManager().popBackStackImmediate();
-          getSupportFragmentManager().popBackStackImmediate();
+          navController.popBackStack(R.id.nav_map, false);
         });
     favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
   }
@@ -320,19 +312,16 @@ public class MainActivity extends AppCompatActivity
       favorFuture.thenAccept(
           favor -> {
             otherActiveFavorsAround.put(favor.getId(), favor);
-            Fragment frag = FavorFragmentFactory.instantiate(favor, new FavorDetailView());
-            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.nav_host_fragment, frag);
-            trans.commit();
+            Bundle favorBundle = new Bundle();
+            favorBundle.putParcelable("FAVOR_ARGS", favor);
+            navController.navigate(R.id.action_global_favorDetailView, favorBundle);
           });
     }
   }
 
   @Override
   public void onBackPressed() {
-    if(onBackPressedListener!=null)
-      onBackPressedListener.doBack();
-    else
-      getSupportFragmentManager().popBackStackImmediate();
+    if (onBackPressedListener != null) onBackPressedListener.doBack();
+    else navController.popBackStack();
   }
 }

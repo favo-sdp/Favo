@@ -47,7 +47,7 @@ public class FavorPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
+          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
         }
       };
 
@@ -59,7 +59,7 @@ public class FavorPageTest {
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    DependencyFactory.setCurrentDatabaseUpdater(null);
+    DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   @Test
@@ -160,6 +160,7 @@ public class FavorPageTest {
     // check favor is displayed in active favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
+  
 
   @Test
   public void testFavorCancelUpdatesActiveAndArchivedListView() {

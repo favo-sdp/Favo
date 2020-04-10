@@ -37,7 +37,7 @@ public class AddFavorOfflineTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
+          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
           DependencyFactory.setOfflineMode(true);
         }
       };

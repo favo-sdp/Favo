@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface DatabaseUpdater<T> {
 
-  void addDocument(T document);
+  void addDocument(T document) throws RuntimeException;
 
   void updateDocument(String key, Map<String, Object> updates);
 

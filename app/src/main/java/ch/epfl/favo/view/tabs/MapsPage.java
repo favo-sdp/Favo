@@ -5,21 +5,23 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -43,10 +45,7 @@ import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
-import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -68,6 +67,7 @@ public class MapsPage extends Fragment
     // Required empty public constructor
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
@@ -80,8 +80,8 @@ public class MapsPage extends Fragment
           .setVisibility(View.VISIBLE);
     } else {
       Objects.requireNonNull(getView())
-              .findViewById(R.id.offline_map_button)
-              .setVisibility(View.INVISIBLE);
+          .findViewById(R.id.offline_map_button)
+          .setVisibility(View.INVISIBLE);
     }
     mMap.setMyLocationEnabled(true);
     drawSelfLocationMarker();
@@ -207,10 +207,10 @@ public class MapsPage extends Fragment
   private List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
     // return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
-    currentActiveLocalFavorList = new ArrayList<>(
+    currentActiveLocalFavorList =
+        new ArrayList<>(
             ((MainActivity) Objects.requireNonNull(getActivity())).activeFavors.values());
-    if(!currentActiveLocalFavorList.isEmpty())
-      return currentActiveLocalFavorList;
+    if (!currentActiveLocalFavorList.isEmpty()) return currentActiveLocalFavorList;
 
     if (mLocation != null) {
       FakeFavorList fakeFavorList =
@@ -236,7 +236,7 @@ public class MapsPage extends Fragment
                   .title("FavorRequest")
                   .draggable(true)
                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-      if(first){
+      if (first) {
         first = false;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
       }
@@ -294,14 +294,15 @@ public class MapsPage extends Fragment
   public void onInfoWindowClick(Marker marker) {
     // replaceFragment(new FavorDetailView(marker.getTitle(), marker.getSnippet()));
     if (marker.getTitle().equals(getString(R.string.self_location)))
-      CommonTools.replaceFragment(
-          R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
+      Navigation.findNavController(getView()).navigate(R.id.action_nav_map_to_favorRequestView);
+    // CommonTools.replaceFragment(
+    //    R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
     else {
       Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude);
-      CommonTools.replaceFragment(
-              R.id.nav_host_fragment,
-              getParentFragmentManager(),
-              FavorFragmentFactory.instantiate(favor,new FavorDetailView()));
+      Bundle favorBundle = new Bundle();
+      favorBundle.putParcelable("FAVOR_ARGS", favor);
+      Navigation.findNavController(getView())
+          .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
     }
   }
 

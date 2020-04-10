@@ -25,7 +25,7 @@ public class UserUtil {
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
   private static DatabaseUpdater collection =
-      DependencyFactory.getCurrentDatabaseUpdater("users", User.class);
+      DependencyFactory.getCurrentCollectionWrapper("users", User.class);
 
   // Private constructor
   private UserUtil() {}
