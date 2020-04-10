@@ -3,11 +3,11 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Map;
 
-import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
-import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.common.FavoLocation;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -20,20 +20,20 @@ public class User implements Document {
   private String email;
   private String deviceId;
   private String notificationId;
-  private LocalDate birthDate;
-  private Location location;
+  private Date birthDate;
+  private FavoLocation location;
   private int activeAcceptingFavors;
   private int activeRequestingFavors;
 
   public User() {}
 
-  public User(String name, String email, String deviceId, LocalDate birthDate, Location location) {
-    this.id = DatabaseWrapper.generateRandomId();
+  public User(String id, String name, String email, String deviceId, LocalDate birthDate, FavoLocation location) {
+    this.id = id;
     this.name = name;
     this.email = email;
     this.deviceId = deviceId;
     this.notificationId = null;
-    this.birthDate = birthDate;
+    this.birthDate = new Date();;
     this.location = location;
     this.activeAcceptingFavors = 0;
     this.activeRequestingFavors = 0;
@@ -66,7 +66,7 @@ public class User implements Document {
     return notificationId;
   }
 
-  public LocalDate getBirthDate() {
+  public Date getBirthDate() {
     return birthDate;
   }
 
@@ -82,19 +82,21 @@ public class User implements Document {
     return activeRequestingFavors;
   }
 
-  void setActiveAcceptingFavors(int activeAcceptingFavors) {
+  public void setActiveAcceptingFavors(int activeAcceptingFavors) {
     this.activeAcceptingFavors = activeAcceptingFavors;
   }
 
-  void setActiveRequestingFavors(int activeRequestingFavors) {
+  public void setActiveRequestingFavors(int activeRequestingFavors) {
     this.activeRequestingFavors = activeRequestingFavors;
   }
 
-  void setNotificationId(String notificationId) {
+  public void setNotificationId(String notificationId) {
     this.notificationId = notificationId;
   }
 
-  void setLocation(Location location) {
+  public void setDeviceId(String deviceId) { this.deviceId = deviceId; }
+
+  void setLocation(FavoLocation location) {
     this.location = location;
   }
 

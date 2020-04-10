@@ -1,5 +1,6 @@
 package ch.epfl.favo.user;
 
+import android.content.res.Resources;
 import android.location.Location;
 import android.util.Log;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
@@ -45,6 +47,17 @@ public class UserUtil {
       currentUserId = user.getId();
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
+    }
+  }
+
+  /** @param id A FireBase Uid to search for in Users table. */
+  public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
+
+    try {
+      return collection.getDocument(id);
+    } catch (Exception e) {
+      Log.d(TAG, "unable to find document in db.");
+      throw new Resources.NotFoundException();
     }
   }
 

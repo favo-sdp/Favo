@@ -11,6 +11,7 @@ import java.time.LocalDate;
 
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.TestUtil;
 
@@ -45,13 +46,14 @@ public class UserUnitTests {
   @Test
   public void userGettersReturnCorrectValues() {
 
+    String id = TestConstants.USER_ID;
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
     LocalDate birthDate = LocalDate.of(1994, 11, 8);
-    Location location = TestConstants.LOCATION;
+    FavoLocation location = TestConstants.LOCATION;
 
-    User user = new User(name, email, deviceId, birthDate, location);
+    User user = new User(id, name, email, deviceId, birthDate, location);
 
     assertEquals(name, user.getName());
     assertEquals(email, user.getEmail());
@@ -70,14 +72,22 @@ public class UserUnitTests {
     User user = new User();
     int activeAcceptingFavors = 3;
     int activeRequestingFavors = 4;
-    String temporaryId = "temporaryId";
+    String temporaryNotificationId = "temporaryNotificationId";
+    String temporaryDeviceId = "temporaryDeviceId";
+    String providerName = "newProvider"
+    FavoLocation newLoc = new FavoLocation(providerName);
+
     user.setActiveAcceptingFavors(activeAcceptingFavors);
     user.setActiveRequestingFavors(activeRequestingFavors);
-    user.setNotificationId(temporaryId);
+    user.setNotificationId(temporaryNotificationId);
+    user.setDeviceId(temporaryDeviceId);
+    user.setLocation(newLoc);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
-    assertEquals(temporaryId, user.getNotificationId());
+    assertEquals(providerName, newLoc.getProvider());
+    assertEquals(temporaryNotificationId, user.getNotificationId());
+    assertEquals(temporaryDeviceId, user.getDeviceId());
   }
 
   @Test
@@ -107,12 +117,13 @@ public class UserUnitTests {
     CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
     Mockito.doNothing().when(mock).addDocument(any(User.class));
 
+    String id = TestConstants.USER_ID;
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    Location location = TestConstants.LOCATION;
+    FavoLocation location = TestConstants.LOCATION;
 
-    User user = new User(name, email, deviceId, null, location);
+    User user = new User(id, name, email, deviceId, null, location);
     UserUtil.getSingleInstance().postAccount(user);
 
     assertNotNull(user);
