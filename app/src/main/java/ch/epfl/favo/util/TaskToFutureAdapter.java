@@ -13,4 +13,14 @@ public class TaskToFutureAdapter<T> extends CompletableFuture<T> {
     task.addOnSuccessListener(this::complete);
     task.addOnFailureListener(this::completeExceptionally);
   }
+  public CompletableFuture<T> getInstance(){
+    CompletableFuture<T> res;
+    if (DependencyFactory.isTestMode()){
+      res = DependencyFactory.getCurrentCompletableFuture();
+    }
+    else{
+      res = this;
+    }
+    return res;
+  }
 }
