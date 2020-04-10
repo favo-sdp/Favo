@@ -74,7 +74,7 @@ public class UserUnitTests {
     int activeRequestingFavors = 4;
     String temporaryNotificationId = "temporaryNotificationId";
     String temporaryDeviceId = "temporaryDeviceId";
-    String providerName = "newProvider"
+    String providerName = "newProvider";
     FavoLocation newLoc = new FavoLocation(providerName);
 
     user.setActiveAcceptingFavors(activeAcceptingFavors);
