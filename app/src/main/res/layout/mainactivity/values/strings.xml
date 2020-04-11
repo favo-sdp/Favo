@@ -33,6 +33,8 @@
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
+    <string name="title_map">Map</string>
+    <string name="title_favors">Favors</string>
 
 
 </resources>

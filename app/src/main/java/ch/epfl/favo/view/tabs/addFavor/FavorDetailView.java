@@ -13,7 +13,6 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
 
 public class FavorDetailView extends Fragment {
   private Favor favor;
@@ -25,8 +24,6 @@ public class FavorDetailView extends Fragment {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // hide bottom tabs and hamburger menu
-    setupView();
     // inflate view
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     Button confirmFavorBtn = rootView.findViewById(R.id.accept_button);
@@ -70,9 +67,5 @@ public class FavorDetailView extends Fragment {
     TextView textView = rootView.findViewById(id);
     textView.setText(text);
     textView.setKeyListener(null);
-  }
-
-  private void setupView() {
-    ((ViewController) getActivity()).setupViewBotDestTab();
   }
 }

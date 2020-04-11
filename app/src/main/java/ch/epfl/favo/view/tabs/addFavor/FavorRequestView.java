@@ -36,7 +36,6 @@ import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
@@ -401,7 +400,7 @@ public class FavorRequestView extends Fragment {
    */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
+    ((MainActivity) Objects.requireNonNull(getActivity())).hideBottomNavigation();
     if (mTitleView.getKeyListener() != null) {
       mTitleView.setTag(mTitleView.getKeyListener());
     }

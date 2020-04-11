@@ -5,20 +5,20 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -30,28 +30,20 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.ViewController;
-
-import static androidx.navigation.Navigation.findNavController;
-import static ch.epfl.favo.R.id.drawer_layout;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
  * left. Contains a bottom navigation for top-level activities.
  */
-public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, ViewController {
-  // Bottom tabs
-  public RadioButton mapButton;
-  public RadioButton favListButton;
-  // UI
+public class MainActivity extends AppCompatActivity {
+
   private NavController navController;
-  private NavigationView nav;
+  private AppBarConfiguration appBarConfiguration;
+
   private DrawerLayout drawerLayout;
-  private ImageButton hambMenuButton;
-  /*Activate if we want a toolbar */
-  // private Toolbar toolbar;
-  private ImageButton backButton;
+  private NavigationView navigationView;
+  private BottomNavigationView bottomNavigationView;
+
   private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
@@ -63,21 +55,6 @@ public class MainActivity extends AppCompatActivity
   public interface OnBackPressedListener {
     void doBack();
   }
-  //  public ArrayList<Favor> getActiveFavorArrayList() {
-  //    return activeFavorArrayList;
-  //  }
-  //
-  //  public void addActiveFavor(Favor favor) {
-  //    activeFavorArrayList.add(favor);
-  //  }
-  //
-  //  public ArrayList<Favor> getarchivedFavorArrayList() {
-  //    return archivedFavorArrayList;
-  //  }
-  //
-  //  public void addPastFavor(Favor favor) {
-  //    archivedFavorArrayList.add(favor);
-  //  }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -87,21 +64,11 @@ public class MainActivity extends AppCompatActivity
     setContentView(R.layout.activity_main);
 
     // Initialize Variables
-    nav = findViewById(R.id.nav_view);
-    drawerLayout = findViewById(drawer_layout);
-    hambMenuButton = findViewById(R.id.hamburger_menu_button);
-    backButton = findViewById(R.id.back_button);
-    mapButton = findViewById(R.id.nav_map_button);
-    favListButton = findViewById(R.id.nav_favor_list_button);
-    // Setup Controllers
-    setUpHamburgerMenuButton();
-    setUpBackButton();
-    setupNavController();
-    setupDrawerNavigation();
-    setupBottomNavigation();
+    navigationView = findViewById(R.id.nav_view);
+    bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+    drawerLayout = findViewById(R.id.drawer_layout);
 
-    // prevent swipe to open the navigation menu
-    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    setupActivity();
 
     // check connection
     if (DependencyFactory.isOfflineMode(this)) {
@@ -111,9 +78,67 @@ public class MainActivity extends AppCompatActivity
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
+  }
 
-    // Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-    // setSupportActionBar(myToolbar);
+  private void setupActivity() {
+    // prevent swipe to open the navigation menu
+    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+    setSupportActionBar(findViewById(R.id.toolbar));
+
+    // setup app bar
+    appBarConfiguration =
+        new AppBarConfiguration.Builder(
+                R.id.nav_map,
+                R.id.nav_favorList,
+                R.id.nav_account,
+                R.id.nav_settings,
+                R.id.nav_about,
+                R.id.nav_share)
+            .setDrawerLayout(drawerLayout)
+            .build();
+
+    navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+    NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+    navigationView.setNavigationItemSelectedListener(
+        item -> {
+          if (item.getItemId() == R.id.nav_share) {
+            startShareIntent();
+          }
+
+          drawerLayout.closeDrawer(GravityCompat.START);
+          return false;
+        });
+
+    navController.addOnDestinationChangedListener(
+        (controller, destination, arguments) -> {
+          switch (destination.getId()) {
+            case R.id.nav_account:
+            case R.id.nav_about:
+            case R.id.nav_settings:
+              hideBottomNavigation();
+              break;
+
+            default:
+              showBothNavigation();
+          }
+        });
+  }
+
+  public void hideBottomNavigation() {
+    findViewById(R.id.nav_view).setVisibility(View.VISIBLE);
+    findViewById(R.id.bottom_navigation_view).setVisibility(View.GONE);
+
+    NavigationUI.setupWithNavController(navigationView, navController);
+  }
+
+  public void showBothNavigation() {
+    findViewById(R.id.nav_view).setVisibility(View.VISIBLE);
+    findViewById(R.id.bottom_navigation_view).setVisibility(View.VISIBLE);
+
+    NavigationUI.setupWithNavController(navigationView, navController);
+    NavigationUI.setupWithNavController(bottomNavigationView, navController);
   }
 
   private void showNoConnectionSnackbar() {
@@ -171,66 +196,14 @@ public class MainActivity extends AppCompatActivity
         if (mKeyboardVisible != isKeyboardNowVisible) {
           if (isKeyboardNowVisible) {
             // onKeyboardShown
-            hideBottomTabs();
+            hideBottomNavigation();
           } else {
             // onKeyboardHidden
-            showBottomTabs();
+            showBothNavigation();
           }
         }
         mKeyboardVisible = isKeyboardNowVisible;
       };
-
-  private void setUpHamburgerMenuButton() {
-    hambMenuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
-  }
-
-  private void setUpBackButton() {
-    backButton.setOnClickListener(v -> onBackPressed());
-  }
-
-  private void setupNavController() {
-    navController = findNavController(this, R.id.nav_host_fragment);
-  }
-
-  private void setupDrawerNavigation() {
-
-    // Only pass top-level destinations.
-    // appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
-
-    /*Activate if we want a toolbar */
-    // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-    nav.setNavigationItemSelectedListener(this);
-  }
-
-  /**
-   * Will control drawer layout.
-   *
-   * @param item One of the buttons in the left drawer menu.
-   * @return boolean of whether operation was successful.
-   */
-  @Override
-  public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-    int itemId = item.getItemId();
-
-    switch (itemId) {
-      case R.id.nav_home:
-        navController.popBackStack(R.id.nav_map, false);
-        // navController.navigate(R.id.action_global_nav_map);
-        // getSupportFragmentManager().popBackStackImmediate();
-        // getSupportFragmentManager().popBackStackImmediate();
-        // getSupportFragmentManager().popBackStackImmediate();
-        break;
-      case R.id.nav_share:
-        startShareIntent();
-        break;
-      default:
-        navController.navigate(itemId);
-    }
-
-    drawerLayout.closeDrawer(GravityCompat.START);
-    return false;
-  }
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -240,64 +213,6 @@ public class MainActivity extends AppCompatActivity
     shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.app_site));
 
     startActivity(Intent.createChooser(shareIntent, null));
-  }
-
-  /** Will control the bottom navigation tabs */
-  private void setupBottomNavigation() {
-    mapButton.setOnClickListener(
-        v -> {
-          navController.popBackStack(R.id.nav_map, false);
-        });
-    favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
-  }
-
-  /** Implementations of the ViewController interface below */
-  @Override
-  public void hideBottomTabs() {
-    mapButton.setVisibility(View.INVISIBLE);
-    favListButton.setVisibility(View.INVISIBLE);
-  }
-
-  @Override
-  public void showBottomTabs() {
-    mapButton.setVisibility(View.VISIBLE);
-    favListButton.setVisibility(View.VISIBLE);
-  }
-
-  @Override
-  public void showBurgerIcon() {
-    hambMenuButton.setVisibility(View.VISIBLE);
-    backButton.setVisibility(View.INVISIBLE);
-  }
-
-  @Override
-  public void showBackIcon() {
-    backButton.setVisibility(View.VISIBLE);
-    hambMenuButton.setVisibility(View.INVISIBLE);
-  }
-
-  @Override
-  public void checkMapViewButton() {
-    favListButton.setChecked(false);
-    mapButton.setChecked(true);
-  }
-
-  @Override
-  public void checkFavListViewButton() {
-    mapButton.setChecked(false);
-    favListButton.setChecked(true);
-  }
-
-  @Override
-  public void setupViewTopDestTab() {
-    showBurgerIcon();
-    showBottomTabs();
-  }
-
-  @Override
-  public void setupViewBotDestTab() {
-    hideBottomTabs();
-    showBackIcon();
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
@@ -311,7 +226,7 @@ public class MainActivity extends AppCompatActivity
 
       favorFuture.thenAccept(
           favor -> {
-            otherActiveFavorsAround.put(favor.getId(), favor);
+            // otherActiveFavorsAround.put(favor.getId(), favor);
             Bundle favorBundle = new Bundle();
             favorBundle.putParcelable("FAVOR_ARGS", favor);
             navController.navigate(R.id.action_global_favorDetailView, favorBundle);
@@ -322,6 +237,19 @@ public class MainActivity extends AppCompatActivity
   @Override
   public void onBackPressed() {
     if (onBackPressedListener != null) onBackPressedListener.doBack();
-    else navController.popBackStack();
+    else {
+      DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+      if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+      else
+        // navController.popBackStack();
+        super.onBackPressed();
+    }
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    return NavigationUI.navigateUp(navController, appBarConfiguration)
+        || super.onSupportNavigateUp();
   }
 }

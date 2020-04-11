@@ -27,7 +27,6 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
-import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
@@ -128,7 +127,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     favorsFound.clear();
     ((MainActivity) (Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
     spinner.setVisibility(View.VISIBLE);
-    ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
+    ((MainActivity) Objects.requireNonNull(getActivity())).hideBottomNavigation();
     if (lastPosition == 0) displayFavorList(activeFavors, R.string.favor_no_active_favor);
     else displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
   }
@@ -168,7 +167,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
           Bundle favorBundle = new Bundle();
           favorBundle.putParcelable("FAVOR_ARGS", favor);
           Navigation.findNavController(getView())
-              .navigate(R.id.action_nav_favorlist_to_favorRequestView, favorBundle);
+              .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
           // CommonTools.replaceFragment(
           //    R.id.nav_host_fragment,
           //    getParentFragmentManager(),
@@ -205,7 +204,7 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
     switch (view.getId()) {
       case R.id.floatingActionButton:
-        Navigation.findNavController(view).navigate(R.id.action_nav_favorlist_to_favorRequestView);
+        Navigation.findNavController(view).navigate(R.id.action_nav_favorList_to_favorRequestView);
         // CommonTools.replaceFragment(
         //    R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
         break;
@@ -228,8 +227,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    ((ViewController) Objects.requireNonNull(getActivity())).setupViewTopDestTab();
-    ((ViewController) Objects.requireNonNull(getActivity())).checkFavListViewButton();
     // ensure click on view will hide keyboard
     listView.setOnTouchListener(
         (v, event) -> {

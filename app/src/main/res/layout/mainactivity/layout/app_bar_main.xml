@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,39 +11,36 @@
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!--
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:popupTheme="@style/AppTheme.PopupOverlay" />
-    <include layout="@layout/content_main" />
-     -->
     <include layout="@layout/content_main" />
 
-    <ImageButton
-        android:id="@+id/hamburger_menu_button"
-        android:layout_width="@dimen/hamburger_button_size"
-        android:layout_height="@dimen/hamburger_button_size"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/hamb_menu_button"
-        android:gravity="top|end"
-        android:src="@drawable/ic_menu_green_24dp" />
+<!--    <ImageButton-->
+<!--        android:id="@+id/hamburger_menu_button"-->
+<!--        android:layout_width="@dimen/hamburger_button_size"-->
+<!--        android:layout_height="@dimen/hamburger_button_size"-->
+<!--        android:layout_marginStart="20dp"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:background="@drawable/hamb_menu_button"-->
+<!--        android:gravity="top|end"-->
+<!--        android:src="@drawable/ic_menu_green_24dp" />-->
 
-    <ImageButton
-        android:id="@+id/back_button"
-        android:layout_width="@dimen/hamburger_button_size"
-        android:layout_height="@dimen/hamburger_button_size"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/hamb_menu_button"
-        android:gravity="top|end"
-        android:src="@drawable/ic_arrow_back_green_24dp"
-        android:visibility="invisible" />
+<!--    <ImageButton-->
+<!--        android:id="@+id/back_button"-->
+<!--        android:layout_width="@dimen/hamburger_button_size"-->
+<!--        android:layout_height="@dimen/hamburger_button_size"-->
+<!--        android:layout_marginStart="20dp"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:background="@drawable/hamb_menu_button"-->
+<!--        android:gravity="top|end"-->
+<!--        android:src="@drawable/ic_arrow_back_green_24dp"-->
+<!--        android:visibility="invisible" />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
