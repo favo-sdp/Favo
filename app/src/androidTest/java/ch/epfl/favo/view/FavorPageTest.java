@@ -160,7 +160,7 @@ public class FavorPageTest {
     // check favor is displayed in active favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
-  
+
 
   @Test
   public void testFavorCancelUpdatesActiveAndArchivedListView() {

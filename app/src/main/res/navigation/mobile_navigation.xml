@@ -25,7 +25,7 @@
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapsPage"
         android:label="Map"
-        tools:layout="@layout/tab1_map">
+        tools:layout="@layout/fragment_map">
         <action
             android:id="@+id/action_nav_map_to_nav_favorlist"
             app:destination="@id/nav_favorlist"
@@ -71,7 +71,7 @@
         android:id="@+id/favorDetailView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
         android:label="FavorDetailView"
-        tools:layout="@layout/fragment_favor_accept_view"></fragment>
+        tools:layout="@layout/fragment_favor_accept_view" />
     <action
         android:id="@+id/action_global_favorDetailView"
         app:destination="@id/favorDetailView">

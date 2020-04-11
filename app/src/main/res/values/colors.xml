@@ -21,4 +21,8 @@
     <color name="accepted_status_bg">#6ED172</color>
     <color name="completed_status_bg">#6ED172</color>
     <color name="cancelled_status_bg">#F79790</color>
+
+    <color name="text_shadow_color">#67CDDC39</color>
+
+
 </resources>

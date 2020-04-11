@@ -216,10 +216,6 @@ public class MainActivity extends AppCompatActivity
     switch (itemId) {
       case R.id.nav_home:
         navController.popBackStack(R.id.nav_map, false);
-        // navController.navigate(R.id.action_global_nav_map);
-        // getSupportFragmentManager().popBackStackImmediate();
-        // getSupportFragmentManager().popBackStackImmediate();
-        // getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -308,7 +304,6 @@ public class MainActivity extends AppCompatActivity
     if (extras != null) {
       String favor_id = extras.getString("FavorId");
       CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-
       favorFuture.thenAccept(
           favor -> {
             otherActiveFavorsAround.put(favor.getId(), favor);

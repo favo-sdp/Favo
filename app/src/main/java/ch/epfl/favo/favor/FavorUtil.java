@@ -1,13 +1,20 @@
 package ch.epfl.favo.favor;
 
 import android.location.Location;
+import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.FavorAlreadyAcceptedException;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
@@ -44,6 +51,57 @@ public class FavorUtil {
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture updateFavor(Favor favor) {
+    CompletableFuture completableFuture = new CompletableFuture();
+    try {
+      completableFuture = collection.updateDocument(favor.getId(), favor.toMap());
+    } catch (Exception e) {
+      Log.d(TAG, Objects.requireNonNull(e.getMessage()));
+    }
+    return completableFuture;
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture acceptFavor(String favorId) {
+    CompletableFuture<Favor> getCurrentFavorTask = retrieveFavor(favorId);
+    return getCurrentFavorTask
+        .thenAccept(
+            favor -> {
+              if (favor.getStatusId() != Favor.Status.REQUESTED) {
+                throw new FavorAlreadyAcceptedException("Favor has been accepted by another user.");
+              } else {
+                collection.updateDocument(
+                    favorId,
+                    new HashMap<String, String>() {
+                      {
+                        put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
+                        put(Favor.STATUS_ID, Favor.Status.ACCEPTED.getPrettyString());
+                      }
+                    });
+              }
+            });
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
+    CompletableFuture updateFuture = new CompletableFuture();
+    try {
+      updateFuture =
+          collection.updateDocument(
+              favorId,
+              new HashMap<String, String>() {
+                {
+                  put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
+                  put(Favor.STATUS_ID, newStatus.toString());
+                }
+              });
+    } catch (Exception e) {
+      Log.d(TAG, Objects.requireNonNull(e.getMessage()));
+    }
+    return updateFuture;
   }
 
   /**

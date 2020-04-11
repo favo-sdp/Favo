@@ -9,14 +9,25 @@ import ch.epfl.favo.common.Document;
 public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<T> {
 
   private T mockDocument;
+  private CompletableFuture mockResult;
 
   public MockDatabaseWrapper() {}
+
+  public void setMockDocument(T document) {
+    this.mockDocument = document;
+  }
+
+  public void setMockResult(CompletableFuture result) {
+    this.mockResult = result;
+  }
 
   @Override
   public void addDocument(T favor) {}
 
   @Override
-  public void updateDocument(String key, Map<String, Object> updates) {}
+  public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
+    return this.mockResult;
+  }
 
   @Override
   public void removeDocument(String key) {}
