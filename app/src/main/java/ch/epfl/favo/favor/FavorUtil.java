@@ -2,15 +2,28 @@ package ch.epfl.favo.favor;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.TaskToFutureAdapter;
 
 /*
 This models the favor request.
@@ -133,11 +146,11 @@ public class FavorUtil {
 
   /**
    * Returns all the favors that are active in a given radius.
-   *
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-  public ArrayList<Favor> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
 
     throw new NotImplementedException();
   }

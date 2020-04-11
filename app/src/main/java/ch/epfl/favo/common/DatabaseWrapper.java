@@ -90,7 +90,7 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-  private static CollectionReference getCollectionReference(String collection) {
+  public static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);
   }
 }

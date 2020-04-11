@@ -1,7 +1,10 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,19 +18,29 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.util.TaskToFutureAdapter;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
@@ -42,7 +55,7 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
  */
 public class NearbyFavorList extends Fragment implements View.OnClickListener {
 
-    private Map<String, Favor> activeFavors;
+    private Map<String, Favor> nearbyFavors = new HashMap<>();
     private TextView tipTextView;
     private ListView listView;
     private SearchView searchView;
@@ -58,15 +71,14 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         // Extract two arrayLists from the main activity
-        MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
-        activeFavors = activity.activeFavors;
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,14 +93,79 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
         FloatingActionButton toggle = rootView.findViewById(R.id.list_toggle);
         toggle.setOnClickListener(this::onToggleClick);
         first = true;
-        if(!favorsFound.isEmpty())
-            displayFavorList(favorsFound, R.string.query_failed);
-        else
-            displayFavorList(activeFavors, R.string.favor_no_active_favor);
         Log.d("ListView", "create view");
         setupListView();
+        setupNearbyList();
         setupSearchView();
         return rootView;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void setupNearbyList(){
+        MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
+        String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1km");
+        double radius = 1;
+        Log.d("Radius", setting);
+        switch (setting){
+            case "1 Km":
+                radius = 1;
+                break;
+            case "5 Km":
+                radius = 5;
+                break;
+            case "10 Km":
+                radius = 10;
+                break;
+            case "25 Km":
+                radius = 25;
+                break;
+        }
+        GpsTracker mGpsTracker = new GpsTracker(getContext());
+        Location loc = mGpsTracker.getLocation();
+        CompletableFuture<List<Favor>> favors = retrieveLongitudeBoundFavors(loc, radius);
+        double finalRadius = radius;
+        favors.thenAccept(favors1 -> {
+            Log.d("Radius", String.valueOf(favors1.size()));
+            double latDif = Math.toDegrees(finalRadius / 6371);
+            double latitude_lower = loc.getLatitude() - latDif;
+            double latitude_upper = loc.getLatitude() + latDif;
+            for (Favor favor:favors1) {
+                if(favor.getLocation().getLatitude() > latitude_lower
+                        && favor.getLocation().getLongitude() < latitude_upper)
+                nearbyFavors.put(favor.getId(), favor);
+                activity.otherActiveFavorsAround = nearbyFavors;
+            }
+            if(!favorsFound.isEmpty())
+                displayFavorList(favorsFound, R.string.query_failed);
+            else
+                displayFavorList(nearbyFavors, R.string.favor_no_active_favor);
+        });
+    }
+
+  /**
+   * I currently implement a temporary, simpler version to retrieve favors in a square area on
+   * sphere surface. It should be replaced by
+   * FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mGpsTracker.getLocation(), radius);
+   * in future.
+   * @param loc
+   * @param radius
+   */
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  private CompletableFuture<List<Favor>> retrieveLongitudeBoundFavors(Location loc, double radius) {
+
+        double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+        double longitude_lower = loc.getLongitude() - longDif;
+        double longitude_upper = loc.getLongitude() + longDif;
+        Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
+                //.whereGreaterThan("location.latitude", latitude_lower)
+                //.whereLessThan("location.latitude", latitude_upper)
+                .whereGreaterThan("location.longitude", 6.6)
+                .whereLessThan("location.longitude", 7).get();
+        Log.d("Radius", longitude_lower + " " + longitude_upper + " " + loc.getLongitude());
+        CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
+
+        return getAllFuture.thenApply(
+                querySnapshot -> querySnapshot.toObjects(Favor.class));
     }
 
     private void setupSearchView(){
@@ -129,7 +206,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
 
     private void quitSearchMode(){
         favorsFound.clear();
-        displayFavorList(activeFavors, R.string.favor_no_active_favor);
+        displayFavorList(nearbyFavors, R.string.favor_no_active_favor);
         ((MainActivity)(Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
         ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
     }
@@ -147,7 +224,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     private class onQuery implements SearchView.OnQueryTextListener {
         @Override
         public boolean onQueryTextSubmit(String query) {
-            favorsFound = doQuery(query, activeFavors);
+            favorsFound = doQuery(query, nearbyFavors);
             displayFavorList(favorsFound, R.string.query_failed);
             return false;
         }
