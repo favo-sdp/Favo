@@ -5,7 +5,7 @@
     android:id="@+id/fragment_tab2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.FavorPage">
+    tools:context=".view.tabs.favorList.FavorPage">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -45,29 +45,6 @@
 <!--            app:backgroundTint="#4CAF50"-->
 <!--            app:srcCompat="@drawable/ic_add_black_24dp" />-->
 
-        <ListView
-            android:id="@+id/favor_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner" >
-        </ListView>
-
-        <TextView
-            android:id="@+id/tip"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/favor_list"
-            app:layout_constraintBottom_toBottomOf="@id/favor_list"
-            android:textSize="20sp"
-            android:visibility="invisible"
-            android:textAlignment="center">
-        </TextView>
-
         <Spinner
             android:id="@+id/spinner"
             android:layout_width="wrap_content"
@@ -78,14 +55,45 @@
 
         <SearchView
             android:id="@+id/searchView"
-            android:tag="searchView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:iconifiedByDefault="true"
             android:queryHint="@string/search_hint"
+            android:tag="searchView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/paging_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/paging_loading"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:clipToPadding="false"
+                tools:listitem="@layout/favor_list_item" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:id="@+id/tip"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/swipe_refresh_layout"
+            app:layout_constraintBottom_toBottomOf="@id/swipe_refresh_layout"
+            android:textSize="20sp"
+            android:visibility="invisible"
+            android:textAlignment="center">
+        </TextView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"

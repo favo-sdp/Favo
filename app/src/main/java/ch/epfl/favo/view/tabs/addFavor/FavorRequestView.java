@@ -287,7 +287,7 @@ public class FavorRequestView extends Fragment {
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
+    Favor favor = new Favor(title, desc, DependencyFactory.getCurrentFirebaseUser().getUid(), loc, Favor.Status.REQUESTED);
     if (currentFavor == null) {
       currentFavor = favor;
     } else {

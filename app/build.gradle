@@ -78,6 +78,7 @@ dependencies {
 
     // FirebaseUI for Cloud Firestore
     implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
+    implementation "androidx.paging:paging-runtime:2.1.2"
 
     implementation 'com.google.firebase:firebase-messaging:20.1.5'
 
