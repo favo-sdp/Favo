@@ -114,13 +114,15 @@ public class FavorDetailViewTest {
   }
   @Test
   public void testFavorFailsToBeAcceptedIfPreviouslyAccepted(){
-    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
-    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).check(matches(withText(R.string.accept_favor)));
+    //Another user accepts favor
+    Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
+    anotherFavorWithSameId.setStatusId(Favor.Status.ACCEPTED);
+    mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText("Failed to update")));
-
+            .check(matches(withText("Favor is no longer available")));
   }
 }

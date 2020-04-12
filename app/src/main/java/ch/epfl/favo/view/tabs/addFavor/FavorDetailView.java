@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,8 +13,6 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -30,7 +29,7 @@ import ch.epfl.favo.view.ViewController;
 public class FavorDetailView extends Fragment {
   private Favor favor;
   private FloatingActionButton locationAccessBtn;
-  private Button confirmFavorBtn;
+  private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
   private TextView statusText;
 
@@ -59,16 +58,42 @@ public class FavorDetailView extends Fragment {
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons(View rootView) {
-    confirmFavorBtn = rootView.findViewById(R.id.accept_button);
+    acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
 
-    // Show snackbar when favor has been confirmed
-    confirmFavorBtn.setOnClickListener(v -> acceptFavor());
+    // If clicking for the first time, then accept the favor
+    acceptAndCancelFavorBtn.setOnClickListener(
+        v -> {
+          if (favor.getStatusId() == Favor.Status.REQUESTED) {
+            acceptFavor();
+          } else {
+            cancelFavor();
+          }
+        });
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
-  @NotNull
+  private void cancelFavor() {
+    CompletableFuture completableFuture =
+        FavorUtil.getSingleInstance()
+            .updateFavorStatus(favor.getId(), Favor.Status.CANCELLED_ACCEPTER);
+    completableFuture.thenAccept(
+            o -> {
+              CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
+            });
+    completableFuture.exceptionally(
+            e -> {
+              CommonTools.showSnackbar(getView(), getString(R.string.update_favor_error));
+              return null;
+            });
+    //update UI
+    favor.setStatusId(Favor.Status.CANCELLED_ACCEPTER);
+    ((MainActivity) getActivity()).activeFavors.remove(favor.getId());
+    updateStatusDisplayFromFavorStatus();
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void acceptFavor() {
     CompletableFuture acceptFavorFuture = FavorUtil.getSingleInstance().acceptFavor(favor.getId());
     acceptFavorFuture.thenAccept(
@@ -80,23 +105,25 @@ public class FavorDetailView extends Fragment {
         });
     acceptFavorFuture.exceptionally(
         e -> {
-          if (((CompletionException) e).getCause().equals(FavorAlreadyAcceptedException.class)) {
-            CommonTools.showSnackbar(getView(), "Favor has already been accepted :(");
+          // if already accepted then change the status display and disable all the buttons
+          if (((CompletionException) e)
+              .getCause()
+              .getClass()
+              .equals(FavorAlreadyAcceptedException.class)) {
+            CommonTools.showSnackbar(getView(), "Favor is no longer available");
             favor.setStatusId(Favor.Status.ACCEPTED_BY_OTHER);
             updateStatusDisplayFromFavorStatus();
           }
-          CommonTools.showSnackbar(getView(), "Failed to update");
+          // if any other error, then just print a simple message
+          else {
+            CommonTools.showSnackbar(getView(), getString(R.string.update_favor_error));
+          }
           return null;
         });
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
-    //    String greetingStr = "favor of " + favor.getRequesterId();
-    //    String locationStr =
-    //        "latitude: "
-    //            + String.format("%.4f", favor.getLocation().getLatitude())
-    //            + " longitude: "
-    //            + String.format("%.4f", favor.getLocation().getLongitude());
+
     String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
@@ -111,36 +138,50 @@ public class FavorDetailView extends Fragment {
   private void updateStatusDisplayFromFavorStatus() {
     Favor.Status newStatus = favor.getStatusId();
     statusText.setText(newStatus.getPrettyString());
+    updateButtonDisplay(newStatus);
     switch (newStatus) {
       case SUCCESSFULLY_COMPLETED:
         {
+          enableButtons(false);
         }
       case ACCEPTED:
         {
-          enableButtons(false, true);
           statusText.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
         }
 
       case REQUESTED:
         {
-          enableButtons(true, true);
           statusText.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           break;
         }
-      case ACCEPTED_BY_OTHER:
-        {
-          enableButtons(false, false);
-        }
       default: // includes accepted by other
-        enableButtons(false, false);
+        enableButtons(false);
         statusText.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
 
-  private void enableButtons(boolean acceptButton, boolean chatButton) {
-    confirmFavorBtn.setEnabled(acceptButton);
-    chatBtn.setEnabled(chatButton);
+  private void updateButtonDisplay(Favor.Status status) {
+    String displayMessage;
+    int backgroundColor;
+    Drawable img;
+    if (status == Favor.Status.ACCEPTED) {
+      displayMessage = "Cancel";
+      backgroundColor = R.color.fui_transparent;
+      img = getResources().getDrawable(R.drawable.ic_cancel_24dp);
+    } else {
+      displayMessage = getResources().getString(R.string.accept_favor);
+      img = getResources().getDrawable(R.drawable.ic_thumb_up_24dp);
+      backgroundColor = android.R.drawable.btn_default;
+    }
+    acceptAndCancelFavorBtn.setText(displayMessage);
+    acceptAndCancelFavorBtn.setBackgroundResource(backgroundColor);
+    acceptAndCancelFavorBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, img);
+  }
+
+  private void enableButtons(boolean enable) {
+    acceptAndCancelFavorBtn.setEnabled(enable);
+    chatBtn.setEnabled(enable);
   }
 
   private void setupTextView(View rootView, int id, String text) {

@@ -35,7 +35,6 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   @Override
   public CompletableFuture<T> getDocument(String key) {
     CompletableFuture<T> future = new CompletableFuture<>();
-    CompletableFuture.supplyAsync(() -> mockDocument);
     future.complete(mockDocument);
     return future;
   }
