@@ -127,12 +127,6 @@ public class DependencyFactory {
     return FirebaseFirestore.getInstance();
   }
 
-  @VisibleForTesting
-  public static void setDeviceId(Settings.Secure dependency) {
-    testMode = true;
-    deviceSettings = dependency;
-  }
-
   public static String getDeviceId(@Nullable ContentResolver contentResolver) {
     if (testMode || contentResolver == null) {
       return "22f523fgg3";
