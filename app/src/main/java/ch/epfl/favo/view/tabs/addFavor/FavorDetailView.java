@@ -9,13 +9,8 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
@@ -36,25 +31,19 @@ public class FavorDetailView extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     Button confirmFavorBtn = rootView.findViewById(R.id.accept_button);
 
-    if (favor == null) {
-      favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
-    }
-    displayFromFavor(rootView, favor);
-
     // Show snackbar when favor has been confirmed
     confirmFavorBtn.setOnClickListener(
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
             CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
-
-            // Update accepterId in DB
-            String accepterId = UserUtil.currentUserId;
-            Map<String, Object> acceptedFavor = new HashMap<>();
-            acceptedFavor.put("accepterId", accepterId);
-            FavorUtil.getSingleInstance().updateFavor(favor.getId(), acceptedFavor);
           }
         });
+
+    if (favor == null) {
+      favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+    }
+    displayFromFavor(rootView, favor);
 
     return rootView;
   }
