@@ -10,6 +10,7 @@ import ch.epfl.favo.common.FavoLocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for Favor object.
@@ -46,7 +47,7 @@ public class FavorUnitTests {
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
-    assertEquals(accepterId, favor.getAccepterID());
+    assertEquals(accepterId, favor.getAccepterId());
   }
 
   @Test
@@ -80,8 +81,18 @@ public class FavorUnitTests {
     assertEquals(favor.getDescription(), favor2.getDescription());
     assertEquals(favor.getLocation(), favor2.getLocation());
     assertEquals(favor.getRequesterId(), favor2.getRequesterId());
-    assertEquals(favor.getAccepterID(), favor2.getAccepterID());
+    assertEquals(favor.getAccepterId(), favor2.getAccepterId());
     assertEquals(favor.getPostedTime(), favor2.getPostedTime());
     assertEquals(favor.getStatusId(), favor2.getStatusId());
+  }
+  @Test
+  public void favorComparisonIsSuccessful(){
+    Favor favor =FakeItemFactory.getFavor();
+    Favor favor2 = FakeItemFactory.getFavor();
+    assertTrue(favor.equals(favor2));
+    Object o = new Object();
+    assertTrue(!favor.equals(o));
+    Favor favor3 = favor;
+    assertTrue(favor.equals(favor3));
   }
 }

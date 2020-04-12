@@ -21,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/title_accept_view"
-            android:background="@color/colorAccent"
+            android:background="@color/material_gray_300"
             android:layout_marginBottom="@dimen/margin_accept_view"/>
         <TextView
             android:id="@+id/title_accept_view"
@@ -39,7 +39,7 @@
             android:clickable="true"
             android:textAlignment="center"
             android:textSize="20sp"
-            android:background="@color/text_shadow_color"
+            android:background="@color/material_gray_300"
 
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -68,7 +68,7 @@
             android:layout_marginBottom="@dimen/margin_accept_view"
             android:orientation="horizontal"
             app:layout_constraintBottom_toTopOf="@id/details_accept_view"
-            android:background="@color/text_shadow_color">
+            android:background="@color/material_gray_300">
 
             <TextView
                 android:id="@+id/datetime_accept_view"
@@ -79,7 +79,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.4"
                 android:focusable="true"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:text="05/29/2015 5:50 AM" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -97,6 +97,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="true"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:text="sample description"
             android:layout_marginBottom="@dimen/margin_accept_view"
             android:focusableInTouchMode="true"
             android:clickable="true"
@@ -105,7 +108,7 @@
             android:maxLines="6"
             android:minLines="6"
             android:scrollbars="vertical"
-            android:background="@color/text_shadow_color"
+            android:background="@color/material_gray_300"
             android:shadowRadius="0.01"
             app:layout_constraintBottom_toTopOf="@+id/accept_chat_btns"/>
 

@@ -35,6 +35,8 @@
     <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="chat_message_detail_view">Start a chat</string>
     <string name="update_favor_error">Failed to update</string>
+    <string name="favor_remotely_changed_msg">Favor has been updated</string>
+    <string name="cancel_accept_button_display">Cancel</string>
 
 
 </resources>

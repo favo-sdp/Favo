@@ -105,17 +105,21 @@ public class FavorDetailViewTest {
   public void testAcceptButtonShowsFailSnackBar() {
     CompletableFuture failedResult = new CompletableFuture();
     failedResult.completeExceptionally(new RuntimeException());
+    // mockDatabaseWrapper.setMockDocument(fakeFavor); // set favor in db
     mockDatabaseWrapper.setMockResult(failedResult);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText("Failed to update")));
+        .check(matches(withText(R.string.update_favor_error)));
   }
+
   @Test
-  public void testFavorFailsToBeAcceptedIfPreviouslyAccepted(){
-    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).check(matches(withText(R.string.accept_favor)));
-    //Another user accepts favor
+  public void testFavorFailsToBeAcceptedIfPreviouslyAccepted() {
+    onView(withId(R.id.accept_button))
+        .check(matches(isDisplayed()))
+        .check(matches(withText(R.string.accept_favor)));
+    // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
     anotherFavorWithSameId.setStatusId(Favor.Status.ACCEPTED);
     mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
@@ -123,6 +127,60 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText("Favor is no longer available")));
+        .check(matches(withText(R.string.favor_remotely_changed_msg)));
+    // check update text matches Accepted by other
+    onView(withId(R.id.status_text_accept_view))
+        .check(matches(withText(Favor.Status.ACCEPTED_BY_OTHER.getPrettyString())));
+  }
+
+  @Test
+  public void testFavorCanBeCancelled() throws InterruptedException {
+    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    CompletableFuture successfulResult = new CompletableFuture();
+    successfulResult.complete(null);
+    mockDatabaseWrapper.setMockResult(successfulResult);
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.accept_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
+    onView(withId(R.id.accept_button))
+        .check(matches(withText(R.string.cancel_accept_button_display)))
+        .perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_cancel_success_msg)));
+    getInstrumentation().waitForIdleSync();
+    // check display is updated
+    onView(withId(R.id.status_text_accept_view))
+        .check(matches(withText(Favor.Status.CANCELLED_ACCEPTER.getPrettyString())));
+  }
+
+  @Test
+  public void testFavorShowsFailureSnackbarIfCancelFails() throws InterruptedException {
+    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    CompletableFuture successfulResult = new CompletableFuture();
+    successfulResult.complete(null);
+    mockDatabaseWrapper.setMockResult(successfulResult);
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.accept_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
+    CompletableFuture failedResult = new CompletableFuture();
+    failedResult.completeExceptionally(new RuntimeException());
+    mockDatabaseWrapper.setMockResult(failedResult);
+    onView(withId(R.id.accept_button))
+        .check(matches(withText(R.string.cancel_accept_button_display)))
+        .perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.update_favor_error)));
+    getInstrumentation().waitForIdleSync();
+    // check display is updated
+    onView(withId(R.id.status_text_accept_view))
+        .check(matches(withText(Favor.Status.ACCEPTED.getPrettyString())));
   }
 }

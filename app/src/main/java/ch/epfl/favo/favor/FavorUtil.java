@@ -12,7 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
-import ch.epfl.favo.common.FavorAlreadyAcceptedException;
+import ch.epfl.favo.common.FavorNoLongerAvailableException;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
@@ -71,7 +71,7 @@ public class FavorUtil {
         .thenAccept(
             favor -> {
               if (favor.getStatusId() != Favor.Status.REQUESTED) {
-                throw new FavorAlreadyAcceptedException("Favor has been accepted by another user.");
+                throw new FavorNoLongerAvailableException("Favor is no longer available");
               } else {
                 collection.updateDocument(
                     favorId,

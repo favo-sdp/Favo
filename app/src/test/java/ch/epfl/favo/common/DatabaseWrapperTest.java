@@ -12,7 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +98,8 @@ public class DatabaseWrapperTest {
 
   @Test
   public void updateDocument() {
+    Task<Void> mockEmptyTask = Mockito.mock(Task.class);
+    Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).update(any(HashMap.class));
     mockCollectionWrapper.updateDocument("bu", testFavor.toMap());
   }
 

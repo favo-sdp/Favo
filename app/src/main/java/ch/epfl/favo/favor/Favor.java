@@ -11,7 +11,6 @@ import java.util.Map;
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.FavoLocation;
-
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
@@ -20,7 +19,7 @@ public class Favor implements Parcelable, Document {
   public enum Status {
     REQUESTED("Requested"),
     EDIT("Edit mode"), // temporary state used for logic in the request view
-    ACCEPTED_BY_OTHER("Accepted by other"),//temporary state used for logic in detail view
+    ACCEPTED_BY_OTHER("Accepted by other"), // temporary state used for logic in detail view
     ACCEPTED("Accepted"),
     EXPIRED("Expired"),
     CANCELLED_REQUESTER("Cancelled by requester"),
@@ -167,8 +166,11 @@ public class Favor implements Parcelable, Document {
     return requesterId;
   }
 
-  public String getAccepterID() {
+  public String getAccepterId() {
     return accepterId;
+  }
+  public void setAccepterId(String id){
+    this.accepterId = id;
   }
 
   public Date getPostedTime() {
@@ -225,5 +227,29 @@ public class Favor implements Parcelable, Document {
     this.postedTime = other.getPostedTime();
     this.requesterId = other.getRequesterId();
     this.statusId = other.getStatusId();
+  }
+  // Overriding equals() to compare two Complex objects
+  @Override
+  public boolean equals(Object o) {
+
+    // If the object is compared with itself then return true
+    if (o == this) {
+      return true;
+    }
+
+        /* Check if o is an instance of Complex or not
+          "null instanceof [type]" also returns false */
+    if (!(o instanceof Favor)) {
+      return false;
+    }
+
+    // typecast o to Complex so that we can compare data members
+    Favor other = (Favor) o;
+
+    // Compare the data members and return accordingly
+    return this.title.equals(other.title)
+            && this.description.equals(other.description)
+            && this.statusId.equals(other.getStatusId())
+            && this.location.equals(other.getLocation());
   }
 }
