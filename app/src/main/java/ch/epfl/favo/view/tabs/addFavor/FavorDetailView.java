@@ -51,10 +51,6 @@ public class FavorDetailView extends Fragment {
 
   private void setupLocationSwitch(View rootView){
     TextView textView = rootView.findViewById(R.id.location_accept_view);
-    textView.setClickable(true);
-    textView.setOnClickListener((v)->{CommonTools.replaceFragment(R.id.fragment_favor_accept_view, getParentFragmentManager(),
-            new MapsPage());});
-
   }
 
   private void displayFromFavor(View rootView, Favor favor) {

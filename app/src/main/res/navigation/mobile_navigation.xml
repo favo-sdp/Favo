@@ -25,7 +25,10 @@
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapsPage"
         android:label="Map"
-        tools:layout="@layout/tab1_map">
+        tools:layout="@layout/fragment_map">
+        <action
+            android:id="@+id/action_nav_map_to_nearby_favor_list"
+            app:destination="@id/nav_nearby_favor_list" />
         <action
             android:id="@+id/action_nav_map_to_nav_favorlist"
             app:destination="@id/nav_favorlist"
@@ -43,6 +46,24 @@
         </action>
 
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_nearby_favor_list"
+        android:name="ch.epfl.favo.view.tabs.NearbyFavorList"
+        android:label="NearbyList"
+        tools:layout="@layout/fragment_nearby_favor_list">
+        <action
+            android:id="@+id/action_nav_nearby_list_to_favorDetailView"
+            app:destination="@id/favorDetailView">
+            <argument
+                android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="ch.epfl.favo.favor.Favor" />
+        </action>
+
+    </fragment>
+
+
     <fragment
         android:id="@+id/nav_favorlist"
         android:name="ch.epfl.favo.view.tabs.FavorPage"
@@ -62,16 +83,17 @@
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorRequestView"
         android:label="FavorRequestView"
         tools:layout="@layout/fragment_favor" />
+    <fragment
+        android:id="@+id/favorDetailView"
+        android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
+        android:label="FavorDetailView"
+        tools:layout="@layout/fragment_favor_accept_view" />
+
     <action
         android:id="@+id/action_global_nav_map"
         app:destination="@id/nav_map"
         app:launchSingleTop="true"
         app:popUpTo="@id/nav_map" />
-    <fragment
-        android:id="@+id/favorDetailView"
-        android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
-        android:label="FavorDetailView"
-        tools:layout="@layout/fragment_favor_accept_view"></fragment>
     <action
         android:id="@+id/action_global_favorDetailView"
         app:destination="@id/favorDetailView">

@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -33,19 +34,25 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
+import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.util.TaskToFutureAdapter;
 import ch.epfl.favo.view.ViewController;
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
@@ -60,10 +67,10 @@ public class MapsPage extends Fragment
   private ArrayList<Favor> currentActiveLocalFavorList = null;
   private boolean first = true;
   private boolean listMode = false;
-  private GpsTracker mGpsTracker;
   private boolean mLocationPermissionGranted = false;
   private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+  private MainActivity activity;
 
   public MapsPage() {
     // Required empty public constructor
@@ -109,8 +116,8 @@ public class MapsPage extends Fragment
   }
 
   private void onToggleClick(View view){
-    Log.d("ViewList", "click");
-    CommonTools.replaceFragment(R.id.nav_host_fragment, getParentFragmentManager(), new NearbyFavorList());
+    Navigation.findNavController(getView())
+            .navigate(R.id.action_nav_map_to_nearby_favor_list, null);
   }
 
   private void setupView() {
@@ -133,21 +140,85 @@ public class MapsPage extends Fragment
 
     FloatingActionButton toggle = view.findViewById(R.id.map_toggle);
      toggle.setOnClickListener(this::onToggleClick);
-
+     activity = (MainActivity) Objects.requireNonNull(getActivity());
     return view;
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    mGpsTracker = new GpsTracker(getContext());
+    GpsTracker gpsTracker = new GpsTracker(getContext());
+    mLocation = gpsTracker.getLocation();
+    setupNearbyList();
     if (mapFragment != null) {
       mapFragment.getMapAsync(this);
     }
   }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  private void setupNearbyList(){
+    String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1km");
+    double radius = 1;
+    Log.d("Radius", setting);
+    switch (setting){
+      case "1 Km":
+        radius = 1;
+        break;
+      case "5 Km":
+        radius = 5;
+        break;
+      case "10 Km":
+        radius = 10;
+        break;
+      case "25 Km":
+        radius = 25;
+        break;
+    }
+    CompletableFuture<List<Favor>> favors = retrieveLongitudeBoundFavors(mLocation, radius);
+    double finalRadius = radius;
+    favors.thenAccept(favors1 -> {
+      Log.d("Radius", String.valueOf(favors1.size()));
+      double latDif = Math.toDegrees(finalRadius / 6371);
+      double latitude_lower = mLocation.getLatitude() - latDif;
+      double latitude_upper = mLocation.getLatitude() + latDif;
+      for (Favor favor:favors1) {
+        if(favor.getLocation().getLatitude() > latitude_lower
+                && favor.getLocation().getLongitude() < latitude_upper)
+          activity.otherActiveFavorsAround.put(favor.getId(), favor);
+      }
+    });
+  }
+
+  /**
+   * I currently implement a temporary, simpler version to retrieve favors in a square area on
+   * sphere surface. It should be replaced by
+   * FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mGpsTracker.getLocation(), radius);
+   * in future.
+   * @param loc
+   * @param radius
+   */
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  private CompletableFuture<List<Favor>> retrieveLongitudeBoundFavors(Location loc, double radius) {
+
+    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    double longitude_lower = loc.getLongitude() - longDif;
+    double longitude_upper = loc.getLongitude() + longDif;
+    Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
+            //.whereGreaterThan("location.latitude", latitude_lower)
+            //.whereLessThan("location.latitude", latitude_upper)
+            .whereGreaterThan("location.longitude", 6.6)
+            .whereLessThan("location.longitude", 7).get();
+    Log.d("Radius", longitude_lower + " " + longitude_upper + " " + loc.getLongitude());
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
+
+    return getAllFuture.thenApply(
+            querySnapshot -> querySnapshot.toObjects(Favor.class));
+  }
+
 
   private void getLocationPermission() {
     /*
@@ -237,7 +308,6 @@ public class MapsPage extends Fragment
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
     try {
-      mLocation = mGpsTracker.getLocation();
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =
           mMap.addMarker(

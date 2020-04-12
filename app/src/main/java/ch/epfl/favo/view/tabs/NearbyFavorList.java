@@ -19,6 +19,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.gms.tasks.Task;
@@ -55,14 +56,13 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
  */
 public class NearbyFavorList extends Fragment implements View.OnClickListener {
 
-    private Map<String, Favor> nearbyFavors = new HashMap<>();
     private TextView tipTextView;
     private ListView listView;
     private SearchView searchView;
     private int screenWidth;
     private boolean first = true;
     private Map<String, Favor> favorsFound = new HashMap<>();
-
+    private MainActivity activity;
     public NearbyFavorList() {
         // Required empty public constructor
     }
@@ -75,97 +75,30 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
+        activity = (MainActivity) Objects.requireNonNull(getActivity());
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+        first = true;
         View rootView = inflater.inflate(R.layout.fragment_nearby_favor_list, container, false);
         setupView(rootView);
         tipTextView = rootView.findViewById(R.id.nearby_tip);
-        tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-
         listView = rootView.findViewById(R.id.nearby_favor_list);
         searchView = rootView.findViewById(R.id.nearby_searchView);
         FloatingActionButton toggle = rootView.findViewById(R.id.list_toggle);
+
         toggle.setOnClickListener(this::onToggleClick);
-        first = true;
-        Log.d("ListView", "create view");
+        tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         setupListView();
-        setupNearbyList();
         setupSearchView();
+        if(!favorsFound.isEmpty())
+            displayFavorList(favorsFound, R.string.query_failed);
+        else
+            displayFavorList(activity.otherActiveFavorsAround, R.string.favor_no_active_favor);
         return rootView;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.N)
-    private void setupNearbyList(){
-        MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
-        String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1km");
-        double radius = 1;
-        Log.d("Radius", setting);
-        switch (setting){
-            case "1 Km":
-                radius = 1;
-                break;
-            case "5 Km":
-                radius = 5;
-                break;
-            case "10 Km":
-                radius = 10;
-                break;
-            case "25 Km":
-                radius = 25;
-                break;
-        }
-        GpsTracker mGpsTracker = new GpsTracker(getContext());
-        Location loc = mGpsTracker.getLocation();
-        CompletableFuture<List<Favor>> favors = retrieveLongitudeBoundFavors(loc, radius);
-        double finalRadius = radius;
-        favors.thenAccept(favors1 -> {
-            Log.d("Radius", String.valueOf(favors1.size()));
-            double latDif = Math.toDegrees(finalRadius / 6371);
-            double latitude_lower = loc.getLatitude() - latDif;
-            double latitude_upper = loc.getLatitude() + latDif;
-            for (Favor favor:favors1) {
-                if(favor.getLocation().getLatitude() > latitude_lower
-                        && favor.getLocation().getLongitude() < latitude_upper)
-                nearbyFavors.put(favor.getId(), favor);
-                activity.otherActiveFavorsAround = nearbyFavors;
-            }
-            if(!favorsFound.isEmpty())
-                displayFavorList(favorsFound, R.string.query_failed);
-            else
-                displayFavorList(nearbyFavors, R.string.favor_no_active_favor);
-        });
-    }
-
-  /**
-   * I currently implement a temporary, simpler version to retrieve favors in a square area on
-   * sphere surface. It should be replaced by
-   * FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mGpsTracker.getLocation(), radius);
-   * in future.
-   * @param loc
-   * @param radius
-   */
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  private CompletableFuture<List<Favor>> retrieveLongitudeBoundFavors(Location loc, double radius) {
-
-        double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
-        double longitude_lower = loc.getLongitude() - longDif;
-        double longitude_upper = loc.getLongitude() + longDif;
-        Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
-                //.whereGreaterThan("location.latitude", latitude_lower)
-                //.whereLessThan("location.latitude", latitude_upper)
-                .whereGreaterThan("location.longitude", 6.6)
-                .whereLessThan("location.longitude", 7).get();
-        Log.d("Radius", longitude_lower + " " + longitude_upper + " " + loc.getLongitude());
-        CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
-
-        return getAllFuture.thenApply(
-                querySnapshot -> querySnapshot.toObjects(Favor.class));
     }
 
     private void setupSearchView(){
@@ -206,7 +139,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
 
     private void quitSearchMode(){
         favorsFound.clear();
-        displayFavorList(nearbyFavors, R.string.favor_no_active_favor);
+        displayFavorList(activity.otherActiveFavorsAround, R.string.favor_no_active_favor);
         ((MainActivity)(Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
         ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
     }
@@ -224,7 +157,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     private class onQuery implements SearchView.OnQueryTextListener {
         @Override
         public boolean onQueryTextSubmit(String query) {
-            favorsFound = doQuery(query, nearbyFavors);
+            favorsFound = doQuery(query, activity.otherActiveFavorsAround);
             displayFavorList(favorsFound, R.string.query_failed);
             return false;
         }
@@ -244,10 +177,10 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
                 (parent, view, position, id) -> {
                     ((MainActivity)(Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
                     Favor favor = (Favor) parent.getItemAtPosition(position);
-                    CommonTools.replaceFragment(
-                            R.id.nav_host_fragment,
-                            getParentFragmentManager(),
-                            FavorFragmentFactory.instantiate(favor,new FavorDetailView()));
+                    Bundle favorBundle = new Bundle();
+                    favorBundle.putParcelable("FAVOR_ARGS", favor);
+                    Navigation.findNavController(getView())
+                            .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
                 });
     }
 
