@@ -97,7 +97,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
         if(!favorsFound.isEmpty())
             displayFavorList(favorsFound, R.string.query_failed);
         else
-            displayFavorList(activity.otherActiveFavorsAround, R.string.favor_no_active_favor);
+            displayFavorList(activity.otherActiveFavorsAround, R.string.favor_no_nearby_favor);
         return rootView;
     }
 

@@ -59,6 +59,9 @@
     <string name="query_failed"> No match found</string>>
     <string name="empty"> </string>
 
+    <!--Nearby Favor View -->
+    <string name="favor_no_nearby_favor">There is no favor around you</string>
+
     <!--Favor Accepting View -->
     <string name="accept_favor">Accept Favor</string>
     <string name="favor_respond_success_msg">Favor responded successfully.</string>

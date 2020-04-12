@@ -48,6 +48,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
@@ -66,7 +67,6 @@ public class MapsPage extends Fragment
   private Location mLocation;
   private ArrayList<Favor> currentActiveLocalFavorList = null;
   private boolean first = true;
-  private boolean listMode = false;
   private boolean mLocationPermissionGranted = false;
   private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -84,6 +84,8 @@ public class MapsPage extends Fragment
     mMap = googleMap;
     mMap.clear();
     mMap.setMyLocationEnabled(true);
+    mMap.setInfoWindowAdapter(this);
+    mMap.setOnInfoWindowClickListener(this);
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
       Objects.requireNonNull(getView())
           .findViewById(R.id.offline_map_button)
@@ -93,14 +95,30 @@ public class MapsPage extends Fragment
           .findViewById(R.id.offline_map_button)
           .setVisibility(View.INVISIBLE);
     }
-    try{
-      GpsTracker gpsTracker = new GpsTracker(getContext());
-      mLocation = gpsTracker.getLocation();
-      setupNearbyList();
-      drawSelfLocationMarker();
-      drawFavorMarker(updateFavorlist());
-    }catch (Exception e){
-      throw new RuntimeException(e.getMessage() + "at map ready");
+    if(getArguments() != null){
+      Favor favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+      LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
+      Marker marker =
+              mMap.addMarker(
+                      new MarkerOptions()
+                              .position(latLng)
+                              .title(favor.getTitle())
+                              .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+      marker.setSnippet(favor.getDescription());
+      marker.showInfoWindow();
+      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
+    }
+    else{
+      try{
+        GpsTracker gpsTracker = new GpsTracker(getContext());
+        mLocation = gpsTracker.getLocation();
+        updateNearbyList();
+        drawSelfLocationMarker();
+        drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+      }catch (Exception e){
+        CommonTools.showSnackbar(getView(), e.getMessage() + "when map is ready");
+        throw new RuntimeException(e.getMessage() + "at map ready");
+      }
     }
   }
 
@@ -163,7 +181,7 @@ public class MapsPage extends Fragment
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
-  private void setupNearbyList(){
+  private void updateNearbyList(){
     String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1km");
     double radius = 1;
     Log.d("Radius", setting);
@@ -189,20 +207,27 @@ public class MapsPage extends Fragment
       double latitude_lower = mLocation.getLatitude() - latDif;
       double latitude_upper = mLocation.getLatitude() + latDif;
       for (Favor favor:favors1) {
-        if(favor.getLocation().getLatitude() > latitude_lower
+
+        if(!favor.getRequesterId().equals(UserUtil.currentUserId)
+              && favor.getStatusId().equals(Favor.Status.REQUESTED)
+                && favor.getLocation().getLatitude() > latitude_lower
                 && favor.getLocation().getLongitude() < latitude_upper)
           activity.otherActiveFavorsAround.put(favor.getId(), favor);
+      }
+      if(first){
+        drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+        first = false;
       }
     });
   }
 
   /**
    * I currently implement a temporary, simpler version to retrieve favors in a square area on
-   * sphere surface. It should be replaced by
+   * sphere surface. For some reason, reading from db is very slow.  It should be replaced by
    * FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mGpsTracker.getLocation(), radius);
    * in future.
-   * @param loc
-   * @param radius
+   * @param loc current location
+   * @param radius radius of received nearby favors in km
    */
   @RequiresApi(api = Build.VERSION_CODES.N)
   private CompletableFuture<List<Favor>> retrieveLongitudeBoundFavors(Location loc, double radius) {
@@ -211,11 +236,9 @@ public class MapsPage extends Fragment
     double longitude_lower = loc.getLongitude() - longDif;
     double longitude_upper = loc.getLongitude() + longDif;
     Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
-            //.whereGreaterThan("location.latitude", latitude_lower)
-            //.whereLessThan("location.latitude", latitude_upper)
-            .whereGreaterThan("location.longitude", 6.6)
-            .whereLessThan("location.longitude", 7).get();
-    Log.d("Radius", longitude_lower + " " + longitude_upper + " " + loc.getLongitude());
+           // .whereEqualTo("statusId", Favor.Status.REQUESTED.getPrettyString())
+            .whereGreaterThan("location.longitude", longitude_lower)
+            .whereLessThan("location.longitude", longitude_upper).limit(20).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
 
     return getAllFuture.thenApply(
@@ -291,10 +314,10 @@ public class MapsPage extends Fragment
   private List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
     // return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
-    currentActiveLocalFavorList =
-        new ArrayList<>(
-            ((MainActivity) Objects.requireNonNull(getActivity())).activeFavors.values());
-    if (!currentActiveLocalFavorList.isEmpty()) return currentActiveLocalFavorList;
+    currentActiveLocalFavorList = new ArrayList<>(
+            activity.otherActiveFavorsAround.values());
+    if(!currentActiveLocalFavorList.isEmpty())
+      return currentActiveLocalFavorList;
 
     if (mLocation != null) {
       FakeFavorList fakeFavorList =
@@ -310,7 +333,6 @@ public class MapsPage extends Fragment
 
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
-    try {
       LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
       Marker me =
           mMap.addMarker(
@@ -323,15 +345,13 @@ public class MapsPage extends Fragment
         first = false;
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
       }
-      mMap.setInfoWindowAdapter(this);
-      mMap.setOnInfoWindowClickListener(this);
-    } catch (Exception e) {
-      CommonTools.showSnackbar(getView(), e.getMessage());
-    }
   }
 
   private void drawFavorMarker(List<Favor> favors) {
-    if (favors == null) favors = new ArrayList<>();
+    if (favors.isEmpty()) {
+      first = true;
+      return;
+    }
     for (Favor favor : favors) {
       LatLng latLng =
           new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
@@ -381,7 +401,7 @@ public class MapsPage extends Fragment
     // CommonTools.replaceFragment(
     //    R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
     else {
-      Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude);
+      Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude, marker.getTitle());
       Bundle favorBundle = new Bundle();
       favorBundle.putParcelable("FAVOR_ARGS", favor);
       Navigation.findNavController(getView())
@@ -389,9 +409,9 @@ public class MapsPage extends Fragment
     }
   }
 
-  public Favor queryFavor(double latitude, double longitude) {
-    for (Favor favor : currentActiveLocalFavorList) {
-      if (favor.getLocation().getLatitude() == latitude
+  private Favor queryFavor(double latitude, double longitude, String title) {
+    for (Favor favor : activity.otherActiveFavorsAround.values()) {
+      if (favor.getTitle().equals(title) && favor.getLocation().getLatitude() == latitude
           && favor.getLocation().getLongitude() == longitude) return favor;
     }
     return null;
