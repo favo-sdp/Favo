@@ -1,16 +1,20 @@
 package ch.epfl.favo;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -293,25 +297,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
           super.onBackPressed();
         }
-        //
-        //        if (f instanceof MapsPage || f instanceof FavorPage) {
-        //          navController.popBackStack(R.id.nav_map, false);
-        //          // getSupportFragmentManager().popBackStack(null,
-        //          // FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        //          // int num2 = getSupportFragmentManager().getBackStackEntryCount();
-        //          super.onBackPressed();
-        //        } else {
-        //          navController.popBackStack(R.id.nav_map, false);
-        //          // currentMenuItem = R.id.nav_map;
-        //          // int num = getSupportFragmentManager().getBackStackEntryCount();
-        //          // getSupportFragmentManager().popBackStack(null,
-        //          // FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        //          // int num2 = getSupportFragmentManager().getBackStackEntryCount();
-        //          // getSupportFragmentManager().popBackStack();
-        //          // navController.navigate(R.id.nav_map);
-        //          // int num3 = getSupportFragmentManager().getBackStackEntryCount();
-        //          // showBottomNavigation();
-        //        }
       }
     }
   }
