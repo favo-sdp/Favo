@@ -1,23 +1,22 @@
 package ch.epfl.favo;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.Toolbar;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
@@ -34,12 +33,25 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.FragmentAbout;
+import ch.epfl.favo.view.tabs.FragmentSettings;
+import ch.epfl.favo.view.tabs.UserAccountPage;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
  * left. Contains a bottom navigation for top-level activities.
  */
 public class MainActivity extends AppCompatActivity {
+
+  private static final int[] NAVIGATION_ITEMS =
+      new int[] {
+        R.id.nav_map,
+        R.id.nav_favorList,
+        R.id.nav_account,
+        R.id.nav_settings,
+        R.id.nav_about,
+        R.id.nav_share
+      };
 
   private NavController navController;
   private AppBarConfiguration appBarConfiguration;
@@ -48,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
   private NavigationView navigationView;
   private BottomNavigationView bottomNavigationView;
 
+  private int currentMenuItem;
   private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
@@ -71,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     navigationView = findViewById(R.id.nav_view);
     bottomNavigationView = findViewById(R.id.bottom_navigation_view);
     drawerLayout = findViewById(R.id.drawer_layout);
+    currentMenuItem = R.id.nav_map;
 
     setupActivity();
 
@@ -84,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
     otherActiveFavorsAround = new HashMap<>();
   }
 
-  @SuppressLint("ClickableViewAccessibility")
   private void setupActivity() {
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -92,20 +105,12 @@ public class MainActivity extends AppCompatActivity {
     setSupportActionBar(findViewById(R.id.toolbar));
 
     // remove title
-//    Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
     Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
     // setup app bar
     appBarConfiguration =
-        new AppBarConfiguration.Builder(
-                R.id.nav_map,
-                R.id.nav_favorList,
-                R.id.nav_account,
-                R.id.nav_settings,
-                R.id.nav_about,
-                R.id.nav_share)
-            .setDrawerLayout(drawerLayout)
-            .build();
+        new AppBarConfiguration.Builder(NAVIGATION_ITEMS).setDrawerLayout(drawerLayout).build();
 
     navController = Navigation.findNavController(this, R.id.nav_host_fragment);
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
@@ -118,36 +123,55 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
-              hideBottomNavigation();
+              if (bottomNavigationView.getVisibility() != View.GONE) {
+                hideBottomNavigation();
+              }
               break;
 
             default:
-              showBothNavigation();
+              if (bottomNavigationView.getVisibility() != View.VISIBLE) {
+                showBottomNavigation();
+              }
           }
         });
   }
 
   public void hideBottomNavigation() {
-    findViewById(R.id.bottom_navigation_view).setVisibility(View.GONE);
+    bottomNavigationView.setVisibility(View.GONE);
+    findViewById(R.id.floatingActionButton).setVisibility(View.GONE);
   }
 
-  public void showBothNavigation() {
-    findViewById(R.id.bottom_navigation_view).setVisibility(View.VISIBLE);
-    NavigationUI.setupWithNavController(bottomNavigationView, navController);
+  public void showBottomNavigation() {
+    bottomNavigationView.setVisibility(View.VISIBLE);
+    findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
+    // NavigationUI.setupWithNavController(bottomNavigationView, navController);
   }
 
   private void setupNavController() {
     NavigationUI.setupWithNavController(navigationView, navController);
+    NavigationUI.setupWithNavController(bottomNavigationView, navController);
     navigationView.setNavigationItemSelectedListener(
         item -> {
           int itemId = item.getItemId();
 
-          if (itemId == R.id.nav_share) {
-            startShareIntent();
-          } else {
-            navController.navigate(itemId);
+          if (itemId == currentMenuItem) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;
           }
 
+          switch (itemId) {
+            case R.id.nav_map:
+              navController.popBackStack(R.id.nav_map, false);
+              break;
+            case R.id.nav_share:
+              startShareIntent();
+              drawerLayout.closeDrawer(GravityCompat.START);
+              return false;
+            default:
+              navController.navigate(itemId);
+          }
+
+          currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
@@ -211,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             hideBottomNavigation();
           } else {
             // onKeyboardHidden
-            showBothNavigation();
+            showBottomNavigation();
           }
         }
         mKeyboardVisible = isKeyboardNowVisible;
@@ -253,9 +277,42 @@ public class MainActivity extends AppCompatActivity {
       DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
       if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
         mDrawerLayout.closeDrawer(GravityCompat.START);
-      else
-        // navController.popBackStack();
-        super.onBackPressed();
+      else {
+        NavHostFragment host =
+            (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        Fragment f =
+            Objects.requireNonNull(host)
+                .getChildFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+
+        if (f instanceof UserAccountPage
+            || f instanceof FragmentAbout
+            || f instanceof FragmentSettings) {
+          navController.popBackStack(R.id.nav_map, false);
+          currentMenuItem = R.id.nav_map;
+        } else {
+          super.onBackPressed();
+        }
+        //
+        //        if (f instanceof MapsPage || f instanceof FavorPage) {
+        //          navController.popBackStack(R.id.nav_map, false);
+        //          // getSupportFragmentManager().popBackStack(null,
+        //          // FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        //          // int num2 = getSupportFragmentManager().getBackStackEntryCount();
+        //          super.onBackPressed();
+        //        } else {
+        //          navController.popBackStack(R.id.nav_map, false);
+        //          // currentMenuItem = R.id.nav_map;
+        //          // int num = getSupportFragmentManager().getBackStackEntryCount();
+        //          // getSupportFragmentManager().popBackStack(null,
+        //          // FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        //          // int num2 = getSupportFragmentManager().getBackStackEntryCount();
+        //          // getSupportFragmentManager().popBackStack();
+        //          // navController.navigate(R.id.nav_map);
+        //          // int num3 = getSupportFragmentManager().getBackStackEntryCount();
+        //          // showBottomNavigation();
+        //        }
+      }
     }
   }
 
@@ -263,5 +320,9 @@ public class MainActivity extends AppCompatActivity {
   public boolean onSupportNavigateUp() {
     return NavigationUI.navigateUp(navController, appBarConfiguration)
         || super.onSupportNavigateUp();
+  }
+
+  public void onFabClick(View view) {
+    navController.navigate(R.id.action_global_favorRequestView);
   }
 }
