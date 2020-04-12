@@ -153,9 +153,7 @@ public class SignInActivity extends AppCompatActivity {
               FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
               user = new User(currentUserId, name, email, deviceId, null, loc);
             } else if (!deviceId.equals(user.getDeviceId())) {
-              if (!deviceId.equals(user.getDeviceId())) {
-                user.setDeviceId(deviceId);
-              }
+              user.setDeviceId(deviceId);
             }
 
             UserUtil.getSingleInstance().postUser(user);
