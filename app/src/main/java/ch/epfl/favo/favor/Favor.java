@@ -175,8 +175,8 @@ public class Favor implements Parcelable, Document {
     return postedTime;
   }
 
-  void setAccepterID(String accepterID) {
-    this.accepterId = accepterID;
+  void setAccepterID(String accepterId) {
+    this.accepterId = accepterId;
   }
 
   /**
