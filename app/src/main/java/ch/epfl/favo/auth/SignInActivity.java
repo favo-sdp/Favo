@@ -1,6 +1,7 @@
 package ch.epfl.favo.auth;
 
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,8 +28,6 @@ import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
-
-import android.provider.Settings.Secure;
 
 @SuppressLint("NewApi")
 public class SignInActivity extends AppCompatActivity {
@@ -143,8 +142,7 @@ public class SignInActivity extends AppCompatActivity {
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String currentUserId = currentUser.getUid();
       CompletableFuture<User> userFuture = UserUtil.getSingleInstance().findUser(currentUserId);
-      String deviceId =
-          Secure.getString(getApplicationContext().getContentResolver(), Secure.ANDROID_ID);
+      String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
 
       // Add/update user info depending on db status
       userFuture.whenComplete(
