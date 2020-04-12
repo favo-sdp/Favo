@@ -1,13 +1,16 @@
 package ch.epfl.favo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.Toolbar;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
@@ -80,11 +84,16 @@ public class MainActivity extends AppCompatActivity {
     otherActiveFavorsAround = new HashMap<>();
   }
 
+  @SuppressLint("ClickableViewAccessibility")
   private void setupActivity() {
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
     setSupportActionBar(findViewById(R.id.toolbar));
+
+    // remove title
+//    Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
 
     // setup app bar
     appBarConfiguration =
@@ -101,15 +110,7 @@ public class MainActivity extends AppCompatActivity {
     navController = Navigation.findNavController(this, R.id.nav_host_fragment);
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-    navigationView.setNavigationItemSelectedListener(
-        item -> {
-          if (item.getItemId() == R.id.nav_share) {
-            startShareIntent();
-          }
-
-          drawerLayout.closeDrawer(GravityCompat.START);
-          return false;
-        });
+    setupNavController();
 
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> {
@@ -127,18 +128,29 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void hideBottomNavigation() {
-    findViewById(R.id.nav_view).setVisibility(View.VISIBLE);
     findViewById(R.id.bottom_navigation_view).setVisibility(View.GONE);
-
-    NavigationUI.setupWithNavController(navigationView, navController);
   }
 
   public void showBothNavigation() {
-    findViewById(R.id.nav_view).setVisibility(View.VISIBLE);
     findViewById(R.id.bottom_navigation_view).setVisibility(View.VISIBLE);
-
-    NavigationUI.setupWithNavController(navigationView, navController);
     NavigationUI.setupWithNavController(bottomNavigationView, navController);
+  }
+
+  private void setupNavController() {
+    NavigationUI.setupWithNavController(navigationView, navController);
+    navigationView.setNavigationItemSelectedListener(
+        item -> {
+          int itemId = item.getItemId();
+
+          if (itemId == R.id.nav_share) {
+            startShareIntent();
+          } else {
+            navController.navigate(itemId);
+          }
+
+          drawerLayout.closeDrawer(GravityCompat.START);
+          return true;
+        });
   }
 
   private void showNoConnectionSnackbar() {

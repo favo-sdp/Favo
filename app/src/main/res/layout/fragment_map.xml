@@ -27,9 +27,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="64dp"
         map:uiCompass="true"
-        map:uiZoomControls="true"
-        tools:context=".view.tabs.MapsPage" />
+        map:uiZoomControls="false" />
 
 </FrameLayout>

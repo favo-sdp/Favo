@@ -5,7 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="nav_header_vertical_spacing">8dp</dimen>
     <dimen name="nav_header_height">176dp</dimen>
-    <dimen name="hamburger_button_size">30dp</dimen>
+    <dimen name="hamburger_button_size">40dp</dimen>
     <!-- Favor Request View-->
     <dimen name="edit_favor_button_width">36dp</dimen>
 </resources>
