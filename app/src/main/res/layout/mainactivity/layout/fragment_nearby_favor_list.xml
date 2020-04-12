@@ -2,6 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/material_green_50"
     android:id="@+id/fragment_nearby_favor_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -50,21 +51,51 @@
             android:queryHint="@string/search_hint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/list_toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="118dp"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="100dp"
-        android:layout_marginEnd="15dp"
-        android:backgroundTint="#4CAF50"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/ic_sync_problem_48dp"
-        android:visibility="visible"
-        app:backgroundTint="#4CAF50" />
+
+
+    <RadioGroup
+        android:checkedButton="@+id/map_switch"
+        android:id="@+id/toggle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="0dp"
+        android:background="@drawable/pink_out_line"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_marginStart="1dp"
+            android:id="@+id/map_switch"
+            android:background="@drawable/toggle_widget_background"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/map_toggle"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/material_green_500" />
+
+        <RadioButton
+            android:layout_marginEnd="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:id="@+id/list_switch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_widget_background"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/list_toggle"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/material_gray_300" />
+    </RadioGroup>
 
 </FrameLayout>

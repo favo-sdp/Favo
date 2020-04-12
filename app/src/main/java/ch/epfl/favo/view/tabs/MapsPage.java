@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -163,8 +164,19 @@ public class MapsPage extends Fragment
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
 
-    FloatingActionButton toggle = view.findViewById(R.id.map_toggle);
-     toggle.setOnClickListener(this::onToggleClick);
+    RadioButton toggle = view.findViewById(R.id.list_switch);
+    toggle.setOnClickListener(this::onToggleClick);
+
+     /*toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+         if (isChecked) {
+           onToggleClick(getView());
+           // The toggle is enabled
+         } else {
+           // The toggle is disabled
+         }
+       }}
+       );*/
      activity = (MainActivity) Objects.requireNonNull(getActivity());
     return view;
   }
@@ -236,7 +248,7 @@ public class MapsPage extends Fragment
     double longitude_lower = loc.getLongitude() - longDif;
     double longitude_upper = loc.getLongitude() + longDif;
     Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
-           // .whereEqualTo("statusId", Favor.Status.REQUESTED.getPrettyString())
+           // .whereEqualTo("statusId", Favor.Status.REQUESTED)
             .whereGreaterThan("location.longitude", longitude_lower)
             .whereLessThan("location.longitude", longitude_upper).limit(20).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);

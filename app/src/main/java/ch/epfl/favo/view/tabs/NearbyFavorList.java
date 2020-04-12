@@ -1,50 +1,30 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Point;
-import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
-import androidx.preference.PreferenceManager;
-
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
-import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.util.TaskToFutureAdapter;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
-import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
@@ -85,14 +65,17 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
         first = true;
         View rootView = inflater.inflate(R.layout.fragment_nearby_favor_list, container, false);
         setupView(rootView);
-        tipTextView = rootView.findViewById(R.id.nearby_tip);
-        listView = rootView.findViewById(R.id.nearby_favor_list);
-        searchView = rootView.findViewById(R.id.nearby_searchView);
-        FloatingActionButton toggle = rootView.findViewById(R.id.list_toggle);
 
-        toggle.setOnClickListener(this::onToggleClick);
+        tipTextView = rootView.findViewById(R.id.nearby_tip);
         tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        listView = rootView.findViewById(R.id.nearby_favor_list);
         setupListView();
+
+        RadioButton toggle = rootView.findViewById(R.id.map_switch);
+        toggle.setOnClickListener(this::onToggleClick);
+
+        searchView = rootView.findViewById(R.id.nearby_searchView);
         setupSearchView();
         if(!favorsFound.isEmpty())
             displayFavorList(favorsFound, R.string.query_failed);

@@ -12,7 +12,6 @@
         android:checked="true"
         android:drawableTop="@drawable/selector_bottom_navigator_view_icon_map"
         android:text="@string/map_icon_label">
-
     </RadioButton>
 
     <RadioButton
@@ -20,7 +19,6 @@
         style="@style/AppTheme.RadioButtonLikeBottomNavigationView"
         android:drawableTop="@drawable/selector_bottom_navigator_view_icon_favorlist"
         android:text="@string/favors_icon_label">
-
     </RadioButton>
 
 </RadioGroup>

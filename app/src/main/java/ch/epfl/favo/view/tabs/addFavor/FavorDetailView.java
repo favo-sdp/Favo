@@ -54,7 +54,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
-    String greetingStr = "favor of " + favor.getRequesterId();
+    //String greetingStr = "favor of " + favor.getRequesterId();
     String locationStr =
         "latitude: "
             + String.format("%.4f", favor.getLocation().getLatitude())
@@ -64,7 +64,7 @@ public class FavorDetailView extends Fragment {
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
 
-    setupTextView(rootView, R.id.favor_greeting_text_accept, greetingStr);
+    //setupTextView(rootView, R.id.favor_greeting_text_accept, greetingStr);
     setupTextView(rootView, R.id.location_accept_view, locationStr);
     setupTextView(rootView, R.id.datetime_accept_view, timeStr);
     setupTextView(rootView, R.id.title_accept_view, titleStr);

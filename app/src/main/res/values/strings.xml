@@ -61,6 +61,8 @@
 
     <!--Nearby Favor View -->
     <string name="favor_no_nearby_favor">There is no favor around you</string>
+    <string name="list_toggle">List</string>
+    <string name="map_toggle">Map</string>
 
     <!--Favor Accepting View -->
     <string name="accept_favor">Accept Favor</string>
