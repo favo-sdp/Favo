@@ -77,8 +77,8 @@ public class Favor implements Parcelable, Document {
       FavoLocation location,
       Status statusId) {
 
-    String id = DatabaseWrapper.generateRandomId();
-    this.id = id;
+    this.id = DatabaseWrapper.generateRandomId();
+    ;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -88,7 +88,8 @@ public class Favor implements Parcelable, Document {
     this.accepterId = null;
   }
 
-  public Favor( // includes id
+  // Constructor to override default generated Id
+  public Favor(
       String id,
       String title,
       String description,

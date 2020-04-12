@@ -1,6 +1,5 @@
 package ch.epfl.favo;
 
-import android.location.Location;
 import android.net.Uri;
 
 import ch.epfl.favo.common.DatabaseWrapper;
@@ -15,7 +14,6 @@ public class TestConstants {
   public static final String EMAIL = "test@example.com";
   public static final String NAME = "Test Testerson";
   public static final String USERNAME = "testerson123";
-  public static final String PASSWORD = "fh498f30cpe";
   public static final String PROVIDER = "test provider";
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
 
@@ -33,5 +31,4 @@ public class TestConstants {
   public static final String NOTIFICATION_TITLE = "title";
   public static final String NOTIFICATION_BODY = "body";
   public static final String FAVOR_ID = "WEZDZQD78A5SI5Q790SZAL7FW";
-
 }
