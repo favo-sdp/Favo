@@ -18,6 +18,7 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /** Unit tests for favor util class */
 public class FavorUtilTest {
@@ -52,14 +53,52 @@ public class FavorUtilTest {
         FavorUtil.getSingleInstance().retrieveFavor(TestConstants.FAVOR_ID);
     assertEquals(fakeFavor, obtainedFutureFavor.get());
   }
+
   @Test
-  public void testGetSingleFavorThrowsRuntimeException() throws ExecutionException, InterruptedException {
+  public void testUpdateFavor() {
     Favor fakeFavor = FakeItemFactory.getFavor();
-    Mockito.doThrow(new RuntimeException()).when(mockDatabaseWrapper).addDocument(Mockito.any(Favor.class));;
+    CompletableFuture successfulTask = new CompletableFuture<>();
+    successfulTask.complete(null);
+    Mockito.doReturn(successfulTask)
+        .when(mockDatabaseWrapper)
+        .updateDocument(Mockito.anyString(), Mockito.anyMap());
+    assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isDone());
+    CompletableFuture failedTask = new CompletableFuture<>();
+    failedTask.completeExceptionally(new RuntimeException());
+    assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isCompletedExceptionally());
+  }
+
+  @Test
+  public void testUpdateFavorStatus() {
+    CompletableFuture successfulTask = new CompletableFuture<>();
+    successfulTask.complete(null);
+    Mockito.doReturn(successfulTask)
+        .when(mockDatabaseWrapper)
+        .updateDocument(Mockito.anyString(), Mockito.anyMap());
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    assertTrue(
+        FavorUtil.getSingleInstance().updateFavorStatus("bla", Favor.Status.ACCEPTED).isDone());
+    CompletableFuture failedTask = new CompletableFuture<>();
+    failedTask.completeExceptionally(new RuntimeException());
+    Mockito.doReturn(failedTask)
+        .when(mockDatabaseWrapper)
+        .updateDocument(Mockito.anyString(), Mockito.anyMap());
+    assertTrue(
+        FavorUtil.getSingleInstance()
+            .updateFavorStatus("bla", Favor.Status.ACCEPTED)
+            .isCompletedExceptionally());
+  }
+
+  @Test
+  public void testGetSingleFavorThrowsRuntimeException()
+      throws ExecutionException, InterruptedException {
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    Mockito.doThrow(new RuntimeException())
+        .when(mockDatabaseWrapper)
+        .addDocument(Mockito.any(Favor.class));
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     FavorUtil.getSingleInstance().postFavor(fakeFavor);
   }
-
 
   @Test
   public void retrieveAllFavorsForGivenUser() {

@@ -65,27 +65,6 @@ public class FavorUtil {
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
-  public CompletableFuture acceptFavor(String favorId) {
-    CompletableFuture<Favor> getCurrentFavorTask = retrieveFavor(favorId);
-    return getCurrentFavorTask
-        .thenAccept(
-            favor -> {
-              if (favor.getStatusId() != Favor.Status.REQUESTED) {
-                throw new FavorNoLongerAvailableException("Favor is no longer available");
-              } else {
-                collection.updateDocument(
-                    favorId,
-                    new HashMap<String, String>() {
-                      {
-                        put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
-                        put(Favor.STATUS_ID, Favor.Status.ACCEPTED.getPrettyString());
-                      }
-                    });
-              }
-            });
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
     CompletableFuture updateFuture = new CompletableFuture();
     try {
