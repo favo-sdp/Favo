@@ -83,6 +83,7 @@ public class MapsPage extends Fragment
     getLocationPermission();
     mMap = googleMap;
     mMap.clear();
+    mMap.setMyLocationEnabled(true);
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
       Objects.requireNonNull(getView())
           .findViewById(R.id.offline_map_button)
@@ -92,9 +93,15 @@ public class MapsPage extends Fragment
           .findViewById(R.id.offline_map_button)
           .setVisibility(View.INVISIBLE);
     }
-    mMap.setMyLocationEnabled(true);
-    drawSelfLocationMarker();
-    drawFavorMarker(updateFavorlist());
+    try{
+      GpsTracker gpsTracker = new GpsTracker(getContext());
+      mLocation = gpsTracker.getLocation();
+      setupNearbyList();
+      drawSelfLocationMarker();
+      drawFavorMarker(updateFavorlist());
+    }catch (Exception e){
+      throw new RuntimeException(e.getMessage() + "at map ready");
+    }
   }
 
   private void onOfflineMapClick(View view) {
@@ -144,16 +151,12 @@ public class MapsPage extends Fragment
     return view;
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     setupView();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    GpsTracker gpsTracker = new GpsTracker(getContext());
-    mLocation = gpsTracker.getLocation();
-    setupNearbyList();
     if (mapFragment != null) {
       mapFragment.getMapAsync(this);
     }
