@@ -27,6 +27,7 @@ import ch.epfl.favo.util.FavorFragmentFactory;
 
 import static androidx.navigation.Navigation.findNavController;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -44,6 +45,7 @@ import static org.hamcrest.core.AllOf.allOf;
 public class FavorDetailViewTest {
   private Favor fakeFavor;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
+  private NavController navController;
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -64,7 +66,7 @@ public class FavorDetailViewTest {
   public void setUp() {
     fakeFavor = FakeItemFactory.getFavor();
     UserUtil.currentUserId = "USER";
-    NavController navController =
+    navController =
         findNavController(mainActivityTestRule.getActivity(), R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
     bundle.putParcelable(FavorFragmentFactory.FAVOR_ARGS, fakeFavor);
@@ -190,5 +192,30 @@ public class FavorDetailViewTest {
     // check display is updated
     onView(withId(R.id.status_text_accept_view))
         .check(matches(withText(Favor.Status.ACCEPTED.getPrettyString())));
+  }
+
+  @Test
+  public void testAcceptingFavorUpdatesListView(){
+    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    mockDatabaseWrapper.setThrowError(false);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    //navigate to list view from main activity
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
+    //press back
+    pressBack();
+    getInstrumentation().waitForIdleSync();
+    navController.navigate(R.id.action_nav_map_to_nav_favorlist);
+    onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+    onView(
+            allOf(
+                    withId(R.id.fragment_favor_accept_view),
+                    withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
+
+
+
+
   }
 }
