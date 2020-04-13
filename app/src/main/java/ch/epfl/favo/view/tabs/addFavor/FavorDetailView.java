@@ -90,6 +90,7 @@ public class FavorDetailView extends Fragment {
       // update UI
       currentFavor.setStatusId(Favor.Status.CANCELLED_ACCEPTER);
       ((MainActivity) getActivity()).activeFavors.remove(currentFavor.getId());
+      ((MainActivity) getActivity()).archivedFavors.remove(currentFavor.getId());
       updateStatusDisplayFromFavorStatus();
     };
   }

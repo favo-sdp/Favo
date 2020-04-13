@@ -155,6 +155,7 @@ public class AddFavorTest {
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.edit_favor_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
 
     // click outside of text view

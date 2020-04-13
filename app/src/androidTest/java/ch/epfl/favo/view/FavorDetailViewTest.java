@@ -66,8 +66,7 @@ public class FavorDetailViewTest {
   public void setUp() {
     fakeFavor = FakeItemFactory.getFavor();
     UserUtil.currentUserId = "USER";
-    navController =
-        findNavController(mainActivityTestRule.getActivity(), R.id.nav_host_fragment);
+    navController = findNavController(mainActivityTestRule.getActivity(), R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
     bundle.putParcelable(FavorFragmentFactory.FAVOR_ARGS, fakeFavor);
     navController.navigate(R.id.action_global_favorDetailView, bundle);
@@ -168,17 +167,14 @@ public class FavorDetailViewTest {
   @Test
   public void testFavorShowsFailureSnackbarIfCancelFails() throws InterruptedException {
     mockDatabaseWrapper.setMockDocument(fakeFavor);
-    CompletableFuture successfulResult = new CompletableFuture();
-    successfulResult.complete(null);
-    mockDatabaseWrapper.setMockResult(successfulResult);
+    mockDatabaseWrapper.setThrowError(false);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
-    CompletableFuture failedResult = new CompletableFuture();
-    failedResult.completeExceptionally(new RuntimeException());
-    mockDatabaseWrapper.setMockResult(failedResult);
+    // now inject throwable to see reaction in the UI
+    mockDatabaseWrapper.setThrowError(true);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
@@ -195,13 +191,13 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testAcceptingFavorUpdatesListView(){
+  public void testAcceptingFavorUpdatesListView() {
     mockDatabaseWrapper.setMockDocument(fakeFavor);
     mockDatabaseWrapper.setThrowError(false);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    //navigate to list view from main activity
+    // navigate to list view from main activity
     onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
-    //press back
+    // press back
     pressBack();
     getInstrumentation().waitForIdleSync();
     navController.navigate(R.id.action_nav_map_to_nav_favorlist);
@@ -210,12 +206,8 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     onView(
             allOf(
-                    withId(R.id.fragment_favor_accept_view),
-                    withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
-
-
-
-
+                withId(R.id.fragment_favor_accept_view),
+                withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
   }
 }
