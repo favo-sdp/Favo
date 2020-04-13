@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -34,6 +35,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
@@ -62,7 +64,7 @@ public class FavorRequestView extends Fragment {
     // Required empty public constructor
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +90,6 @@ public class FavorRequestView extends Fragment {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
       displayFavorInfo(rootView);
       setFavorActivatedView(rootView);
-
     }
     return rootView;
   }
@@ -106,7 +107,7 @@ public class FavorRequestView extends Fragment {
    *
    * @param rootView
    */
-  @RequiresApi(api = Build.VERSION_CODES.M)
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -196,9 +197,25 @@ public class FavorRequestView extends Fragment {
   }
 
   /** When edit button is clicked */
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void startUpdatingFavor() {
-    currentFavor.setStatusId(Favor.Status.EDIT);
-    updateViewFromStatus(getView());
+    CompletableFuture<Favor> currentFavorFuture =
+        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
+    currentFavorFuture.thenAccept(
+        favor -> {
+          if (favor.getStatusId().equals(Favor.Status.ACCEPTED)) {
+            CommonTools.showSnackbar(getView(), getString(R.string.fail_edit_favor_request_view));
+            currentFavor.setStatusId(favor.getStatusId());
+          } else {
+            currentFavor.setStatusId(Favor.Status.EDIT);
+          }
+          updateViewFromStatus(getView());
+        });
+    currentFavorFuture.exceptionally(
+        e -> {
+          showSnackbar(getString(R.string.update_favor_error));
+          return null;
+        });
   }
 
   /** Gets called once favor has been updated on view. */

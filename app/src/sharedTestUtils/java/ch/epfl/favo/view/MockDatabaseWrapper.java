@@ -10,8 +10,28 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   private T mockDocument;
   private CompletableFuture mockResult;
+  private boolean throwError = false;
 
   public MockDatabaseWrapper() {}
+
+  public void setThrowError(boolean throwError) {
+    this.throwError = throwError;
+    if (throwError) {
+      this.mockResult =
+          new CompletableFuture() {
+            {
+              completeExceptionally(new RuntimeException());
+            }
+          };
+    } else {
+      this.mockResult =
+          new CompletableFuture() {
+            {
+              complete(null);
+            }
+          };
+    }
+  }
 
   public void setMockDocument(T document) {
     this.mockDocument = document;
@@ -35,7 +55,9 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   @Override
   public CompletableFuture<T> getDocument(String key) {
     CompletableFuture<T> future = new CompletableFuture<>();
-    future.complete(mockDocument);
+
+    if (throwError) future.completeExceptionally(new RuntimeException());
+    else future.complete(mockDocument);
     return future;
   }
 }

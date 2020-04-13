@@ -26,6 +26,7 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
@@ -167,12 +168,14 @@ public class FavorPage extends Fragment implements View.OnClickListener {
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
           favorBundle.putParcelable("FAVOR_ARGS", favor);
-          Navigation.findNavController(getView())
-              .navigate(R.id.action_nav_favorlist_to_favorRequestView, favorBundle);
-          // CommonTools.replaceFragment(
-          //    R.id.nav_host_fragment,
-          //    getParentFragmentManager(),
-          //        FavorFragmentFactory.instantiate(favor,new FavorRequestView()));
+          // if favor was requested, open request view
+          if (favor.getRequesterId().equals(UserUtil.currentUserId)) {
+            Navigation.findNavController(getView())
+                .navigate(R.id.action_nav_favorlist_to_favorRequestView, favorBundle);
+          } else { // if favor was accepted, open accept view
+            Navigation.findNavController(getView())
+                .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
+          }
         });
   }
 

@@ -32,6 +32,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
@@ -58,6 +59,7 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
 
   @Rule
   public final ActivityTestRule<MainActivity> activityTestRule =
@@ -67,7 +69,9 @@ public class AddFavorTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+          mockDatabaseWrapper.setThrowError(false);
+          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
         }
       };
 
@@ -102,26 +106,6 @@ public class AddFavorTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_request_success_msg)));
   }
-
-  //  @Test
-  //  public void cameraPermissionTest() throws Throwable {
-  //
-  //    launchFragment(new FavorRequestView());
-  //    getInstrumentation().waitForIdleSync();
-  //    InstrumentationRegistry.getInstrumentation()
-  //            .getUiAutomation().revokeRuntimePermission(
-  //            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
-  //            Manifest.permission.CAMERA);
-  //    Button cameraButton =
-  //            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
-  //    runOnUiThread(() -> cameraButton.setEnabled(true));
-  //    onView(withId(R.id.add_camera_picture_button)).perform(click());
-  //    sleep(1000);
-  //    //launches permission intent
-  //    // click allow button
-  //    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-  //    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
-  //  }
 
   @Test
   public void addPictureWorks() throws Throwable {
@@ -244,6 +228,46 @@ public class AddFavorTest {
         });
     getInstrumentation().waitForIdleSync();
     checkCompletedView(fakeFavor);
+  }
+
+  @Test
+  public void testFavorCannotBeEditedIfAcceptedBySomeoneElse() {
+
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    // set status to accepted
+    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    // inject result
+    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check accepted view
+    checkAcceptedView(fakeFavor);
+    // Check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.fail_edit_favor_request_view)));
+  }
+
+  @Test
+  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabaseWhenTryingToEdit() {
+    // make the collection wrapper throw an error
+    mockDatabaseWrapper.setThrowError(true);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    // instantiate view
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    // Try to click on edit
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check error message is printed
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.update_favor_error)));
+    mockDatabaseWrapper.setThrowError(false);
   }
 
   public void checkCompletedView(Favor fakeFavor) {
