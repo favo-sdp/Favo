@@ -98,7 +98,7 @@ public class FavorRequestView extends Fragment {
   public void displayFavorInfo(View v) {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    mStatusView.setText(currentFavor.getStatusId().toString());
+    mStatusView.setText(Favor.Status.toString(currentFavor.getStatusId()));
     updateViewFromStatus(v);
   }
 
@@ -138,7 +138,7 @@ public class FavorRequestView extends Fragment {
     editFavorBtn.setOnClickListener(
         v -> {
           // if text is currently "Update Request"
-          if (currentFavor.getStatusId() == Favor.Status.EDIT) {
+          if (currentFavor.getStatusId() == Favor.Status.EDIT.toInt()) {
             confirmUpdatedFavor();
           } else { // text is currently "Edit Request"
             startUpdatingFavor();
@@ -168,7 +168,7 @@ public class FavorRequestView extends Fragment {
   @RequiresApi(api = Build.VERSION_CODES.M)
   private void requestFavor() {
     // update currentFavor
-    getFavorFromView(Favor.Status.REQUESTED);
+    getFavorFromView();
     // post to DB
     FavorUtil.getSingleInstance().postFavor(currentFavor);
     // Save the favor to local favorList
@@ -198,13 +198,13 @@ public class FavorRequestView extends Fragment {
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    currentFavor.setStatusId(Favor.Status.EDIT);
+    currentFavor.setStatusId(Favor.Status.EDIT.toInt());
     updateViewFromStatus(getView());
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
-    getFavorFromView(Favor.Status.REQUESTED);
+    getFavorFromView();
     // update lists
     updateMainActivityLists(true);
     updateViewFromStatus(getView());
@@ -216,7 +216,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
-    currentFavor.setStatusId(Favor.Status.CANCELLED_REQUESTER);
+    currentFavor.setStatusId(Favor.Status.CANCELLED_REQUESTER.toInt());
     updateMainActivityLists(false);
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
@@ -224,7 +224,7 @@ public class FavorRequestView extends Fragment {
 
     // DB call to update status
     Map<String, Object> statusUpdates = new HashMap<>();
-    statusUpdates.put("statusId", Favor.Status.CANCELLED_REQUESTER);
+    statusUpdates.put("statusId", Favor.Status.CANCELLED_REQUESTER.toInt());
     FavorUtil.getSingleInstance().updateFavor(currentFavor.getId(), statusUpdates);
   }
 
@@ -242,8 +242,9 @@ public class FavorRequestView extends Fragment {
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {
-    mStatusView.setText(currentFavor.getStatusId().getPrettyString());
-    switch (currentFavor.getStatusId()) {
+    Favor.Status status = Favor.Status.toEnum(currentFavor.getStatusId());
+    mStatusView.setText(status.toString());
+    switch (status) {
       case REQUESTED:
         {
           editFavorBtn.setText(R.string.edit_favor);
@@ -303,7 +304,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
-  private void getFavorFromView(Favor.Status status) {
+  private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
@@ -311,7 +312,8 @@ public class FavorRequestView extends Fragment {
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, status);
+    Favor favor =
+        new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED.toInt());
 
     // Updates the current favor
     if (currentFavor == null) {

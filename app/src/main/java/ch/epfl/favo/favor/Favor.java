@@ -17,23 +17,38 @@ import ch.epfl.favo.common.FavoLocation;
  * description, requester, accepter, location and status
  */
 public class Favor implements Parcelable, Document {
+
   public enum Status {
-    REQUESTED("Requested"),
-    EDIT("Edit mode"), // temporary state used for logic in the request view
-    ACCEPTED("Accepted"),
-    EXPIRED("Expired"),
-    CANCELLED_REQUESTER("Cancelled by requester"),
-    CANCELLED_ACCEPTER("Cancelled by accepter"),
-    SUCCESSFULLY_COMPLETED("Completed succesfully");
+    REQUESTED("Requested", 0),
+    EDIT("Edit mode", 1),
+    ACCEPTED("Accepted", 2),
+    EXPIRED("Expired", 3),
+    CANCELLED_REQUESTER("Cancelled by requester", 4),
+    CANCELLED_ACCEPTER("Cancelled by accepter", 5),
+    SUCCESSFULLY_COMPLETED("Completed succesfully", 6);
 
-    private String customDisplay;
+    private String statusString;
+    private int statusCode;
 
-    Status(String custom) {
-      this.customDisplay = custom;
+    Status(String text, int code) {
+      this.statusString = text;
+      this.statusCode = code;
     }
 
-    public String getPrettyString() {
-      return customDisplay;
+    public String toString() {
+      return statusString;
+    }
+
+    public int toInt() {
+      return statusCode;
+    }
+
+    public static String toString(int code) {
+      return toEnum(code).name();
+    }
+
+    public static Favor.Status toEnum(int code) {
+      return Favor.Status.values()[code];
     }
   }
 
@@ -66,19 +81,14 @@ public class Favor implements Parcelable, Document {
   private String accepterId;
   private FavoLocation location;
   private Date postedTime;
-  private Status statusId;
+  private int statusId;
 
   public Favor() {}
 
   public Favor(
-      String title,
-      String description,
-      String requesterId,
-      FavoLocation location,
-      Status statusId) {
+      String title, String description, String requesterId, FavoLocation location, int statusId) {
 
     this.id = DatabaseWrapper.generateRandomId();
-    ;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -95,7 +105,7 @@ public class Favor implements Parcelable, Document {
       String description,
       String requesterId,
       FavoLocation location,
-      Status statusId) {
+      int statusId) {
     this(title, description, requesterId, location, statusId);
     this.id = id;
   }
@@ -113,7 +123,7 @@ public class Favor implements Parcelable, Document {
     this.accepterId = (String) map.get(ACCEPTER_ID);
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
-    this.statusId = (Status) map.get(STATUS_ID);
+    this.statusId = (int) map.get(STATUS_ID);
   }
 
   /**
@@ -128,9 +138,9 @@ public class Favor implements Parcelable, Document {
     accepterId = in.readString();
     location = in.readParcelable(Location.class.getClassLoader());
     try {
-      statusId = Status.valueOf(in.readString());
+      statusId = in.readInt();
     } catch (Exception e) { // null pointer
-      statusId = null;
+      statusId = -1;
     }
   }
 
@@ -185,11 +195,11 @@ public class Favor implements Parcelable, Document {
    *
    * @return statusID
    */
-  public Status getStatusId() {
+  public int getStatusId() {
     return statusId;
   }
 
-  public void setStatusId(Status statusId) {
+  public void setStatusId(int statusId) {
     this.statusId = statusId;
   }
 
@@ -213,7 +223,7 @@ public class Favor implements Parcelable, Document {
     dest.writeString(requesterId);
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
-    dest.writeString(statusId.toString());
+    dest.writeString(Favor.Status.values()[statusId].name());
   }
 
   public void updateToOther(Favor other) {
