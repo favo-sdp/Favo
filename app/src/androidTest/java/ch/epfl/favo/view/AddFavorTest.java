@@ -149,6 +149,9 @@ public class AddFavorTest {
 
   @Test
   public void testCanHideKeyboardOnClickOutsideOfTextView() {
+    mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+    mockDatabaseWrapper.setThrowError(false);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     FavorRequestView currentFragment = new FavorRequestView();
     launchFragment(currentFragment);
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));

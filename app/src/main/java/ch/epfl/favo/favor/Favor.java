@@ -241,16 +241,11 @@ public class Favor implements Parcelable, Document {
 
     // typecast o to Complex so that we can compare data members
     Favor other = (Favor) o;
-    boolean contentIsEqual =
-        this.title.equals(other.title)
-            && this.description.equals(other.description)
-            && this.statusId.equals(other.getStatusId());
-
-    boolean locationIsEqual =
-        this.location.getLatitude() == other.location.getLatitude()
-            && this.location.getLongitude() == other.location.getLongitude();
 
     // Compare the data members and return accordingly
-    return contentIsEqual && locationIsEqual;
+    return this.title.equals(other.title)
+        && this.description.equals(other.description)
+        && this.statusId.equals(other.getStatusId())
+        && this.location.equals(other.location);
   }
 }
