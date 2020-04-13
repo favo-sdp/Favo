@@ -95,6 +95,18 @@ public class FavorUnitTests {
     Favor favor3 = favor;
     assertTrue(favor.equals(favor3));
   }
+  @Test
+  public void favoLocationComparisonIsSuccessful(){
+    Favor favor = FakeItemFactory.getFavor();
+    FavoLocation location1 = favor.getLocation();
+    FavoLocation location2 = new FavoLocation("whatever");
+    FavoLocation location3 = location1;
+    location2.setLatitude(location1.getLatitude());
+    location2.setLongitude(location1.getLongitude());
+    assertTrue(location1.equals(location2)); // check they're equal based on latitude and longitude
+    assertTrue(!location1.equals(favor));
+    assertTrue(location1.equals(location3)); // check reference equality
+  }
     @Test
     public void favorCanBeUpdatedToOther(){
       Favor favor = FakeItemFactory.getFavor();
