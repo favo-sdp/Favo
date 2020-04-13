@@ -89,11 +89,7 @@ public class FavorUnitTests {
   public void favorComparisonIsSuccessful(){
     Favor favor =FakeItemFactory.getFavor();
     Favor favor2 = FakeItemFactory.getFavor();
-    assertTrue(favor.equals(favor2));
-    Object o = new Object();
-    assertTrue(!favor.equals(o));
-    Favor favor3 = favor;
-    assertTrue(favor.equals(favor3));
+    assertTrue(favor.contentEquals(favor2));
   }
   @Test
   public void favoLocationComparisonIsSuccessful(){

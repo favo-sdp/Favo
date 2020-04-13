@@ -172,7 +172,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500);
+
     // now inject throwable to see reaction in the UI
     mockDatabaseWrapper.setThrowError(true);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -180,14 +180,16 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
+    // check display is updated
+    onView(withId(R.id.status_text_accept_view))
+            .check(matches(withText(Favor.Status.ACCEPTED.getPrettyString())));
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.update_favor_error)));
     getInstrumentation().waitForIdleSync();
-    // check display is updated
-    onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(Favor.Status.ACCEPTED.getPrettyString())));
+
   }
 
   @Test

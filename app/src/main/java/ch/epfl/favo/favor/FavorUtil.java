@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
@@ -56,32 +55,19 @@ public class FavorUtil {
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavor(Favor favor) {
-    CompletableFuture completableFuture = new CompletableFuture();
-    try {
-      completableFuture = collection.updateDocument(favor.getId(), favor.toMap());
-    } catch (Exception e) {
-      Log.d(TAG, Objects.requireNonNull(e.getMessage()));
-    }
-    return completableFuture;
+    return collection.updateDocument(favor.getId(), favor.toMap());
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
-    CompletableFuture updateFuture = new CompletableFuture();
-    try {
-      updateFuture =
-          collection.updateDocument(
-              favorId,
-              new HashMap<String, String>() {
-                {
-                  put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
-                  put(Favor.STATUS_ID, newStatus.toString());
-                }
-              });
-    } catch (Exception e) {
-      Log.d(TAG, Objects.requireNonNull(e.getMessage()));
-    }
-    return updateFuture;
+    Map updates =
+        new HashMap<String, String>() {
+          {
+            put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
+            put(Favor.STATUS_ID, newStatus.toString());
+          }
+        };
+    return updateFavor(favorId, updates);
   }
 
   /**
@@ -89,24 +75,15 @@ public class FavorUtil {
    * @return CompletableFuture<Favor>
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
-    try {
-      return collection.getDocument(favorId);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to retrieve document from db.");
-    }
-    return new CompletableFuture<>();
+    return collection.getDocument(favorId);
   }
 
   /**
    * @param favorId the id of the favor to retrieve from DB.
    * @return CompletableFuture<Favor>
    */
-  public void updateFavor(String favorId, Map<String, Object> updates) {
-    try {
-      collection.updateDocument(favorId, updates);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to retrieve document from db.");
-    }
+  public CompletableFuture updateFavor(String favorId, Map<String, Object> updates) {
+    return collection.updateDocument(favorId, updates);
   }
 
   /**

@@ -1,4 +1,4 @@
-package ch.epfl.favo.view.tabs.addFavor;
+package ch.epfl.favo.view.tabs;
 
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -115,7 +115,7 @@ public class FavorDetailView extends Fragment {
     favorFuture // get updated favor from db
         .thenAccept(
         favor -> {
-          if (!favor.equals(currentFavor)) { // if favor changed, update the view
+          if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
             currentFavor.updateToOther(favor);
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
             displayFromFavor(getView(), favor);
