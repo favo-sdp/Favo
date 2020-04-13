@@ -25,6 +25,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
@@ -88,7 +90,6 @@ public class FavorRequestView extends Fragment {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
       displayFavorInfo(rootView);
       setFavorActivatedView(rootView);
-
     }
     return rootView;
   }
@@ -207,8 +208,10 @@ public class FavorRequestView extends Fragment {
     // update lists
     updateMainActivityLists(true);
     updateViewFromStatus(getView());
-    // TODO: add db call
     showSnackbar(getString(R.string.favor_edit_success_msg));
+
+    // DB call to update Favor details
+    FavorUtil.getSingleInstance().postFavor(currentFavor);
   }
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
@@ -218,7 +221,11 @@ public class FavorRequestView extends Fragment {
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_cancel_success_msg));
-    // TODO: insert db call
+
+    // DB call to update status
+    Map<String, Object> statusUpdates = new HashMap<>();
+    statusUpdates.put("statusId", Favor.Status.CANCELLED_REQUESTER);
+    FavorUtil.getSingleInstance().updateFavor(currentFavor.getId(), statusUpdates);
   }
 
   private void updateMainActivityLists(boolean favorIsActive) {
@@ -304,7 +311,9 @@ public class FavorRequestView extends Fragment {
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED);
+    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, status);
+
+    // Updates the current favor
     if (currentFavor == null) {
       currentFavor = favor;
     } else {

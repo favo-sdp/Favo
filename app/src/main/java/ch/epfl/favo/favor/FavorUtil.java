@@ -1,9 +1,11 @@
 package ch.epfl.favo.favor;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
@@ -13,9 +15,9 @@ import ch.epfl.favo.util.DependencyFactory;
 /*
 This models the favor request.
 */
+@SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
-  private static final String FAVOR_COLLECTION = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static DatabaseUpdater collection =
       DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class);
@@ -43,6 +45,31 @@ public class FavorUtil {
       collection.addDocument(favor);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
+    }
+  }
+
+  /**
+   * @param favorId the id of the favor to retrieve from DB.
+   * @return CompletableFuture<Favor>
+   */
+  public CompletableFuture<Favor> retrieveFavor(String favorId) {
+    try {
+      return collection.getDocument(favorId);
+    } catch (RuntimeException e) {
+      Log.d(TAG, "unable to retrieve document from db.");
+    }
+    return new CompletableFuture<>();
+  }
+
+  /**
+   * @param favorId the id of the favor to retrieve from DB.
+   * @return CompletableFuture<Favor>
+   */
+  public void updateFavor(String favorId, Map<String, Object> updates) {
+    try {
+      collection.updateDocument(favorId, updates);
+    } catch (RuntimeException e) {
+      Log.d(TAG, "unable to retrieve document from db.");
     }
   }
 
@@ -113,9 +140,5 @@ public class FavorUtil {
   public ArrayList<Favor> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
 
     throw new NotImplementedException();
-  }
-
-  public CompletableFuture<Favor> retrieveFavor(String favorId) {
-    return collection.getDocument(favorId);
   }
 }
