@@ -120,13 +120,7 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <Button
-                android:id="@+id/accept_button"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:drawableBottom="@drawable/ic_thumb_up_24dp"
-                android:text="@string/accept_favor" />
+
 
             <Button
                 android:id="@+id/chat_button_accept_view"
@@ -135,6 +129,13 @@
                 android:layout_weight="1"
                 android:drawableBottom="@drawable/ic_chat_24dp"
                 android:text="@string/chat_message_detail_view" />
+            <Button
+                android:id="@+id/accept_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/ic_thumb_up_24dp"
+                android:text="@string/accept_favor" />
         </LinearLayout>
 
 

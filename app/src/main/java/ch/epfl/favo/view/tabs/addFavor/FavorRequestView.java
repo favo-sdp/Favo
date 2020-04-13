@@ -266,7 +266,7 @@ public class FavorRequestView extends Fragment {
       default: // cancelled
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
-          editFavorBtn.setText(R.string.edit_favor);
+          editFavorBtn.setText(R.string.restart_request);
           updateViewFromParameters(view, false, true, false, true, false);
         }
     }

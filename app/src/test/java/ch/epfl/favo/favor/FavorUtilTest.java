@@ -27,6 +27,7 @@ public class FavorUtilTest {
   @Before
   public void setUp() throws Exception {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
+    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
   }
 
   @After
@@ -36,7 +37,6 @@ public class FavorUtilTest {
 
   @Test
   public void testPostFavorFlow() {
-    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().postFavor(favor);
   }
