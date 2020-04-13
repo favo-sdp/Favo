@@ -51,6 +51,7 @@ public class FavorDetailView extends Fragment {
 
     if (currentFavor == null) {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+
     }
     displayFromFavor(rootView, currentFavor);
 
@@ -117,6 +118,7 @@ public class FavorDetailView extends Fragment {
             currentFavor.updateToOther(favor);
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
             displayFromFavor(getView(), favor);
+            updateStatusDisplayFromFavorStatus();
           } else { // update DB with accepted status
             CompletableFuture updateFavorFuture =
                 FavorUtil.getSingleInstance()
@@ -140,6 +142,7 @@ public class FavorDetailView extends Fragment {
   private Consumer favorAcceptedConsumer() {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
+
       ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       currentFavor.setStatusId(Favor.Status.ACCEPTED);
       updateStatusDisplayFromFavorStatus();

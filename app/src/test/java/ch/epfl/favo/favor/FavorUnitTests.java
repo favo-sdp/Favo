@@ -43,7 +43,7 @@ public class FavorUnitTests {
 
     favor.setStatusId(statusId);
     favor.setLocation(location);
-    favor.setAccepterID(accepterId);
+    favor.setAccepterId(accepterId);
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
@@ -95,4 +95,15 @@ public class FavorUnitTests {
     Favor favor3 = favor;
     assertTrue(favor.equals(favor3));
   }
+    @Test
+    public void favorCanBeUpdatedToOther(){
+      Favor favor = FakeItemFactory.getFavor();
+      String oldAccepterId = "old accepter Id";
+      favor.setAccepterId(oldAccepterId);
+      Favor anotherFavor = FakeItemFactory.getFavor();
+      anotherFavor.setAccepterId("new accepter Id");
+      favor.updateToOther(anotherFavor);
+      assertEquals(oldAccepterId,favor.getAccepterId());
+
+    }
 }

@@ -78,7 +78,6 @@ public class Favor implements Parcelable, Document {
       Status statusId) {
 
     this.id = DatabaseWrapper.generateRandomId();
-    ;
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -170,16 +169,13 @@ public class Favor implements Parcelable, Document {
   public String getAccepterId() {
     return accepterId;
   }
-  public void setAccepterId(String id){
+
+  public void setAccepterId(String id) {
     this.accepterId = id;
   }
 
   public Date getPostedTime() {
     return postedTime;
-  }
-
-  void setAccepterID(String accepterID) {
-    this.accepterId = accepterID;
   }
 
   /**
@@ -220,13 +216,12 @@ public class Favor implements Parcelable, Document {
   }
 
   public void updateToOther(Favor other) {
-    // we take all the values except for the ID
+    // we take all the values except for the id, acceptor and requester id
 
     this.title = other.getTitle();
     this.description = other.getDescription();
     this.location = other.getLocation();
     this.postedTime = other.getPostedTime();
-    this.requesterId = other.getRequesterId();
     this.statusId = other.getStatusId();
   }
   // Overriding equals() to compare two Complex objects
@@ -238,8 +233,8 @@ public class Favor implements Parcelable, Document {
       return true;
     }
 
-        /* Check if o is an instance of Complex or not
-          "null instanceof [type]" also returns false */
+    /* Check if o is an instance of Complex or not
+    "null instanceof [type]" also returns false */
     if (!(o instanceof Favor)) {
       return false;
     }
@@ -248,9 +243,11 @@ public class Favor implements Parcelable, Document {
     Favor other = (Favor) o;
 
     // Compare the data members and return accordingly
+
     return this.title.equals(other.title)
-            && this.description.equals(other.description)
-            && this.statusId.equals(other.getStatusId())
-            && this.location.equals(other.getLocation());
+        && this.description.equals(other.description)
+        && this.statusId.equals(other.getStatusId())
+        && (this.location.getLatitude() == other.location.getLatitude())
+        && (this.location.getLongitude() == other.location.getLongitude());
   }
 }

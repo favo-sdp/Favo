@@ -14,4 +14,5 @@ public class FavoLocation extends Location {
   public FavoLocation(Location l) {
     super(l);
   }
+
 }
