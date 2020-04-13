@@ -3,16 +3,21 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
 
-import java.time.LocalDate;
+import java.util.Date;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TestUtil;
+import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -21,6 +26,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -28,30 +34,29 @@ import static org.mockito.ArgumentMatchers.any;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class UserUnitTests {
-  private User user;
 
   @Before
   public void setup() {
-    user = new User();
+    DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
   }
 
   @Test
   public void userCanRemoveDetailsFromDatabase() {
 
-    String userId = TestConstants.USER_ID;
     assertThrows(NotImplementedException.class, () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
   @Test
   public void userGettersReturnCorrectValues() {
 
+    String id = TestConstants.USER_ID;
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    LocalDate birthDate = LocalDate.of(1994, 11, 8);
-    Location location = TestConstants.LOCATION;
+    Date birthDate = new Date();
+    FavoLocation location = TestConstants.LOCATION;
 
-    User user = new User(name, email, deviceId, birthDate, location);
+    User user = new User(id, name, email, deviceId, birthDate, location);
 
     assertEquals(name, user.getName());
     assertEquals(email, user.getEmail());
@@ -70,14 +75,20 @@ public class UserUnitTests {
     User user = new User();
     int activeAcceptingFavors = 3;
     int activeRequestingFavors = 4;
-    String temporaryId = "temporaryId";
+    String temporaryNotificationId = "temporaryNotificationId";
+    String temporaryDeviceId = "temporaryDeviceId";
+    FavoLocation newLoc = new FavoLocation();
+
     user.setActiveAcceptingFavors(activeAcceptingFavors);
     user.setActiveRequestingFavors(activeRequestingFavors);
-    user.setNotificationId(temporaryId);
+    user.setNotificationId(temporaryNotificationId);
+    user.setDeviceId(temporaryDeviceId);
+    user.setLocation(newLoc);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
-    assertEquals(temporaryId, user.getNotificationId());
+    assertEquals(temporaryNotificationId, user.getNotificationId());
+    assertEquals(temporaryDeviceId, user.getDeviceId());
   }
 
   @Test
@@ -104,16 +115,30 @@ public class UserUnitTests {
 
   @Test
   public void userSuccessfullyPostsToDB() {
-    CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
-    Mockito.doNothing().when(mock).addDocument(any(User.class));
+    DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+    CollectionWrapper collection = Mockito.mock(CollectionWrapper.class);
+    Mockito.doNothing().when(collection).addDocument(any(User.class));
 
+    String id = TestConstants.USER_ID;
     String name = TestConstants.NAME;
     String email = TestConstants.EMAIL;
     String deviceId = TestConstants.DEVICE_ID;
-    Location location = TestConstants.LOCATION;
+    FavoLocation location = TestConstants.LOCATION;
 
-    User user = new User(name, email, deviceId, null, location);
-    UserUtil.getSingleInstance().postAccount(user);
+    User user = new User(id, name, email, deviceId, null, location);
+    UserUtil.getSingleInstance().postUser(user);
+
+    assertNotNull(user);
+  }
+
+  @Test
+  public void userSuccessfullyRetrievedFromDB() {
+    CollectionWrapper collection = Mockito.mock(CollectionWrapper.class);
+    CompletableFuture<User> userFuture = new CompletableFuture<>();
+    when(collection.getDocument(any(String.class))).thenReturn(userFuture);
+
+    String id = TestConstants.USER_ID;
+    CompletableFuture<User> user = UserUtil.getSingleInstance().findUser(id);
 
     assertNotNull(user);
   }

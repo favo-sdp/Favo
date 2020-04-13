@@ -1,10 +1,12 @@
 package ch.epfl.favo.util;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.provider.Settings;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -31,11 +33,13 @@ public class DependencyFactory {
   private static boolean offlineMode = false;
   private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
+  private static Settings.Secure deviceSettings;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
     return offlineMode || CommonTools.isOffline(context);
   }
+
   public static boolean isTestMode() {
     return testMode;
   }
@@ -121,6 +125,13 @@ public class DependencyFactory {
       return currentFirestore;
     }
     return FirebaseFirestore.getInstance();
+  }
+
+  public static String getDeviceId(@Nullable ContentResolver contentResolver) {
+    if (testMode || contentResolver == null) {
+      return "22f523fgg3";
+    }
+    return deviceSettings.getString(contentResolver, Settings.Secure.ANDROID_ID);
   }
 
   public static <T> CompletableFuture<T> getCurrentCompletableFuture() {

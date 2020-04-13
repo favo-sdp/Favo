@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -25,7 +24,7 @@ public class DatabaseWrapper {
 
   // final fields regarding ID generation
   private static final String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  private static final int ID_LENGTH = 25;
+  private static final int ID_LENGTH = 28;
 
   private DatabaseWrapper() {
     FirebaseFirestore.setLoggingEnabled(true);
