@@ -225,7 +225,7 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(Favor.Status.toString(fakeFavor.getStatusId()))));
+        .check(matches(withText(Favor.Status.toEnum(fakeFavor.getStatusId()).name())));
   }
 
   @Test
@@ -261,7 +261,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(Favor.Status.toString(fakeFavor.getStatusId()))));
+        .check(matches(withText(Favor.Status.toEnum(fakeFavor.getStatusId()).name())));
   }
 
   @Test
