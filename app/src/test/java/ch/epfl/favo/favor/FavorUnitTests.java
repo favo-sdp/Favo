@@ -27,7 +27,7 @@ public class FavorUnitTests {
     assertEquals(TestConstants.DESCRIPTION, favor.getDescription());
     assertEquals(TestConstants.REQUESTER_ID, favor.getRequesterId());
     assertEquals(TestConstants.LOCATION, favor.getLocation());
-    assertEquals(TestConstants.FAVOR_STATUS, favor.getStatusId());
+    assertEquals(TestConstants.STATUS_ID, favor.getStatusId());
     assertNotNull(favor.getPostedTime());
   }
 
@@ -36,7 +36,7 @@ public class FavorUnitTests {
 
     Favor favor = FakeItemFactory.getFavor();
 
-    Favor.Status statusId = Favor.Status.CANCELLED_REQUESTER;
+    int statusId = Favor.Status.CANCELLED_REQUESTER.toInt();
     FavoLocation location = new FavoLocation("Dummy provider 2");
     String accepterId = "2364652";
 
@@ -67,7 +67,7 @@ public class FavorUnitTests {
     assertEquals(TestConstants.DESCRIPTION, favors[0].getDescription());
     assertEquals(TestConstants.REQUESTER_ID, favors[0].getRequesterId());
     assertEquals(TestConstants.LOCATION, favors[0].getLocation());
-    assertEquals(TestConstants.FAVOR_STATUS, favors[0].getStatusId());
+    assertEquals(TestConstants.STATUS_ID, favors[0].getStatusId());
   }
 
   @Test

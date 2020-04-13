@@ -14,7 +14,7 @@ public class FakeItemFactory {
         TestConstants.DESCRIPTION,
         TestConstants.REQUESTER_ID,
         TestConstants.LOCATION,
-        TestConstants.FAVOR_STATUS);
+        TestConstants.STATUS_ID);
   }
 
   public static List<Favor> getFavorList() {

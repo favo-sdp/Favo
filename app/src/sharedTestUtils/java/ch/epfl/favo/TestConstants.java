@@ -22,9 +22,9 @@ public class TestConstants {
   public static final String DESCRIPTION = "fake test description";
   public static final String REQUESTER_ID = DatabaseWrapper.generateRandomId();
   public static final FavoLocation LOCATION = new FavoLocation(PROVIDER);
+  public static final int STATUS_ID = Favor.Status.REQUESTED.toInt();
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
-  public static final Favor.Status FAVOR_STATUS = Favor.Status.REQUESTED;
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
 
   // Notification related constants
