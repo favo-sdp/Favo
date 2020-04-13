@@ -71,7 +71,8 @@ public class DatabaseWrapper {
   static <T extends Document> CompletableFuture<T> getDocument(
       String key, Class<T> cls, String collection) throws RuntimeException {
     Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
-    CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask).getInstance();
+    CompletableFuture<DocumentSnapshot> getFuture =
+        new TaskToFutureAdapter<>(getTask).getInstance();
     return getFuture.thenApply(
         documentSnapshot -> {
           if (documentSnapshot.exists()) {
@@ -82,10 +83,12 @@ public class DatabaseWrapper {
         });
   }
 
-  static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
-      Class<T> cls, String collection) {
-    Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
-    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
+  static <T extends Document> CompletableFuture<List<T>> getDocuments(
+      Class<T> cls, String field, List<String> criteria, String collection) {
+    Task<QuerySnapshot> getAllTask =
+        getCollectionReference(collection).whereIn(field, criteria).get();
+    CompletableFuture<QuerySnapshot> getAllFuture =
+        new TaskToFutureAdapter<>(getAllTask).getInstance();
 
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }

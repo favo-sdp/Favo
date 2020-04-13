@@ -32,7 +32,7 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     return DatabaseWrapper.getDocument(key, cls, collection);
   }
 
-  public CompletableFuture<List<T>> getAllDocuments() {
-    return DatabaseWrapper.getAllDocuments(cls, collection);
+  public CompletableFuture<List<T>> getDocuments(String field, List<String> criteria) {
+    return DatabaseWrapper.getDocuments(cls, field, criteria, collection);
   }
 }

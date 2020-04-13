@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -37,14 +39,14 @@ public class DatabaseWrapperTest {
   private QuerySnapshot mockQuerySnapshot;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     mockFirestore = Mockito.mock(FirebaseFirestore.class);
     mockCollectionReference = Mockito.mock(CollectionReference.class);
     mockDocumentReference = Mockito.mock(DocumentReference.class);
     testFavor = FakeItemFactory.getFavor();
     mockCollectionWrapper = new CollectionWrapper<>("favors", Favor.class);
 
-    // return collection refernece from firestore object
+    // return collection reference from firestore object
     Mockito.doReturn(mockCollectionReference).when(mockFirestore).collection(anyString());
     setupMockGetDocument();
     setupMockDocumentListRetrieval();
@@ -78,7 +80,7 @@ public class DatabaseWrapperTest {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirestore(null);
   }
@@ -110,7 +112,7 @@ public class DatabaseWrapperTest {
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
     CompletableFuture<Favor> actualFuture = mockCollectionWrapper.getDocument("fish");
     Favor obtained = actualFuture.get(2, TimeUnit.SECONDS);
-    assertEquals(testFavor,obtained);
+    assertEquals(testFavor, obtained);
   }
 
   @Test
@@ -129,15 +131,20 @@ public class DatabaseWrapperTest {
   }
 
   @Test
-  public void testGetAllDocumentsReturnsExpectedList()
+  public void testGetDocumentsReturnsExpectedList()
       throws InterruptedException, ExecutionException, TimeoutException {
     List<Favor> expectedFavors = FakeItemFactory.getFavorList();
+    String field = "accepterId";
+    String[] data = {TestConstants.ACCEPTER_ID};
+    List<String> criteria = Arrays.asList(data);
+
     CompletableFuture<QuerySnapshot> futureSnapshot = new CompletableFuture<>();
     Mockito.doReturn(expectedFavors).when(mockQuerySnapshot).toObjects(any());
     futureSnapshot.complete(mockQuerySnapshot);
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
-    CompletableFuture<List<Favor>> obtainedFuture = mockCollectionWrapper.getAllDocuments();
+    CompletableFuture<List<Favor>> obtainedFuture =
+        mockCollectionWrapper.getDocuments(field, criteria);
     List<Favor> obtainedFavors = obtainedFuture.get();
-    assertEquals(expectedFavors,obtainedFavors);
+    assertEquals(expectedFavors, obtainedFavors);
   }
 }
