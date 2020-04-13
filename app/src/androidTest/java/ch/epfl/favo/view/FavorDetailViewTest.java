@@ -20,6 +20,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
@@ -92,6 +93,7 @@ public class FavorDetailViewTest {
     successfulResult.complete(null);
     mockDatabaseWrapper.setMockDocument(fakeFavor); // set favor in db
     mockDatabaseWrapper.setMockResult(successfulResult);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
@@ -102,13 +104,15 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testAcceptButtonShowsFailSnackBar() {
+  public void testAcceptButtonShowsFailSnackBar() throws InterruptedException {
     CompletableFuture failedResult = new CompletableFuture();
     failedResult.completeExceptionally(new RuntimeException());
     // mockDatabaseWrapper.setMockDocument(fakeFavor); // set favor in db
     mockDatabaseWrapper.setMockResult(failedResult);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.update_favor_error)));
@@ -123,6 +127,7 @@ public class FavorDetailViewTest {
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
     anotherFavorWithSameId.setStatusId(Favor.Status.ACCEPTED);
     mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
@@ -139,6 +144,7 @@ public class FavorDetailViewTest {
     CompletableFuture successfulResult = new CompletableFuture();
     successfulResult.complete(null);
     mockDatabaseWrapper.setMockResult(successfulResult);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -147,14 +153,14 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
+    // check display is updated
+    onView(withId(R.id.status_text_accept_view))
+        .check(matches(withText(Favor.Status.CANCELLED_ACCEPTER.getPrettyString())));
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_cancel_success_msg)));
     getInstrumentation().waitForIdleSync();
-    // check display is updated
-    onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(Favor.Status.CANCELLED_ACCEPTER.getPrettyString())));
   }
 
   @Test
@@ -163,6 +169,7 @@ public class FavorDetailViewTest {
     CompletableFuture successfulResult = new CompletableFuture();
     successfulResult.complete(null);
     mockDatabaseWrapper.setMockResult(successfulResult);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -170,6 +177,7 @@ public class FavorDetailViewTest {
     CompletableFuture failedResult = new CompletableFuture();
     failedResult.completeExceptionally(new RuntimeException());
     mockDatabaseWrapper.setMockResult(failedResult);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());
