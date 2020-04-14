@@ -18,40 +18,6 @@ import ch.epfl.favo.common.FavoLocation;
  */
 public class Favor implements Parcelable, Document {
 
-  public enum Status {
-    REQUESTED("Requested", 0),
-    EDIT("Edit mode", 1),
-    ACCEPTED("Accepted", 2),
-    EXPIRED("Expired", 3),
-    CANCELLED_REQUESTER("Cancelled by requester", 4),
-    CANCELLED_ACCEPTER("Cancelled by accepter", 5),
-    SUCCESSFULLY_COMPLETED("Completed succesfully", 6);
-
-    private String statusString;
-    private int statusCode;
-
-    Status(String text, int code) {
-      this.statusString = text;
-      this.statusCode = code;
-    }
-
-    public String toString() {
-      return statusString;
-    }
-
-    public int toInt() {
-      return statusCode;
-    }
-
-    public static String toString(int code) {
-      return toEnum(code).name();
-    }
-
-    public static Favor.Status toEnum(int code) {
-      return Favor.Status.values()[code];
-    }
-  }
-
   // String constants for Map conversion
   public static final String ID = "ID";
   public static final String TITLE = "Title";
@@ -223,7 +189,7 @@ public class Favor implements Parcelable, Document {
     dest.writeString(requesterId);
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
-    dest.writeString(Favor.Status.values()[statusId].name());
+    dest.writeString(FavorStatus.values()[statusId].name());
   }
 
   public void updateToOther(Favor other) {

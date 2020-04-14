@@ -36,7 +36,7 @@ public class FavorUnitTests {
 
     Favor favor = FakeItemFactory.getFavor();
 
-    int statusId = Favor.Status.CANCELLED_REQUESTER.toInt();
+    int statusId = FavorStatus.CANCELLED_REQUESTER.toInt();
     FavoLocation location = new FavoLocation("Dummy provider 2");
     String accepterId = "2364652";
 

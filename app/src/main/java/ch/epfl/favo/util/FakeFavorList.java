@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 
 public class FakeFavorList {
   private long time;
@@ -43,6 +44,6 @@ public class FakeFavorList {
         "Description of favor " + number,
         "Requester" + number,
         location,
-        Favor.Status.REQUESTED.toInt());
+        FavorStatus.REQUESTED.toInt());
   }
 }

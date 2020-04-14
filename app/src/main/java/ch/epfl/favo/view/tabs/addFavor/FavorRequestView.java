@@ -33,6 +33,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
@@ -98,7 +99,7 @@ public class FavorRequestView extends Fragment {
   public void displayFavorInfo(View v) {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    mStatusView.setText(Favor.Status.toString(currentFavor.getStatusId()));
+    mStatusView.setText(FavorStatus.toString(currentFavor.getStatusId()));
     updateViewFromStatus(v);
   }
 
@@ -138,7 +139,7 @@ public class FavorRequestView extends Fragment {
     editFavorBtn.setOnClickListener(
         v -> {
           // if text is currently "Update Request"
-          if (currentFavor.getStatusId() == Favor.Status.EDIT.toInt()) {
+          if (currentFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
             confirmUpdatedFavor();
           } else { // text is currently "Edit Request"
             startUpdatingFavor();
@@ -198,7 +199,7 @@ public class FavorRequestView extends Fragment {
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    currentFavor.setStatusId(Favor.Status.EDIT.toInt());
+    currentFavor.setStatusId(FavorStatus.EDIT.toInt());
     updateViewFromStatus(getView());
   }
 
@@ -216,7 +217,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
-    currentFavor.setStatusId(Favor.Status.CANCELLED_REQUESTER.toInt());
+    currentFavor.setStatusId(FavorStatus.CANCELLED_REQUESTER.toInt());
     updateMainActivityLists(false);
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
@@ -224,7 +225,7 @@ public class FavorRequestView extends Fragment {
 
     // DB call to update status
     Map<String, Object> statusUpdates = new HashMap<>();
-    statusUpdates.put("statusId", Favor.Status.CANCELLED_REQUESTER.toInt());
+    statusUpdates.put("statusId", FavorStatus.CANCELLED_REQUESTER.toInt());
     FavorUtil.getSingleInstance().updateFavor(currentFavor.getId(), statusUpdates);
   }
 
@@ -242,7 +243,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {
-    Favor.Status status = Favor.Status.toEnum(currentFavor.getStatusId());
+    FavorStatus status = FavorStatus.toEnum(currentFavor.getStatusId());
     mStatusView.setText(status.toString());
     switch (status) {
       case REQUESTED:
@@ -313,7 +314,7 @@ public class FavorRequestView extends Fragment {
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     Favor favor =
-        new Favor(title, desc, UserUtil.currentUserId, loc, Favor.Status.REQUESTED.toInt());
+        new Favor(title, desc, UserUtil.currentUserId, loc, FavorStatus.REQUESTED.toInt());
 
     // Updates the current favor
     if (currentFavor == null) {
