@@ -48,6 +48,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
@@ -200,7 +201,7 @@ public class MapsPage extends Fragment
         radius = 25;
         break;
     }
-    CompletableFuture<List<Favor>> favors = retrieveLongitudeBoundFavors(mLocation, radius);
+    CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mLocation, radius);
     double finalRadius = radius;
     favors.thenAccept(favors1 -> {
       Log.d("Radius", String.valueOf(favors1.size()));
@@ -208,7 +209,6 @@ public class MapsPage extends Fragment
       double latitude_lower = mLocation.getLatitude() - latDif;
       double latitude_upper = mLocation.getLatitude() + latDif;
       for (Favor favor:favors1) {
-
         if(!favor.getRequesterId().equals(UserUtil.currentUserId)
               && favor.getStatusId().equals(Favor.Status.REQUESTED)
                 && favor.getLocation().getLatitude() > latitude_lower
@@ -222,29 +222,6 @@ public class MapsPage extends Fragment
     });
   }
 
-  /**
-   * I currently implement a temporary, simpler version to retrieve favors in a square area on
-   * sphere surface. For some reason, reading from db is very slow.  It should be replaced by
-   * FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mGpsTracker.getLocation(), radius);
-   * in future.
-   * @param loc current location
-   * @param radius radius of received nearby favors in km
-   */
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  private CompletableFuture<List<Favor>> retrieveLongitudeBoundFavors(Location loc, double radius) {
-
-    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
-    double longitude_lower = loc.getLongitude() - longDif;
-    double longitude_upper = loc.getLongitude() + longDif;
-    Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
-           // .whereEqualTo("statusId", Favor.Status.REQUESTED)
-            .whereGreaterThan("location.longitude", longitude_lower)
-            .whereLessThan("location.longitude", longitude_upper).limit(20).get();
-    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
-
-    return getAllFuture.thenApply(
-            querySnapshot -> querySnapshot.toObjects(Favor.class));
-  }
 
 
   private void getLocationPermission() {

@@ -149,9 +149,28 @@ public class FavorUtil {
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-  @RequiresApi(api = Build.VERSION_CODES.N)
+
   public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
 
-    throw new NotImplementedException();
+  /**
+   * I currently implement a temporary, simpler version to retrieve favors in a **square area** on
+   * sphere surface. This function only return longitude bounded favors, the rest query is done
+   * by the caller of this function.
+   *  TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
+   * */
+
+    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    double longitude_lower = loc.getLongitude() - longDif;
+    double longitude_upper = loc.getLongitude() + longDif;
+    Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
+            /** For some reason, reading from db is very slow when adding one more whereEqualTo query field
+             * or not without .limit(..) **/
+            // .whereEqualTo("statusId", Favor.Status.REQUESTED)
+            .whereGreaterThan("location.longitude", longitude_lower)
+            .whereLessThan("location.longitude", longitude_upper).limit(20).get();
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
+    return getAllFuture.thenApply(
+            querySnapshot -> querySnapshot.toObjects(Favor.class));
+
   }
 }
