@@ -17,24 +17,12 @@ import ch.epfl.favo.common.FavoLocation;
  */
 public class Favor implements Parcelable, Document {
   public enum Status {
-    REQUESTED("Requested"),
-    EDIT("Edit mode"), // temporary state used for logic in the request view
-    ACCEPTED_BY_OTHER("Accepted by other"), // temporary state used for logic in detail view
-    ACCEPTED("Accepted"),
-    EXPIRED("Expired"),
-    CANCELLED_REQUESTER("Cancelled by requester"),
-    CANCELLED_ACCEPTER("Cancelled by accepter"),
-    SUCCESSFULLY_COMPLETED("Completed succesfully");
-
-    private String customDisplay;
-
-    Status(String custom) {
-      this.customDisplay = custom;
-    }
-
-    public String getPrettyString() {
-      return customDisplay;
-    }
+    REQUESTED,
+    ACCEPTED,
+    EXPIRED,
+    CANCELLED_REQUESTER,
+    CANCELLED_ACCEPTER,
+    SUCCESSFULLY_COMPLETED
   }
 
   // String constants for Map conversion

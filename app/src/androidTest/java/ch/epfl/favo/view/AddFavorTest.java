@@ -36,6 +36,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
+import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -163,7 +164,7 @@ public class AddFavorTest {
 
     // click outside of text view
     UiDevice device = UiDevice.getInstance(getInstrumentation());
-    device.click(10, device.getDisplayHeight()*3 / 4);
+    device.click(10, device.getDisplayHeight() * 3 / 4);
     // check button is visible
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed()));
   }
@@ -213,7 +214,7 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.REQUESTED.getPrettyString())));
   }
 
   @Test
@@ -279,7 +280,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.SUCCESSFULLY_COMPLETED.getPrettyString())));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -289,7 +290,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
   }
 
   @Test
@@ -341,7 +342,7 @@ public class AddFavorTest {
 
     // Check updated status string
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(Favor.Status.CANCELLED_REQUESTER.getPrettyString())));
+        .check(matches(withText(FavorViewStatus.CANCELLED_REQUESTER.getPrettyString())));
   }
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {

@@ -77,7 +77,7 @@
         app:popUpTo="@id/nav_map" />
     <fragment
         android:id="@+id/favorDetailView"
-        android:name="ch.epfl.favo.view.tabs.FavorDetailView"
+        android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
         android:label="FavorDetailView"
         tools:layout="@layout/fragment_favor_accept_view" />
     <action

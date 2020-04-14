@@ -85,14 +85,16 @@ public class FavorUnitTests {
     assertEquals(favor.getPostedTime(), favor2.getPostedTime());
     assertEquals(favor.getStatusId(), favor2.getStatusId());
   }
+
   @Test
-  public void favorComparisonIsSuccessful(){
-    Favor favor =FakeItemFactory.getFavor();
+  public void favorComparisonIsSuccessful() {
+    Favor favor = FakeItemFactory.getFavor();
     Favor favor2 = FakeItemFactory.getFavor();
     assertTrue(favor.contentEquals(favor2));
   }
+
   @Test
-  public void favoLocationComparisonIsSuccessful(){
+  public void favoLocationComparisonIsSuccessful() {
     Favor favor = FakeItemFactory.getFavor();
     FavoLocation location1 = favor.getLocation();
     FavoLocation location2 = new FavoLocation("whatever");
@@ -103,15 +105,16 @@ public class FavorUnitTests {
     assertTrue(!location1.equals(favor));
     assertTrue(location1.equals(location3)); // check reference equality
   }
-    @Test
-    public void favorCanBeUpdatedToOther(){
-      Favor favor = FakeItemFactory.getFavor();
-      String oldAccepterId = "old accepter Id";
-      favor.setAccepterId(oldAccepterId);
-      Favor anotherFavor = FakeItemFactory.getFavor();
-      anotherFavor.setAccepterId("new accepter Id");
-      favor.updateToOther(anotherFavor);
-      assertEquals(oldAccepterId,favor.getAccepterId());
 
-    }
+  @Test
+  public void favorCanBeUpdatedToOther() {
+    Favor favor = FakeItemFactory.getFavor();
+    String oldAccepterId = "old accepter Id";
+    favor.setAccepterId(oldAccepterId);
+    Favor anotherFavor = FakeItemFactory.getFavor();
+    anotherFavor.setAccepterId("new accepter Id");
+    favor.updateToOther(anotherFavor);
+    assertEquals(oldAccepterId, favor.getAccepterId());
+  }
+
 }
