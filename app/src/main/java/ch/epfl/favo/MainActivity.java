@@ -1,5 +1,6 @@
 package ch.epfl.favo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
@@ -39,6 +40,7 @@ import static ch.epfl.favo.R.id.drawer_layout;
  * This view will control all the fragments that are created. Contains a navigation drawer on the
  * left. Contains a bottom navigation for top-level activities.
  */
+@SuppressLint("NewApi")
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
   // Bottom tabs
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity
   //    archivedFavorArrayList.add(favor);
   //  }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -216,10 +217,6 @@ public class MainActivity extends AppCompatActivity
     switch (itemId) {
       case R.id.nav_home:
         navController.popBackStack(R.id.nav_map, false);
-        // navController.navigate(R.id.action_global_nav_map);
-        // getSupportFragmentManager().popBackStackImmediate();
-        // getSupportFragmentManager().popBackStackImmediate();
-        // getSupportFragmentManager().popBackStackImmediate();
         break;
       case R.id.nav_share:
         startShareIntent();
@@ -308,7 +305,6 @@ public class MainActivity extends AppCompatActivity
     if (extras != null) {
       String favor_id = extras.getString("FavorId");
       CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-
       favorFuture.thenAccept(
           favor -> {
             otherActiveFavorsAround.put(favor.getId(), favor);

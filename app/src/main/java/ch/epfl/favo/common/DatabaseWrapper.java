@@ -64,8 +64,9 @@ public class DatabaseWrapper {
     getCollectionReference(collection).document(key).delete();
   }
 
-  static void updateDocument(String key, Map<String, Object> updates, String collection) {
-    getCollectionReference(collection).document(key).update(updates);
+  static CompletableFuture updateDocument(String key, Map<String, Object> updates, String collection) {
+    Task update = getCollectionReference(collection).document(key).update(updates);
+    return new TaskToFutureAdapter<>(update).getInstance();
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(

@@ -32,9 +32,11 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
+import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -58,6 +60,7 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
 
   @Rule
   public final ActivityTestRule<MainActivity> activityTestRule =
@@ -67,7 +70,9 @@ public class AddFavorTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+          mockDatabaseWrapper.setThrowError(false);
+          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
         }
       };
 
@@ -102,26 +107,6 @@ public class AddFavorTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_request_success_msg)));
   }
-
-  //  @Test
-  //  public void cameraPermissionTest() throws Throwable {
-  //
-  //    launchFragment(new FavorRequestView());
-  //    getInstrumentation().waitForIdleSync();
-  //    InstrumentationRegistry.getInstrumentation()
-  //            .getUiAutomation().revokeRuntimePermission(
-  //            InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName(),
-  //            Manifest.permission.CAMERA);
-  //    Button cameraButton =
-  //            activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
-  //    runOnUiThread(() -> cameraButton.setEnabled(true));
-  //    onView(withId(R.id.add_camera_picture_button)).perform(click());
-  //    sleep(1000);
-  //    //launches permission intent
-  //    // click allow button
-  //    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-  //    mDevice.findObject(new UiSelector().textMatches("Allow").enabled(true)).click();
-  //  }
 
   @Test
   public void addPictureWorks() throws Throwable {
@@ -165,17 +150,21 @@ public class AddFavorTest {
 
   @Test
   public void testCanHideKeyboardOnClickOutsideOfTextView() {
+    mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+    mockDatabaseWrapper.setThrowError(false);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     FavorRequestView currentFragment = new FavorRequestView();
     launchFragment(currentFragment);
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.edit_favor_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
 
     // click outside of text view
     UiDevice device = UiDevice.getInstance(getInstrumentation());
-    device.click(10, device.getDisplayHeight() / 2);
+    device.click(10, device.getDisplayHeight() * 3 / 4);
     // check button is visible
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed()));
   }
@@ -225,7 +214,7 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.REQUESTED.getPrettyString())));
   }
 
   @Test
@@ -246,12 +235,52 @@ public class AddFavorTest {
     checkCompletedView(fakeFavor);
   }
 
+  @Test
+  public void testFavorCannotBeEditedIfAcceptedBySomeoneElse() {
+
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    // set status to accepted
+    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    // inject result
+    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check accepted view
+    checkAcceptedView(fakeFavor);
+    // Check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.fail_edit_favor_request_view)));
+  }
+
+  @Test
+  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabaseWhenTryingToEdit() {
+    // make the collection wrapper throw an error
+    mockDatabaseWrapper.setThrowError(true);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    // instantiate view
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    // Try to click on edit
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check error message is printed
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.update_favor_error)));
+    mockDatabaseWrapper.setThrowError(false);
+  }
+
   public void checkCompletedView(Favor fakeFavor) {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.SUCCESSFULLY_COMPLETED.getPrettyString())));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -261,7 +290,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
   }
 
   @Test
@@ -313,7 +342,7 @@ public class AddFavorTest {
 
     // Check updated status string
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(Favor.Status.CANCELLED_REQUESTER.getPrettyString())));
+        .check(matches(withText(FavorViewStatus.CANCELLED_REQUESTER.getPrettyString())));
   }
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
