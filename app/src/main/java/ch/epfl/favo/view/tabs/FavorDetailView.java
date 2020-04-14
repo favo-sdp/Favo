@@ -1,7 +1,7 @@
 package ch.epfl.favo.view.tabs;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,6 +26,7 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
 
+@SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
   private Favor currentFavor;
   private FloatingActionButton locationAccessBtn;
@@ -38,7 +38,6 @@ public class FavorDetailView extends Fragment {
     // create favor detail from a favor
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,14 +50,12 @@ public class FavorDetailView extends Fragment {
 
     if (currentFavor == null) {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
-
     }
     displayFromFavor(rootView, currentFavor);
 
     return rootView;
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons(View rootView) {
     acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
@@ -75,7 +72,6 @@ public class FavorDetailView extends Fragment {
         });
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void cancelFavor() {
     CompletableFuture completableFuture =
         FavorUtil.getSingleInstance()
@@ -95,7 +91,6 @@ public class FavorDetailView extends Fragment {
     };
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private CompletableFuture<Favor> retrieveFavorWrapper() {
     CompletableFuture<Favor> futureFavor =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
@@ -109,7 +104,6 @@ public class FavorDetailView extends Fragment {
         });
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void acceptFavor() {
     CompletableFuture<Favor> favorFuture = retrieveFavorWrapper();
     favorFuture // get updated favor from db
@@ -131,7 +125,6 @@ public class FavorDetailView extends Fragment {
     favorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private Function favorFailedToBeAcceptedConsumer() {
     return e -> {
       // if already accepted then change the status display and disable all the buttons

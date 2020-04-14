@@ -2,7 +2,6 @@ package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
 import android.graphics.Point;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
@@ -38,6 +36,7 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
+@SuppressLint("NewApi")
 public class FavorPage extends Fragment implements View.OnClickListener {
 
   private Map<String, Favor> activeFavors;
@@ -68,7 +67,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     screenWidth = size.x;
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -1,5 +1,6 @@
 package ch.epfl.favo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Build;
@@ -39,6 +40,7 @@ import static ch.epfl.favo.R.id.drawer_layout;
  * This view will control all the fragments that are created. Contains a navigation drawer on the
  * left. Contains a bottom navigation for top-level activities.
  */
+@SuppressLint("NewApi")
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener, ViewController {
   // Bottom tabs
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity
   //    archivedFavorArrayList.add(favor);
   //  }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
