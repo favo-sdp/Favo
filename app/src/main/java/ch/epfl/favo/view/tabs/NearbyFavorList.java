@@ -13,6 +13,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
+import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 
 /**
@@ -43,6 +45,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     private boolean first = true;
     private Map<String, Favor> favorsFound = new HashMap<>();
     private MainActivity activity;
+    private NavController navController;
     public NearbyFavorList() {
         // Required empty public constructor
     }
@@ -50,12 +53,12 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        // Extract two arrayLists from the main activity
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
+        Display display = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         screenWidth = size.x;
         activity = (MainActivity) Objects.requireNonNull(getActivity());
+        navController = findNavController(activity, R.id.nav_host_fragment);
     }
 
 
@@ -100,7 +103,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     }
 
     private void onToggleClick(View view){
-        Objects.requireNonNull(getActivity()).getSupportFragmentManager().popBackStack();
+        navController.popBackStack(R.id.nav_map, false);
     }
 
     private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope){

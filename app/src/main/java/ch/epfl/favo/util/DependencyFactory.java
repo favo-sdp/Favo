@@ -34,7 +34,7 @@ public class DependencyFactory {
   private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
   private static Settings.Secure deviceSettings;
-  
+
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
     return offlineMode || CommonTools.isOffline(context);
