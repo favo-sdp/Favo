@@ -166,17 +166,6 @@ public class MapsPage extends Fragment
 
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
-
-     /*toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-         if (isChecked) {
-           onToggleClick(getView());
-           // The toggle is enabled
-         } else {
-           // The toggle is disabled
-         }
-       }}
-       );*/
      activity = (MainActivity) Objects.requireNonNull(getActivity());
     return view;
   }
