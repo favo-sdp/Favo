@@ -72,7 +72,7 @@ public class NearbyFavorListTest {
     private void openSearchView(){
         // switch to nearby favor list view
         try{
-            Thread.sleep(3000);
+            Thread.sleep(10000);
             onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
             getInstrumentation().waitForIdleSync();
 
