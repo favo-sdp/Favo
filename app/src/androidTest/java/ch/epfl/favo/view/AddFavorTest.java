@@ -225,7 +225,7 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(Favor.Status.toEnum(fakeFavor.getStatusId()).name())));
+        .check(matches(withText(Favor.Status.toString(fakeFavor.getStatusId()))));
   }
 
   @Test
