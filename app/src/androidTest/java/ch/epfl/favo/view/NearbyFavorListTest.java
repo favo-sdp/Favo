@@ -83,7 +83,7 @@ public class NearbyFavorListTest {
             Log.d("ListTest", e.getMessage());
         }
     }
-/*
+
     @Test
     public void testSearchViewFound() {
 
@@ -142,20 +142,20 @@ public class NearbyFavorListTest {
         // check favor is displayed in active favor list view
         onView(withText(favor.getTitle())).check(matches(isDisplayed()));
     }
-*/
+
     @Test
     public void FavorDetailViewJumptoMapTest(){
-
+        // just wait and change to listView
         openSearchView();
         pressBack();
         pressBack();
 
-        // check query is successful and click on found item
+        // check test favor is found click on found item
         onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
 
         // Check and click on the location text
-        onView(withId(R.id.location_accept_view)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.location_accept_view)).check(matches(isDisplayed())).perform(click()).perform(click());
     }
 }
 
