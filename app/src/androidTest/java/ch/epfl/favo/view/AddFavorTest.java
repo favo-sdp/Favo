@@ -32,6 +32,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
