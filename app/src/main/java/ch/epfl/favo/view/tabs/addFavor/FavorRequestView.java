@@ -40,6 +40,7 @@ import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
+import static ch.epfl.favo.view.tabs.addFavor.FavorViewStatus.convertViewStatusToFavorStatus;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
@@ -320,15 +321,6 @@ public class FavorRequestView extends Fragment {
     }
   }
 
-  private Favor.Status convertViewStatusToFavorStatus(FavorViewStatus status) {
-    Favor.Status favorStatus;
-    if (status.equals(FavorViewStatus.EDIT)) {
-      favorStatus = Favor.Status.REQUESTED;
-    } else {
-      favorStatus = Favor.Status.valueOf(status.toString());
-    }
-    return favorStatus;
-  }
 
   /** Extracts favor data from and assigns it to currentFavor. */
   private void getFavorFromView(FavorViewStatus status) {

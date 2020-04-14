@@ -1,5 +1,7 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import ch.epfl.favo.favor.Favor;
+
 public enum FavorViewStatus {
   ACCEPTED("Accepted"),
   EDIT("Edit mode"),
@@ -17,5 +19,14 @@ public enum FavorViewStatus {
 
   public String getPrettyString() {
     return this.customString;
+  }
+  public static Favor.Status convertViewStatusToFavorStatus(FavorViewStatus status){
+    Favor.Status favorStatus;
+    if (status.equals(FavorViewStatus.EDIT)) {
+      favorStatus = Favor.Status.REQUESTED;
+    } else {
+      favorStatus = Favor.Status.valueOf(status.toString());
+    }
+    return favorStatus;
   }
 }
