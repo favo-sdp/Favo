@@ -225,7 +225,7 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId())));
+        .check(matches(withText(Favor.Status.REQUESTED.toString())));
   }
 
   @Test
@@ -235,7 +235,7 @@ public class AddFavorTest {
     fakeFavor.setStatusId(Favor.Status.ACCEPTED.toInt());
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
-    checkAcceptedView(fakeFavor);
+    checkAcceptedView();
     fakeFavor.setStatusId(Favor.Status.SUCCESSFULLY_COMPLETED.toInt());
     View v = activityTestRule.getActivity().getCurrentFocus();
     runOnUiThread(
@@ -243,25 +243,25 @@ public class AddFavorTest {
           fragment.displayFavorInfo(v);
         });
     getInstrumentation().waitForIdleSync();
-    checkCompletedView(fakeFavor);
+    checkCompletedView();
   }
 
-  public void checkCompletedView(Favor fakeFavor) {
+  public void checkCompletedView() {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(Favor.Status.toString(fakeFavor.getStatusId()))));
+        .check(matches(withText(Favor.Status.SUCCESSFULLY_COMPLETED.toString())));
   }
 
-  public void checkAcceptedView(Favor fakeFavor) {
+  public void checkAcceptedView() {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(Favor.Status.toEnum(fakeFavor.getStatusId()).name())));
+        .check(matches(withText(Favor.Status.ACCEPTED.toString())));
   }
 
   @Test
