@@ -52,7 +52,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/spinner"
+            app:layout_constraintTop_toTopOf="parent"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true">
@@ -71,24 +71,24 @@
             android:textAlignment="center">
         </TextView>
 
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:entries="@array/favor_list_spinner"
-            app:layout_constraintRight_toLeftOf="@id/searchView"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <Spinner-->
+<!--            android:id="@+id/spinner"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:entries="@array/favor_list_spinner"-->
+<!--            app:layout_constraintRight_toLeftOf="@id/searchView"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-        <SearchView
-            android:id="@+id/searchView"
-            android:tag="searchView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:iconifiedByDefault="true"
-            android:queryHint="@string/search_hint"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+<!--        <SearchView-->
+<!--            android:id="@+id/searchView"-->
+<!--            android:tag="searchView"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:iconifiedByDefault="true"-->
+<!--            android:queryHint="@string/search_hint"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

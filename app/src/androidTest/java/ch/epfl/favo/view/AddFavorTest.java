@@ -89,7 +89,7 @@ public class AddFavorTest {
   @Test
   public void addFavorShowsSnackBar() {
     // Click on fav list tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
 
