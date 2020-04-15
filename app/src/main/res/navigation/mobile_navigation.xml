@@ -26,10 +26,9 @@
         android:name="ch.epfl.favo.view.tabs.MapsPage"
         android:label="Map"
         tools:layout="@layout/fragment_map">
-<!--        <action-->
-<!--            android:id="@+id/action_nav_map_to_nav_favorList"-->
-<!--            app:destination="@id/nav_favorList"-->
-<!--            app:launchSingleTop="true"/>-->
+        <action
+            android:id="@+id/action_nav_map_to_nav_favorList"
+            app:destination="@id/nav_favorList" />
         <action
             android:id="@+id/action_nav_map_to_favorRequestView"
             app:destination="@id/favorRequestView" />

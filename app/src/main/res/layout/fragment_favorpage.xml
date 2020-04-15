@@ -16,35 +16,6 @@
         android:text="@string/tab2_description"
         android:id="@+id/constraint_layout_favor_view">
 
-<!--        <Button-->
-<!--            android:id="@+id/new_favor"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="55dp"-->
-<!--            android:onClick="onClick"-->
-<!--            android:text="@string/new_favor"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintLeft_toLeftOf="parent"-->
-<!--            app:layout_constraintRight_toRightOf="parent" />-->
-
-<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--            android:id="@+id/fab"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_alignParentBottom="true"-->
-<!--            android:layout_gravity="bottom|end"-->
-<!--            android:layout_marginStart="16dp"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:layout_marginEnd="33dp"-->
-<!--            android:layout_marginBottom="99dp"-->
-<!--            android:clickable="true"-->
-<!--            android:focusable="true"-->
-<!--            android:gravity="bottom|end"-->
-<!--            android:onClick="onClick"-->
-<!--            app:backgroundTint="#4CAF50"-->
-<!--            app:srcCompat="@drawable/ic_add_black_24dp" />-->
-
         <ListView
             android:id="@+id/favor_list"
             android:layout_width="match_parent"
@@ -70,25 +41,6 @@
             android:visibility="invisible"
             android:textAlignment="center">
         </TextView>
-
-<!--        <Spinner-->
-<!--            android:id="@+id/spinner"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:entries="@array/favor_list_spinner"-->
-<!--            app:layout_constraintRight_toLeftOf="@id/searchView"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--        <SearchView-->
-<!--            android:id="@+id/searchView"-->
-<!--            android:tag="searchView"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentTop="true"-->
-<!--            android:iconifiedByDefault="true"-->
-<!--            android:queryHint="@string/search_hint"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

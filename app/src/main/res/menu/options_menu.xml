@@ -6,7 +6,7 @@
         android:title="@string/actionbar_spinner"
         app:actionViewClass="android.widget.Spinner"
         app:showAsAction="always" />
-    <item android:id="@+id/searchView"
+    <item android:id="@+id/search_item"
         android:icon="@drawable/ic_search_black_24dp"
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"

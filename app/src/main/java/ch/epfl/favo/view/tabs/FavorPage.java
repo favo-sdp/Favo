@@ -26,6 +26,7 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
@@ -106,8 +107,14 @@ public class FavorPage extends Fragment {
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
           favorBundle.putParcelable("FAVOR_ARGS", favor);
-          Navigation.findNavController(Objects.requireNonNull(getView()))
-              .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
+          // if favor was requested, open request view
+          if (favor.getRequesterId().equals(UserUtil.currentUserId)) {
+            Navigation.findNavController(Objects.requireNonNull(getView()))
+                .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
+          } else { // if favor was accepted, open accept view
+            Navigation.findNavController(Objects.requireNonNull(getView()))
+                .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
+          }
         });
   }
 
@@ -144,15 +151,17 @@ public class FavorPage extends Fragment {
   }
 
   private void setupSearch(Menu menu) {
-    MenuItem searchMenuItem = menu.findItem(R.id.searchView);
+    MenuItem searchMenuItem = menu.findItem(R.id.search_item);
     searchView = (SearchView) searchMenuItem.getActionView();
 
     // if returned from FavorDetail view, continue to show the search mode
-    if (!favorsFound.isEmpty()) {
-      searchView.setIconified(false);
-      searchView.clearFocus();
-      setupSearchMode();
-    }
+
+      // commenting for the moment because it doesn't work with androidx, will work on it in the next PR when sync with database
+//    if (!favorsFound.isEmpty()) {
+//      searchView.setIconified(false);
+//      searchView.clearFocus();
+//      setupSearchMode();
+//    }
 
     // replacing the other two callbacks because they were buggy according to some stack overflow
     // forums
@@ -186,7 +195,7 @@ public class FavorPage extends Fragment {
           @Override
           public boolean onQueryTextChange(String newText) {
             // replace irrelevant items on listView with last query results or empty view
-            // displayFavorList(new HashMap<>(), R.string.empty);
+            displayFavorList(new HashMap<>(), R.string.empty);
             return false;
           }
         });

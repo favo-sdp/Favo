@@ -8,4 +8,7 @@
     <dimen name="hamburger_button_size">40dp</dimen>
     <!-- Favor Request View-->
     <dimen name="edit_favor_button_width">36dp</dimen>
+
+    <dimen name="margin_bottom_button">45dp</dimen>
+    <dimen name="margin_accept_view">15dp</dimen>
 </resources>

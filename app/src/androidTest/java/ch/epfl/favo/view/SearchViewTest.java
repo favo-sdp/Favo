@@ -1,6 +1,6 @@
 package ch.epfl.favo.view;
 
-import android.view.KeyEvent;
+import android.widget.EditText;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -21,15 +21,15 @@ import ch.epfl.favo.util.DependencyFactory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.pressKey;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class SearchViewTest {
@@ -75,12 +75,14 @@ public class SearchViewTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on searchView button
-    onView(withId(R.id.searchView)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check spinner is invisible and favor list is empty
     onView(withText(favor.getTitle())).check(doesNotExist());
-    //onView(withId(R.id.spinner)).check(matches(not(isDisplayed())));
+
+    // no need for that because the spinner is not in the layout anymore
+    // onView(withId(R.id.spinner)).check(matches(not(isDisplayed())));
   }
 
   @Test
@@ -89,10 +91,13 @@ public class SearchViewTest {
     typeFavors();
 
     Favor favor = FakeItemFactory.getFavor();
-    // type the title of fake favor
-    onView(withId(R.id.searchView))
-        .perform(typeText(favor.getTitle()))
-        .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+
+    onView(isAssignableFrom(EditText.class))
+        .perform(typeText(favor.getTitle()), pressImeActionButton());
+    //    onView(withId(Resources.getSystem().getIdentifier("search_src_text",
+    //            "id", "android")))
+    //        .perform(typeText(favor.getTitle()))
+    //        .perform(pressKey(KeyEvent.KEYCODE_ENTER));
     getInstrumentation().waitForIdleSync();
 
     // check query is successful and click on found item
@@ -103,9 +108,6 @@ public class SearchViewTest {
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // press two times of back button to quit search mode
-    pressBack();
-    pressBack();
     // check favor is displayed in active favor list view
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -116,21 +118,14 @@ public class SearchViewTest {
 
     typeFavors();
 
-    Favor favor = FakeItemFactory.getFavor();
     // type the title of fake favor
-    onView(withId(R.id.searchView))
-        .perform(typeText("random words"))
-        .perform(pressKey(KeyEvent.KEYCODE_ENTER));
-    getInstrumentation().waitForIdleSync();
+    onView(isAssignableFrom(EditText.class))
+        .perform(typeText("random words"), pressImeActionButton());
 
     // check the tip text is displayed when query failed
     onView(withId(R.id.tip))
         .check(matches(isDisplayed()))
         .check(matches(withText(R.string.query_failed)));
-
-    // Click on close searchView button
-    pressBack();
-    pressBack();
   }
 
   @Test
@@ -142,7 +137,7 @@ public class SearchViewTest {
     device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
 
     // if keyboard hidden, one time of pressBack will return to Favor List view
-    pressBack();
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     Favor favor = FakeItemFactory.getFavor();
     // check favor is displayed in active favor list view
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());

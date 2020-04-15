@@ -224,7 +224,9 @@ public class FavorDetailViewTest {
     // press back
     pressBack();
     getInstrumentation().waitForIdleSync();
-    navController.navigate(R.id.action_nav_map_to_nav_favorlist);
+
+    navController.navigate(R.id.action_nav_map_to_nav_favorList);
+
     onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
