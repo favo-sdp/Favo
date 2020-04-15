@@ -1,5 +1,7 @@
 package ch.epfl.favo.common;
 
+import android.location.Location;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -19,17 +21,24 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     DatabaseWrapper.addDocument(document, collection);
   }
 
+  @Override
   public void removeDocument(String key) {
     DatabaseWrapper.removeDocument(key, collection);
   }
 
-  public void updateDocument(String key, Map<String, Object> updates) {
-    DatabaseWrapper.updateDocument(key, updates, collection);
+  @Override
+  public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
+    return DatabaseWrapper.updateDocument(key, updates, collection);
   }
 
   @Override
   public CompletableFuture<T> getDocument(String key) {
     return DatabaseWrapper.getDocument(key, cls, collection);
+  }
+
+  @Override
+  public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
+    return DatabaseWrapper.getAllDocumentsLongitudeBounded(loc, radius, cls, collection);
   }
 
   public CompletableFuture<List<T>> getAllDocuments() {

@@ -2,134 +2,143 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_favor_accept_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="view.tabs.addFavor.FavorDetailView"
     android:background="@color/material_green_50"
-    android:clickable="true"
-    android:focusable="true"
-    android:id="@+id/fragment_favor_accept_view">
+    tools:context=".view.tabs.FavorDetailView">
     <!-- add above: android:background="@color/material_green_50"-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="20dp">
-
         <TextView
-            android:id="@+id/favor_greeting_text_accept"
+            android:id="@+id/status_text_accept_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:gravity="center_horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/title_accept_view"
+            android:background="@color/material_gray_300"
+            android:layout_marginBottom="@dimen/margin_accept_view"/>
+        <TextView
+            android:id="@+id/title_accept_view"
 
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="220dp"
+            android:layout_marginBottom="@dimen/margin_accept_view"
             android:ems="10"
+            android:lines="2"
+            android:maxLines="2"
 
-            android:text="@string/favor_greeting_str"
+            android:text="Favor Title"
+            android:gravity="center_vertical|center_horizontal"
+            android:textIsSelectable="true"
+            android:clickable="true"
             android:textAlignment="center"
             android:textSize="20sp"
+            android:background="@color/material_gray_300"
 
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@id/imageView_accept_view" />
 
-        <EditText
-            android:id="@+id/title_accept_view"
-
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-
-            android:autofillHints=""
-            android:hint="@string/favor_title_hint"
-            android:inputType="textShortMessage"
-
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/favor_greeting_text_accept" />
 
         <ImageView
             android:id="@+id/imageView_accept_view"
 
             android:layout_width="240dp"
-            android:layout_height="160dp"
+            android:layout_height="200dp"
 
-            android:layout_marginTop="22dp"
+            android:layout_marginBottom="@dimen/margin_accept_view"
             android:contentDescription="@string/favor_img_content_desc"
             app:layout_constraintLeft_toLeftOf="parent"
 
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_accept_view"
+            app:layout_constraintBottom_toTopOf="@id/time_location_layout_accept_view"
             app:srcCompat="@android:drawable/ic_menu_gallery" />
 
-        <EditText
-            android:id="@+id/location_accept_view"
-
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="204dp"
-
-            android:autofillHints=""
-            android:hint="@string/favor_location_hint"
-            android:inputType="textShortMessage"
-
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_accept_view" />
-
-        <EditText
-            android:id="@+id/datetime_accept_view"
-
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-
-            android:autofillHints=""
-            android:hint="@string/favor_datetime_hint"
-
-            android:inputType="datetime"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/location_accept_view" />
-
-        <EditText
-            android:id="@+id/details_accept_view"
-
+        <LinearLayout
+            android:id="@+id/time_location_layout_accept_view"
+            android:padding="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:autofillHints=""
-            android:gravity="top|start"
-            android:hint="@string/favor_details_hint"
-            android:inputType="textMultiLine"
-            android:lines="8"
-            android:maxLines="8"
+            android:layout_marginBottom="@dimen/margin_accept_view"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/details_accept_view"
+            android:background="@color/material_gray_300">
 
-            android:minLines="8"
-            android:scrollbars="vertical"
+            <TextView
+                android:id="@+id/datetime_accept_view"
+                android:textIsSelectable="true"
+                android:clickable="true"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.4"
+                android:focusable="true"
+                android:textSize="15sp"
+                android:text="05/29/2015 5:50 AM" />
 
-            app:layout_constraintTop_toBottomOf="@id/datetime_accept_view" />
-
-        <Button
-            android:id="@+id/accept_button"
-
-            android:layout_width="0dp"
-
-            android:layout_height="wrap_content"
-            android:layout_marginTop="604dp"
-            android:text="@string/accept_favor"
-
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/location_accept_view_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:layout_weight="0.1"
+                android:background="@color/material_green_700"
+                android:src="@drawable/ic_location_on_24dp" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/errorText"
-            android:layout_width="wrap_content"
+            android:id="@+id/details_accept_view"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:text=""
-            android:textColor="#FF0000"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/accept_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            android:focusable="true"
+            android:textSize="15sp"
+            android:padding="10dp"
+            android:text="sample description"
+            android:layout_marginBottom="@dimen/margin_accept_view"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:gravity="top|start"
+            android:lines="8"
+            android:maxLines="6"
+            android:minLines="6"
+            android:scrollbars="vertical"
+            android:background="@color/material_gray_300"
+            android:shadowRadius="0.01"
+            app:layout_constraintBottom_toTopOf="@+id/accept_chat_btns"/>
+
+        <LinearLayout
+            android:id="@+id/accept_chat_btns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_bottom_button"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+
+
+            <Button
+                android:id="@+id/chat_button_accept_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/ic_chat_24dp"
+                android:text="@string/chat_message_detail_view" />
+            <Button
+                android:id="@+id/accept_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/ic_thumb_up_24dp"
+                android:text="@string/accept_favor" />
+        </LinearLayout>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

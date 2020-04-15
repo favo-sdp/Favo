@@ -8,20 +8,18 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.map.GpsTracker;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -61,29 +59,37 @@ public class FavorUtil {
     }
   }
 
-  /**
-   * @param favorId the id of the favor to retrieve from DB.
-   * @return CompletableFuture<Favor>
-   */
-  public CompletableFuture<Favor> retrieveFavor(String favorId) {
-    try {
-      return collection.getDocument(favorId);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to retrieve document from db.");
-    }
-    return new CompletableFuture<>();
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture updateFavor(Favor favor) {
+    return collection.updateDocument(favor.getId(), favor.toMap());
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
+    Map updates =
+        new HashMap<String, String>() {
+          {
+            put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
+            put(Favor.STATUS_ID, newStatus.toString());
+          }
+        };
+    return updateFavor(favorId, updates);
   }
 
   /**
    * @param favorId the id of the favor to retrieve from DB.
    * @return CompletableFuture<Favor>
    */
-  public void updateFavor(String favorId, Map<String, Object> updates) {
-    try {
-      collection.updateDocument(favorId, updates);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to retrieve document from db.");
-    }
+  public CompletableFuture<Favor> retrieveFavor(String favorId) {
+    return collection.getDocument(favorId);
+  }
+
+  /**
+   * @param favorId the id of the favor to retrieve from DB.
+   * @return CompletableFuture<Favor>
+   */
+  public CompletableFuture updateFavor(String favorId, Map<String, Object> updates) {
+    return collection.updateDocument(favorId, updates);
   }
 
   /**
@@ -151,26 +157,6 @@ public class FavorUtil {
    */
 
   public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
-
-  /**
-   * I currently implement a temporary, simpler version to retrieve favors in a **square area** on
-   * sphere surface. This function only return longitude bounded favors, the rest query is done
-   * by the caller of this function.
-   *  TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
-   * */
-
-    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
-    double longitude_lower = loc.getLongitude() - longDif;
-    double longitude_upper = loc.getLongitude() + longDif;
-    Task<QuerySnapshot> getAllTask = DatabaseWrapper.getCollectionReference("favors")
-            /** For some reason, reading from db is very slow when adding one more whereEqualTo query field
-             * or not without .limit(..) **/
-            // .whereEqualTo("statusId", Favor.Status.REQUESTED)
-            .whereGreaterThan("location.longitude", longitude_lower)
-            .whereLessThan("location.longitude", longitude_upper).limit(20).get();
-    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
-    return getAllFuture.thenApply(
-            querySnapshot -> querySnapshot.toObjects(Favor.class));
-
+    throw new NotImplementedException();
   }
 }

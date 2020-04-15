@@ -10,6 +10,7 @@ import ch.epfl.favo.common.FavoLocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit tests for Favor object.
@@ -42,11 +43,11 @@ public class FavorUnitTests {
 
     favor.setStatusId(statusId);
     favor.setLocation(location);
-    favor.setAccepterID(accepterId);
+    favor.setAccepterId(accepterId);
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
-    assertEquals(accepterId, favor.getAccepterID());
+    assertEquals(accepterId, favor.getAccepterId());
   }
 
   @Test
@@ -80,8 +81,37 @@ public class FavorUnitTests {
     assertEquals(favor.getDescription(), favor2.getDescription());
     assertEquals(favor.getLocation(), favor2.getLocation());
     assertEquals(favor.getRequesterId(), favor2.getRequesterId());
-    assertEquals(favor.getAccepterID(), favor2.getAccepterID());
+    assertEquals(favor.getAccepterId(), favor2.getAccepterId());
     assertEquals(favor.getPostedTime(), favor2.getPostedTime());
     assertEquals(favor.getStatusId(), favor2.getStatusId());
   }
+  @Test
+  public void favorComparisonIsSuccessful(){
+    Favor favor =FakeItemFactory.getFavor();
+    Favor favor2 = FakeItemFactory.getFavor();
+    assertTrue(favor.contentEquals(favor2));
+  }
+  @Test
+  public void favoLocationComparisonIsSuccessful(){
+    Favor favor = FakeItemFactory.getFavor();
+    FavoLocation location1 = favor.getLocation();
+    FavoLocation location2 = new FavoLocation("whatever");
+    FavoLocation location3 = location1;
+    location2.setLatitude(location1.getLatitude());
+    location2.setLongitude(location1.getLongitude());
+    assertTrue(location1.equals(location2)); // check they're equal based on latitude and longitude
+    assertTrue(!location1.equals(favor));
+    assertTrue(location1.equals(location3)); // check reference equality
+  }
+    @Test
+    public void favorCanBeUpdatedToOther(){
+      Favor favor = FakeItemFactory.getFavor();
+      String oldAccepterId = "old accepter Id";
+      favor.setAccepterId(oldAccepterId);
+      Favor anotherFavor = FakeItemFactory.getFavor();
+      anotherFavor.setAccepterId("new accepter Id");
+      favor.updateToOther(anotherFavor);
+      assertEquals(oldAccepterId,favor.getAccepterId());
+
+    }
 }

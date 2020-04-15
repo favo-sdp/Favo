@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -35,9 +36,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +45,6 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
@@ -55,12 +53,12 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.util.TaskToFutureAdapter;
 import ch.epfl.favo.view.ViewController;
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
+@SuppressLint("NewApi")
 public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
@@ -97,8 +95,10 @@ public class MapsPage extends Fragment
           .findViewById(R.id.offline_map_button)
           .setVisibility(View.INVISIBLE);
     }
-    if(getArguments() != null){
-      Favor favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+
+    if(activity.focusedFavor != null){
+      Favor favor = activity.focusedFavor;
+      activity.focusedFavor = null;
       LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
       Marker marker =
               mMap.addMarker(
@@ -167,7 +167,7 @@ public class MapsPage extends Fragment
 
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
-     activity = (MainActivity) Objects.requireNonNull(getActivity());
+    activity = (MainActivity) Objects.requireNonNull(getActivity());
     return view;
   }
 
@@ -182,7 +182,6 @@ public class MapsPage extends Fragment
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void updateNearbyList(){
     String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1km");
     double radius = 1;
@@ -201,25 +200,44 @@ public class MapsPage extends Fragment
         radius = 25;
         break;
     }
-    CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mLocation, radius);
+    CompletableFuture<List<Favor>> favors = DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class)
+    .getAllDocumentsLongitudeBounded(mLocation, radius);
     double finalRadius = radius;
-    favors.thenAccept(favors1 -> {
-      Log.d("Radius", String.valueOf(favors1.size()));
-      double latDif = Math.toDegrees(finalRadius / 6371);
-      double latitude_lower = mLocation.getLatitude() - latDif;
-      double latitude_upper = mLocation.getLatitude() + latDif;
-      for (Favor favor:favors1) {
-        if(!favor.getRequesterId().equals(UserUtil.currentUserId)
-              && favor.getStatusId().equals(Favor.Status.REQUESTED)
+    favors.thenAccept(
+        favors1 -> {
+          Log.d("Radius", String.valueOf(favors1.size()));
+          double latDif = Math.toDegrees(finalRadius / 6371);
+          double latitude_lower = mLocation.getLatitude() - latDif;
+          double latitude_upper = mLocation.getLatitude() + latDif;
+
+          for (Favor favor : favors1) {
+            if (!favor.getRequesterId().equals(UserUtil.currentUserId)
+                && favor.getStatusId().equals(Favor.Status.REQUESTED)
                 && favor.getLocation().getLatitude() > latitude_lower
-                && favor.getLocation().getLongitude() < latitude_upper)
-          activity.otherActiveFavorsAround.put(favor.getId(), favor);
-      }
-      if(first){
-        drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
-        first = false;
-      }
-    });
+                && favor.getLocation().getLongitude() < latitude_upper) {
+              Log.d(
+                  "Insd",
+                  favor.getStatusId()
+                      + " "
+                      + favor.getLocation().getLongitude()
+                      + " "
+                      + favor.getLocation().getLatitude()
+                      + " "
+                      + favor.getRequesterId()
+                      + " "
+                      + UserUtil.currentUserId
+                      + " "
+                      + favor.getTitle()
+                      + " "
+                      + favor.getDescription());
+              activity.otherActiveFavorsAround.put(favor.getId(), favor);
+            }
+          }
+          if (first) {
+            drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+            first = false;
+          }
+        });
   }
 
 

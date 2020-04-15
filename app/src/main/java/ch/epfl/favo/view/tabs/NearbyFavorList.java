@@ -58,7 +58,6 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
         display.getSize(size);
         screenWidth = size.x;
         activity = (MainActivity) Objects.requireNonNull(getActivity());
-        navController = findNavController(activity, R.id.nav_host_fragment);
     }
 
 
@@ -103,7 +102,7 @@ public class NearbyFavorList extends Fragment implements View.OnClickListener {
     }
 
     private void onToggleClick(View view){
-        navController.popBackStack(R.id.nav_map, false);
+        findNavController(activity, R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
     }
 
     private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope){

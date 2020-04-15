@@ -17,12 +17,10 @@ import org.junit.runner.RunWith;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
@@ -57,7 +55,6 @@ public class NearbyFavorListTest {
                             return location;
                         }
                     });
-                    //DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
                 }
             };
     @Rule
@@ -66,13 +63,13 @@ public class NearbyFavorListTest {
     @After
     public void tearDown() {
         DependencyFactory.setCurrentGpsTracker(null);
-        //DependencyFactory.setCurrentDatabaseUpdater(null);
+        //DependencyFactory.setCurrentCollectionWrapper(null);
     }
 
     private void openSearchView(){
         // switch to nearby favor list view
         try{
-            Thread.sleep(10000);
+            Thread.sleep(3000);
             onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
             getInstrumentation().waitForIdleSync();
 
@@ -155,7 +152,7 @@ public class NearbyFavorListTest {
         getInstrumentation().waitForIdleSync();
 
         // Check and click on the location text
-        onView(withId(R.id.location_accept_view)).check(matches(isDisplayed())).perform(click()).perform(click());
+        onView(withId(R.id.location_accept_view_btn)).check(matches(isDisplayed())).perform(click());
     }
 }
 

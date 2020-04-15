@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -28,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -36,6 +35,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.ViewController;
@@ -43,6 +43,7 @@ import ch.epfl.favo.view.ViewController;
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 
+@SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
 
   public static final int PICK_IMAGE_REQUEST = 1;
@@ -64,7 +65,6 @@ public class FavorRequestView extends Fragment {
     // Required empty public constructor
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -107,7 +107,6 @@ public class FavorRequestView extends Fragment {
    *
    * @param rootView
    */
-  @RequiresApi(api = Build.VERSION_CODES.M)
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -165,7 +164,6 @@ public class FavorRequestView extends Fragment {
    * Method is called when request favor button is clicked. It uploads favor request to the database
    * and updates view so that favor is editable.
    */
-  @RequiresApi(api = Build.VERSION_CODES.M)
   private void requestFavor() {
     // update currentFavor
     getFavorFromView(Favor.Status.REQUESTED);
@@ -198,8 +196,23 @@ public class FavorRequestView extends Fragment {
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    currentFavor.setStatusId(Favor.Status.EDIT);
-    updateViewFromStatus(getView());
+    CompletableFuture<Favor> currentFavorFuture =
+        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
+    currentFavorFuture.thenAccept(
+        favor -> {
+          if (favor.getStatusId().equals(Favor.Status.ACCEPTED)) {
+            CommonTools.showSnackbar(getView(), getString(R.string.fail_edit_favor_request_view));
+            currentFavor.setStatusId(favor.getStatusId());
+          } else {
+            currentFavor.setStatusId(Favor.Status.EDIT);
+          }
+          updateViewFromStatus(getView());
+        });
+    currentFavorFuture.exceptionally(
+        e -> {
+          showSnackbar(getString(R.string.update_favor_error));
+          return null;
+        });
   }
 
   /** Gets called once favor has been updated on view. */
@@ -273,7 +286,7 @@ public class FavorRequestView extends Fragment {
       default: // cancelled
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
-          editFavorBtn.setText(R.string.edit_favor);
+          editFavorBtn.setText(R.string.restart_request);
           updateViewFromParameters(view, false, true, false, true, false);
         }
     }
@@ -333,7 +346,6 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Called when camera button is clicked Method calls camera intent. */
-  @RequiresApi(api = Build.VERSION_CODES.M)
   public void takePicture() {
     if (ContextCompat.checkSelfPermission(
             Objects.requireNonNull(getContext()), Manifest.permission.CAMERA)

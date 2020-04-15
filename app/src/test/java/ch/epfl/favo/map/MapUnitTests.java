@@ -17,7 +17,6 @@ import org.junit.function.ThrowingRunnable;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;

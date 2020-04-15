@@ -136,7 +136,7 @@ public class UserUnitTests {
     CollectionWrapper collection = Mockito.mock(CollectionWrapper.class);
     CompletableFuture<User> userFuture = new CompletableFuture<>();
     when(collection.getDocument(any(String.class))).thenReturn(userFuture);
-
+    UserUtil.getSingleInstance().setCollectionWrapper(collection);
     String id = TestConstants.USER_ID;
     CompletableFuture<User> user = UserUtil.getSingleInstance().findUser(id);
 

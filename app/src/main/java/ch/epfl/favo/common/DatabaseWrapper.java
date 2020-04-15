@@ -1,6 +1,7 @@
 package ch.epfl.favo.common;
 
 import android.annotation.SuppressLint;
+import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -29,7 +31,7 @@ public class DatabaseWrapper {
   private DatabaseWrapper() {
     FirebaseFirestore.setLoggingEnabled(true);
     FirebaseFirestoreSettings settings =
-        new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
+            new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
     try {
       firestore = DependencyFactory.getCurrentFirestore();
       firestore.setFirestoreSettings(settings);
@@ -64,8 +66,9 @@ public class DatabaseWrapper {
     getCollectionReference(collection).document(key).delete();
   }
 
-  static void updateDocument(String key, Map<String, Object> updates, String collection) {
-    getCollectionReference(collection).document(key).update(updates);
+  static CompletableFuture updateDocument(String key, Map<String, Object> updates, String collection) {
+    Task update = getCollectionReference(collection).document(key).update(updates);
+    return new TaskToFutureAdapter<>(update).getInstance();
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(
@@ -90,7 +93,28 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-  public static CollectionReference getCollectionReference(String collection) {
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius, Class<T> cls, String collection){
+    /**
+     * I currently implement a temporary, simpler version to retrieve favors in a **square area** on
+     * sphere surface. This function only return longitude bounded favors, the rest query is done
+     * by the caller of this function.
+     *  TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
+     * */
+    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    double longitude_lower = loc.getLongitude() - longDif;
+    double longitude_upper = loc.getLongitude() + longDif;
+    /** For some reason, reading from db is very slow when adding one more whereEqualTo query field
+     * or not without .limit(..) **/
+    Task<QuerySnapshot> getAllTask = getCollectionReference(collection)
+            // .whereEqualTo("statusId", Favor.Status.REQUESTED)
+            .whereGreaterThan("location.longitude", longitude_lower)
+            .whereLessThan("location.longitude", longitude_upper).limit(20).get();
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
+    return getAllFuture.thenApply(
+            querySnapshot -> querySnapshot.toObjects(cls));
+  }
+
+  private static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);
   }
 }

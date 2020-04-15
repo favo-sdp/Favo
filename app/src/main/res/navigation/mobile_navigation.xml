@@ -78,6 +78,14 @@
                 android:defaultValue="@null"
                 app:argType="ch.epfl.favo.favor.Favor" />
         </action>
+        <action
+            android:id="@+id/action_nav_favorlist_to_favorDetailView"
+            app:destination="@id/favorDetailView">
+            <argument
+                android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="ch.epfl.favo.favor.Favor" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/favorRequestView"
@@ -86,7 +94,7 @@
         tools:layout="@layout/fragment_favor" />
     <fragment
         android:id="@+id/favorDetailView"
-        android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
+        android:name="ch.epfl.favo.view.tabs.FavorDetailView"
         android:label="FavorDetailView"
         tools:layout="@layout/fragment_favor_accept_view" />
 
