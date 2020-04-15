@@ -7,7 +7,7 @@ public interface DatabaseUpdater<T> {
 
   void addDocument(T document) throws RuntimeException;
 
-  void updateDocument(String key, Map<String, Object> updates);
+  CompletableFuture updateDocument(String key, Map<String, Object> updates);
 
   void removeDocument(String key);
 
