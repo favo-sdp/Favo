@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import android.app.Activity;
 import android.location.Location;
 
 import com.google.firebase.firestore.CollectionReference;
@@ -10,8 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.Document;
+import ch.epfl.favo.favor.Favor;
 
 public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<T> {
 
@@ -69,7 +73,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   }
 
   @Override
-  public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
+  public CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Activity activity) {
     CompletableFuture<List<T>> future = new CompletableFuture<>();
     if (throwError) future.completeExceptionally(new RuntimeException());
     else {
@@ -77,6 +81,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
       arrayList.add(mockDocument);
       future.complete(arrayList);
     }
+    ((MainActivity)activity).otherActiveFavorsAround.put(mockDocument.getId(), (Favor)mockDocument);
     return future;
   }
 

@@ -1,9 +1,12 @@
 package ch.epfl.favo.common;
 
+import android.app.Activity;
 import android.location.Location;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.Query;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.List;
 import java.util.Map;
@@ -19,5 +22,5 @@ public interface DatabaseUpdater<T> {
 
   CompletableFuture<T> getDocument(String key);
 
-  CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
+  CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Activity activity);
 }

@@ -1,7 +1,5 @@
 package ch.epfl.favo.view;
 
-import android.location.Location;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -18,10 +16,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.common.NoPermissionGrantedException;
-import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -39,22 +34,15 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
-    private Favor favor = new Favor("CiaoCiao", "For test", UserUtil.currentUserId,
-            new FavoLocation("mock"), Favor.Status.REQUESTED);
+    private Favor favor = FakeItemFactory.getFavor();
     @Rule
     public final ActivityTestRule<MainActivity> mainActivityTestRule =
             new ActivityTestRule<MainActivity>(MainActivity.class) {
                 @Override
                 protected void beforeActivityLaunched() {
-                    DependencyFactory.setCurrentGpsTracker(new Locator() {
-                        @Override
-                        public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-                            Location location = new Location("mock");
-                            location.setLatitude(6.5668);
-                            location.setLongitude(46.5191);
-                            return location;
-                        }
-                    });
+                    MockDatabaseWrapper databaseWrapper = new MockDatabaseWrapper<Favor>();
+                    databaseWrapper.setMockDocument(favor);
+                    DependencyFactory.setCurrentCollectionWrapper(databaseWrapper);
                 }
             };
     @Rule
@@ -68,17 +56,12 @@ public class NearbyFavorListTest {
 
     private void openSearchView(){
         // switch to nearby favor list view
-        try{
-            Thread.sleep(3000);
-            onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
-            getInstrumentation().waitForIdleSync();
+        onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
+        getInstrumentation().waitForIdleSync();
 
-            //Click on searchView button
-            onView(withId(R.id.nearby_searchView)).check(matches(isDisplayed())).perform(click());
-            getInstrumentation().waitForIdleSync();
-        } catch (Exception e){
-            Log.d("ListTest", e.getMessage());
-        }
+        //Click on searchView button
+        onView(withId(R.id.nearby_searchView)).check(matches(isDisplayed())).perform(click());
+        getInstrumentation().waitForIdleSync();
     }
 
     @Test

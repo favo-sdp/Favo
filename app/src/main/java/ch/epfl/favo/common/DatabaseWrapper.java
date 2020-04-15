@@ -1,7 +1,9 @@
 package ch.epfl.favo.common;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -10,11 +12,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -93,11 +98,11 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius, Class<T> cls, String collection){
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Class<T> cls, String collection, Activity activity){
     /**
-     * I currently implement a temporary, simpler version to retrieve favors in a **square area** on
-     * sphere surface. This function only return longitude bounded favors, the rest query is done
-     * by the caller of this function.
+     * It is a temporary, simpler version to retrieve favors in a **square area** on
+     * sphere surface. This function retrieve longitude and latitude bounded documents and save
+     * them in MainActivity.
      *  TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
      * */
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
@@ -110,8 +115,27 @@ public class DatabaseWrapper {
             .whereGreaterThan("location.longitude", longitude_lower)
             .whereLessThan("location.longitude", longitude_upper).limit(20).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
-    return getAllFuture.thenApply(
+    CompletableFuture<List<T>> documents = getAllFuture.thenApply(
             querySnapshot -> querySnapshot.toObjects(cls));
+    documents.thenAccept(
+            docs -> {
+              Log.d("Radius", String.valueOf(docs.size()));
+              double latDif = Math.toDegrees(radius / 6371);
+              double latitude_lower = loc.getLatitude() - latDif;
+              double latitude_upper = loc.getLatitude() + latDif;
+              if(cls == Favor.class){
+                ArrayList<Favor> favors = (ArrayList<Favor>) docs;
+                for (Favor favor : favors) {
+                  if (!favor.getRequesterId().equals(UserUtil.currentUserId)
+                          && favor.getStatusId().equals(Favor.Status.REQUESTED)
+                          && favor.getLocation().getLatitude() > latitude_lower
+                          && favor.getLocation().getLongitude() < latitude_upper) {
+                    ((MainActivity)(activity)).otherActiveFavorsAround.put(favor.getId(), favor);
+                  }
+                }
+              }
+            });
+    return documents;
   }
 
   private static CollectionReference getCollectionReference(String collection) {

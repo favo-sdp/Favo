@@ -200,46 +200,14 @@ public class MapsPage extends Fragment
         radius = 25;
         break;
     }
-    CompletableFuture<List<Favor>> favors = DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class)
-    .getAllDocumentsLongitudeBounded(mLocation, radius);
-    double finalRadius = radius;
-    favors.thenAccept(
-        favors1 -> {
-          Log.d("Radius", String.valueOf(favors1.size()));
-          double latDif = Math.toDegrees(finalRadius / 6371);
-          double latitude_lower = mLocation.getLatitude() - latDif;
-          double latitude_upper = mLocation.getLatitude() + latDif;
-
-          for (Favor favor : favors1) {
-            if (!favor.getRequesterId().equals(UserUtil.currentUserId)
-                && favor.getStatusId().equals(Favor.Status.REQUESTED)
-                && favor.getLocation().getLatitude() > latitude_lower
-                && favor.getLocation().getLongitude() < latitude_upper) {
-              Log.d(
-                  "Insd",
-                  favor.getStatusId()
-                      + " "
-                      + favor.getLocation().getLongitude()
-                      + " "
-                      + favor.getLocation().getLatitude()
-                      + " "
-                      + favor.getRequesterId()
-                      + " "
-                      + UserUtil.currentUserId
-                      + " "
-                      + favor.getTitle()
-                      + " "
-                      + favor.getDescription());
-              activity.otherActiveFavorsAround.put(favor.getId(), favor);
-            }
-          }
-          if (first) {
-            drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
-            first = false;
-          }
-        });
+    CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
+            .retrieveAllFavorsInGivenRadius(mLocation, radius, activity);
+    favors.whenComplete((e, res)->{
+      if (first) {
+        drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+        first = false;
+    }});
   }
-
 
 
   private void getLocationPermission() {

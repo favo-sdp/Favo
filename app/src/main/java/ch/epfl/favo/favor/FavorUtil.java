@@ -1,6 +1,7 @@
 package ch.epfl.favo.favor;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.location.Location;
 import android.os.Build;
 import android.util.Log;
@@ -156,7 +157,8 @@ public class FavorUtil {
    * @param radius a given radius to search within
    */
 
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
-    throw new NotImplementedException();
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius, Activity activity) {
+    /**It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface**/
+    return collection.getAllDocumentsLongitudeLatitudeBounded(loc, radius, activity);
   }
 }
