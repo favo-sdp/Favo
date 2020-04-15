@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import android.util.Log;
 import android.view.KeyEvent;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -12,12 +13,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -31,6 +31,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+import static ch.epfl.favo.TestConstants.EMAIL;
+import static ch.epfl.favo.TestConstants.NAME;
+import static ch.epfl.favo.TestConstants.PHOTO_URI;
+import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
@@ -43,6 +47,9 @@ public class NearbyFavorListTest {
                     MockDatabaseWrapper databaseWrapper = new MockDatabaseWrapper<Favor>();
                     databaseWrapper.setMockDocument(favor);
                     DependencyFactory.setCurrentCollectionWrapper(databaseWrapper);
+                    DependencyFactory.setCurrentFirebaseUser(
+                            new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+                    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
                 }
             };
     @Rule
@@ -50,18 +57,24 @@ public class NearbyFavorListTest {
             GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
     @After
     public void tearDown() {
+        DependencyFactory.setCurrentCollectionWrapper(null);
+        DependencyFactory.setCurrentFirebaseUser(null);
         DependencyFactory.setCurrentGpsTracker(null);
-        //DependencyFactory.setCurrentCollectionWrapper(null);
     }
 
     private void openSearchView(){
-        // switch to nearby favor list view
-        onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
-        getInstrumentation().waitForIdleSync();
+        try{
+            Thread.sleep(2000);
+            // switch to nearby favor list view
+            onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
+            getInstrumentation().waitForIdleSync();
 
-        //Click on searchView button
-        onView(withId(R.id.nearby_searchView)).check(matches(isDisplayed())).perform(click());
-        getInstrumentation().waitForIdleSync();
+            //Click on searchView button
+            onView(withId(R.id.nearby_searchView)).check(matches(isDisplayed())).perform(click());
+            getInstrumentation().waitForIdleSync();
+        }catch (Exception e){
+            Log.d("listTest", e.getMessage());
+        }
     }
 
     @Test
