@@ -2,11 +2,13 @@ package ch.epfl.favo.requestview;
 
 import android.content.Intent;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
+import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -28,5 +30,9 @@ public class RequestViewTest {
   public void testFileChooser() {
     Mockito.doNothing().when(spy).startActivityForResult(any(Intent.class), anyInt());
     spy.openFileChooser();
+  }
+  @Test
+  public void testViewStatusShowDesiredStrings(){
+    Assert.assertEquals("Expired",FavorViewStatus.EXPIRED.getPrettyString());
   }
 }

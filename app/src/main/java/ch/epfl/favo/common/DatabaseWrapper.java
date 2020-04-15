@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -25,7 +24,7 @@ public class DatabaseWrapper {
 
   // final fields regarding ID generation
   private static final String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  private static final int ID_LENGTH = 25;
+  private static final int ID_LENGTH = 28;
 
   private DatabaseWrapper() {
     FirebaseFirestore.setLoggingEnabled(true);
@@ -65,8 +64,9 @@ public class DatabaseWrapper {
     getCollectionReference(collection).document(key).delete();
   }
 
-  static void updateDocument(String key, Map<String, Object> updates, String collection) {
-    getCollectionReference(collection).document(key).update(updates);
+  static CompletableFuture updateDocument(String key, Map<String, Object> updates, String collection) {
+    Task update = getCollectionReference(collection).document(key).update(updates);
+    return new TaskToFutureAdapter<>(update).getInstance();
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(

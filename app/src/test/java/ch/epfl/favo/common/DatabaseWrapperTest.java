@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -20,15 +21,17 @@ import java.util.concurrent.TimeoutException;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class DatabaseWrapperTest {
   private Favor testFavor;
-  private CollectionWrapper<Favor> mockCollectionWrapper;
+  private CollectionWrapper<Favor> collectionWrapper;
   private FirebaseFirestore mockFirestore;
   private CollectionReference mockCollectionReference;
   private DocumentReference mockDocumentReference;
@@ -42,7 +45,7 @@ public class DatabaseWrapperTest {
     mockCollectionReference = Mockito.mock(CollectionReference.class);
     mockDocumentReference = Mockito.mock(DocumentReference.class);
     testFavor = FakeItemFactory.getFavor();
-    mockCollectionWrapper = new CollectionWrapper<>("favors", Favor.class);
+    collectionWrapper = new CollectionWrapper<>("favors", Favor.class);
 
     // return collection refernece from firestore object
     Mockito.doReturn(mockCollectionReference).when(mockFirestore).collection(anyString());
@@ -66,6 +69,8 @@ public class DatabaseWrapperTest {
     // return document reference when collection.document()
     Mockito.doReturn(mockDocumentReference).when(mockCollectionReference).document(anyString());
     Mockito.doReturn(mockDocumentReference).when(mockCollectionReference).document();
+    Task mockEmptyTask = Mockito.mock(Task.class);
+    Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).update(anyMap());
     // mock return task
     documentSnapshotTask = Mockito.mock(Task.class);
     // mock document returned by task
@@ -86,17 +91,18 @@ public class DatabaseWrapperTest {
   @Test
   public void addDocument() {
 
-    mockCollectionWrapper.addDocument(testFavor);
+    collectionWrapper.addDocument(testFavor);
   }
 
   @Test
   public void removeDocument() {
-    mockCollectionWrapper.removeDocument("bla");
+    collectionWrapper.removeDocument("bla");
   }
 
   @Test
   public void updateDocument() {
-    mockCollectionWrapper.updateDocument("bu", testFavor.toMap());
+
+    collectionWrapper.updateDocument("bu", testFavor.toMap());
   }
 
   @Test
@@ -108,7 +114,7 @@ public class DatabaseWrapperTest {
     CompletableFuture<DocumentSnapshot> futureSnapshot = new CompletableFuture<>();
     futureSnapshot.complete(mockDocumentSnapshot);
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
-    CompletableFuture<Favor> actualFuture = mockCollectionWrapper.getDocument("fish");
+    CompletableFuture<Favor> actualFuture = collectionWrapper.getDocument("fish");
     Favor obtained = actualFuture.get(2, TimeUnit.SECONDS);
     assertEquals(testFavor,obtained);
   }
@@ -124,7 +130,7 @@ public class DatabaseWrapperTest {
     CompletableFuture<DocumentSnapshot> futureSnapshot = new CompletableFuture<>();
     futureSnapshot.complete(mockDocumentSnapshot);
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
-    CompletableFuture<Favor> actualFuture = mockCollectionWrapper.getDocument("fish");
+    CompletableFuture<Favor> actualFuture = collectionWrapper.getDocument("fish");
     assertEquals(true, actualFuture.isCompletedExceptionally());
   }
 
@@ -136,7 +142,7 @@ public class DatabaseWrapperTest {
     Mockito.doReturn(expectedFavors).when(mockQuerySnapshot).toObjects(any());
     futureSnapshot.complete(mockQuerySnapshot);
     DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
-    CompletableFuture<List<Favor>> obtainedFuture = mockCollectionWrapper.getAllDocuments();
+    CompletableFuture<List<Favor>> obtainedFuture = collectionWrapper.getAllDocuments();
     List<Favor> obtainedFavors = obtainedFuture.get();
     assertEquals(expectedFavors,obtainedFavors);
   }
