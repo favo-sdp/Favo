@@ -1,5 +1,6 @@
 package ch.epfl.favo.favor;
 
+import android.app.Activity;
 import android.location.Location;
 
 import org.junit.After;
@@ -135,15 +136,7 @@ public class FavorUtilTest {
         () -> FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId));
   }
 
-  @Test
-  public void favorCanRetrieveAllFavorsInGivenRadius() {
 
-    Location loc = TestConstants.LOCATION;
-    double radius = TestConstants.RADIUS;
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(loc, radius));
-  }
 
   @Test
   public void favorCanRetrieveAllPastFavors() {
