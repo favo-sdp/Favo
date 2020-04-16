@@ -164,7 +164,7 @@ public class AddFavorTest {
 
     // click outside of text view
     UiDevice device = UiDevice.getInstance(getInstrumentation());
-    device.click(10, device.getDisplayHeight() * 3 / 4);
+    device.click(1, device.getDisplayHeight() * 1 / 3);
     // check button is visible
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed()));
   }

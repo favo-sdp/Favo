@@ -69,7 +69,7 @@
         android:id="@+id/favorRequestView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorRequestView"
         android:label="FavorRequestView"
-        tools:layout="@layout/fragment_favor" />
+        tools:layout="@layout/fragment_favor_request_view" />
     <action
         android:id="@+id/action_global_nav_map"
         app:destination="@id/nav_map"

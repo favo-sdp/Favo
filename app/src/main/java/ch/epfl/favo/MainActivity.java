@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity
   private void setupDrawerNavigation() {
 
     // Only pass top-level destinations.
-    // appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
+    // appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor_request_view).build();
 
     /*Activate if we want a toolbar */
     // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
