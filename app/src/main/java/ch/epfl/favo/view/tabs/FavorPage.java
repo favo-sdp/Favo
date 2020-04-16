@@ -157,13 +157,18 @@ public class FavorPage extends Fragment {
     // if returned from FavorDetail view, continue to show the search mode
 
     // commenting for the moment because it doesn't work with androidx, will work on it in the next
-    // PR when sync with database
+    // PR when sync list with database
+
     //    if (!favorsFound.isEmpty()) {
     //      searchView.setIconified(false);
     //      searchView.clearFocus();
     //      setupSearchMode();
     //    }
 
+    setupSearchListeners(searchMenuItem);
+  }
+
+  private void setupSearchListeners(MenuItem searchMenuItem) {
     // replacing the other two callbacks because they were buggy according to some stack overflow
     // forums
     searchMenuItem.setOnActionExpandListener(
@@ -215,6 +220,10 @@ public class FavorPage extends Fragment {
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinner.setAdapter(adapter);
 
+    setupSpinnerListeners(spinner);
+  }
+
+  private void setupSpinnerListeners(Spinner spinner) {
     spinner.setOnItemSelectedListener(
         new AdapterView.OnItemSelectedListener() {
           @Override
