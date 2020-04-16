@@ -108,10 +108,9 @@ public class DatabaseWrapper {
       Location loc, double radius, Class<T> cls, String collection, Activity activity) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
     double latDif = Math.toDegrees(radius / 6371);
-    Log.d("Radius", loc.getLatitude() + " " + loc.getLatitude());
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection)
             .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
-            .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(20).get();
+            .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(30).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
     CompletableFuture<List<T>> documents = getAllFuture.thenApply(
             querySnapshot -> querySnapshot.toObjects(cls));

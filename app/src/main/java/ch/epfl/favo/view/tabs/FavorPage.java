@@ -1,9 +1,7 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +14,6 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
@@ -26,8 +21,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
-import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
+import ch.epfl.favo.view.tabs.favorList.searchBarCoordinator;
 
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 
@@ -38,17 +32,13 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
  */
 @SuppressLint("NewApi")
 public class FavorPage extends Fragment implements View.OnClickListener {
-
-  private Map<String, Favor> activeFavors;
-  private Map<String, Favor> archivedFavors;
   private TextView tipTextView;
   private Spinner spinner;
   private ListView listView;
   private SearchView searchView;
   private int lastPosition;
-  private String lastQuery;
-  private int screenWidth;
-  private Map<String, Favor> favorsFound = new HashMap<>();
+  MainActivity activity;
+  private searchBarCoordinator searchBarCoordinator;
 
   public FavorPage() {
     // Required empty public constructor
@@ -58,13 +48,8 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
     // Extract two arrayLists from the main activity
-    MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
-    activeFavors = activity.activeFavors;
-    archivedFavors = activity.archivedFavors;
-    Display display = getActivity().getWindowManager().getDefaultDisplay();
-    Point size = new Point();
-    display.getSize(size);
-    screenWidth = size.x;
+    activity = (MainActivity) Objects.requireNonNull(getActivity());
+    searchBarCoordinator = new searchBarCoordinator(activity, getContext(), "ActiveList");
   }
 
   @Override
@@ -80,89 +65,31 @@ public class FavorPage extends Fragment implements View.OnClickListener {
     spinner = rootView.findViewById(R.id.spinner);
     listView = rootView.findViewById(R.id.favor_list);
     searchView = rootView.findViewById(R.id.searchView);
+    searchView.setOnCloseListener(()->{quitSearchMode();return false;});
+    searchBarCoordinator.setupAssets(tipTextView, listView, searchView);
+    searchBarCoordinator.setupSearchBar(rootView);
     setupListView();
     setupSpinner();
-    setupSearchView();
-    setupView(rootView);
+    setupView();
     return rootView;
   }
 
-  private void setupSearchView() {
-    searchView.setIconifiedByDefault(true);
-    searchView.setTag("SearchView");
-    // if returned from FavorDetail view, continue to show the search mode
-    if (!favorsFound.isEmpty()) {
-      searchView.setIconified(false);
-      searchView.clearFocus();
-      setupSearchMode();
-    }
-    searchView.setOnSearchClickListener(this);
-    searchView.setMaxWidth((int) (screenWidth * 0.85));
-    searchView.setOnCloseListener(new onCloseListener());
-    searchView.setOnQueryTextListener(new onQuery());
-  }
-
-  private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope) {
-    Map<String, Favor> favorsFound = new HashMap<>();
-    query = query.toLowerCase();
-    for (Favor favor : searchScope.values()) {
-      if (favor.getTitle().toLowerCase().contains(query)
-          || favor.getDescription().toLowerCase().contains(query))
-        favorsFound.put(favor.getId(), favor);
-    }
-    return favorsFound;
-  }
-
-  private void setupSearchMode() {
-    spinner.setVisibility(View.INVISIBLE);
-    displayFavorList(favorsFound, R.string.empty);
-    ((MainActivity) (Objects.requireNonNull(getActivity()))).onBackPressedListener =
-        () -> {
-          searchView.setIconified(true);
-          if (getView() != null) CommonTools.hideKeyboardFrom(getContext(), getView());
-        };
-  }
 
   private void quitSearchMode() {
-    favorsFound.clear();
-    ((MainActivity) (Objects.requireNonNull(getActivity()))).onBackPressedListener = null;
+    searchBarCoordinator.clearFoundFavors();
+    activity.onBackPressedListener = null;
+    activity.showBottomTabs();
     spinner.setVisibility(View.VISIBLE);
-    ((MainActivity) Objects.requireNonNull(getActivity())).showBottomTabs();
-    if (lastPosition == 0) displayFavorList(activeFavors, R.string.favor_no_active_favor);
-    else displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
+    if (lastPosition == 0) searchBarCoordinator.displayContent(getString(R.string.favor_no_active_favor), 0);
+    else searchBarCoordinator.displayContent(getString(R.string.favor_no_archived_favor), 1);
   }
 
-  private class onCloseListener implements SearchView.OnCloseListener {
-
-    @Override
-    public boolean onClose() {
-      // clear last query results and recover last listView
-      quitSearchMode();
-      return false;
-    }
-  }
-
-  private class onQuery implements SearchView.OnQueryTextListener {
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-      lastQuery = query;
-      favorsFound = doQuery(query, activeFavors);
-      favorsFound.putAll(doQuery(query, archivedFavors));
-      displayFavorList(favorsFound, R.string.query_failed);
-      return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-      // replace irrelevant items on listView with last query results or empty view
-      displayFavorList(new HashMap<String, Favor>(), R.string.empty);
-      return false;
-    }
-  }
 
   private void setupListView() {
     listView.setOnItemClickListener(
         (parent, view, position, id) -> {
+          activity.onBackPressedListener = null;
+          CommonTools.hideKeyboardFrom(Objects.requireNonNull(getContext()), view);
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
           favorBundle.putParcelable("FAVOR_ARGS", favor);
@@ -182,17 +109,12 @@ public class FavorPage extends Fragment implements View.OnClickListener {
         new AdapterView.OnItemSelectedListener() {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (!favorsFound.isEmpty()) {
-              // if stay in search mode, show the last query text and display last query results
-              // favorsFound will be automatically cleared if quit from search mode
-              searchView.setQuery(lastQuery, false); // this block is unreachable?
-              displayFavorList(favorsFound, R.string.query_failed);
-            } else if (position == 0) {
+            if (position == 0) {
               lastPosition = 0;
-              displayFavorList(activeFavors, R.string.favor_no_active_favor);
+              searchBarCoordinator.displayContent(getString(R.string.favor_no_active_favor), 0);
             } else {
               lastPosition = 1;
-              displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
+              searchBarCoordinator.displayContent(getString(R.string.favor_no_archived_favor), 1);
             }
           }
 
@@ -203,34 +125,14 @@ public class FavorPage extends Fragment implements View.OnClickListener {
 
   @Override
   public void onClick(View view) {
-
-    switch (view.getId()) {
-      case R.id.floatingActionButton:
-        Navigation.findNavController(view).navigate(R.id.action_nav_favorlist_to_favorRequestView);
-        // CommonTools.replaceFragment(
-        //    R.id.nav_host_fragment, getParentFragmentManager(), new FavorRequestView());
-        break;
-      case R.id.searchView:
-        setupSearchMode();
-        break;
-    }
-  }
-
-  private void displayFavorList(Map<String, Favor> favors, int textId) {
-    if (favors.isEmpty()) showText((getString(textId)));
-    else tipTextView.setVisibility(View.INVISIBLE);
-    listView.setAdapter(new FavorAdapter(getContext(), new ArrayList<>(favors.values())));
-  }
-
-  private void showText(String text) {
-    tipTextView.setText(text);
-    tipTextView.setVisibility(View.VISIBLE);
+    if (view.getId() == R.id.floatingActionButton)
+      Navigation.findNavController(view).navigate(R.id.action_nav_favorlist_to_favorRequestView);
   }
 
   @SuppressLint("ClickableViewAccessibility")
-  private void setupView(View view) {
-    ((ViewController) Objects.requireNonNull(getActivity())).setupViewTopDestTab();
-    ((ViewController) Objects.requireNonNull(getActivity())).checkFavListViewButton();
+  private void setupView() {
+    activity.setupViewTopDestTab();
+    activity.checkFavListViewButton();
     // ensure click on view will hide keyboard
     listView.setOnTouchListener(
         (v, event) -> {
