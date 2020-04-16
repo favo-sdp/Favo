@@ -6,10 +6,12 @@ import org.mockito.Mockito;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.spy;
 
 public class SignInActivityTest {
@@ -39,10 +41,13 @@ public class SignInActivityTest {
     spy.onActivityResult(123, 10, null);
   }
 
-  //  @Test
-  //  public void testOnActivityResult_resultOk() {
-  //    Mockito.doNothing().when(spy).handleSignInResponse(0);
-  //    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, null));
-  //    spy.onActivityResult(123, RESULT_OK, null);
-  //  }
+  @Test
+  public void testOnActivityResult_resultOk() {
+
+    Mockito.doNothing().when(spy).handleSignInResponse(anyInt());
+    DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, null));
+
+    spy.onActivityResult(123, RESULT_OK, null);
+  }
 }

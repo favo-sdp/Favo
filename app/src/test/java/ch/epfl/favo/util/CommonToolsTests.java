@@ -24,7 +24,7 @@ public class CommonToolsTests {
 
   @Test
   public void databaseUtilCorrectlyGeneratesIds() {
-    int ID_LENGTH = 25;
+    int ID_LENGTH = 28;
     String id1 = DatabaseWrapper.generateRandomId();
     String id2 = DatabaseWrapper.generateRandomId();
     assertEquals(ID_LENGTH, id1.length());

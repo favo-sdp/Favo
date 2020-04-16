@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_map"
+        android:icon="@drawable/ic_place_black_24dp"
+        android:title="@string/title_map" />
+
+    <item
+        android:id="@+id/nav_favorList"
+        android:icon="@drawable/ic_people_black_24dp"
+        android:title="@string/title_favors" />
+
+</menu>

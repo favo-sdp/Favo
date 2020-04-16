@@ -15,7 +15,7 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
 
   @Override
-  public void addDocument(T document) {
+  public void addDocument(T document) throws RuntimeException {
     DatabaseWrapper.addDocument(document, collection);
   }
 
@@ -23,8 +23,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     DatabaseWrapper.removeDocument(key, collection);
   }
 
-  public void updateDocument(String key, Map<String, Object> updates) {
-    DatabaseWrapper.updateDocument(key, updates, collection);
+  public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
+    return DatabaseWrapper.updateDocument(key, updates, collection);
   }
 
   @Override

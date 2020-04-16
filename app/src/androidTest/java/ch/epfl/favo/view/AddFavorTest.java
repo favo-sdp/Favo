@@ -1,10 +1,12 @@
 package ch.epfl.favo.view;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.view.View;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -29,15 +32,18 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
+import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -54,6 +60,7 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
 
   @Rule
   public final ActivityTestRule<MainActivity> activityTestRule =
@@ -63,26 +70,31 @@ public class AddFavorTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentDatabaseUpdater(new MockDatabaseWrapper());
+          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+          mockDatabaseWrapper.setThrowError(false);
+          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
         }
       };
 
   @Rule
   public GrantPermissionRule permissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+      GrantPermissionRule.grant(android.Manifest.permission.CAMERA);
+
+  @Rule
+  public GrantPermissionRule permissionRule2 =
+      GrantPermissionRule.grant(Manifest.permission.ACCESS_FINE_LOCATION);
 
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    DependencyFactory.setCurrentDatabaseUpdater(null);
+    DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   @Test
   public void addFavorShowsSnackBar() {
     // Click on fav list tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
-
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
 
@@ -100,11 +112,7 @@ public class AddFavorTest {
   public void addPictureWorks() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, currentFragment);
-    ft.addToBackStack(null);
-    ft.commit();
+    launchFragment(currentFragment);
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Intent intent = new Intent();
@@ -114,34 +122,59 @@ public class AddFavorTest {
     onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
   }
 
-  @Test
-  public void cameraButtonCanBeClicked() throws Throwable {
-    FavorRequestView currentFragment = new FavorRequestView();
+  public void launchFragment(FavorRequestView currentFragment) {
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, currentFragment);
     ft.addToBackStack(null);
     ft.commit();
+  }
+
+  @Test
+  public void cameraButtonCanBeClicked() throws Throwable {
+
+    FavorRequestView currentFragment = new FavorRequestView();
+    launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     Button cameraButton =
         activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
     runOnUiThread(() -> cameraButton.setEnabled(true));
+
     Intent fakeIntent = new Intent();
     DependencyFactory.setCurrentCameraIntent(fakeIntent);
-    onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
-    // nothing should happen
+
     getInstrumentation().waitForIdleSync();
+    // click on button
+    onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
+  }
+
+  @Test
+  public void testCanHideKeyboardOnClickOutsideOfTextView() throws InterruptedException {
+    mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+    mockDatabaseWrapper.setThrowError(false);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    FavorRequestView currentFragment = new FavorRequestView();
+    launchFragment(currentFragment);
+    onView(withId(R.id.title_request_view)).perform(typeText("bla"));
+    onView(withId(R.id.request_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(4000); //wait for snackbar to hide
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.title_request_view)).perform(typeText("ble"));
+
+    // click outside of text view
+    UiDevice device = UiDevice.getInstance(getInstrumentation());
+    device.click(1, device.getDisplayHeight() * 1 / 3);
+    // check button is visible
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed()));
   }
 
   @Test
   public void loadSavedPicture() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, currentFragment);
-    ft.addToBackStack(null);
-    ft.commit();
+    launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
@@ -157,11 +190,7 @@ public class AddFavorTest {
   public void snackbarShowsWhenIncorrectResultCodeOnImageUpload() throws Throwable {
     // Click on fav list tab
     FavorRequestView currentFragment = new FavorRequestView();
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, currentFragment);
-    ft.addToBackStack(null);
-    ft.commit();
+    launchFragment(currentFragment);
     getInstrumentation().waitForIdleSync();
     Intent intent = new Intent();
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_CANCELED, intent));
@@ -186,21 +215,65 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.REQUESTED.getPrettyString())));
   }
 
   @Test
   public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
     Favor fakeFavor = FakeItemFactory.getFavor();
     FavorRequestView fragment = new FavorRequestView();
-    fakeFavor.updateStatus(Favor.Status.ACCEPTED);
+    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
     checkAcceptedView(fakeFavor);
-    fakeFavor.updateStatus(Favor.Status.SUCCESSFULLY_COMPLETED);
-    runOnUiThread(() -> fragment.displayFavorInfo());
+    fakeFavor.setStatusId(Favor.Status.SUCCESSFULLY_COMPLETED);
+    View v = activityTestRule.getActivity().getCurrentFocus();
+    runOnUiThread(
+        () -> {
+          fragment.displayFavorInfo(v);
+        });
     getInstrumentation().waitForIdleSync();
     checkCompletedView(fakeFavor);
+  }
+
+  @Test
+  public void testFavorCannotBeEditedIfAcceptedBySomeoneElse() {
+
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    // set status to accepted
+    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    // inject result
+    mockDatabaseWrapper.setMockDocument(fakeFavor);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check accepted view
+    checkAcceptedView(fakeFavor);
+    // Check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.fail_edit_favor_request_view)));
+  }
+
+  @Test
+  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabaseWhenTryingToEdit() {
+    // make the collection wrapper throw an error
+    mockDatabaseWrapper.setThrowError(true);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    // instantiate view
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorRequestView fragment = new FavorRequestView();
+    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    getInstrumentation().waitForIdleSync();
+    // Try to click on edit
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    // check error message is printed
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.update_favor_error)));
+    mockDatabaseWrapper.setThrowError(false);
   }
 
   public void checkCompletedView(Favor fakeFavor) {
@@ -208,7 +281,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.SUCCESSFULLY_COMPLETED.getPrettyString())));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -218,7 +291,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(fakeFavor.getStatusId().getPrettyString())));
+        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
   }
 
   @Test
@@ -270,7 +343,7 @@ public class AddFavorTest {
 
     // Check updated status string
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(Favor.Status.CANCELLED_REQUESTER.getPrettyString())));
+        .check(matches(withText(FavorViewStatus.CANCELLED_REQUESTER.getPrettyString())));
   }
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {

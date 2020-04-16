@@ -1,89 +1,78 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.RadioButton;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.MapsPage;
-import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
-
-import static androidx.navigation.Navigation.findNavController;
-import static ch.epfl.favo.R.id.drawer_layout;
+import ch.epfl.favo.view.tabs.FragmentAbout;
+import ch.epfl.favo.view.tabs.FragmentSettings;
+import ch.epfl.favo.view.tabs.UserAccountPage;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
  * left. Contains a bottom navigation for top-level activities.
  */
-public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, ViewController {
-  // Bottom tabs
-  public RadioButton mapButton;
-  public RadioButton favListButton;
-  // UI
+public class MainActivity extends AppCompatActivity {
+
+  private static final int[] NAVIGATION_ITEMS =
+      new int[] {
+        R.id.nav_map,
+        R.id.nav_favorList,
+        R.id.nav_account,
+        R.id.nav_settings,
+        R.id.nav_about,
+        R.id.nav_share
+      };
+
   private NavController navController;
-  private NavigationView nav;
+  private AppBarConfiguration appBarConfiguration;
+
   private DrawerLayout drawerLayout;
-  private ImageButton hambMenuButton;
-  /*Activate if we want a toolbar */
-  // private Toolbar toolbar;
-  private ImageButton backButton;
-  private boolean mKeyboardVisible = false;
+  private NavigationView navigationView;
+  private BottomNavigationView bottomNavigationView;
+
+  private int currentMenuItem;
+  //private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
 
-  public OnBackPressedListener onBackPressedListener;
+  // should not be needed anymore
+//  public OnBackPressedListener onBackPressedListener;
+//
+//  public interface OnBackPressedListener {
+//    void doBack();
+//  }
 
-  public interface OnBackPressedListener {
-    void doBack();
-  }
-  //  public ArrayList<Favor> getActiveFavorArrayList() {
-  //    return activeFavorArrayList;
-  //  }
-  //
-  //  public void addActiveFavor(Favor favor) {
-  //    activeFavorArrayList.add(favor);
-  //  }
-  //
-  //  public ArrayList<Favor> getarchivedFavorArrayList() {
-  //    return archivedFavorArrayList;
-  //  }
-  //
-  //  public void addPastFavor(Favor favor) {
-  //    archivedFavorArrayList.add(favor);
-  //  }
-
+  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -91,21 +80,12 @@ public class MainActivity extends AppCompatActivity
     setContentView(R.layout.activity_main);
 
     // Initialize Variables
-    nav = findViewById(R.id.nav_view);
-    drawerLayout = findViewById(drawer_layout);
-    hambMenuButton = findViewById(R.id.hamburger_menu_button);
-    backButton = findViewById(R.id.back_button);
-    mapButton = findViewById(R.id.nav_map_button);
-    favListButton = findViewById(R.id.nav_favor_list_button);
-    // Setup Controllers
-    setUpHamburgerMenuButton();
-    setUpBackButton();
-    setupNavController();
-    setupDrawerNavigation();
-    setupBottomNavigation();
+    navigationView = findViewById(R.id.nav_view);
+    bottomNavigationView = findViewById(R.id.bottom_navigation_view);
+    drawerLayout = findViewById(R.id.drawer_layout);
+    currentMenuItem = R.id.nav_map;
 
-    // prevent swipe to open the navigation menu
-    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    setupActivity();
 
     // check connection
     if (DependencyFactory.isOfflineMode(this)) {
@@ -115,9 +95,85 @@ public class MainActivity extends AppCompatActivity
     activeFavors = new HashMap<>();
     archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
+  }
 
-    //Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-    //setSupportActionBar(myToolbar);
+  private void setupActivity() {
+    // prevent swipe to open the navigation menu
+    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+    setSupportActionBar(findViewById(R.id.toolbar));
+
+    // remove title
+    Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+    Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+
+    // setup app bar
+    appBarConfiguration =
+        new AppBarConfiguration.Builder(NAVIGATION_ITEMS).setDrawerLayout(drawerLayout).build();
+
+    navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+    NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+    setupNavController();
+
+    navController.addOnDestinationChangedListener(
+        (controller, destination, arguments) -> {
+          switch (destination.getId()) {
+            case R.id.nav_account:
+            case R.id.nav_about:
+            case R.id.nav_settings:
+              if (bottomNavigationView.getVisibility() != View.GONE) {
+                hideBottomNavigation();
+              }
+              break;
+
+            default:
+              if (bottomNavigationView.getVisibility() != View.VISIBLE) {
+                showBottomNavigation();
+              }
+          }
+        });
+  }
+
+  public void hideBottomNavigation() {
+    bottomNavigationView.setVisibility(View.GONE);
+    findViewById(R.id.floatingActionButton).setVisibility(View.GONE);
+  }
+
+  public void showBottomNavigation() {
+    bottomNavigationView.setVisibility(View.VISIBLE);
+    findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
+    // NavigationUI.setupWithNavController(bottomNavigationView, navController);
+  }
+
+  private void setupNavController() {
+    NavigationUI.setupWithNavController(navigationView, navController);
+    NavigationUI.setupWithNavController(bottomNavigationView, navController);
+    navigationView.setNavigationItemSelectedListener(
+        item -> {
+          int itemId = item.getItemId();
+
+          if (itemId == currentMenuItem) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+          }
+
+          switch (itemId) {
+            case R.id.nav_map:
+              navController.popBackStack(R.id.nav_map, false);
+              break;
+            case R.id.nav_share:
+              startShareIntent();
+              drawerLayout.closeDrawer(GravityCompat.START);
+              return false;
+            default:
+              navController.navigate(itemId);
+          }
+
+          currentMenuItem = itemId;
+          drawerLayout.closeDrawer(GravityCompat.START);
+          return true;
+        });
   }
 
   private void showNoConnectionSnackbar() {
@@ -131,112 +187,60 @@ public class MainActivity extends AppCompatActivity
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
     params.gravity = Gravity.TOP;
     params.setMargins(
-        params.leftMargin,
-        params.topMargin + 60,
-        params.rightMargin,
-        params.bottomMargin);
+        params.leftMargin, params.topMargin + 60, params.rightMargin, params.bottomMargin);
     view.setLayoutParams(params);
     snack.show();
   }
 
-  /**
-  *  This is used to hide navigation bar when input contents in search bar,
-  *  and recover the navigation bar when soft keyboard displays.
-  *  It only works when the current view is SearchView, for sake of, if possible, unnecessary slowing down.
-  *
-  * */
-  @Override
-  protected void onResume() {
-    super.onResume();
-   findViewById(android.R.id.content).getViewTreeObserver()
-            .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-  }
+  // should not be needed anymore
 
-  @Override
-  protected void onPause() {
-    super.onPause();
-    findViewById(android.R.id.content).getViewTreeObserver()
-            .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-  }
+//  /**
+//   * This is used to hide navigation bar when input contents in search bar, and recover the
+//   * navigation bar when soft keyboard displays. It only works when the current view is SearchView,
+//   * for sake of, if possible, unnecessary slowing down.
+//   */
+//  @Override
+//  protected void onResume() {
+//    super.onResume();
+//    findViewById(android.R.id.content)
+//        .getViewTreeObserver()
+//        .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+//  }
+//
+//  @Override
+//  protected void onPause() {
+//    super.onPause();
+//    findViewById(android.R.id.content)
+//        .getViewTreeObserver()
+//        .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+//  }
 
-  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
-          () -> {
-            View view = getCurrentFocus();
-            if(view == null || !view.toString().startsWith("android.widget.SearchView"))
-              return;
-            final Rect rectangle = new Rect();
-            final View contentView = findViewById(android.R.id.content);
-            contentView.getWindowVisibleDisplayFrame(rectangle);
-            int screenHeight = contentView.getRootView().getHeight();
-
-            // r.bottom is the position above soft keypad or device button.
-            // If keypad is shown, the rectangle.bottom is smaller than that before.
-            int keypadHeight = screenHeight - rectangle.bottom;
-            // 0.15 ratio is perhaps enough to determine keypad height.
-            boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
-
-            if (mKeyboardVisible != isKeyboardNowVisible) {
-              if (isKeyboardNowVisible) {
-                // onKeyboardShown
-                hideBottomTabs();
-              } else {
-                // onKeyboardHidden
-                showBottomTabs();
-              }
-            }
-            mKeyboardVisible = isKeyboardNowVisible;
-          };
-
-  private void setUpHamburgerMenuButton() {
-    hambMenuButton.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
-  }
-
-  private void setUpBackButton() {
-    backButton.setOnClickListener(v -> onBackPressed());
-  }
-
-  private void setupNavController() {
-    navController = findNavController(this, R.id.nav_host_fragment);
-  }
-
-  private void setupDrawerNavigation() {
-
-    // Only pass top-level destinations.
-    // appBarConfiguration = new AppBarConfiguration.Builder(R.id.map, R.id.fragment_favor).build();
-
-    /*Activate if we want a toolbar */
-    // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-
-    nav.setNavigationItemSelectedListener(this);
-  }
-
-  /**
-   * Will control drawer layout.
-   *
-   * @param item One of the buttons in the left drawer menu.
-   * @return boolean of whether operation was successful.
-   */
-  @Override
-  public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-    int itemId = item.getItemId();
-
-    switch (itemId) {
-      case R.id.nav_home:
-        getSupportFragmentManager().popBackStackImmediate();
-        getSupportFragmentManager().popBackStackImmediate();
-        getSupportFragmentManager().popBackStackImmediate();
-        break;
-      case R.id.nav_share:
-        startShareIntent();
-        break;
-      default:
-        navController.navigate(itemId);
-    }
-
-    drawerLayout.closeDrawer(GravityCompat.START);
-    return true;
-  }
-
+//  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
+//      () -> {
+//        View view = getCurrentFocus();
+//        if (view == null || !view.toString().startsWith("android.widget.SearchView")) return;
+//        final Rect rectangle = new Rect();
+//        final View contentView = findViewById(android.R.id.content);
+//        contentView.getWindowVisibleDisplayFrame(rectangle);
+//        int screenHeight = contentView.getRootView().getHeight();
+//
+//        // r.bottom is the position above soft keypad or device button.
+//        // If keypad is shown, the rectangle.bottom is smaller than that before.
+//        int keypadHeight = screenHeight - rectangle.bottom;
+//        // 0.15 ratio is perhaps enough to determine keypad height.
+//        boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
+//
+//        if (mKeyboardVisible != isKeyboardNowVisible) {
+//          if (isKeyboardNowVisible) {
+//            // onKeyboardShown
+//            hideBottomNavigation();
+//          } else {
+//            // onKeyboardHidden
+//            showBottomNavigation();
+//          }
+//        }
+//        mKeyboardVisible = isKeyboardNowVisible;
+//      };
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -246,66 +250,6 @@ public class MainActivity extends AppCompatActivity
     shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.app_site));
 
     startActivity(Intent.createChooser(shareIntent, null));
-  }
-
-  /** Will control the bottom navigation tabs */
-  private void setupBottomNavigation() {
-    mapButton.setOnClickListener(
-        v -> {
-          getSupportFragmentManager().popBackStackImmediate();
-          getSupportFragmentManager().popBackStackImmediate();
-          getSupportFragmentManager().popBackStackImmediate();
-        });
-    favListButton.setOnClickListener(v -> navController.navigate(R.id.nav_favorlist));
-  }
-
-  /** Implementations of the ViewController interface below */
-  @Override
-  public void hideBottomTabs() {
-    mapButton.setVisibility(View.INVISIBLE);
-    favListButton.setVisibility(View.INVISIBLE);
-  }
-
-  @Override
-  public void showBottomTabs() {
-    mapButton.setVisibility(View.VISIBLE);
-    favListButton.setVisibility(View.VISIBLE);
-  }
-
-  @Override
-  public void showBurgerIcon() {
-    hambMenuButton.setVisibility(View.VISIBLE);
-    backButton.setVisibility(View.INVISIBLE);
-  }
-
-  @Override
-  public void showBackIcon() {
-    backButton.setVisibility(View.VISIBLE);
-    hambMenuButton.setVisibility(View.INVISIBLE);
-  }
-
-  @Override
-  public void checkMapViewButton() {
-    favListButton.setChecked(false);
-    mapButton.setChecked(true);
-  }
-
-  @Override
-  public void checkFavListViewButton() {
-    mapButton.setChecked(false);
-    favListButton.setChecked(true);
-  }
-
-  @Override
-  public void setupViewTopDestTab() {
-    showBurgerIcon();
-    showBottomTabs();
-  }
-
-  @Override
-  public void setupViewBotDestTab() {
-    hideBottomTabs();
-    showBackIcon();
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
@@ -319,20 +263,70 @@ public class MainActivity extends AppCompatActivity
 
       favorFuture.thenAccept(
           favor -> {
-            otherActiveFavorsAround.put(favor.getId(), favor);
-            Fragment frag = FavorFragmentFactory.instantiate(favor, new FavorDetailView());
-            FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.nav_host_fragment, frag);
-            trans.commit();
+            // otherActiveFavorsAround.put(favor.getId(), favor);
+            Bundle favorBundle = new Bundle();
+            favorBundle.putParcelable("FAVOR_ARGS", favor);
+            navController.navigate(R.id.action_global_favorDetailView, favorBundle);
           });
     }
   }
 
   @Override
   public void onBackPressed() {
-    if(onBackPressedListener!=null)
-      onBackPressedListener.doBack();
-    else
-      getSupportFragmentManager().popBackStackImmediate();
+//    if (onBackPressedListener != null) onBackPressedListener.doBack();
+//    else {
+      DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+      if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+      else {
+        NavHostFragment host =
+            (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        Fragment f =
+            Objects.requireNonNull(host)
+                .getChildFragmentManager()
+                .findFragmentById(R.id.nav_host_fragment);
+
+        if (f instanceof UserAccountPage
+            || f instanceof FragmentAbout
+            || f instanceof FragmentSettings) {
+          navController.popBackStack(R.id.nav_map, false);
+          currentMenuItem = R.id.nav_map;
+        } else {
+          super.onBackPressed();
+        }
+      }
+    //}
   }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    return NavigationUI.navigateUp(navController, appBarConfiguration)
+        || super.onSupportNavigateUp();
+  }
+
+  public void onFabClick(View view) {
+    navController.navigate(R.id.action_global_favorRequestView);
+  }
+
+//  @Override
+//  public boolean onCreateOptionsMenu(Menu menu) {
+//    // Inflate the menu; this adds items to the action bar if it is present.
+//    getMenuInflater().inflate(R.menu.options_menu, menu);
+//
+//    MenuItem myActionMenuItem = menu.findItem(R.id.search);
+//    SearchView searchView = (SearchView) myActionMenuItem.getActionView();
+//    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//      @Override
+//      public boolean onQueryTextSubmit(String query) {
+//        // Toast like print
+//        return false;
+//      }
+//      @Override
+//      public boolean onQueryTextChange(String s) {
+//        return false;
+//      }
+//    });
+//
+//    return true;
+//  }
 }

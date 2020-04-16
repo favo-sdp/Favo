@@ -11,29 +11,18 @@ import java.util.Map;
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.FavoLocation;
-
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
  */
 public class Favor implements Parcelable, Document {
   public enum Status {
-    REQUESTED("Requested"),
-    ACCEPTED("Accepted"),
-    EXPIRED("Expired"),
-    CANCELLED_REQUESTER("Cancelled by requester"),
-    CANCELLED_ACCEPTER("Cancelled by accepter"),
-    SUCCESSFULLY_COMPLETED("Completed succesfully");
-
-    private String customDisplay;
-
-    Status(String custom) {
-      this.customDisplay = custom;
-    }
-
-    public String getPrettyString() {
-      return customDisplay;
-    }
+    REQUESTED,
+    ACCEPTED,
+    EXPIRED,
+    CANCELLED_REQUESTER,
+    CANCELLED_ACCEPTER,
+    SUCCESSFULLY_COMPLETED
   }
 
   // String constants for Map conversion
@@ -70,9 +59,13 @@ public class Favor implements Parcelable, Document {
   public Favor() {}
 
   public Favor(
-      String title, String description, String requesterId, FavoLocation location, Status statusId) {
-    String id = DatabaseWrapper.generateRandomId();
-    setId(id);
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      Status statusId) {
+
+    this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
     this.description = description;
     this.requesterId = requesterId;
@@ -80,6 +73,18 @@ public class Favor implements Parcelable, Document {
     this.postedTime = new Date();
     this.statusId = statusId;
     this.accepterId = null;
+  }
+
+  // Constructor to override default generated Id
+  public Favor(
+      String id,
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      Status statusId) {
+    this(title, description, requesterId, location, statusId);
+    this.id = id;
   }
 
   /**
@@ -121,10 +126,6 @@ public class Favor implements Parcelable, Document {
     return id;
   }
 
-  private void setId(String id) {
-    this.id = id;
-  }
-
   @Override
   public Map<String, Object> toMap() {
     return new HashMap<String, Object>() {
@@ -153,16 +154,16 @@ public class Favor implements Parcelable, Document {
     return requesterId;
   }
 
-  public String getAccepterID() {
+  public String getAccepterId() {
     return accepterId;
+  }
+
+  public void setAccepterId(String id) {
+    this.accepterId = id;
   }
 
   public Date getPostedTime() {
     return postedTime;
-  }
-
-  void setAccepterID(String accepterID) {
-    this.accepterId = accepterID;
   }
 
   /**
@@ -175,7 +176,7 @@ public class Favor implements Parcelable, Document {
     return statusId;
   }
 
-  void setStatusId(Status statusId) {
+  public void setStatusId(Status statusId) {
     this.statusId = statusId;
   }
 
@@ -203,17 +204,19 @@ public class Favor implements Parcelable, Document {
   }
 
   public void updateToOther(Favor other) {
-    // we take all the values except for the ID
+    // we take all the values except for the id, acceptor and requester id
 
     this.title = other.getTitle();
     this.description = other.getDescription();
     this.location = other.getLocation();
     this.postedTime = other.getPostedTime();
-    this.requesterId = other.getRequesterId();
     this.statusId = other.getStatusId();
   }
-
-  public void updateStatus(Status newStatus) {
-    this.statusId = newStatus;
+  // Overriding equals() to compare two Complex objects
+  public boolean contentEquals(Favor other) {
+    return this.title.equals(other.title)
+        && this.description.equals(other.description)
+        && this.statusId.equals(other.getStatusId())
+        && this.location.equals(other.location);
   }
 }

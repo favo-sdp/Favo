@@ -1,27 +1,19 @@
 package ch.epfl.favo.favor;
 
-import android.location.Location;
-
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
-import org.mockito.Mockito;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.common.NotImplementedException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertTrue;
 
 /**
- * Example local unit test, which will execute on the development machine (host).
+ * Unit tests for Favor object.
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
@@ -51,93 +43,11 @@ public class FavorUnitTests {
 
     favor.setStatusId(statusId);
     favor.setLocation(location);
-    favor.setAccepterID(accepterId);
+    favor.setAccepterId(accepterId);
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId, favor.getStatusId());
-    assertEquals(accepterId, favor.getAccepterID());
-  }
-
-  @Test
-  public void favorSuccessfullyPostsToDB() {
-    CollectionWrapper mock = Mockito.mock(CollectionWrapper.class);
-    Mockito.doNothing().when(mock).addDocument(any(Favor.class));
-
-    Favor favor = FakeItemFactory.getFavor();
-    FavorUtil.getSingleInstance().postFavor(favor);
-
-    assertNotNull(favor);
-  }
-
-  @Test
-  public void favorCanRetrieveAllFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            FavorUtil.getSingleInstance().retrieveAllFavorsForGivenUser(userId);
-          }
-        });
-  }
-
-  @Test
-  public void favorCanRetrieveAllActiveFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser(userId);
-          }
-        });
-  }
-
-  @Test
-  public void favorCanRetrieveAllRequestedFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            FavorUtil.getSingleInstance().retrieveAllRequestedFavorsForGivenUser(userId);
-          }
-        });
-  }
-
-  @Test
-  public void favorCanRetrieveAllAcceptedFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId);
-          }
-        });
-  }
-
-  @Test
-  public void favorCanRetrieveAllFavorsInGivenRadius() {
-
-    Location loc = TestConstants.LOCATION;
-    double radius = TestConstants.RADIUS;
-    assertThrows(
-        NotImplementedException.class,
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(loc, radius);
-          }
-        });
+    assertEquals(accepterId, favor.getAccepterId());
   }
 
   @Test
@@ -162,26 +72,49 @@ public class FavorUnitTests {
   }
 
   @Test
-  public void getDocumentFunction() throws ExecutionException, InterruptedException {
-    // get favor from database
-    String favorID = "WEZDZQD78A5SI5Q790SZAL7FW";
-    assertThrows(
-      RuntimeException.class,
-      () -> FavorUtil.getSingleInstance().retrieveFavor(favorID).get());
-    }
+  public void favorGivesCorrectTransformationToMap() {
+    Favor favor = FakeItemFactory.getFavor();
+    Map<String, Object> favorMap = favor.toMap();
+    Favor favor2 = new Favor(favorMap);
+    assertEquals(favor.getTitle(), favor2.getTitle());
+    assertEquals(favor.getId(), favor2.getId());
+    assertEquals(favor.getDescription(), favor2.getDescription());
+    assertEquals(favor.getLocation(), favor2.getLocation());
+    assertEquals(favor.getRequesterId(), favor2.getRequesterId());
+    assertEquals(favor.getAccepterId(), favor2.getAccepterId());
+    assertEquals(favor.getPostedTime(), favor2.getPostedTime());
+    assertEquals(favor.getStatusId(), favor2.getStatusId());
+  }
 
   @Test
-  public void favorGivesCorrectTransformationToMap(){
+  public void favorComparisonIsSuccessful() {
     Favor favor = FakeItemFactory.getFavor();
-    Map<String,Object> favorMap = favor.toMap();
-    Favor favor2 = new Favor(favorMap);
-    assertEquals(favor.getTitle(),favor2.getTitle());
-    assertEquals(favor.getId(),favor2.getId());
-    assertEquals(favor.getDescription(),favor2.getDescription());
-    assertEquals(favor.getLocation(),favor2.getLocation());
-    assertEquals(favor.getRequesterId(),favor2.getRequesterId());
-    assertEquals(favor.getAccepterID(),favor2.getAccepterID());
-    assertEquals(favor.getPostedTime(),favor2.getPostedTime());
-    assertEquals(favor.getStatusId(),favor2.getStatusId());
+    Favor favor2 = FakeItemFactory.getFavor();
+    assertTrue(favor.contentEquals(favor2));
   }
+
+  @Test
+  public void favoLocationComparisonIsSuccessful() {
+    Favor favor = FakeItemFactory.getFavor();
+    FavoLocation location1 = favor.getLocation();
+    FavoLocation location2 = new FavoLocation("whatever");
+    FavoLocation location3 = location1;
+    location2.setLatitude(location1.getLatitude());
+    location2.setLongitude(location1.getLongitude());
+    assertTrue(location1.equals(location2)); // check they're equal based on latitude and longitude
+    assertTrue(!location1.equals(favor));
+    assertTrue(location1.equals(location3)); // check reference equality
+  }
+
+  @Test
+  public void favorCanBeUpdatedToOther() {
+    Favor favor = FakeItemFactory.getFavor();
+    String oldAccepterId = "old accepter Id";
+    favor.setAccepterId(oldAccepterId);
+    Favor anotherFavor = FakeItemFactory.getFavor();
+    anotherFavor.setAccepterId("new accepter Id");
+    favor.updateToOther(anotherFavor);
+    assertEquals(oldAccepterId, favor.getAccepterId());
+  }
+
 }

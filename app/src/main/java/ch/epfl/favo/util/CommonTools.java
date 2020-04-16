@@ -24,14 +24,6 @@ public class CommonTools {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
-  public static void replaceFragment(
-      int id, FragmentManager fragmentManager, Fragment newFragment) {
-    FragmentTransaction transaction = fragmentManager.beginTransaction();
-    transaction.replace(id, newFragment);
-    transaction.addToBackStack(null);
-    transaction.commit();
-    // transaction.remove(this);
-  }
 
   public static String convertTime(long time) {
     Date date = new Date(time);

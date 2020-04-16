@@ -45,6 +45,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
         var title = newFavor.title;
         var usersIds = [];
         var maxDistance = 100.0; // in km
+        var id = newFavor.id;
 
         const message = {
             data: {
@@ -53,6 +54,9 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
             notification: {
                 title: 'New favor nearby: ' + title,
                 body: 'Click to check out the post details',
+            },
+            data: {
+                "FavorId": newFavor.id,
             },
             tokens: usersIds
         };
@@ -86,7 +90,7 @@ exports.sendNotificationOnUpdate = functions.firestore
 
         // get new favor that has just been posted
         const newFavor = change.data();
-        var accepterID = newFavor.accepter;
+        var accepterId = newFavor.accepter;
         var favorTitle = newFavor.title;
         var usersIds = [];
 
@@ -104,7 +108,7 @@ exports.sendNotificationOnUpdate = functions.firestore
                 snapshot.forEach((doc) => {
                     var user = doc.data();
                     var userID = user.id;
-                    if (userID === accepterID) {
+                    if (userID === accepterId) {
                         usersIds.push(user.notificationId);
                     }
                 });
