@@ -8,7 +8,7 @@ import ch.epfl.favo.map.Locator;
 
 import static ch.epfl.favo.TestConstants.LOCATION;
 
-class MockGpsTracker implements Locator {
+public class MockGpsTracker implements Locator {
   @Override
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
     return LOCATION;

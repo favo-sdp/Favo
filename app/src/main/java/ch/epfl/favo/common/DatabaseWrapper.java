@@ -98,43 +98,35 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Class<T> cls, String collection, Activity activity){
-    /**
-     * It is a temporary, simpler version to retrieve favors in a **square area** on
-     * sphere surface. This function retrieve longitude and latitude bounded documents and save
-     * them in MainActivity.
-     *  TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
-     * */
+  /**
+   * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
+   * This function retrieve longitude and latitude bounded documents and save them in MainActivity.
+   * For some reason, reading from db is very slow when adding one more whereEqualTo query field
+   * TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
+   */
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(
+      Location loc, double radius, Class<T> cls, String collection, Activity activity) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
-    double longitude_lower = loc.getLongitude() - longDif;
-    double longitude_upper = loc.getLongitude() + longDif;
-    /** For some reason, reading from db is very slow when adding one more whereEqualTo query field
-     * or not without .limit(..) **/
+    double latDif = Math.toDegrees(radius / 6371);
+    Log.d("Radius", loc.getLatitude() + " " + loc.getLatitude());
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection)
-            // .whereEqualTo("statusId", Favor.Status.REQUESTED)
-            .whereGreaterThan("location.longitude", longitude_lower)
-            .whereLessThan("location.longitude", longitude_upper).limit(20).get();
-    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask);
+            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+            .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(20).get();
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
     CompletableFuture<List<T>> documents = getAllFuture.thenApply(
             querySnapshot -> querySnapshot.toObjects(cls));
     documents.thenAccept(
-            docs -> {
-              Log.d("Radius", String.valueOf(docs.size()));
-              double latDif = Math.toDegrees(radius / 6371);
-              double latitude_lower = loc.getLatitude() - latDif;
-              double latitude_upper = loc.getLatitude() + latDif;
-              if(cls == Favor.class){
-                ArrayList<Favor> favors = (ArrayList<Favor>) docs;
-                for (Favor favor : favors) {
-                  if (!favor.getRequesterId().equals(UserUtil.currentUserId)
-                          && favor.getStatusId().equals(Favor.Status.REQUESTED)
-                          && favor.getLocation().getLatitude() > latitude_lower
-                          && favor.getLocation().getLongitude() < latitude_upper) {
-                    ((MainActivity)(activity)).otherActiveFavorsAround.put(favor.getId(), favor);
-                  }
-                }
-              }
-            });
+        docs -> {
+          if (cls == Favor.class) {
+            ArrayList<Favor> favors = (ArrayList<Favor>) docs;
+            for (Favor favor : favors)
+              if (!favor.getRequesterId().equals(UserUtil.currentUserId)
+                  && favor.getStatusId().equals(Favor.Status.REQUESTED)
+                  && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
+                  && favor.getLocation().getLongitude() < loc.getLatitude() + latDif)
+                ((MainActivity)(activity)).otherActiveFavorsAround.put(favor.getId(), favor);
+          }
+        });
     return documents;
   }
 

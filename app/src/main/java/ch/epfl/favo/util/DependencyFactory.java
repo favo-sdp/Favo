@@ -41,7 +41,7 @@ public class DependencyFactory {
   }
 
   public static boolean isTestMode() {
-    return testMode;
+    return testMode && currentCompletableFuture!=null;
   }
 
   @VisibleForTesting

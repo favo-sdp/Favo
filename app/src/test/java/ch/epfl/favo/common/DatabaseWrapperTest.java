@@ -1,10 +1,14 @@
 package ch.epfl.favo.common;
 
+import android.app.Activity;
+import android.location.Location;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.junit.After;
@@ -12,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -21,16 +24,22 @@ import java.util.concurrent.TimeoutException;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.startsWith;
 
 public class DatabaseWrapperTest {
   private Favor testFavor;
+  private List<Favor> expectedFavors;
   private CollectionWrapper<Favor> collectionWrapper;
   private FirebaseFirestore mockFirestore;
   private CollectionReference mockCollectionReference;
@@ -40,28 +49,38 @@ public class DatabaseWrapperTest {
   private QuerySnapshot mockQuerySnapshot;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     mockFirestore = Mockito.mock(FirebaseFirestore.class);
     mockCollectionReference = Mockito.mock(CollectionReference.class);
     mockDocumentReference = Mockito.mock(DocumentReference.class);
     testFavor = FakeItemFactory.getFavor();
+    expectedFavors = FakeItemFactory.getFavorList();
     collectionWrapper = new CollectionWrapper<>("favors", Favor.class);
 
     // return collection refernece from firestore object
     Mockito.doReturn(mockCollectionReference).when(mockFirestore).collection(anyString());
+    DependencyFactory.setCurrentFirestore(mockFirestore);
     setupMockGetDocument();
     setupMockDocumentListRetrieval();
-    DependencyFactory.setCurrentFirestore(mockFirestore);
   }
 
   /** Mock collectionreference->querysnapshotTask->querysnapshot */
   private void setupMockDocumentListRetrieval() {
+    // setup for testing getAllDocuments()
     Task<QuerySnapshot> querySnapshotTask = Mockito.mock(Task.class);
     Mockito.doReturn(querySnapshotTask).when(mockCollectionReference).get();
+    //setup for testing getAllDocumentsLongitudeLatitudeBounded()
+    Query query = Mockito.mock(Query.class);
+    Mockito.doReturn(query).when(mockCollectionReference).whereGreaterThan(anyString(), anyDouble());
+    Mockito.doReturn(query).when(query).whereLessThan(anyString(), anyDouble());
+    Mockito.doReturn(query).when(query).limit(anyLong());
+    Mockito.doReturn(querySnapshotTask).when(query).get();
+    // setup task, below is common parts
     mockQuerySnapshot = Mockito.mock(QuerySnapshot.class);
-
     Mockito.doReturn(mockQuerySnapshot).when(querySnapshotTask).getResult();
     Mockito.doReturn(mockQuerySnapshot).when(querySnapshotTask).getResult(any());
+    // return favor object from document
+    Mockito.doReturn(expectedFavors).when(mockQuerySnapshot).toObjects(any());
   }
 
   /** Mock DocumentReference -> documentSnapshotTask->documentsnapshot */
@@ -80,17 +99,24 @@ public class DatabaseWrapperTest {
     // return task when document reference is called on get
     Mockito.doReturn(documentSnapshotTask).when(mockDocumentReference).get(any());
     Mockito.doReturn(documentSnapshotTask).when(mockDocumentReference).get();
+    // return favor object from document
+    Mockito.doReturn(testFavor).when(mockDocumentSnapshot).toObject(any());
+  }
+
+  private<T> void setupCompletableFuture(T mockSnapshot){
+    CompletableFuture<T> futureSnapshot = new CompletableFuture<>();
+    futureSnapshot.complete(mockSnapshot);
+    DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirestore(null);
   }
 
   @Test
   public void addDocument() {
-
     collectionWrapper.addDocument(testFavor);
   }
 
@@ -101,48 +127,43 @@ public class DatabaseWrapperTest {
 
   @Test
   public void updateDocument() {
-
     collectionWrapper.updateDocument("bu", testFavor.toMap());
   }
 
   @Test
   public void testGetDocumentReturnsExpectedDocument()
       throws ExecutionException, InterruptedException, TimeoutException {
-    // return favor object from document
-    Mockito.doReturn(testFavor).when(mockDocumentSnapshot).toObject(any());
+    setupCompletableFuture(mockDocumentSnapshot);
     Mockito.doReturn(true).when(mockDocumentSnapshot).exists();
-    CompletableFuture<DocumentSnapshot> futureSnapshot = new CompletableFuture<>();
-    futureSnapshot.complete(mockDocumentSnapshot);
-    DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
     CompletableFuture<Favor> actualFuture = collectionWrapper.getDocument("fish");
     Favor obtained = actualFuture.get(2, TimeUnit.SECONDS);
     assertEquals(testFavor,obtained);
   }
 
   @Test
-  public void testGetDocumentReturnsExceptionIfNull()
-      throws InterruptedException, TimeoutException {
-    // return favor object from document
-    Mockito.doReturn(testFavor).when(mockDocumentSnapshot).toObject(any());
+  public void testGetDocumentReturnsExceptionIfNull() {
     // document snapshot doesn't exist (not returned)
+    setupCompletableFuture(mockDocumentSnapshot);
     Mockito.doReturn(false).when(mockDocumentSnapshot).exists();
-
-    CompletableFuture<DocumentSnapshot> futureSnapshot = new CompletableFuture<>();
-    futureSnapshot.complete(mockDocumentSnapshot);
-    DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
     CompletableFuture<Favor> actualFuture = collectionWrapper.getDocument("fish");
     assertEquals(true, actualFuture.isCompletedExceptionally());
   }
 
   @Test
   public void testGetAllDocumentsReturnsExpectedList()
-      throws InterruptedException, ExecutionException, TimeoutException {
-    List<Favor> expectedFavors = FakeItemFactory.getFavorList();
-    CompletableFuture<QuerySnapshot> futureSnapshot = new CompletableFuture<>();
-    Mockito.doReturn(expectedFavors).when(mockQuerySnapshot).toObjects(any());
-    futureSnapshot.complete(mockQuerySnapshot);
-    DependencyFactory.setCurrentCompletableFuture(futureSnapshot);
+      throws InterruptedException, ExecutionException {
+    setupCompletableFuture(mockQuerySnapshot);
     CompletableFuture<List<Favor>> obtainedFuture = collectionWrapper.getAllDocuments();
+    List<Favor> obtainedFavors = obtainedFuture.get();
+    assertEquals(expectedFavors,obtainedFavors);
+  }
+
+  @Test
+  public void testGetAllDocumentsLongitudeLatitudeBoundedExpectedList()
+          throws InterruptedException, ExecutionException{
+    setupCompletableFuture(mockQuerySnapshot);
+    CompletableFuture<List<Favor>> obtainedFuture = collectionWrapper
+            .getAllDocumentsLongitudeLatitudeBounded(new Location("null"), 1.0, new Activity());
     List<Favor> obtainedFavors = obtainedFuture.get();
     assertEquals(expectedFavors,obtainedFavors);
   }

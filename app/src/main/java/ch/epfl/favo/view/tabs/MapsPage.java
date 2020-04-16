@@ -45,6 +45,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
@@ -112,14 +113,13 @@ public class MapsPage extends Fragment
     }
     else{
       try{
-        GpsTracker gpsTracker = new GpsTracker(getContext());
-        mLocation = gpsTracker.getLocation();
+        mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
         updateNearbyList();
         drawSelfLocationMarker();
         drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
-      }catch (Exception e){
+      }catch (NoPositionFoundException e){
         CommonTools.showSnackbar(getView(), e.getMessage() + "when map is ready");
-        throw new RuntimeException(e.getMessage() + "at map ready");
+        throw new RuntimeException(e.getMessage() + " **custom** when map ready");
       }
     }
   }
