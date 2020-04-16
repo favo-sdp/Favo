@@ -3,6 +3,7 @@ package ch.epfl.favo.view;
 import android.os.Bundle;
 
 import androidx.navigation.NavController;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -64,6 +65,7 @@ public class FavorDetailViewTest {
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
   @Before
+  @UiThreadTest
   public void setUp() {
     fakeFavor = FakeItemFactory.getFavor();
     UserUtil.currentUserId = "USER";
@@ -215,7 +217,7 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testAcceptingFavorUpdatesListView() {
+  public void testAcceptingFavorUpdatesListView() throws InterruptedException {
     mockDatabaseWrapper.setMockDocument(fakeFavor);
     mockDatabaseWrapper.setThrowError(false);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -225,7 +227,12 @@ public class FavorDetailViewTest {
     pressBack();
     getInstrumentation().waitForIdleSync();
 
-    navController.navigate(R.id.action_nav_map_to_nav_favorList);
+    // wait for snackbar
+    Thread.sleep(5000);
+
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
 
     onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed())).perform(click());
 
