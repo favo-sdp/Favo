@@ -9,6 +9,6 @@
     <!-- Favor Request View-->
     <dimen name="edit_favor_button_width">36dp</dimen>
 
-    <dimen name="margin_bottom_button">45dp</dimen>
-    <dimen name="margin_accept_view">15dp</dimen>
+    <dimen name="margin_bottom_button">10dip</dimen>
+    <dimen name="margin_accept_view">10dip</dimen>
 </resources>
