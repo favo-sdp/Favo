@@ -149,7 +149,7 @@ public class AddFavorTest {
   }
 
   @Test
-  public void testCanHideKeyboardOnClickOutsideOfTextView() {
+  public void testCanHideKeyboardOnClickOutsideOfTextView() throws InterruptedException {
     mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
     mockDatabaseWrapper.setThrowError(false);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -158,7 +158,8 @@ public class AddFavorTest {
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_favor_button)).perform(click());
+    Thread.sleep(4000); //wait for snackbar to hide
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
 

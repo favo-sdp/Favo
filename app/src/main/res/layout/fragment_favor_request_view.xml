@@ -16,8 +16,7 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:id="@+id/edit_buttons_layout"
@@ -99,7 +98,7 @@
             android:id="@+id/picture_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -126,10 +125,9 @@
 
         <ImageView
             android:id="@+id/image_view_request_view"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="22dp"
-            android:layout_marginBottom="22dp"
+            android:layout_marginVertical="10dp"
             android:contentDescription="@string/favor_img_content_desc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

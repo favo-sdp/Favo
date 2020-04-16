@@ -167,7 +167,7 @@ public class FavorPageTest {
 
 
   @Test
-  public void testFavorCancelUpdatesActiveAndArchivedListView() {
+  public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
     // Click on favors tab
     onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -185,6 +185,7 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(4000); //wait for snackbar to hide
 
     // Click on cancel button
     onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
