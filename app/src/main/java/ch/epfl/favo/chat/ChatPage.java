@@ -19,13 +19,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.Objects;
-
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
 
 public class ChatPage extends Fragment {
 
@@ -50,7 +48,7 @@ public class ChatPage extends Fragment {
 
   private void setupView() {
 
-    ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
+    ((MainActivity) requireActivity()).hideBottomNavigation();
 
     Button sendMessageButton = view.findViewById(R.id.sendButton);
     sendMessageButton.setOnClickListener(v -> onSendClick());
@@ -145,7 +143,7 @@ public class ChatPage extends Fragment {
     sChatCollection
         .add(chatModel)
         .addOnFailureListener(
-            Objects.requireNonNull(getActivity()),
+            requireActivity(),
             e -> Log.e("ChatPage", "Failed to send message", e));
   }
 }

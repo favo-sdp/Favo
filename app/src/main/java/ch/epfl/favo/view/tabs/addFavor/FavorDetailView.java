@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -44,6 +45,9 @@ public class FavorDetailView extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // inflate view
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
+
+    ((MainActivity) requireActivity()).hideBottomNavigation();
+
     setupButtons(rootView);
     statusText = rootView.findViewById(R.id.status_text_accept_view);
 
@@ -68,6 +72,14 @@ public class FavorDetailView extends Fragment {
           } else {
             cancelFavor();
           }
+        });
+
+    chatBtn.setOnClickListener(
+        v -> {
+          Bundle favorBundle = new Bundle();
+          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+          Navigation.findNavController(requireView())
+              .navigate(R.id.action_nav_favorDetailView_to_chatView, favorBundle);
         });
   }
 

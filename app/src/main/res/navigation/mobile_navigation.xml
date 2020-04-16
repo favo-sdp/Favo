@@ -22,6 +22,10 @@
         android:id="@+id/nav_share"
         android:label="@string/share" />
     <fragment
+        android:id="@+id/chatView"
+        android:name="ch.epfl.favo.chat.ChatPage"
+        android:label="Chat" />
+    <fragment
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapsPage"
         android:label="Map"
@@ -44,7 +48,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_favorList"
-        android:name="ch.epfl.favo.view.tabs.FavorPage"
+        android:name="ch.epfl.favo.view.tabs.favorList.FavorPage"
         android:label="FavorView"
         tools:layout="@layout/fragment_favorpage">
         <action
@@ -78,7 +82,17 @@
         android:id="@+id/favorDetailView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
         android:label="FavorDetailView"
-        tools:layout="@layout/fragment_favor_accept_view" />
+        tools:layout="@layout/fragment_favor_accept_view">
+
+        <action
+            android:id="@+id/action_nav_favorDetailView_to_chatView"
+            app:destination="@id/chatView">
+            <argument
+                android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="ch.epfl.favo.favor.Favor" />
+        </action>
+    </fragment>
     <action
         android:id="@+id/action_global_favorDetailView"
         app:destination="@id/favorDetailView">
