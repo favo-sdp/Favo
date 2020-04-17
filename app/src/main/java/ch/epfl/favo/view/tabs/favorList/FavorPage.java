@@ -39,7 +39,7 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.favor.Favor.Status.CANCELLED_REQUESTER;
 import static ch.epfl.favo.favor.Favor.Status.REQUESTED;
-import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
+import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 /**
  * View will contain list of favors requested in the past. The list will contain clickable items
@@ -214,7 +214,7 @@ public class FavorPage extends Fragment {
         // ensure click on view will hide keyboard
         mRecycler.setOnTouchListener(
                 (v, event) -> {
-                    hideKeyboardFrom(requireContext(), v);
+                    hideSoftKeyboard(requireActivity());
                     return false;
                 });
     }

@@ -38,7 +38,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 
 import static android.app.Activity.RESULT_OK;
-import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
+import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 import static ch.epfl.favo.view.tabs.addFavor.FavorViewStatus.convertViewStatusToFavorStatus;
 
 @SuppressLint("NewApi")
@@ -309,7 +309,7 @@ public class FavorRequestView extends Fragment {
     editFavorBtn.setEnabled(editButtonEnabled);
     cancelFavorBtn.setEnabled(cancelButtonEnabled);
     if (hideKeyboard) {
-      hideKeyboardFrom(getContext(), view);
+      hideSoftKeyboard(requireActivity());
     }
   }
 
@@ -440,7 +440,7 @@ public class FavorRequestView extends Fragment {
     view.findViewById(R.id.constraint_layout_req_view)
         .setOnTouchListener(
             (v, event) -> {
-              hideKeyboardFrom(requireContext(), v);
+              hideSoftKeyboard(requireActivity());
               return false;
             });
   }

@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
@@ -59,18 +60,18 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
-  //private boolean mKeyboardVisible = false;
+  // private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
 
   // should not be needed anymore
-//  public OnBackPressedListener onBackPressedListener;
-//
-//  public interface OnBackPressedListener {
-//    void doBack();
-//  }
+  //  public OnBackPressedListener onBackPressedListener;
+  //
+  //  public interface OnBackPressedListener {
+  //    void doBack();
+  //  }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -194,53 +195,54 @@ public class MainActivity extends AppCompatActivity {
 
   // should not be needed anymore
 
-//  /**
-//   * This is used to hide navigation bar when input contents in search bar, and recover the
-//   * navigation bar when soft keyboard displays. It only works when the current view is SearchView,
-//   * for sake of, if possible, unnecessary slowing down.
-//   */
-//  @Override
-//  protected void onResume() {
-//    super.onResume();
-//    findViewById(android.R.id.content)
-//        .getViewTreeObserver()
-//        .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-//  }
-//
-//  @Override
-//  protected void onPause() {
-//    super.onPause();
-//    findViewById(android.R.id.content)
-//        .getViewTreeObserver()
-//        .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-//  }
+  //  /**
+  //   * This is used to hide navigation bar when input contents in search bar, and recover the
+  //   * navigation bar when soft keyboard displays. It only works when the current view is
+  // SearchView,
+  //   * for sake of, if possible, unnecessary slowing down.
+  //   */
+  //  @Override
+  //  protected void onResume() {
+  //    super.onResume();
+  //    findViewById(android.R.id.content)
+  //        .getViewTreeObserver()
+  //        .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+  //  }
+  //
+  //  @Override
+  //  protected void onPause() {
+  //    super.onPause();
+  //    findViewById(android.R.id.content)
+  //        .getViewTreeObserver()
+  //        .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
+  //  }
 
-//  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
-//      () -> {
-//        View view = getCurrentFocus();
-//        if (view == null || !view.toString().startsWith("android.widget.SearchView")) return;
-//        final Rect rectangle = new Rect();
-//        final View contentView = findViewById(android.R.id.content);
-//        contentView.getWindowVisibleDisplayFrame(rectangle);
-//        int screenHeight = contentView.getRootView().getHeight();
-//
-//        // r.bottom is the position above soft keypad or device button.
-//        // If keypad is shown, the rectangle.bottom is smaller than that before.
-//        int keypadHeight = screenHeight - rectangle.bottom;
-//        // 0.15 ratio is perhaps enough to determine keypad height.
-//        boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
-//
-//        if (mKeyboardVisible != isKeyboardNowVisible) {
-//          if (isKeyboardNowVisible) {
-//            // onKeyboardShown
-//            hideBottomNavigation();
-//          } else {
-//            // onKeyboardHidden
-//            showBottomNavigation();
-//          }
-//        }
-//        mKeyboardVisible = isKeyboardNowVisible;
-//      };
+  //  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
+  //      () -> {
+  //        View view = getCurrentFocus();
+  //        if (view == null || !view.toString().startsWith("android.widget.SearchView")) return;
+  //        final Rect rectangle = new Rect();
+  //        final View contentView = findViewById(android.R.id.content);
+  //        contentView.getWindowVisibleDisplayFrame(rectangle);
+  //        int screenHeight = contentView.getRootView().getHeight();
+  //
+  //        // r.bottom is the position above soft keypad or device button.
+  //        // If keypad is shown, the rectangle.bottom is smaller than that before.
+  //        int keypadHeight = screenHeight - rectangle.bottom;
+  //        // 0.15 ratio is perhaps enough to determine keypad height.
+  //        boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
+  //
+  //        if (mKeyboardVisible != isKeyboardNowVisible) {
+  //          if (isKeyboardNowVisible) {
+  //            // onKeyboardShown
+  //            hideBottomNavigation();
+  //          } else {
+  //            // onKeyboardHidden
+  //            showBottomNavigation();
+  //          }
+  //        }
+  //        mKeyboardVisible = isKeyboardNowVisible;
+  //      };
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -273,33 +275,38 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-//    if (onBackPressedListener != null) onBackPressedListener.doBack();
-//    else {
-      DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
-      if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-      else {
-        NavHostFragment host =
-            (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        Fragment f =
-            Objects.requireNonNull(host)
-                .getChildFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
+    //    if (onBackPressedListener != null) onBackPressedListener.doBack();
+    //    else {
 
-        if (f instanceof UserAccountPage
-            || f instanceof FragmentAbout
-            || f instanceof FragmentSettings) {
-          navController.popBackStack(R.id.nav_map, false);
-          currentMenuItem = R.id.nav_map;
-        } else {
-          super.onBackPressed();
-        }
+    DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+    if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+      mDrawerLayout.closeDrawer(GravityCompat.START);
+    else {
+      NavHostFragment host =
+          (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+      Fragment f =
+          Objects.requireNonNull(host)
+              .getChildFragmentManager()
+              .findFragmentById(R.id.nav_host_fragment);
+
+      if (f instanceof UserAccountPage
+          || f instanceof FragmentAbout
+          || f instanceof FragmentSettings) {
+        navController.popBackStack(R.id.nav_map, false);
+        currentMenuItem = R.id.nav_map;
+      } else {
+        super.onBackPressed();
       }
-    //}
+    }
+    // }
   }
 
   @Override
   public boolean onSupportNavigateUp() {
+
+    // close keyboard if open
+    CommonTools.hideSoftKeyboard(this);
+
     return NavigationUI.navigateUp(navController, appBarConfiguration)
         || super.onSupportNavigateUp();
   }
@@ -307,26 +314,4 @@ public class MainActivity extends AppCompatActivity {
   public void onFabClick(View view) {
     navController.navigate(R.id.action_global_favorRequestView);
   }
-
-//  @Override
-//  public boolean onCreateOptionsMenu(Menu menu) {
-//    // Inflate the menu; this adds items to the action bar if it is present.
-//    getMenuInflater().inflate(R.menu.options_menu, menu);
-//
-//    MenuItem myActionMenuItem = menu.findItem(R.id.search);
-//    SearchView searchView = (SearchView) myActionMenuItem.getActionView();
-//    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//      @Override
-//      public boolean onQueryTextSubmit(String query) {
-//        // Toast like print
-//        return false;
-//      }
-//      @Override
-//      public boolean onQueryTextChange(String s) {
-//        return false;
-//      }
-//    });
-//
-//    return true;
-//  }
 }

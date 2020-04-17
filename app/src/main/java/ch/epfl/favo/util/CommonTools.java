@@ -31,10 +31,13 @@ public class CommonTools {
     return format.format(date);
   }
 
-  public static void hideKeyboardFrom(Context context, View view) {
-    InputMethodManager imm =
-        (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  public static void hideSoftKeyboard(Activity activity) {
+    final InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    if (inputMethodManager.isActive()) {
+      if (activity.getCurrentFocus() != null) {
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+      }
+    }
   }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
