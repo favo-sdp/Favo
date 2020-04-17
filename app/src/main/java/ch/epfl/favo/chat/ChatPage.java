@@ -1,5 +1,6 @@
 package ch.epfl.favo.chat;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 
+import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
+
 public class ChatPage extends Fragment {
 
   private static final CollectionReference sChatCollection =
@@ -37,6 +40,7 @@ public class ChatPage extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     view = inflater.inflate(R.layout.fragment_chat, container, false);
+
     setupView();
 
     if (getArguments() != null) {
@@ -46,6 +50,7 @@ public class ChatPage extends Fragment {
     return view;
   }
 
+  @SuppressLint("ClickableViewAccessibility")
   private void setupView() {
 
     ((MainActivity) requireActivity()).hideBottomNavigation();
@@ -66,6 +71,12 @@ public class ChatPage extends Fragment {
           if (bottom < oldBottom) {
             mRecyclerView.postDelayed(() -> mRecyclerView.smoothScrollToPosition(0), 100);
           }
+        });
+
+    mRecyclerView.setOnTouchListener(
+        (v, event) -> {
+          hideSoftKeyboard(requireActivity());
+          return false;
         });
   }
 
@@ -143,7 +154,6 @@ public class ChatPage extends Fragment {
     sChatCollection
         .add(chatModel)
         .addOnFailureListener(
-            requireActivity(),
-            e -> Log.e("ChatPage", "Failed to send message", e));
+            requireActivity(), e -> Log.e("ChatPage", "Failed to send message", e));
   }
 }

@@ -57,7 +57,7 @@
     <!--Favor search bar -->
     <string name="searchView_title">Search View</string>
     <string name="search_hint">Search title/description</string>
-    <string name="query_failed"> No match found</string>>
+    <string name="query_failed"> No results found</string>
     <string name="empty"> </string>
 
     <!--Favor Accepting View -->

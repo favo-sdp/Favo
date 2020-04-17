@@ -9,9 +9,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,263 +47,291 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
  */
 public class FavorPage extends Fragment {
 
-    private TextView tipTextView;
-    private SearchView searchView;
-    private MenuItem spinnerItem;
+  private TextView tipTextView;
+  private SearchView searchView;
+  private RadioGroup radioGroup;
+  private RadioButton activeToggle;
+  private RadioButton archivedToggle;
 
-    private RecyclerView mRecycler;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+  private RecyclerView mRecycler;
+  private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private FirestorePagingAdapter<Favor, FavorViewHolder> activeFavorsAdapter;
-    private FirestorePagingAdapter<Favor, FavorViewHolder> archivedFavorsAdapter;
+  private PagedList.Config pagingConfig =
+      new PagedList.Config.Builder()
+          .setEnablePlaceholders(false)
+          .setPrefetchDistance(10)
+          .setPageSize(10)
+          .build();
 
-    private static Query baseQuery =
-            FirebaseFirestore.getInstance()
-                    .collection("favors")
-                    .orderBy("postedTime", Query.Direction.ASCENDING);
+  private FirestorePagingAdapter<Favor, FavorViewHolder> adapter;
 
-    public FavorPage() {
-        // Required empty public constructor
-    }
+  private FirestorePagingOptions<Favor> activeFavorsOptions;
+  private FirestorePagingOptions<Favor> archiveFavorsOptions;
 
-    @Override
-    public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-        setHasOptionsMenu(true);
-    }
+  private String lastQuery;
 
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+  private static Query baseQuery =
+      FirebaseFirestore.getInstance()
+          .collection("favors")
+          .orderBy("postedTime", Query.Direction.ASCENDING);
 
-        View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
+  public FavorPage() {
+    // Required empty public constructor
+  }
 
-        tipTextView = rootView.findViewById(R.id.tip);
+  @Override
+  public void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    lastQuery = "";
+    setHasOptionsMenu(true);
+  }
 
-        mRecycler = rootView.findViewById(R.id.paging_recycler);
-        mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+  @Override
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        baseQuery =
-                baseQuery.whereEqualTo("requesterId", DependencyFactory.getCurrentFirebaseUser().getUid());
-        activeFavorsAdapter =
-                createPagingAdapterFromQuery(baseQuery.whereEqualTo("statusId", REQUESTED));
-        archivedFavorsAdapter =
-                createPagingAdapterFromQuery(baseQuery.whereEqualTo("statusId", CANCELLED_REQUESTER));
+    View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
 
-        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        setUpAdapter(activeFavorsAdapter);
+    tipTextView = rootView.findViewById(R.id.tip);
+    radioGroup = rootView.findViewById(R.id.radio_toggle);
+    activeToggle = rootView.findViewById(R.id.active_toggle);
+    archivedToggle = rootView.findViewById(R.id.archived_toggle);
 
-        setupView();
-        return rootView;
-    }
+    setupSwitchButtons();
 
-    private void setUpAdapter(FirestorePagingAdapter<Favor, FavorViewHolder> adapter) {
-        mRecycler.setAdapter(adapter);
-        mSwipeRefreshLayout.setOnRefreshListener(adapter::refresh);
-    }
+    mRecycler = rootView.findViewById(R.id.paging_recycler);
+    mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
-    private FirestorePagingAdapter<Favor, FavorViewHolder> createPagingAdapterFromQuery(Query query) {
-        FirestorePagingOptions<Favor> options = getFirestorePagingOptions(query);
-        return getFirestorePagingAdapter(options);
-    }
+    baseQuery =
+        baseQuery.whereEqualTo("requesterId", DependencyFactory.getCurrentFirebaseUser().getUid());
 
-    private FirestorePagingAdapter<Favor, FavorViewHolder> getFirestorePagingAdapter(
-            FirestorePagingOptions<Favor> options) {
-        return new FirestorePagingAdapter<Favor, FavorViewHolder>(options) {
-            @NonNull
-            @Override
-            public FavorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view =
-                        LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.favor_list_item, parent, false);
+    activeFavorsOptions =
+        createFirestorePagingOptions(baseQuery.whereEqualTo("statusId", REQUESTED));
+    archiveFavorsOptions =
+        createFirestorePagingOptions(baseQuery.whereEqualTo("statusId", CANCELLED_REQUESTER));
 
-                view.setOnClickListener(
-                        v -> {
-                            int itemPosition = mRecycler.getChildLayoutPosition(view);
-                            DocumentSnapshot doc = getItem(itemPosition);
-                            if (doc != null && doc.exists()) {
-                                Favor favor = doc.toObject(Favor.class);
-                                if (favor != null) {
-                                    Bundle favorBundle = new Bundle();
-                                    favorBundle.putParcelable("FAVOR_ARGS", favor);
-                                    // if favor was requested, open request view
-                                    if (favor.getRequesterId().equals(UserUtil.currentUserId)) {
-                                        Navigation.findNavController(requireView())
-                                                .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
-                                    } else { // if favor was accepted, open accept view
-                                        Navigation.findNavController(requireView())
-                                                .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
-                                    }
-                                }
-                            }
-                        });
+    mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+    adapter = createFirestorePagingAdapter(activeFavorsOptions);
+    mRecycler.setAdapter(adapter);
+    mSwipeRefreshLayout.setOnRefreshListener(adapter::refresh);
 
-                return new FavorViewHolder(view);
+    adapter.registerAdapterDataObserver(
+        new RecyclerView.AdapterDataObserver() {
+          @Override
+          public void onItemRangeInserted(int positionStart, int itemCount) {
+            //super.onItemRangeChanged(positionStart, itemCount);
+            int totalNumberOfItems = adapter.getItemCount();
+            if (totalNumberOfItems == 0) {
+              tipTextView.setVisibility(View.VISIBLE);
+            } else {
+              tipTextView.setVisibility(View.INVISIBLE);
             }
+          }
 
-            @Override
-            protected void onBindViewHolder(
-                    @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-                holder.bind(model);
+          @Override
+          public void onItemRangeRemoved(int positionStart, int itemCount) {
+            //super.onItemRangeChanged(positionStart, itemCount);
+            int totalNumberOfItems = adapter.getItemCount();
+            if (totalNumberOfItems == 0) {
+              tipTextView.setVisibility(View.VISIBLE);
+            } else {
+              tipTextView.setVisibility(View.INVISIBLE);
             }
+          }
+        });
 
-            @Override
-            protected void onLoadingStateChanged(@NonNull LoadingState state) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (state == LoadingState.ERROR) {
-                    showToast("An error occurred.");
-                    retry();
+    setupView();
+
+    return rootView;
+  }
+
+  private void setupSwitchButtons() {
+    activeToggle.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> {
+          if (isChecked) {
+            tipTextView.setText(R.string.favor_no_active_favor);
+            displayFavorList(activeFavorsOptions);
+          }
+        });
+
+    archivedToggle.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> {
+          if (isChecked) {
+            tipTextView.setText(R.string.favor_no_archived_favor);
+            displayFavorList(archiveFavorsOptions);
+          }
+        });
+  }
+
+  private FirestorePagingAdapter<Favor, FavorViewHolder> createFirestorePagingAdapter(
+      FirestorePagingOptions<Favor> options) {
+    return new FirestorePagingAdapter<Favor, FavorViewHolder>(options) {
+      @NonNull
+      @Override
+      public FavorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view =
+            LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.favor_list_item, parent, false);
+
+        view.setOnClickListener(
+            v -> {
+              int itemPosition = mRecycler.getChildLayoutPosition(view);
+              DocumentSnapshot doc = getItem(itemPosition);
+              if (doc != null && doc.exists()) {
+                Favor favor = doc.toObject(Favor.class);
+                if (favor != null) {
+                  Bundle favorBundle = new Bundle();
+                  favorBundle.putParcelable("FAVOR_ARGS", favor);
+                  // if favor was requested, open request view
+                  if (favor.getRequesterId().equals(UserUtil.currentUserId)) {
+                    Navigation.findNavController(requireView())
+                        .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
+                  } else { // if favor was accepted, open accept view
+                    Navigation.findNavController(requireView())
+                        .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
+                  }
                 }
+              }
+            });
+
+        return new FavorViewHolder(view);
+      }
+
+      @Override
+      protected void onBindViewHolder(
+          @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
+        holder.bind(model);
+      }
+
+      @Override
+      protected void onLoadingStateChanged(@NonNull LoadingState state) {
+        mSwipeRefreshLayout.setRefreshing(false);
+        switch (state) {
+            //          case LOADING_INITIAL:
+            //            mSwipeRefreshLayout.setRefreshing(true);
+            //            break;
+            //          case FINISHED:
+            //            mSwipeRefreshLayout.setRefreshing(false);
+            //            break;
+          case ERROR:
+            Toast.makeText(
+                    getContext(),
+                    "An error occurred. Check your internet connection.",
+                    Toast.LENGTH_SHORT)
+                .show();
+            retry();
+            break;
+        }
+      }
+
+      @Override
+      protected void onError(@NonNull Exception e) {
+        mSwipeRefreshLayout.setRefreshing(false);
+        Log.e("FavorsPage", e.getMessage(), e);
+      }
+    };
+  }
+
+  private FirestorePagingOptions<Favor> createFirestorePagingOptions(Query baseQuery) {
+    return new FirestorePagingOptions.Builder<Favor>()
+        .setLifecycleOwner(this)
+        .setQuery(baseQuery, pagingConfig, Favor.class)
+        .build();
+  }
+
+  private void displayFavorList(FirestorePagingOptions<Favor> options) {
+    adapter.updateOptions(options);
+    mRecycler.setAdapter(adapter);
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  private void setupView() {
+    // ensure click on view will hide keyboard
+    mRecycler.setOnTouchListener(
+        (v, event) -> {
+          hideSoftKeyboard(requireActivity());
+          return false;
+        });
+  }
+
+  @Override
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+    // Inflate the menu; this adds items to the action bar if it is present.
+    inflater.inflate(R.menu.options_menu, menu);
+    super.onCreateOptionsMenu(menu, inflater);
+
+    setupSearch(menu);
+  }
+
+  private void setupSearch(Menu menu) {
+    MenuItem searchMenuItem = menu.findItem(R.id.search_item);
+    searchView = (SearchView) searchMenuItem.getActionView();
+    searchView.setIconifiedByDefault(true);
+
+    setupSearchListeners(searchMenuItem);
+
+    if (!lastQuery.equals("")) {
+      searchView.post(() -> searchView.setQuery(lastQuery, false));
+      searchMenuItem.expandActionView();
+    }
+  }
+
+  private void setupSearchListeners(MenuItem searchMenuItem) {
+
+    searchMenuItem.setOnActionExpandListener(
+        new MenuItem.OnActionExpandListener() {
+
+          @Override
+          public boolean onMenuItemActionExpand(MenuItem item) {
+            searchView.post(() -> searchView.setQuery(lastQuery, false));
+            radioGroup.setVisibility(View.INVISIBLE);
+            ((MainActivity) (requireActivity())).hideBottomNavigation();
+            tipTextView.setText(R.string.query_failed);
+            return true;
+          }
+
+          @Override
+          public boolean onMenuItemActionCollapse(MenuItem item) {
+            radioGroup.setVisibility(View.VISIBLE);
+            ((MainActivity) (requireActivity())).showBottomNavigation();
+            lastQuery = "";
+            return true;
+          }
+        });
+
+    searchView.setOnQueryTextListener(
+        new SearchView.OnQueryTextListener() {
+          @Override
+          public boolean onQueryTextSubmit(String query) {
+            return false;
+          }
+
+          @Override
+          public boolean onQueryTextChange(String newText) {
+
+            if (radioGroup.getVisibility() == View.VISIBLE) {
+              if (activeToggle.isChecked()) {
+                tipTextView.setText(R.string.favor_no_active_favor);
+                displayFavorList(activeFavorsOptions);
+              } else {
+                tipTextView.setText(R.string.favor_no_archived_favor);
+                displayFavorList(archiveFavorsOptions);
+              }
+            } else {
+              FirestorePagingOptions<Favor> options;
+              if (newText.equals("")) {
+                options = createFirestorePagingOptions(baseQuery);
+              } else {
+                options = createFirestorePagingOptions(baseQuery.whereEqualTo("title", newText));
+                lastQuery = newText;
+              }
+
+              displayFavorList(options);
             }
 
-            @Override
-            protected void onError(@NonNull Exception e) {
-                mSwipeRefreshLayout.setRefreshing(false);
-                Log.e("FavorsPage", e.getMessage(), e);
-            }
-        };
-    }
-
-    private FirestorePagingOptions<Favor> getFirestorePagingOptions(Query baseQuery) {
-
-        PagedList.Config config =
-                new PagedList.Config.Builder()
-                        .setEnablePlaceholders(false)
-                        .setPrefetchDistance(10)
-                        .setPageSize(20)
-                        .build();
-
-        return new FirestorePagingOptions.Builder<Favor>()
-                .setLifecycleOwner(this)
-                .setQuery(baseQuery, config, Favor.class)
-                .build();
-    }
-
-    private void setupSearchMode() {
-        spinnerItem.setVisible(false);
-        FirestorePagingAdapter<Favor, FavorViewHolder> adapterSearch =
-                createPagingAdapterFromQuery(baseQuery.whereEqualTo("title", ""));
-        displayFavorList(adapterSearch, R.string.empty);
-        ((MainActivity) (requireActivity())).hideBottomNavigation();
-    }
-
-    private void quitSearchMode() {
-        // favorsFound.clear();
-        spinnerItem.setVisible(true);
-        ((MainActivity) (requireActivity())).showBottomNavigation();
-        //    if (lastPosition == 0) displayFavorList(activeFavorsAdapter,
-        // R.string.favor_no_active_favor);
-        //    else displayFavorList(archivedFavorsAdapter, R.string.favor_no_archived_favor);
-    }
-
-    private void displayFavorList(
-            FirestorePagingAdapter<Favor, FavorViewHolder> adapter, int textId) {
-        if (adapter.getItemCount() == 0) showText((getString(textId)));
-        else tipTextView.setVisibility(View.INVISIBLE);
-        mRecycler.setAdapter(adapter);
-    }
-
-    private void showText(String text) {
-        tipTextView.setText(text);
-        tipTextView.setVisibility(View.VISIBLE);
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private void setupView() {
-        // ensure click on view will hide keyboard
-        mRecycler.setOnTouchListener(
-                (v, event) -> {
-                    hideSoftKeyboard(requireActivity());
-                    return false;
-                });
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.options_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-
-        setupSpinner(menu);
-        setupSearch(menu);
-    }
-
-    private void setupSearch(Menu menu) {
-        MenuItem searchMenuItem = menu.findItem(R.id.search_item);
-        searchView = (SearchView) searchMenuItem.getActionView();
-
-        setupSearchListeners(searchMenuItem);
-    }
-
-    private void setupSearchListeners(MenuItem searchMenuItem) {
-        // replacing the other two callbacks because they were buggy according to some stack overflow
-        // forums
-        searchMenuItem.setOnActionExpandListener(
-                new MenuItem.OnActionExpandListener() {
-
-                    @Override
-                    public boolean onMenuItemActionExpand(MenuItem item) {
-                        setupSearchMode();
-                        return true;
-                    }
-
-                    @Override
-                    public boolean onMenuItemActionCollapse(MenuItem item) {
-                        quitSearchMode();
-                        return true;
-                    }
-                });
-
-        searchView.setOnQueryTextListener(
-                new SearchView.OnQueryTextListener() {
-                    @Override
-                    public boolean onQueryTextSubmit(String query) {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean onQueryTextChange(String newText) {
-                        // replace irrelevant items on listView with last query results or empty view
-                        FirestorePagingAdapter<Favor, FavorViewHolder> adapterSearch =
-                                createPagingAdapterFromQuery(baseQuery.whereEqualTo("title", newText));
-                        displayFavorList(adapterSearch, R.string.query_failed);
-                        return true;
-                    }
-                });
-    }
-
-    private void setupSpinner(Menu menu) {
-        spinnerItem = menu.findItem(R.id.spinner);
-        Spinner spinner = (Spinner) spinnerItem.getActionView();
-
-        ArrayAdapter<CharSequence> adapter =
-                ArrayAdapter.createFromResource(
-                        requireContext(), R.array.favor_list_spinner, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        setupSpinnerListeners(spinner);
-    }
-
-    private void setupSpinnerListeners(Spinner spinner) {
-        spinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) {
-                            displayFavorList(activeFavorsAdapter, R.string.favor_no_active_favor);
-                        } else {
-                            displayFavorList(archivedFavorsAdapter, R.string.favor_no_archived_favor);
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {}
-                });
-    }
-
-    private void showToast(@NonNull String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
+            return false;
+          }
+        });
+  }
 }
