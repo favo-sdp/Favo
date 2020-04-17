@@ -45,7 +45,6 @@ public class UserUtil {
   public void postUser(User user) throws RuntimeException {
     try {
       collection.addDocument(user);
-      currentUserId = user.getId();
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }

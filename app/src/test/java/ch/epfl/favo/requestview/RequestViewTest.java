@@ -7,8 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
-import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -31,8 +31,9 @@ public class RequestViewTest {
     Mockito.doNothing().when(spy).startActivityForResult(any(Intent.class), anyInt());
     spy.openFileChooser();
   }
+
   @Test
-  public void testViewStatusShowDesiredStrings(){
-    Assert.assertEquals("Expired",FavorViewStatus.EXPIRED.getPrettyString());
+  public void testViewStatusShowDesiredStrings() {
+    Assert.assertEquals("Expired", FavorStatus.EXPIRED.toString());
   }
 }

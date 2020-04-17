@@ -8,13 +8,11 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
@@ -56,18 +54,6 @@ public class FavorUtil {
   @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
-    Map updates =
-        new HashMap<String, String>() {
-          {
-            put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
-            put(Favor.STATUS_ID, newStatus.toString());
-          }
-        };
-    return updateFavor(favorId, updates);
   }
 
   /**

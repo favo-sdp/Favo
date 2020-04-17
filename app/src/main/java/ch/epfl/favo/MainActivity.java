@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 
@@ -103,6 +104,9 @@ public class MainActivity extends AppCompatActivity
 
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+    // Setup current user in UserUtil
+    UserUtil.currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
     // check connection
     if (DependencyFactory.isOfflineMode(this)) {

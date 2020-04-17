@@ -69,27 +69,6 @@ public class FavorUtilTest {
   }
 
   @Test
-  public void testUpdateFavorStatus() {
-    CompletableFuture successfulTask = new CompletableFuture<>();
-    successfulTask.complete(null);
-    Mockito.doReturn(successfulTask)
-        .when(mockDatabaseWrapper)
-        .updateDocument(Mockito.anyString(), Mockito.anyMap());
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    assertTrue(
-        FavorUtil.getSingleInstance().updateFavorStatus("bla", Favor.Status.ACCEPTED).isDone());
-    CompletableFuture failedTask = new CompletableFuture<>();
-    failedTask.completeExceptionally(new RuntimeException());
-    Mockito.doReturn(failedTask)
-        .when(mockDatabaseWrapper)
-        .updateDocument(Mockito.anyString(), Mockito.anyMap());
-    assertTrue(
-        FavorUtil.getSingleInstance()
-            .updateFavorStatus("bla", Favor.Status.ACCEPTED)
-            .isCompletedExceptionally());
-  }
-
-  @Test
   public void testGetSingleFavorThrowsRuntimeException()
       throws ExecutionException, InterruptedException {
     Favor fakeFavor = FakeItemFactory.getFavor();
