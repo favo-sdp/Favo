@@ -2,10 +2,7 @@ package ch.epfl.favo.favor;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -51,7 +48,6 @@ public class FavorUtil {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
   }
@@ -62,14 +58,6 @@ public class FavorUtil {
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
     return collection.getDocument(favorId);
-  }
-
-  /**
-   * @param favorId the id of the favor to retrieve from DB.
-   * @return CompletableFuture<Favor>
-   */
-  public CompletableFuture updateFavor(String favorId, Map<String, Object> updates) {
-    return collection.updateDocument(favorId, updates);
   }
 
   /**

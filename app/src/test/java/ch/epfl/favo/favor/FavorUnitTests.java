@@ -68,7 +68,7 @@ public class FavorUnitTests {
     assertEquals(TestConstants.DESCRIPTION, favors[0].getDescription());
     assertEquals(TestConstants.REQUESTER_ID, favors[0].getRequesterId());
     assertEquals(TestConstants.LOCATION, favors[0].getLocation());
-    assertEquals(TestConstants.FAVOR_STATUS, favors[0].getStatusId());
+    assertEquals(TestConstants.FAVOR_STATUS.toInt(), favors[0].getStatusId());
   }
 
   @Test

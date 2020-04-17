@@ -25,13 +25,14 @@ public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
@@ -63,14 +64,10 @@ public class FavorUtilTest {
         .when(mockDatabaseWrapper)
         .updateDocument(Mockito.anyString(), Mockito.anyMap());
     assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isDone());
-    CompletableFuture failedTask = new CompletableFuture<>();
-    failedTask.completeExceptionally(new RuntimeException());
-    assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isCompletedExceptionally());
   }
 
   @Test
-  public void testGetSingleFavorThrowsRuntimeException()
-      throws ExecutionException, InterruptedException {
+  public void testGetSingleFavorThrowsRuntimeException() {
     Favor fakeFavor = FakeItemFactory.getFavor();
     Mockito.doThrow(new RuntimeException())
         .when(mockDatabaseWrapper)
