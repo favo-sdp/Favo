@@ -119,7 +119,7 @@ public class FavorPage extends Fragment {
         new RecyclerView.AdapterDataObserver() {
           @Override
           public void onItemRangeInserted(int positionStart, int itemCount) {
-            //super.onItemRangeChanged(positionStart, itemCount);
+            // super.onItemRangeChanged(positionStart, itemCount);
             int totalNumberOfItems = adapter.getItemCount();
             if (totalNumberOfItems == 0) {
               tipTextView.setVisibility(View.VISIBLE);
@@ -130,7 +130,7 @@ public class FavorPage extends Fragment {
 
           @Override
           public void onItemRangeRemoved(int positionStart, int itemCount) {
-            //super.onItemRangeChanged(positionStart, itemCount);
+            // super.onItemRangeChanged(positionStart, itemCount);
             int totalNumberOfItems = adapter.getItemCount();
             if (totalNumberOfItems == 0) {
               tipTextView.setVisibility(View.VISIBLE);
@@ -268,6 +268,7 @@ public class FavorPage extends Fragment {
     MenuItem searchMenuItem = menu.findItem(R.id.search_item);
     searchView = (SearchView) searchMenuItem.getActionView();
     searchView.setIconifiedByDefault(true);
+    searchView.setQueryHint("Enter search");
 
     setupSearchListeners(searchMenuItem);
 
