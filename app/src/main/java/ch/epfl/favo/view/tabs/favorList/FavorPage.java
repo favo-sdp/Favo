@@ -92,12 +92,11 @@ public class FavorPage extends Fragment {
 
     View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
 
+    // initialize fields
     tipTextView = rootView.findViewById(R.id.tip);
     radioGroup = rootView.findViewById(R.id.radio_toggle);
     activeToggle = rootView.findViewById(R.id.active_toggle);
     archivedToggle = rootView.findViewById(R.id.archived_toggle);
-
-    setupSwitchButtons();
 
     mRecycler = rootView.findViewById(R.id.paging_recycler);
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
@@ -110,6 +109,15 @@ public class FavorPage extends Fragment {
     archiveFavorsOptions =
         createFirestorePagingOptions(baseQuery.whereEqualTo("statusId", CANCELLED_REQUESTER));
 
+    // setup methods
+    setupSwitchButtons();
+    setupAdapter();
+    setupView();
+
+    return rootView;
+  }
+
+  private void setupAdapter() {
     mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     adapter = createFirestorePagingAdapter(activeFavorsOptions);
     mRecycler.setAdapter(adapter);
@@ -139,10 +147,6 @@ public class FavorPage extends Fragment {
             }
           }
         });
-
-    setupView();
-
-    return rootView;
   }
 
   private void setupSwitchButtons() {
@@ -206,21 +210,14 @@ public class FavorPage extends Fragment {
       @Override
       protected void onLoadingStateChanged(@NonNull LoadingState state) {
         mSwipeRefreshLayout.setRefreshing(false);
-        switch (state) {
-            //          case LOADING_INITIAL:
-            //            mSwipeRefreshLayout.setRefreshing(true);
-            //            break;
-            //          case FINISHED:
-            //            mSwipeRefreshLayout.setRefreshing(false);
-            //            break;
-          case ERROR:
-            Toast.makeText(
-                    getContext(),
-                    "An error occurred. Check your internet connection.",
-                    Toast.LENGTH_SHORT)
-                .show();
-            retry();
-            break;
+
+        if (state == LoadingState.ERROR) {
+          Toast.makeText(
+                  getContext(),
+                  "An error occurred. Check your internet connection.",
+                  Toast.LENGTH_SHORT)
+              .show();
+          retry();
         }
       }
 
@@ -255,7 +252,7 @@ public class FavorPage extends Fragment {
   }
 
   @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+  public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
 
     // Inflate the menu; this adds items to the action bar if it is present.
     inflater.inflate(R.menu.options_menu, menu);

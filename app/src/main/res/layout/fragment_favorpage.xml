@@ -39,7 +39,7 @@
                 android:layout_weight="1"
                 android:button="@null"
                 android:gravity="center"
-                android:text="Active"
+                android:text="@string/active_favors_text"
                 android:textColor="@color/toggle_widget_text" />
 
             <RadioButton
@@ -53,7 +53,7 @@
                 android:background="@drawable/toggle_widget_background"
                 android:button="@null"
                 android:gravity="center"
-                android:text="Archived"
+                android:text="@string/archived_favors_text"
                 android:textColor="@color/toggle_widget_text" />
         </RadioGroup>
 
