@@ -68,7 +68,7 @@ public class MainActivityTest {
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 
@@ -252,7 +252,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the favor list page
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 
@@ -273,7 +273,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the favor list page
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 }

@@ -73,7 +73,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed()));
@@ -100,7 +100,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
     // check the tip text is displayed when active favor list is empty
@@ -126,7 +126,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
     // check that the new favor button is displayed and click on it

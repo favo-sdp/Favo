@@ -348,7 +348,7 @@ public class AddFavorTest {
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
     // Launch view
-    activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
+    //activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor, fragment));
