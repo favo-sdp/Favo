@@ -227,7 +227,6 @@ public class Favor implements Parcelable, Document {
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
     dest.writeInt(statusId);
-    dest.writeBoolean(isArchived);
   }
 
   public void updateToOther(Favor other) {

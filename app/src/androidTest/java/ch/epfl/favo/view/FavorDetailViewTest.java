@@ -128,7 +128,7 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.accept_favor)));
     // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
-    anotherFavorWithSameId.setStatusIdToInt(FavorStatus.ACCEPTED);
+    anotherFavorWithSameId.setStatusIdToInt(FavorStatus.ACCEPTED_BY_OTHER);
     anotherFavorWithSameId.setAccepterId("another user");
     mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);

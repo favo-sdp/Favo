@@ -105,9 +105,6 @@ public class MainActivity extends AppCompatActivity
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    // Setup current user in UserUtil
-    UserUtil.currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
-
     // check connection
     if (DependencyFactory.isOfflineMode(this)) {
       showNoConnectionSnackbar();

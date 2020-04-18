@@ -22,7 +22,7 @@ public class UserUtil {
   TODO: Design singleton constructor and logic
    */
   // Expose current logged in user id
-  public static String currentUserId = "currentUserId";
+  public static String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
   // Single private instance
   private static final String TAG = "UserUtil";
@@ -114,7 +114,8 @@ public class UserUtil {
               collection.updateDocument(user.getId(), notifMap);
             });
   }
-  public void setCollectionWrapper(CollectionWrapper collectionWrapper){
+
+  public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     this.collection = collectionWrapper;
   }
 }
