@@ -2,6 +2,8 @@ package ch.epfl.favo.chat;
 
 import android.graphics.BlendMode;
 import android.graphics.BlendModeColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
 import android.view.Gravity;
@@ -16,12 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.util.DependencyFactory;
 
 class ChatViewHolder extends RecyclerView.ViewHolder {
   private final TextView mNameField;
@@ -49,7 +51,7 @@ class ChatViewHolder extends RecyclerView.ViewHolder {
     setName(chatModel.getName());
     setMessage(chatModel.getMessage());
 
-    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+    FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
     setIsSender(currentUser != null && chatModel.getUid().equals(currentUser.getUid()));
   }
 
@@ -77,8 +79,8 @@ class ChatViewHolder extends RecyclerView.ViewHolder {
 
     ((GradientDrawable) mMessage.getBackground()).setColor(color);
     Objects.requireNonNull(((RotateDrawable) mLeftArrow.getBackground()).getDrawable())
-        .setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC));
+        .setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC));
     Objects.requireNonNull(((RotateDrawable) mRightArrow.getBackground()).getDrawable())
-        .setColorFilter(new BlendModeColorFilter(color, BlendMode.SRC));
+        .setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC));
   }
 }

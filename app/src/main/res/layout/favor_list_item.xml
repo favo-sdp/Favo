@@ -7,11 +7,11 @@
     android:orientation="vertical"
     android:minHeight="?attr/listPreferredItemHeight"
     android:paddingStart="?attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?attr/listPreferredItemPaddingEnd">
+    android:paddingEnd="?attr/listPreferredItemPaddingEnd" >
 
     <TextView
         android:id="@+id/item_title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textAppearance="?attr/textAppearanceListItem"
@@ -20,7 +20,7 @@
 
     <TextView
         android:id="@+id/item_desc"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSecondary" />
 

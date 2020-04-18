@@ -1,24 +1,31 @@
 package ch.epfl.favo.chat;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.auth.util.ui.ImeHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -50,7 +57,7 @@ public class ChatPage extends Fragment {
     return view;
   }
 
-  @SuppressLint("ClickableViewAccessibility")
+  @SuppressLint({"ClickableViewAccessibility", "RestrictedApi"})
   private void setupView() {
 
     ((MainActivity) requireActivity()).hideBottomNavigation();
@@ -78,16 +85,36 @@ public class ChatPage extends Fragment {
           hideSoftKeyboard(requireActivity());
           return false;
         });
+
+    ImeHelper.setImeOnDoneListener(view.findViewById(R.id.messageEdit), this::onSendClick);
   }
 
   @Override
   public void onStart() {
     super.onStart();
     attachRecyclerViewAdapter();
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+    toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
+    toolbar.setTitleTextColor(Color.WHITE);
+    Objects.requireNonNull(toolbar.getNavigationIcon())
+        .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
+    toolbar.setTitle(favor.getTitle());
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+    toolbar.setBackgroundColor(Color.TRANSPARENT);
+    toolbar.setTitleTextColor(Color.BLACK);
+    Objects.requireNonNull(toolbar.getNavigationIcon())
+        .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
+    toolbar.setTitle("");
   }
 
   private void attachRecyclerViewAdapter() {
-    final RecyclerView.Adapter adapter = newAdapter();
+    FirestoreRecyclerOptions<ChatModel> options = getFirestoreRecyclerOptions();
+    final RecyclerView.Adapter adapter = createRecyclerAdapter(options);
 
     RecyclerView mRecyclerView = view.findViewById(R.id.messagesList);
 
@@ -95,7 +122,7 @@ public class ChatPage extends Fragment {
         new RecyclerView.AdapterDataObserver() {
           @Override
           public void onItemRangeInserted(int positionStart, int itemCount) {
-            mRecyclerView.smoothScrollToPosition(0);
+            mRecyclerView.postDelayed(() -> mRecyclerView.smoothScrollToPosition(0), 100);
           }
         });
 
@@ -113,21 +140,21 @@ public class ChatPage extends Fragment {
     mMessageEdit.setText("");
   }
 
-  @NonNull
-  private RecyclerView.Adapter newAdapter() {
-
+  private FirestoreRecyclerOptions<ChatModel> getFirestoreRecyclerOptions() {
     Query sChatQuery =
         sChatCollection
             .whereEqualTo("favorId", favor.getId())
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(50);
 
-    FirestoreRecyclerOptions<ChatModel> options =
-        new FirestoreRecyclerOptions.Builder<ChatModel>()
-            .setQuery(sChatQuery, ChatModel.class)
-            .setLifecycleOwner(this)
-            .build();
+    return new FirestoreRecyclerOptions.Builder<ChatModel>()
+        .setQuery(sChatQuery, ChatModel.class)
+        .setLifecycleOwner(this)
+        .build();
+  }
 
+  @NonNull
+  private RecyclerView.Adapter createRecyclerAdapter(FirestoreRecyclerOptions<ChatModel> options) {
     return new FirestoreRecyclerAdapter<ChatModel, ChatViewHolder>(options) {
       @NonNull
       @Override
@@ -154,6 +181,12 @@ public class ChatPage extends Fragment {
     sChatCollection
         .add(chatModel)
         .addOnFailureListener(
-            requireActivity(), e -> Log.e("ChatPage", "Failed to send message", e));
+            requireActivity(),
+            e ->
+                Toast.makeText(
+                        getContext(),
+                        "Failed to send message. Check your internet connection.",
+                        Toast.LENGTH_SHORT)
+                    .show());
   }
 }

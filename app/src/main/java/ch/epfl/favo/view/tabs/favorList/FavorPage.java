@@ -60,7 +60,7 @@ public class FavorPage extends Fragment {
       new PagedList.Config.Builder()
           .setEnablePlaceholders(false)
           .setPrefetchDistance(10)
-          .setPageSize(10)
+          .setPageSize(20)
           .build();
 
   private FirestorePagingAdapter<Favor, FavorViewHolder> adapter;
@@ -118,35 +118,33 @@ public class FavorPage extends Fragment {
   }
 
   private void setupAdapter() {
-    mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
     adapter = createFirestorePagingAdapter(activeFavorsOptions);
-    mRecycler.setAdapter(adapter);
-    mSwipeRefreshLayout.setOnRefreshListener(adapter::refresh);
 
     adapter.registerAdapterDataObserver(
         new RecyclerView.AdapterDataObserver() {
           @Override
           public void onItemRangeInserted(int positionStart, int itemCount) {
-            // super.onItemRangeChanged(positionStart, itemCount);
-            int totalNumberOfItems = adapter.getItemCount();
-            if (totalNumberOfItems == 0) {
-              tipTextView.setVisibility(View.VISIBLE);
-            } else {
-              tipTextView.setVisibility(View.INVISIBLE);
-            }
+            setEmptyListText();
           }
 
           @Override
           public void onItemRangeRemoved(int positionStart, int itemCount) {
-            // super.onItemRangeChanged(positionStart, itemCount);
-            int totalNumberOfItems = adapter.getItemCount();
-            if (totalNumberOfItems == 0) {
-              tipTextView.setVisibility(View.VISIBLE);
-            } else {
-              tipTextView.setVisibility(View.INVISIBLE);
-            }
+            setEmptyListText();
           }
         });
+
+    mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+    mRecycler.setAdapter(adapter);
+    mSwipeRefreshLayout.setOnRefreshListener(adapter::refresh);
+  }
+
+  private void setEmptyListText() {
+    int totalNumberOfItems = adapter.getItemCount();
+    if (totalNumberOfItems == 0) {
+      tipTextView.setVisibility(View.VISIBLE);
+    } else {
+      tipTextView.setVisibility(View.INVISIBLE);
+    }
   }
 
   private void setupSwitchButtons() {
@@ -267,7 +265,8 @@ public class FavorPage extends Fragment {
     searchView.setIconifiedByDefault(true);
     searchView.setQueryHint("Enter search");
 
-    setupSearchListeners(searchMenuItem);
+    setOnMenuItemActions(searchMenuItem);
+    setOnQueryTextListeners();
 
     if (!lastQuery.equals("")) {
       searchView.post(() -> searchView.setQuery(lastQuery, false));
@@ -275,29 +274,7 @@ public class FavorPage extends Fragment {
     }
   }
 
-  private void setupSearchListeners(MenuItem searchMenuItem) {
-
-    searchMenuItem.setOnActionExpandListener(
-        new MenuItem.OnActionExpandListener() {
-
-          @Override
-          public boolean onMenuItemActionExpand(MenuItem item) {
-            searchView.post(() -> searchView.setQuery(lastQuery, false));
-            radioGroup.setVisibility(View.INVISIBLE);
-            ((MainActivity) (requireActivity())).hideBottomNavigation();
-            tipTextView.setText(R.string.query_failed);
-            return true;
-          }
-
-          @Override
-          public boolean onMenuItemActionCollapse(MenuItem item) {
-            radioGroup.setVisibility(View.VISIBLE);
-            ((MainActivity) (requireActivity())).showBottomNavigation();
-            lastQuery = "";
-            return true;
-          }
-        });
-
+  private void setOnQueryTextListeners() {
     searchView.setOnQueryTextListener(
         new SearchView.OnQueryTextListener() {
           @Override
@@ -329,6 +306,29 @@ public class FavorPage extends Fragment {
             }
 
             return false;
+          }
+        });
+  }
+
+  private void setOnMenuItemActions(MenuItem searchMenuItem) {
+    searchMenuItem.setOnActionExpandListener(
+        new MenuItem.OnActionExpandListener() {
+
+          @Override
+          public boolean onMenuItemActionExpand(MenuItem item) {
+            searchView.post(() -> searchView.setQuery(lastQuery, false));
+            radioGroup.setVisibility(View.INVISIBLE);
+            ((MainActivity) (requireActivity())).hideBottomNavigation();
+            tipTextView.setText(R.string.query_failed);
+            return true;
+          }
+
+          @Override
+          public boolean onMenuItemActionCollapse(MenuItem item) {
+            radioGroup.setVisibility(View.VISIBLE);
+            ((MainActivity) (requireActivity())).showBottomNavigation();
+            lastQuery = "";
+            return true;
           }
         });
   }
