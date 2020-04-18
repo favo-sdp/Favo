@@ -95,8 +95,6 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
 
-      ((MainActivity) getActivity()).activeFavors.remove(currentFavor.getId());
-      ((MainActivity) getActivity()).archivedFavors.remove(currentFavor.getId());
       // update UI
       currentFavor.setStatusId(Favor.Status.CANCELLED_ACCEPTER);
       viewStatus = convertFavorStatusToViewStatus(currentFavor);
@@ -151,7 +149,6 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
 
-      ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       currentFavor.setStatusId(Favor.Status.ACCEPTED);
       viewStatus = FavorViewStatus.ACCEPTED;
       updateDisplayFromViewStatus();

@@ -36,8 +36,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
-import static ch.epfl.favo.favor.Favor.Status.CANCELLED_REQUESTER;
-import static ch.epfl.favo.favor.Favor.Status.REQUESTED;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 /**
@@ -73,7 +71,7 @@ public class FavorPage extends Fragment {
   private static Query baseQuery =
       FirebaseFirestore.getInstance()
           .collection("favors")
-          .orderBy("postedTime", Query.Direction.ASCENDING);
+          .orderBy("postedTime", Query.Direction.DESCENDING);
 
   public FavorPage() {
     // Required empty public constructor
@@ -104,10 +102,8 @@ public class FavorPage extends Fragment {
     baseQuery =
         baseQuery.whereEqualTo("requesterId", DependencyFactory.getCurrentFirebaseUser().getUid());
 
-    activeFavorsOptions =
-        createFirestorePagingOptions(baseQuery.whereEqualTo("statusId", REQUESTED));
-    archiveFavorsOptions =
-        createFirestorePagingOptions(baseQuery.whereEqualTo("statusId", CANCELLED_REQUESTER));
+    activeFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", false));
+    archiveFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", true));
 
     // setup methods
     setupSwitchButtons();
@@ -215,7 +211,9 @@ public class FavorPage extends Fragment {
                   "An error occurred. Check your internet connection.",
                   Toast.LENGTH_SHORT)
               .show();
-          retry();
+
+          // remove this to repeat toast every time
+          // retry();
         }
       }
 

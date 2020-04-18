@@ -60,18 +60,8 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
-  // private boolean mKeyboardVisible = false;
 
-  public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
-  public Map<String, Favor> archivedFavors;
-
-  // should not be needed anymore
-  //  public OnBackPressedListener onBackPressedListener;
-  //
-  //  public interface OnBackPressedListener {
-  //    void doBack();
-  //  }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -93,8 +83,6 @@ public class MainActivity extends AppCompatActivity {
       showNoConnectionSnackbar();
     }
 
-    activeFavors = new HashMap<>();
-    archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
   }
 
@@ -144,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
   public void showBottomNavigation() {
     bottomNavigationView.setVisibility(View.VISIBLE);
     findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
-    // NavigationUI.setupWithNavController(bottomNavigationView, navController);
   }
 
   private void setupNavController() {
@@ -193,57 +180,6 @@ public class MainActivity extends AppCompatActivity {
     snack.show();
   }
 
-  // should not be needed anymore
-
-  //  /**
-  //   * This is used to hide navigation bar when input contents in search bar, and recover the
-  //   * navigation bar when soft keyboard displays. It only works when the current view is
-  // SearchView,
-  //   * for sake of, if possible, unnecessary slowing down.
-  //   */
-  //  @Override
-  //  protected void onResume() {
-  //    super.onResume();
-  //    findViewById(android.R.id.content)
-  //        .getViewTreeObserver()
-  //        .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-  //  }
-  //
-  //  @Override
-  //  protected void onPause() {
-  //    super.onPause();
-  //    findViewById(android.R.id.content)
-  //        .getViewTreeObserver()
-  //        .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-  //  }
-
-  //  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
-  //      () -> {
-  //        View view = getCurrentFocus();
-  //        if (view == null || !view.toString().startsWith("android.widget.SearchView")) return;
-  //        final Rect rectangle = new Rect();
-  //        final View contentView = findViewById(android.R.id.content);
-  //        contentView.getWindowVisibleDisplayFrame(rectangle);
-  //        int screenHeight = contentView.getRootView().getHeight();
-  //
-  //        // r.bottom is the position above soft keypad or device button.
-  //        // If keypad is shown, the rectangle.bottom is smaller than that before.
-  //        int keypadHeight = screenHeight - rectangle.bottom;
-  //        // 0.15 ratio is perhaps enough to determine keypad height.
-  //        boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
-  //
-  //        if (mKeyboardVisible != isKeyboardNowVisible) {
-  //          if (isKeyboardNowVisible) {
-  //            // onKeyboardShown
-  //            hideBottomNavigation();
-  //          } else {
-  //            // onKeyboardHidden
-  //            showBottomNavigation();
-  //          }
-  //        }
-  //        mKeyboardVisible = isKeyboardNowVisible;
-  //      };
-
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
     shareIntent.setType("text/plain");
@@ -275,9 +211,6 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-    //    if (onBackPressedListener != null) onBackPressedListener.doBack();
-    //    else {
-
     DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
     if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
       mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -298,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
       }
     }
-    // }
   }
 
   @Override

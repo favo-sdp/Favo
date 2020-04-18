@@ -23,7 +23,6 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
@@ -32,7 +31,6 @@ import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
@@ -43,7 +41,6 @@ import static ch.epfl.favo.view.tabs.addFavor.FavorViewStatus.convertViewStatusT
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
-
 
   public static final int PICK_IMAGE_REQUEST = 1;
   public static final int USE_CAMERA_REQUEST = 2;
@@ -81,9 +78,7 @@ public class FavorRequestView extends Fragment {
     mImageView = rootView.findViewById(R.id.image_view_request_view);
 
     // Get dependencies
-    mGpsTracker =
-        DependencyFactory.getCurrentGpsTracker(
-            requireActivity().getApplicationContext());
+    mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
 
     if (getArguments() != null) {
@@ -172,8 +167,6 @@ public class FavorRequestView extends Fragment {
     getFavorFromView(viewStatus);
     // post to DB
     FavorUtil.getSingleInstance().postFavor(currentFavor);
-    // Save the favor to local favorList
-    updateMainActivityLists(true);
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
@@ -223,8 +216,6 @@ public class FavorRequestView extends Fragment {
   private void confirmUpdatedFavor() {
     viewStatus = FavorViewStatus.REQUESTED;
     getFavorFromView(viewStatus);
-    // update lists
-    updateMainActivityLists(true);
     updateViewFromStatus(getView());
     showSnackbar(getString(R.string.favor_edit_success_msg));
 
@@ -236,7 +227,6 @@ public class FavorRequestView extends Fragment {
   private void cancelFavor() {
     currentFavor.setStatusId(Favor.Status.CANCELLED_REQUESTER);
     viewStatus = FavorViewStatus.CANCELLED_REQUESTER;
-    updateMainActivityLists(false);
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_cancel_success_msg));
@@ -244,18 +234,6 @@ public class FavorRequestView extends Fragment {
     // DB call to update status
     FavorUtil.getSingleInstance()
         .updateFavorStatus(currentFavor.getId(), Favor.Status.CANCELLED_REQUESTER);
-  }
-
-  private void updateMainActivityLists(boolean favorIsActive) {
-    MainActivity mainActivity = Objects.requireNonNull((MainActivity) getActivity());
-    if (favorIsActive) {
-      mainActivity.activeFavors.put(currentFavor.getId(), currentFavor);
-      mainActivity.archivedFavors.remove(currentFavor.getId());
-
-    } else {
-      mainActivity.archivedFavors.put(currentFavor.getId(), currentFavor);
-      mainActivity.activeFavors.remove(currentFavor.getId());
-    }
   }
 
   /** Updates status text and button visibility on favor status changes. */
@@ -320,7 +298,6 @@ public class FavorRequestView extends Fragment {
     }
   }
 
-
   /** Extracts favor data from and assigns it to currentFavor. */
   private void getFavorFromView(FavorViewStatus status) {
 
@@ -331,7 +308,9 @@ public class FavorRequestView extends Fragment {
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     Favor.Status favorStatus = convertViewStatusToFavorStatus(status);
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, favorStatus);
+    Favor favor =
+        new Favor(
+            title, desc, DependencyFactory.getCurrentFirebaseUser().getUid(), loc, favorStatus);
 
     // Updates the current favor
     if (currentFavor == null) {
@@ -354,17 +333,14 @@ public class FavorRequestView extends Fragment {
 
   /** Called when camera button is clicked Method calls camera intent. */
   public void takePicture() {
-    if (ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.CAMERA)
+    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         != PackageManager.PERMISSION_GRANTED) {
       requireActivity()
           .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
 
-      if (takePictureIntent.resolveActivity(
-              requireActivity().getPackageManager())
-          != null) {
+      if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
         startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
       }
     }
@@ -372,9 +348,7 @@ public class FavorRequestView extends Fragment {
 
   private boolean isCameraAvailable() {
     boolean hasCamera =
-        requireActivity()
-            .getPackageManager()
-            .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+        requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     int numberOfCameras = Camera.getNumberOfCameras();
     return (hasCamera && numberOfCameras != 0);
   }

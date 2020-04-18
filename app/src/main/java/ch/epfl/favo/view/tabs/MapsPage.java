@@ -36,9 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.map.GpsTracker;
@@ -73,14 +71,10 @@ public class MapsPage extends Fragment
     getLocationPermission();
     mMap = googleMap;
     mMap.clear();
-    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
-      Objects.requireNonNull(getView())
-          .findViewById(R.id.offline_map_button)
-          .setVisibility(View.VISIBLE);
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      requireView().findViewById(R.id.offline_map_button).setVisibility(View.VISIBLE);
     } else {
-      Objects.requireNonNull(getView())
-          .findViewById(R.id.offline_map_button)
-          .setVisibility(View.INVISIBLE);
+      requireView().findViewById(R.id.offline_map_button).setVisibility(View.INVISIBLE);
     }
     mMap.setMyLocationEnabled(true);
     drawSelfLocationMarker();
@@ -88,7 +82,7 @@ public class MapsPage extends Fragment
   }
 
   private void onOfflineMapClick(View view) {
-    new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+    new AlertDialog.Builder(requireContext())
         .setTitle(R.string.offline_mode_dialog_title)
         .setMessage(R.string.offline_mode_instructions)
         .setPositiveButton(android.R.string.yes, null)
@@ -137,13 +131,13 @@ public class MapsPage extends Fragment
      * onRequestPermissionsResult.
      */
     if (ContextCompat.checkSelfPermission(
-            Objects.requireNonNull(getActivity()).getApplicationContext(),
+            requireActivity().getApplicationContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION)
         == PackageManager.PERMISSION_GRANTED) {
       mLocationPermissionGranted = true;
     } else {
       ActivityCompat.requestPermissions(
-          Objects.requireNonNull(getActivity()),
+          requireActivity(),
           new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
           PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
     }
@@ -198,9 +192,10 @@ public class MapsPage extends Fragment
   private List<Favor> updateFavorlist() {
     // FavorUtil favorUtil = FavorUtil.getSingleInstance();
     // return favorUtil.retrieveAllFavorsInGivenRadius(mLocation, 2);
-    currentActiveLocalFavorList =
-        new ArrayList<>(
-            ((MainActivity) Objects.requireNonNull(getActivity())).activeFavors.values());
+
+    // remove main activity maps because they are not useful anymore and I guess this will be
+    // updated in thr new Map/List page
+    currentActiveLocalFavorList = new ArrayList<>();
     if (!currentActiveLocalFavorList.isEmpty()) return currentActiveLocalFavorList;
 
     if (mLocation != null) {
