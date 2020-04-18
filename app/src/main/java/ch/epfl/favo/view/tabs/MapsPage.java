@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -25,7 +24,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -45,7 +43,6 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 /**
@@ -147,6 +144,7 @@ public class MapsPage extends Fragment
     SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null)
       mapFragment.getMapAsync(this);
+    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     updateNearbyList();
     return view;
   }
@@ -165,7 +163,7 @@ public class MapsPage extends Fragment
         radius = 25; break;
     }
     CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
-            .retrieveAllFavorsInGivenRadius(DependencyFactory.getCurrentGpsTracker(getContext()).getLocation(), radius, activity);
+            .retrieveAllFavorsInGivenRadius(mLocation, radius, activity);
     favors.whenComplete((e, res)->{
       if (first) {
         drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
@@ -226,7 +224,6 @@ public class MapsPage extends Fragment
 
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
-    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
     Marker me =
         mMap.addMarker(
