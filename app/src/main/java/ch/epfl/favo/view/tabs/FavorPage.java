@@ -43,10 +43,11 @@ public class FavorPage extends Fragment {
   private TextView tipTextView;
   private ListView listView;
   private SearchView searchView;
-  private int lastPosition;
-  private String lastQuery;
+  private int lastPosition = 0;
+  //private String lastQuery;
   private Map<String, Favor> favorsFound = new HashMap<>();
   private MenuItem spinnerItem;
+  private MenuItem searchMenuItem;
 
   public FavorPage() {
     // Required empty public constructor
@@ -90,13 +91,11 @@ public class FavorPage extends Fragment {
   private void setupSearchMode() {
     spinnerItem.setVisible(false);
     displayFavorList(favorsFound, R.string.empty);
-    ((MainActivity) (Objects.requireNonNull(getActivity()))).hideBottomNavigation();
   }
 
   private void quitSearchMode() {
     favorsFound.clear();
     spinnerItem.setVisible(true);
-    ((MainActivity) (Objects.requireNonNull(getActivity()))).showBottomNavigation();
     if (lastPosition == 0) displayFavorList(activeFavors, R.string.favor_no_active_favor);
     else displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
   }
@@ -151,7 +150,7 @@ public class FavorPage extends Fragment {
   }
 
   private void setupSearch(Menu menu) {
-    MenuItem searchMenuItem = menu.findItem(R.id.search_item);
+    searchMenuItem = menu.findItem(R.id.search_item);
     searchView = (SearchView) searchMenuItem.getActionView();
 
     // if returned from FavorDetail view, continue to show the search mode
@@ -165,10 +164,10 @@ public class FavorPage extends Fragment {
     //      setupSearchMode();
     //    }
 
-    setupSearchListeners(searchMenuItem);
+    setupSearchListeners();
   }
 
-  private void setupSearchListeners(MenuItem searchMenuItem) {
+  private void setupSearchListeners() {
     // replacing the other two callbacks because they were buggy according to some stack overflow
     // forums
     searchMenuItem.setOnActionExpandListener(
@@ -191,7 +190,7 @@ public class FavorPage extends Fragment {
         new SearchView.OnQueryTextListener() {
           @Override
           public boolean onQueryTextSubmit(String query) {
-            lastQuery = query;
+            //lastQuery = query;
             favorsFound = doQuery(query, activeFavors);
             favorsFound.putAll(doQuery(query, archivedFavors));
             displayFavorList(favorsFound, R.string.query_failed);
@@ -201,8 +200,13 @@ public class FavorPage extends Fragment {
           @Override
           public boolean onQueryTextChange(String newText) {
             // replace irrelevant items on listView with last query results or empty view
-
-            // displayFavorList(new HashMap<>(), R.string.empty);
+            //lastQuery = newText;
+            if(newText.equals("")) favorsFound = new HashMap<>();
+            else{
+                favorsFound = doQuery(newText, activeFavors);
+                favorsFound.putAll(doQuery(newText, archivedFavors));
+            }
+            displayFavorList(favorsFound, R.string.query_failed);
             return false;
           }
         });
@@ -219,7 +223,7 @@ public class FavorPage extends Fragment {
             android.R.layout.simple_spinner_item);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     spinner.setAdapter(adapter);
-
+    spinner.setSelection(lastPosition);
     setupSpinnerListeners(spinner);
   }
 
@@ -228,12 +232,13 @@ public class FavorPage extends Fragment {
         new AdapterView.OnItemSelectedListener() {
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (!favorsFound.isEmpty()) {
+           /* if (!favorsFound.isEmpty()) {
               // if stay in search mode, show the last query text and display last query results
               // favorsFound will be automatically cleared if quit from search mode
               searchView.setQuery(lastQuery, false); // this block is unreachable?
               displayFavorList(favorsFound, R.string.query_failed);
-            } else if (position == 0) {
+            } else */
+            if (position == 0) {
               lastPosition = 0;
               displayFavorList(activeFavors, R.string.favor_no_active_favor);
             } else {

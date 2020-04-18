@@ -429,7 +429,6 @@ public class FavorRequestView extends Fragment {
    */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    ((MainActivity) Objects.requireNonNull(getActivity())).hideBottomNavigation();
     if (mTitleView.getKeyListener() != null) {
       mTitleView.setTag(mTitleView.getKeyListener());
     }

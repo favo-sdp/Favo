@@ -59,18 +59,11 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
-  //private boolean mKeyboardVisible = false;
 
   public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
 
-  // should not be needed anymore
-//  public OnBackPressedListener onBackPressedListener;
-//
-//  public interface OnBackPressedListener {
-//    void doBack();
-//  }
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -122,6 +115,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
+            case R.id.favorDetailView:
+            case R.id.favorRequestView:
               if (bottomNavigationView.getVisibility() != View.GONE) {
                 hideBottomNavigation();
               }
@@ -152,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
     navigationView.setNavigationItemSelectedListener(
         item -> {
           int itemId = item.getItemId();
-
           if (itemId == currentMenuItem) {
             drawerLayout.closeDrawer(GravityCompat.START);
             return false;
@@ -174,6 +168,21 @@ public class MainActivity extends AppCompatActivity {
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
+    bottomNavigationView.setOnNavigationItemSelectedListener(
+            item -> {
+              int itemId = item.getItemId();
+              if (itemId == currentMenuItem) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+              }
+
+              if(itemId == R.id.nav_map)
+                navController.popBackStack(R.id.nav_map, false);
+              else navController.navigate(R.id.nav_favorList);
+
+              currentMenuItem = itemId;
+              return false;
+            });
   }
 
   private void showNoConnectionSnackbar() {
@@ -191,56 +200,6 @@ public class MainActivity extends AppCompatActivity {
     view.setLayoutParams(params);
     snack.show();
   }
-
-  // should not be needed anymore
-
-//  /**
-//   * This is used to hide navigation bar when input contents in search bar, and recover the
-//   * navigation bar when soft keyboard displays. It only works when the current view is SearchView,
-//   * for sake of, if possible, unnecessary slowing down.
-//   */
-//  @Override
-//  protected void onResume() {
-//    super.onResume();
-//    findViewById(android.R.id.content)
-//        .getViewTreeObserver()
-//        .addOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-//  }
-//
-//  @Override
-//  protected void onPause() {
-//    super.onPause();
-//    findViewById(android.R.id.content)
-//        .getViewTreeObserver()
-//        .removeOnGlobalLayoutListener(mLayoutKeyboardVisibilityListener);
-//  }
-
-//  private final ViewTreeObserver.OnGlobalLayoutListener mLayoutKeyboardVisibilityListener =
-//      () -> {
-//        View view = getCurrentFocus();
-//        if (view == null || !view.toString().startsWith("android.widget.SearchView")) return;
-//        final Rect rectangle = new Rect();
-//        final View contentView = findViewById(android.R.id.content);
-//        contentView.getWindowVisibleDisplayFrame(rectangle);
-//        int screenHeight = contentView.getRootView().getHeight();
-//
-//        // r.bottom is the position above soft keypad or device button.
-//        // If keypad is shown, the rectangle.bottom is smaller than that before.
-//        int keypadHeight = screenHeight - rectangle.bottom;
-//        // 0.15 ratio is perhaps enough to determine keypad height.
-//        boolean isKeyboardNowVisible = keypadHeight > screenHeight * 0.15;
-//
-//        if (mKeyboardVisible != isKeyboardNowVisible) {
-//          if (isKeyboardNowVisible) {
-//            // onKeyboardShown
-//            hideBottomNavigation();
-//          } else {
-//            // onKeyboardHidden
-//            showBottomNavigation();
-//          }
-//        }
-//        mKeyboardVisible = isKeyboardNowVisible;
-//      };
 
   private void startShareIntent() {
     Intent shareIntent = new Intent(Intent.ACTION_SEND);
