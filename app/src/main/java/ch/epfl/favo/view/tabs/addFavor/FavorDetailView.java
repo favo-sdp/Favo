@@ -1,4 +1,4 @@
-package ch.epfl.favo.view.tabs;
+package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
@@ -31,6 +31,8 @@ import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
+
+  private FavorViewStatus viewStatus;
   private Favor currentFavor;
   private FloatingActionButton locationAccessBtn;
   private Button acceptAndCancelFavorBtn;
@@ -94,29 +96,33 @@ public class FavorDetailView extends Fragment {
   private Consumer successfullyCancelledConsumer() {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
-      // update UI
-      currentFavor.setStatusId(Favor.Status.CANCELLED_ACCEPTER);
+
       ((MainActivity) getActivity()).activeFavors.remove(currentFavor.getId());
       ((MainActivity) getActivity()).archivedFavors.remove(currentFavor.getId());
-      updateStatusDisplayFromFavorStatus();
+      // update UI
+      currentFavor.setStatusId(Favor.Status.CANCELLED_ACCEPTER);
+      viewStatus = convertFavorStatusToViewStatus(currentFavor);
+      updateDisplayFromViewStatus();
     };
   }
 
-  private CompletableFuture<Favor> retrieveFavorWrapper() {
-    CompletableFuture<Favor> futureFavor =
-        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
-    return futureFavor.thenApply(
-        favor -> {
-          if (favor.getStatusId().equals(Favor.Status.ACCEPTED)
-              && (!UserUtil.currentUserId.equals(favor.getAccepterId()))) {
-            favor.setStatusId(Favor.Status.ACCEPTED_BY_OTHER);
-          }
-          return favor;
-        });
+  private FavorViewStatus convertFavorStatusToViewStatus(Favor favor) {
+    // Equivalent mapping except for the accepted case. Here we check if the
+    // accepter Id matches the current user
+    Favor.Status favorStatus = favor.getStatusId();
+    FavorViewStatus resultStatus;
+    if (favorStatus.equals(Favor.Status.ACCEPTED)
+        && !favor.getRequesterId().equals(UserUtil.currentUserId)) {
+      resultStatus = FavorViewStatus.ACCEPTED_BY_OTHER;
+    } else { // need to ensure that the name is the same as the name in Favor class
+      resultStatus = FavorViewStatus.valueOf(favorStatus.toString());
+    }
+    return resultStatus;
   }
 
   private void acceptFavor() {
-    CompletableFuture<Favor> favorFuture = retrieveFavorWrapper();
+    CompletableFuture<Favor> favorFuture =
+        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db
         .thenAccept(
         favor -> {
@@ -124,7 +130,6 @@ public class FavorDetailView extends Fragment {
             currentFavor.updateToOther(favor);
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
             displayFromFavor(getView(), favor);
-            updateStatusDisplayFromFavorStatus();
           } else { // update DB with accepted status
             CompletableFuture updateFavorFuture =
                 FavorUtil.getSingleInstance()
@@ -151,7 +156,8 @@ public class FavorDetailView extends Fragment {
       ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       ((MainActivity) requireActivity()).otherActiveFavorsAround.remove(currentFavor.getId());
       currentFavor.setStatusId(Favor.Status.ACCEPTED);
-      updateStatusDisplayFromFavorStatus();
+      viewStatus = FavorViewStatus.ACCEPTED;
+      updateDisplayFromViewStatus();
     };
   }
 
@@ -161,18 +167,18 @@ public class FavorDetailView extends Fragment {
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
     // update status string
-    updateStatusDisplayFromFavorStatus();
+    viewStatus = convertFavorStatusToViewStatus(favor);
+    updateDisplayFromViewStatus();
 
     setupTextView(rootView, R.id.datetime_accept_view, timeStr);
     setupTextView(rootView, R.id.title_accept_view, titleStr);
     setupTextView(rootView, R.id.details_accept_view, descriptionStr);
   }
 
-  private void updateStatusDisplayFromFavorStatus() {
-    Favor.Status newStatus = currentFavor.getStatusId();
-    statusText.setText(newStatus.getPrettyString());
-    updateButtonDisplay(newStatus);
-    switch (newStatus) {
+  private void updateDisplayFromViewStatus() {
+    statusText.setText(viewStatus.getPrettyString());
+    updateButtonDisplay();
+    switch (viewStatus) {
       case SUCCESSFULLY_COMPLETED:
         {
           enableButtons(false);
@@ -194,15 +200,15 @@ public class FavorDetailView extends Fragment {
     }
   }
 
-  private void updateButtonDisplay(Favor.Status status) {
+  private void updateButtonDisplay() {
     String displayMessage;
     int backgroundColor;
     Drawable img;
-    if (status == Favor.Status.ACCEPTED) {
+    if (viewStatus == FavorViewStatus.ACCEPTED) {
       displayMessage = getString(R.string.cancel_accept_button_display);
       backgroundColor = R.color.fui_transparent;
       img = getResources().getDrawable(R.drawable.ic_cancel_24dp);
-    } else {
+    } else { // includes ACCEPTED_BY_OTHER
       displayMessage = getResources().getString(R.string.accept_favor);
       img = getResources().getDrawable(R.drawable.ic_thumb_up_24dp);
       backgroundColor = android.R.drawable.btn_default;
