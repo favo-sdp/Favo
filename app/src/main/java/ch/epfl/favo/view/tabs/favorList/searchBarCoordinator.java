@@ -27,6 +27,7 @@ public class searchBarCoordinator{
     private Map<String, Favor> favorsFound = new HashMap<>();
     private int screenWidth;
     private String mode;
+    private boolean first;
 
     public searchBarCoordinator(MainActivity activity, Context context, String mode){
         this.context = context;
@@ -42,6 +43,7 @@ public class searchBarCoordinator{
         this.tipTextView = textView;
         this.listView = listView;
         this.searchView = searchView;
+        first = true;
     }
 
     public void setupSearchBar(View view){
@@ -104,7 +106,8 @@ public class searchBarCoordinator{
 
         @Override
         public boolean onQueryTextChange(String newText) {
-            queryAndDisplay(newText);
+            if(first) first = false;
+            else queryAndDisplay(newText);
             return false;
         }
     }
@@ -125,8 +128,8 @@ public class searchBarCoordinator{
         Map<String, Favor> favorsFound = new HashMap<>();
         query = query.toLowerCase();
         for(Favor favor : searchScope.values()){
-        if(favor.getTitle().toLowerCase().contains(query) || favor.getDescription().toLowerCase().contains(query))
-        favorsFound.put(favor.getId(),favor);
+            if(favor.getTitle().toLowerCase().contains(query) || favor.getDescription().toLowerCase().contains(query))
+            favorsFound.put(favor.getId(),favor);
         }
         return favorsFound;
     }
