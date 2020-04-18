@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs.favorList;
 
 import android.content.Context;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.widget.ListView;
@@ -50,6 +51,7 @@ public class searchBarCoordinator{
         if(!favorsFound.isEmpty()){
             searchView.setIconified(false);
             searchView.clearFocus();
+            enterSearchMode(view, context);
             displayFavorList(favorsFound, "");
         }
         searchView.setOnSearchClickListener((v)->{
@@ -64,7 +66,7 @@ public class searchBarCoordinator{
         if(view.findViewById(R.id.spinner) != null)
             view.findViewById(R.id.spinner).setVisibility(View.INVISIBLE);
         activity.onBackPressedListener =
-                () -> { searchView.setIconified(true);
+                () -> { searchView.setIconified(true); Log.d("UnD", "back once");
                     CommonTools.hideKeyboardFrom(context, view);
                 };
     }

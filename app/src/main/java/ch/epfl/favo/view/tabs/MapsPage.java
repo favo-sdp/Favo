@@ -45,6 +45,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 /**
@@ -92,8 +93,6 @@ public class MapsPage extends Fragment
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
     }
     else{
-      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-      updateNearbyList();
       drawSelfLocationMarker();
       drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
     }
@@ -148,6 +147,7 @@ public class MapsPage extends Fragment
     SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null)
       mapFragment.getMapAsync(this);
+    updateNearbyList();
     return view;
   }
 
@@ -165,12 +165,13 @@ public class MapsPage extends Fragment
         radius = 25; break;
     }
     CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
-            .retrieveAllFavorsInGivenRadius(mLocation, radius, activity);
+            .retrieveAllFavorsInGivenRadius(DependencyFactory.getCurrentGpsTracker(getContext()).getLocation(), radius, activity);
     favors.whenComplete((e, res)->{
       if (first) {
         drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
         first = false;
-    }});
+      }
+    });
   }
 
 
@@ -225,18 +226,19 @@ public class MapsPage extends Fragment
 
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
-      LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-      Marker me =
-          mMap.addMarker(
-              new MarkerOptions()
-                  .position(myLocation)
-                  .title("FavorRequest")
-                  .draggable(true)
-                  .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-      if (first) {
-        first = false;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
-      }
+    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+    LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
+    Marker me =
+        mMap.addMarker(
+            new MarkerOptions()
+                .position(myLocation)
+                .title("FavorRequest")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+    if (first) {
+      first = false;
+      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
+    }
   }
 
   private void drawFavorMarker(List<Favor> favors) {

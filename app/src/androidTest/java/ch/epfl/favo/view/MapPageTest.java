@@ -43,6 +43,7 @@ public class MapPageTest {
           new ActivityTestRule<MainActivity>(MainActivity.class) {
             @Override
             protected void beforeActivityLaunched() {
+              DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
               DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
             }
           };
@@ -53,6 +54,7 @@ public class MapPageTest {
 
   @After
   public void tearDown() {
+    DependencyFactory.setCurrentCollectionWrapper(null);
     DependencyFactory.setCurrentGpsTracker(null);
   }
 

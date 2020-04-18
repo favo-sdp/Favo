@@ -43,6 +43,7 @@ public class SearchViewTest {
             new ActivityTestRule<MainActivity>(MainActivity.class) {
                 @Override
                 protected void beforeActivityLaunched() {
+                    DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
                     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
             }
     };
@@ -52,6 +53,7 @@ public class SearchViewTest {
             GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
     @After
     public void tearDown() {
+        DependencyFactory.setCurrentCollectionWrapper(null);
         DependencyFactory.setCurrentGpsTracker(null);
     }
 
@@ -116,8 +118,8 @@ public class SearchViewTest {
         pressBack();
         pressBack();
         // check active favors are displayed in active favor list view
-        onView(withText(favor.getDescription())).check(matches(isDisplayed()));
         onView(withText(favor2.getDescription())).check(matches(isDisplayed()));
+        onView(withText(favor.getDescription())).check(matches(isDisplayed()));
         getInstrumentation().waitForIdleSync();
     }
 

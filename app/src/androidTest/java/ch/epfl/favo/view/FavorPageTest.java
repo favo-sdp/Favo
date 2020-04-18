@@ -49,9 +49,9 @@ public class FavorPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
           mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
           mockDatabaseWrapper.setThrowError(false);
+          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
         }
       };
 

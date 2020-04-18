@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.Document;
@@ -77,7 +78,8 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
       arrayList.add(mockDocument);
       future.complete(arrayList);
     }
-    ((MainActivity)activity).otherActiveFavorsAround.put(mockDocument.getId(), (Favor)mockDocument);
+    Favor favor = FakeItemFactory.getFavor();
+    ((MainActivity)activity).otherActiveFavorsAround.put(favor.getId(), favor);
     return future;
   }
 

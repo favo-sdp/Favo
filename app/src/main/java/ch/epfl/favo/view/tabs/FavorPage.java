@@ -47,7 +47,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
   @Override
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
-    // Extract two arrayLists from the main activity
     activity = (MainActivity) Objects.requireNonNull(getActivity());
     searchBarCoordinator = new searchBarCoordinator(activity, getContext(), "ActiveList");
   }

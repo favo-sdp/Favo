@@ -54,6 +54,7 @@ public class FavorDetailViewTest {
         protected void beforeActivityLaunched() {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
         }
       };
@@ -74,6 +75,7 @@ public class FavorDetailViewTest {
 
   @After
   public void tearDown() {
+    DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
   }

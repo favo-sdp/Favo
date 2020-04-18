@@ -42,7 +42,7 @@ public class MapUnitTests extends FragmentActivity {
     // Given a mocked Context injected into the object under test...
     when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(false);
     when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
-    assertThrows(NoPositionFoundException.class, () -> new GpsTracker(contextMock).getLocation());
+    assertThrows( NoPositionFoundException.class, ()->new GpsTracker(contextMock).getLocation());
   }
 
   @Test

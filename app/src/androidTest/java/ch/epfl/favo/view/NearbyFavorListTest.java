@@ -118,6 +118,9 @@ public class NearbyFavorListTest {
         //Click on close searchView button
         pressBack();
         pressBack();
+        // check active favors are displayed in active favor list view
+        onView(withText(favor.getDescription())).check(matches(isDisplayed()));
+        getInstrumentation().waitForIdleSync();
     }
 
     @Test
@@ -133,6 +136,7 @@ public class NearbyFavorListTest {
         // if keyboard is not displayed, one time of pressBack will return to Favor List view
         pressBack();
         // check favor is displayed in active favor list view
+        //onData(anything()).inAdapterView(withId(R.id.nearby_favor_list)).atPosition(0).perform(click());
         onView(withText(favor.getTitle())).check(matches(isDisplayed()));
     }
 
