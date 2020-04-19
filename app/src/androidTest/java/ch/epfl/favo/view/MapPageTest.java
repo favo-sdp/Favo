@@ -17,12 +17,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.MapsPage;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -31,19 +30,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-import static ch.epfl.favo.TestConstants.EMAIL;
-import static ch.epfl.favo.TestConstants.NAME;
-import static ch.epfl.favo.TestConstants.PHOTO_URI;
-import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class MapPageTest {
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
           new ActivityTestRule<MainActivity>(MainActivity.class) {
             @Override
             protected void beforeActivityLaunched() {
-              DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+              DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
               DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
             }
           };
@@ -59,6 +55,21 @@ public class MapPageTest {
   }
 
   @Test
+  public void RetrieveNearbyFavorsExceptionShowSnackBarTest() throws InterruptedException {
+    mockDatabaseWrapper.setThrowError(true);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.map_switch)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
+    //check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+           .check(matches(withText(R.string.nearby_favors_exception)));
+  }
+/*
+  @Test
   public void InfoWindowClickSelfTest() throws UiObjectNotFoundException, InterruptedException {
     MapsPage mapsPage = new MapsPage();
     //mapsPage.updateFavorlist();
@@ -70,7 +81,7 @@ public class MapPageTest {
   public void InfoWindowClickOtherTest() throws InterruptedException, UiObjectNotFoundException {
     //CheckContent("Title of Favor 0", R.string.favor_respond_success_msg);
   }
-
+*/
   public void CheckContent(String MarkerTitle, int snackbar)
       throws UiObjectNotFoundException, InterruptedException {
     UiDevice device = UiDevice.getInstance(getInstrumentation());

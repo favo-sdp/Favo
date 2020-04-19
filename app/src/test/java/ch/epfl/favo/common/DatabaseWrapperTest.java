@@ -27,6 +27,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -159,7 +160,8 @@ public class DatabaseWrapperTest {
           throws InterruptedException, ExecutionException{
     setupCompletableFuture(mockQuerySnapshot);
     CompletableFuture<List<Favor>> obtainedFuture = collectionWrapper
-            .getAllDocumentsLongitudeLatitudeBounded(new Location("null"), 1.0, new Activity());
+            .getAllDocumentsLongitudeBounded(new Location("null"), 1.0);
     List<Favor> obtainedFavors = obtainedFuture.get();
+    assertEquals(expectedFavors, obtainedFavors);
   }
 }

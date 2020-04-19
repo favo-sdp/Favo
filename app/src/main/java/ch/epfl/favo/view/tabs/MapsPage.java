@@ -7,7 +7,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -17,9 +16,8 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -43,6 +41,8 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.ViewController;
 /**
@@ -59,13 +59,42 @@ public class MapsPage extends Fragment
   private boolean first = true;
   //private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+  private boolean mLocationPermissionGranted = false;
   private MainActivity activity;
 
   public MapsPage() {
     // Required empty public constructor
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
+  @Override
+  public View onCreateView(
+          LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    setupView();
+    getLocationPermission();
+    // this is another, maybe better, way to get location, but cannot pass cirrus testing
+    // mFusedLocationProviderClient =
+    // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
+    // getLocation();
+    View view = inflater.inflate(R.layout.fragment_map, container, false);
+    // setup offline map button
+    FloatingActionButton button = view.findViewById(R.id.offline_map_button);
+    button.setOnClickListener(this::onOfflineMapClick);
+    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext())))
+      button.setVisibility(View.VISIBLE);
+    else
+      button.setVisibility(View.INVISIBLE);
+    // setup toggle between map and nearby list
+    RadioButton toggle = view.findViewById(R.id.list_switch);
+    toggle.setOnClickListener(this::onToggleClick);
+
+    activity = (MainActivity) Objects.requireNonNull(getActivity());
+    updateNearbyList(view);
+    SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+    if (mapFragment != null && mLocationPermissionGranted)
+      mapFragment.getMapAsync(this);
+    return view;
+  }
+
   @Override
   public void onMapReady(GoogleMap googleMap) {
     setupView();
@@ -74,11 +103,6 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext())))
-      Objects.requireNonNull(getView()).findViewById(R.id.offline_map_button).setVisibility(View.VISIBLE);
-    else
-      Objects.requireNonNull(getView()).findViewById(R.id.offline_map_button).setVisibility(View.INVISIBLE);
-
     if(activity.focusedFavor != null){
       Favor favor = activity.focusedFavor;
       activity.focusedFavor = null;
@@ -123,74 +147,69 @@ public class MapsPage extends Fragment
     ((ViewController) getActivity()).checkMapViewButton();
   }
 
-  @Override
-  public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
-    setupView();
-    getLocationPermission();
-    // mFusedLocationProviderClient =
-    // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
-    // getLocation();
-    View view = inflater.inflate(R.layout.fragment_map, container, false);
-
-    FloatingActionButton button = view.findViewById(R.id.offline_map_button);
-    button.setOnClickListener(this::onOfflineMapClick);
-
-    RadioButton toggle = view.findViewById(R.id.list_switch);
-    toggle.setOnClickListener(this::onToggleClick);
-    activity = (MainActivity) Objects.requireNonNull(getActivity());
-    setupView();
-    SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    if (mapFragment != null)
-      mapFragment.getMapAsync(this);
-    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-    updateNearbyList();
-    return view;
-  }
-
-  private void updateNearbyList(){
-    String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1km");
-    double radius = 1;
-    switch (setting){
-      case "1 Km":
-        radius = 1; break;
-      case "5 Km":
-        radius = 5; break;
-      case "10 Km":
-        radius = 10; break;
-      case "25 Km":
-        radius = 25; break;
+  private void updateNearbyList(View view){
+    String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1 Km");
+    double radius = Double.parseDouble(setting.split(" ")[0]);
+    try{
+      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+      CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
+              .retrieveAllFavorsInGivenRadius(mLocation, radius);
+      favors.thenAccept(
+              favors1 -> {
+                double latDif = Math.toDegrees(radius / 6371);
+                for (Favor favor : favors1)
+                  if (!favor.getRequesterId().equals(UserUtil.currentUserId)
+                          && favor.getStatusId().equals(Favor.Status.REQUESTED)
+                          && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
+                          && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
+                    activity.otherActiveFavorsAround.put(favor.getId(), favor);
+              });
+      favors.exceptionally(
+              e -> {
+                CommonTools.showSnackbar(view, getString(R.string.nearby_favors_exception));
+                return null;
+              });
+      favors.whenComplete((e, res)->{
+        if (first) {
+          drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+          first = false;
+        }
+      });
+    }catch (RuntimeException e){
+      CommonTools.showSnackbar(view, e.getMessage());
     }
-    CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
-            .retrieveAllFavorsInGivenRadius(mLocation, radius, activity);
-    favors.whenComplete((e, res)->{
-      if (first) {
-        drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
-        first = false;
-      }
-    });
   }
-
 
   private void getLocationPermission() {
     /**
      * Request location permission, so that we can get the location of the
-     * device. The result of the permission request is handled by a callback,
-     * onRequestPermissionsResult.
+     * device.
      **/
     if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()).getApplicationContext(),
-            android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-    } else {
-      ActivityCompat.requestPermissions(
-          Objects.requireNonNull(getActivity()),
-          new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
-          PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+      requestPermissions(new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
+              PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+      mLocationPermissionGranted = false;
+    } else{
+      mLocationPermissionGranted = true;
+    }
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode,
+                                         @NonNull String[] permissions,
+                                         @NonNull int[] grantResults) {
+    if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
+      if (grantResults.length > 0
+              && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        mLocationPermissionGranted = true;
+        Navigation.findNavController(getView())
+                .navigate(R.id.action_global_nav_map);
+      }
     }
   }
 
   /*
-
     private void checkPlayServices() {
       GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
       int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
@@ -219,7 +238,6 @@ public class MapsPage extends Fragment
         });
       }
     }
-
 */
 
   private void drawSelfLocationMarker() {
@@ -248,6 +266,7 @@ public class MapsPage extends Fragment
       Marker marker = mMap.addMarker( new MarkerOptions().position(latLng).title(favor.getTitle())
                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
       marker.setSnippet(favor.getDescription());
+      marker.setTag(favor.getId());
     }
   }
 
@@ -282,7 +301,7 @@ public class MapsPage extends Fragment
     if (marker.getTitle().equals(getString(R.string.self_location)))
       Navigation.findNavController(getView()).navigate(R.id.action_nav_map_to_favorRequestView);
     else {
-      Favor favor = queryFavor(marker.getPosition().latitude, marker.getPosition().longitude, marker.getTitle());
+      Favor favor = findFavorInLocalList((String) marker.getTag());
       Bundle favorBundle = new Bundle();
       favorBundle.putParcelable("FAVOR_ARGS", favor);
       Navigation.findNavController(getView())
@@ -290,10 +309,9 @@ public class MapsPage extends Fragment
     }
   }
 
-  private Favor queryFavor(double latitude, double longitude, String title) {
+  private Favor findFavorInLocalList(String favorId) {
     for (Favor favor : activity.otherActiveFavorsAround.values()) {
-      if (favor.getTitle().equals(title) && favor.getLocation().getLatitude() == latitude
-          && favor.getLocation().getLongitude() == longitude) return favor;
+      if (favor.getId().equals(favorId)) return favor;
     }
     return null;
   }

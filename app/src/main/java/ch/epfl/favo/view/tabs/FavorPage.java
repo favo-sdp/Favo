@@ -102,17 +102,6 @@ public class FavorPage extends Fragment implements View.OnClickListener {
         searchView.setOnQueryTextListener(new onQuery());
     }
 
-    private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope) {
-        Map<String, Favor> favorsFound = new HashMap<>();
-        query = query.toLowerCase();
-        for (Favor favor : searchScope.values()) {
-            if (favor.getTitle().toLowerCase().contains(query)
-                    || favor.getDescription().toLowerCase().contains(query))
-                favorsFound.put(favor.getId(), favor);
-        }
-        return favorsFound;
-    }
-
     private void setupSearchMode() {
         spinner.setVisibility(View.INVISIBLE);
         displayFavorList(favorsFound, R.string.empty);
@@ -146,8 +135,8 @@ public class FavorPage extends Fragment implements View.OnClickListener {
         @Override
         public boolean onQueryTextSubmit(String query) {
             lastQuery = query;
-            favorsFound = doQuery(query, activeFavors);
-            favorsFound.putAll(doQuery(query, archivedFavors));
+            favorsFound = CommonTools.doQuery(query, activeFavors);
+            favorsFound.putAll(CommonTools.doQuery(query, archivedFavors));
             displayFavorList(favorsFound, R.string.query_failed);
             return false;
         }

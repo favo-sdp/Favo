@@ -38,8 +38,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
 
   @Override
-  public CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Activity activity) {
-    return DatabaseWrapper.getAllDocumentsLongitudeLatitudeBounded(loc, radius, cls, collection, activity);
+  public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
+    return DatabaseWrapper.getAllDocumentsLongitudeBounded(loc, radius, cls, collection);
   }
 
   public CompletableFuture<List<T>> getAllDocuments() {

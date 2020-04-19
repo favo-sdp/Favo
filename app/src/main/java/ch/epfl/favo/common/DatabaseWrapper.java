@@ -18,8 +18,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -100,32 +102,19 @@ public class DatabaseWrapper {
 
   /**
    * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
-   * This function retrieve longitude and latitude bounded documents and save them in MainActivity.
+   * This function retrieve longitude bounded documents because firebase only supports one range query field
    * For some reason, reading from db is very slow when adding one more whereEqualTo query field
-   * TODO: use firebase functions or other server code to write logic that performs customized filtering and fetch the result
+   * TODO: use firebase functions or other server code to perform customized filtering and fetch the result
    */
-  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(
-      Location loc, double radius, Class<T> cls, String collection, Activity activity) {
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
+      Location loc, double radius, Class<T> cls, String collection) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
-    double latDif = Math.toDegrees(radius / 6371);
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection)
             .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
             .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(30).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
     CompletableFuture<List<T>> documents = getAllFuture.thenApply(
             querySnapshot -> querySnapshot.toObjects(cls));
-    documents.thenAccept(
-        docs -> {
-          if (cls == Favor.class) {
-            ArrayList<Favor> favors = (ArrayList<Favor>) docs;
-            for (Favor favor : favors)
-              if (!favor.getRequesterId().equals(UserUtil.currentUserId)
-                  && favor.getStatusId().equals(Favor.Status.REQUESTED)
-                  && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
-                  && favor.getLocation().getLongitude() < loc.getLatitude() + latDif)
-                ((MainActivity)(activity)).otherActiveFavorsAround.put(favor.getId(), favor);
-          }
-        });
     return documents;
   }
 

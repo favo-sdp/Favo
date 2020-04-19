@@ -63,23 +63,18 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   @Override
   public CompletableFuture<T> getDocument(String key) {
     CompletableFuture<T> future = new CompletableFuture<>();
-
     if (throwError) future.completeExceptionally(new RuntimeException());
     else future.complete(mockDocument);
     return future;
   }
 
   @Override
-  public CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Activity activity) {
+  public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
     CompletableFuture<List<T>> future = new CompletableFuture<>();
-    if (throwError) future.completeExceptionally(new RuntimeException());
+    if (throwError) future.completeExceptionally(new RuntimeException("Error db"));
     else {
-      ArrayList<T> arrayList = new ArrayList<>();
-      arrayList.add(mockDocument);
-      future.complete(arrayList);
+      future.complete((List<T>) FakeItemFactory.getFavorList());
     }
-    Favor favor = FakeItemFactory.getFavor();
-    ((MainActivity)activity).otherActiveFavorsAround.put(favor.getId(), favor);
     return future;
   }
 

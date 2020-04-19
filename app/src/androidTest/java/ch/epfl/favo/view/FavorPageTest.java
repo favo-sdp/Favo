@@ -46,10 +46,9 @@ public class FavorPageTest {
       new ActivityTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          DependencyFactory.setCurrentFirebaseUser(
-              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+          DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
         }
       };
 

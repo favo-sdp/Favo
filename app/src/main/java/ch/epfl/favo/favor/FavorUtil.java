@@ -157,8 +157,8 @@ public class FavorUtil {
    * @param radius a given radius to search within
    */
 
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius, Activity activity) {
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
     /**It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface**/
-    return collection.getAllDocumentsLongitudeLatitudeBounded(loc, radius, activity);
+    return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 }

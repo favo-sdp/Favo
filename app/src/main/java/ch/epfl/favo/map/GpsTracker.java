@@ -9,11 +9,11 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import ch.epfl.favo.R;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
@@ -62,7 +62,9 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
       if (mLastKnownLocation == null) {
         throw new NoPositionFoundException("Permission is granted, but no position is found");
       }
-    } else throw new NoPermissionGrantedException("No location permission granted");
+    } else {
+      throw new NoPermissionGrantedException("No location permission granted");
+    }
     mLastUpdate = System.currentTimeMillis();
     return mLastKnownLocation;
   }

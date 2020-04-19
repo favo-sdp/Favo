@@ -22,5 +22,5 @@ public interface DatabaseUpdater<T> {
 
   CompletableFuture<T> getDocument(String key);
 
-  CompletableFuture<List<T>> getAllDocumentsLongitudeLatitudeBounded(Location loc, double radius, Activity activity);
+  CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
 }

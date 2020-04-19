@@ -20,7 +20,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.view.ViewController;
-import ch.epfl.favo.view.tabs.favorList.searchBarCoordinator;
+import ch.epfl.favo.view.tabs.favorList.SearchBarCoordinator;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
@@ -35,7 +35,7 @@ public class NearbyFavorList extends Fragment{
     private TextView tipTextView;
     private ListView listView;
     private SearchView searchView;
-    private searchBarCoordinator searchBarCoordinator;
+    private SearchBarCoordinator searchBarCoordinator;
     private MainActivity activity;
     public NearbyFavorList() {
         // Required empty public constructor
@@ -45,7 +45,7 @@ public class NearbyFavorList extends Fragment{
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         activity = (MainActivity) Objects.requireNonNull(getActivity());
-        searchBarCoordinator = new searchBarCoordinator(activity, getContext(), "NearbyList");
+        searchBarCoordinator = new SearchBarCoordinator(activity, getContext(), "NearbyList");
     }
 
 

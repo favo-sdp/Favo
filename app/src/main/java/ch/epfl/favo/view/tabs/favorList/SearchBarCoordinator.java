@@ -18,7 +18,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 
-public class searchBarCoordinator{
+public class SearchBarCoordinator {
     private MainActivity activity;
     private Context context;
     private TextView tipTextView;
@@ -29,7 +29,7 @@ public class searchBarCoordinator{
     private String mode;
     private boolean first;
 
-    public searchBarCoordinator(MainActivity activity, Context context, String mode){
+    public SearchBarCoordinator(MainActivity activity, Context context, String mode){
         this.context = context;
         this.activity = activity;
         this.mode = mode;
@@ -48,7 +48,6 @@ public class searchBarCoordinator{
 
     public void setupSearchBar(View view){
         searchView.setIconifiedByDefault(true);
-        searchView.setTag("SearchView");
         // if returned from FavorDetail view, continue to show the search mode
         if(!favorsFound.isEmpty()){
             searchView.setIconified(false);
@@ -68,7 +67,7 @@ public class searchBarCoordinator{
         if(view.findViewById(R.id.spinner) != null)
             view.findViewById(R.id.spinner).setVisibility(View.INVISIBLE);
         activity.onBackPressedListener =
-                () -> { searchView.setIconified(true); Log.d("UnD", "back once");
+                () -> { searchView.setIconified(true);
                     CommonTools.hideKeyboardFrom(context, view);
                 };
     }
@@ -89,10 +88,10 @@ public class searchBarCoordinator{
 
     private void queryAndDisplay(String query){
         if(query.equals("")) favorsFound = new HashMap<>();
-        else if (mode.equals("NearbyList")) favorsFound = doQuery(query, activity.otherActiveFavorsAround);
+        else if (mode.equals("NearbyList")) favorsFound = CommonTools.doQuery(query, activity.otherActiveFavorsAround);
         else {
-            favorsFound = doQuery(query, activity.activeFavors);
-            favorsFound.putAll(doQuery(query, activity.archivedFavors));
+            favorsFound = CommonTools.doQuery(query, activity.activeFavors);
+            favorsFound.putAll(CommonTools.doQuery(query, activity.archivedFavors));
         }
         displayFavorList(favorsFound, "No match found");
     }
@@ -121,16 +120,5 @@ public class searchBarCoordinator{
         if (favors.isEmpty()) showText(text);
         else tipTextView.setVisibility(View.INVISIBLE);
         listView.setAdapter(new FavorAdapter(context, new ArrayList<>(favors.values())));
-    }
-
-
-    private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope){
-        Map<String, Favor> favorsFound = new HashMap<>();
-        query = query.toLowerCase();
-        for(Favor favor : searchScope.values()){
-            if(favor.getTitle().toLowerCase().contains(query) || favor.getDescription().toLowerCase().contains(query))
-            favorsFound.put(favor.getId(),favor);
-        }
-        return favorsFound;
     }
 }

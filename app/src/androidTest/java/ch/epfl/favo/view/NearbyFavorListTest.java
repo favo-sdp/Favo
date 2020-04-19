@@ -64,7 +64,7 @@ public class NearbyFavorListTest {
 
     private void openSearchView(){
         try{
-            Thread.sleep(2000);
+            Thread.sleep(5000);
             // switch to nearby favor list view
             onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
             getInstrumentation().waitForIdleSync();
@@ -96,9 +96,11 @@ public class NearbyFavorListTest {
         // press two times of back button to quit search mode
         pressBack();
         pressBack();
+
         // check active favors are displayed in active favor list view
         onView(withText(favor.getDescription())).check(matches(isDisplayed()));
         getInstrumentation().waitForIdleSync();
+
     }
 
     @Test
