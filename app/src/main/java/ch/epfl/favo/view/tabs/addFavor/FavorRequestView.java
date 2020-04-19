@@ -36,7 +36,6 @@ import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
@@ -70,7 +69,7 @@ public class FavorRequestView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
     setupButtons(rootView);
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
@@ -430,7 +429,6 @@ public class FavorRequestView extends Fragment {
    */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
     if (mTitleView.getKeyListener() != null) {
       mTitleView.setTag(mTitleView.getKeyListener());
     }

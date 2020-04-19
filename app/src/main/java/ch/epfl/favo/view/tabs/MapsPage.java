@@ -45,7 +45,7 @@ import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FakeFavorList;
-import ch.epfl.favo.view.ViewController;
+
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -70,7 +70,6 @@ public class MapsPage extends Fragment
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   public void onMapReady(GoogleMap googleMap) {
-    setupView();
     getLocationPermission();
     mMap = googleMap;
     mMap.clear();
@@ -106,16 +105,9 @@ public class MapsPage extends Fragment
         .show();
   }
 
-  private void setupView() {
-    ((ViewController) getActivity()).setupViewTopDestTab();
-    ((ViewController) getActivity()).checkMapViewButton();
-  }
-
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
-    setupView();
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
@@ -130,7 +122,6 @@ public class MapsPage extends Fragment
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    setupView();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     mGpsTracker = new GpsTracker(getContext());
