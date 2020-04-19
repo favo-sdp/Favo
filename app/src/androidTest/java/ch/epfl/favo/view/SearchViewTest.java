@@ -94,10 +94,7 @@ public class SearchViewTest {
 
     onView(isAssignableFrom(EditText.class))
         .perform(typeText(favor.getTitle()), pressImeActionButton());
-    //    onView(withId(Resources.getSystem().getIdentifier("search_src_text",
-    //            "id", "android")))
-    //        .perform(typeText(favor.getTitle()))
-    //        .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+
     getInstrumentation().waitForIdleSync();
 
     // check query is successful and click on found item
