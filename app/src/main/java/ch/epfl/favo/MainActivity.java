@@ -111,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
+            case R.id.favorDetailView:
+            case R.id.favorRequestView:
               if (bottomNavigationView.getVisibility() != View.GONE) {
                 hideBottomNavigation();
               }
@@ -140,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
     navigationView.setNavigationItemSelectedListener(
         item -> {
           int itemId = item.getItemId();
-
           if (itemId == currentMenuItem) {
             drawerLayout.closeDrawer(GravityCompat.START);
             return false;
@@ -162,6 +163,21 @@ public class MainActivity extends AppCompatActivity {
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
+    bottomNavigationView.setOnNavigationItemSelectedListener(
+            item -> {
+              int itemId = item.getItemId();
+              if (itemId == currentMenuItem) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+              }
+
+              if(itemId == R.id.nav_map)
+                navController.popBackStack(R.id.nav_map, false);
+              else navController.navigate(R.id.nav_favorList);
+
+              currentMenuItem = itemId;
+              return false;
+            });
   }
 
   private void showNoConnectionSnackbar() {
