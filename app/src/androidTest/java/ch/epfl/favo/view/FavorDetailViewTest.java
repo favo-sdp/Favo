@@ -68,7 +68,6 @@ public class FavorDetailViewTest {
   @UiThreadTest
   public void setUp() {
     fakeFavor = FakeItemFactory.getFavor();
-    UserUtil.currentUserId = "USER";
     navController = findNavController(mainActivityTestRule.getActivity(), R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
     bundle.putParcelable(FavorFragmentFactory.FAVOR_ARGS, fakeFavor);
@@ -183,6 +182,7 @@ public class FavorDetailViewTest {
     onView(withId(R.id.status_text_accept_view))
         .check(matches(withText(FavorStatus.CANCELLED_ACCEPTER.toString())));
 
+    Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_cancel_success_msg)));

@@ -139,8 +139,8 @@ public class SignInActivity extends AppCompatActivity {
 
       // Lookup user with Firebase Id in Db to extract details
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
-      String currentUserId = currentUser.getUid();
-      CompletableFuture<User> userFuture = UserUtil.getSingleInstance().findUser(currentUserId);
+      String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
+      CompletableFuture<User> userFuture = UserUtil.getSingleInstance().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
 
       // Add/update user info depending on db status
@@ -151,7 +151,7 @@ public class SignInActivity extends AppCompatActivity {
               String email = currentUser.getEmail();
               Uri photo = currentUser.getPhotoUrl();
               FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-              user = new User(currentUserId, name, email, deviceId, null, loc);
+              user = new User(userId, name, email, deviceId, null, loc);
             } else if (!deviceId.equals(user.getDeviceId())) {
               user.setDeviceId(deviceId);
             }

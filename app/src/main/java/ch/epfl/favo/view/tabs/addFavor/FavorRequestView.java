@@ -325,11 +325,12 @@ public class FavorRequestView extends Fragment {
     // Extract details and post favor to Firebase
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
+    String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     status = FavorStatus.convertTemporaryStatus(status);
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, status);
+    Favor favor = new Favor(title, desc, userId, loc, status);
 
     // Updates the current favor
     if (currentFavor == null) {

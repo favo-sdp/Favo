@@ -22,8 +22,8 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 
 @SuppressLint("NewApi")
@@ -96,7 +96,7 @@ public class FavorDetailView extends Fragment {
   private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
     FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
     if (favorStatus.equals(FavorStatus.ACCEPTED)
-        && !favor.getRequesterId().equals(UserUtil.currentUserId)) {
+        && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
       favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
     }
     return favorStatus;

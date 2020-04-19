@@ -21,9 +21,6 @@ public class UserUtil {
   /*
   TODO: Design singleton constructor and logic
    */
-  // Expose current logged in user id
-  public static String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
-
   // Single private instance
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
