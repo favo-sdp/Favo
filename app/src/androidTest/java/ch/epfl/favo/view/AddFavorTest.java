@@ -32,11 +32,11 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
-import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -215,18 +215,18 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorViewStatus.REQUESTED.getPrettyString())));
+        .check(matches(withText(FavorStatus.REQUESTED.toString())));
   }
 
   @Test
   public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
     Favor fakeFavor = FakeItemFactory.getFavor();
     FavorRequestView fragment = new FavorRequestView();
-    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
     checkAcceptedView(fakeFavor);
-    fakeFavor.setStatusId(Favor.Status.SUCCESSFULLY_COMPLETED);
+    fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
     View v = activityTestRule.getActivity().getCurrentFocus();
     runOnUiThread(
         () -> {
@@ -244,7 +244,7 @@ public class AddFavorTest {
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
     // set status to accepted
-    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     // inject result
     mockDatabaseWrapper.setMockDocument(fakeFavor);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -281,7 +281,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(FavorViewStatus.SUCCESSFULLY_COMPLETED.getPrettyString())));
+        .check(matches(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString())));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -291,7 +291,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
+        .check(matches(withText(FavorStatus.ACCEPTED.toString())));
   }
 
   @Test
@@ -343,7 +343,7 @@ public class AddFavorTest {
 
     // Check updated status string
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(FavorViewStatus.CANCELLED_REQUESTER.getPrettyString())));
+        .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
   }
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
