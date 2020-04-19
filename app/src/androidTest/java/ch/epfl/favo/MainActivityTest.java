@@ -29,7 +29,7 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -112,7 +112,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.account), withId(nav_account))).perform(click());
+    onView(withId(nav_account)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -129,7 +129,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.settings), withId(R.id.nav_settings))).perform(click());
+    onView(withId(R.id.nav_settings)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -145,7 +145,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.about), withId(nav_about))).perform(click());
+    onView(withId(nav_about)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -162,7 +162,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
+    onView(withId(R.id.nav_share)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that share intent is indeed opened
@@ -181,8 +181,7 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    // Click on account icon
-    onView(allOf(withId(R.id.nav_map), withText("Home"))).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription(not("Map")))).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -198,7 +197,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.about), withId(R.id.nav_share))).perform(click());
+    onView(withId(nav_about)).perform(click());
 
     getInstrumentation().waitForIdleSync();
 
@@ -207,7 +206,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
-    onView(withId(R.id.nav_map)).check(matches(isDisplayed()));
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -219,7 +218,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // click share
-    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
+    onView(withId(R.id.nav_share)).perform(click());
 
     getInstrumentation().waitForIdleSync();
 

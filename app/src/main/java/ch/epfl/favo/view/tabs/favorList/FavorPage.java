@@ -33,7 +33,6 @@ import com.google.firebase.firestore.Query;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
@@ -69,7 +68,7 @@ public class FavorPage extends Fragment {
   private String lastQuery;
 
   private static Query baseQuery =
-      FirebaseFirestore.getInstance()
+      DependencyFactory.getCurrentFirestore()
           .collection("favors")
           .orderBy("postedTime", Query.Direction.DESCENDING);
 
@@ -180,7 +179,7 @@ public class FavorPage extends Fragment {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putParcelable("FAVOR_ARGS", favor);
                   // if favor was requested, open request view
-                  if (favor.getRequesterId().equals(UserUtil.currentUserId)) {
+                  if (favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
                     Navigation.findNavController(requireView())
                         .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
                   } else { // if favor was accepted, open accept view
