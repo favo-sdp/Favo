@@ -80,7 +80,6 @@ public class FavorPage extends Fragment {
   @Override
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
-    lastQuery = "";
     setHasOptionsMenu(true);
   }
 
@@ -266,7 +265,7 @@ public class FavorPage extends Fragment {
     setOnMenuItemActions(searchMenuItem);
     setOnQueryTextListeners();
 
-    if (!lastQuery.equals("")) {
+    if (lastQuery != null) {
       searchView.post(() -> searchView.setQuery(lastQuery, false));
       searchMenuItem.expandActionView();
     }
@@ -283,27 +282,26 @@ public class FavorPage extends Fragment {
           @Override
           public boolean onQueryTextChange(String newText) {
 
-            if (radioGroup.getVisibility() == View.VISIBLE) {
-              if (activeToggle.isChecked()) {
-                tipTextView.setText(R.string.favor_no_active_favor);
-                displayFavorList(activeFavorsOptions);
-              } else {
-                tipTextView.setText(R.string.favor_no_archived_favor);
-                displayFavorList(archiveFavorsOptions);
-              }
-            } else {
-              FirestorePagingOptions<Favor> options;
-              if (newText.equals("")) {
-                options = createFirestorePagingOptions(baseQuery);
-              } else {
-                options = createFirestorePagingOptions(baseQuery.whereEqualTo("title", newText));
-                lastQuery = newText;
-              }
-
-              displayFavorList(options);
+            // complex condition to prevent modification of last query when callback is fired on
+            // fragment replacement and on back button pressed
+            if (radioGroup.getVisibility() == View.VISIBLE
+                || searchView.isIconified()
+                || !isVisible()) {
+              // Don't call setSearchQuery when SearchView is collapsing/collapsed
+              return true;
             }
 
-            return false;
+            Query query;
+            if (newText.equals("")) {
+              query = baseQuery;
+            } else {
+              query = baseQuery.whereEqualTo("title", newText);
+            }
+
+            lastQuery = newText;
+            displayFavorList(createFirestorePagingOptions(query));
+
+            return true;
           }
         });
   }
@@ -314,10 +312,19 @@ public class FavorPage extends Fragment {
 
           @Override
           public boolean onMenuItemActionExpand(MenuItem item) {
-            searchView.post(() -> searchView.setQuery(lastQuery, false));
             radioGroup.setVisibility(View.INVISIBLE);
             ((MainActivity) (requireActivity())).hideBottomNavigation();
             tipTextView.setText(R.string.query_failed);
+
+            Query query;
+            if (lastQuery == null || lastQuery.equals("")) {
+              query = baseQuery;
+              lastQuery = "";
+            } else {
+              query = baseQuery.whereEqualTo("title", lastQuery);
+            }
+
+            displayFavorList(createFirestorePagingOptions(query));
             return true;
           }
 
@@ -325,7 +332,16 @@ public class FavorPage extends Fragment {
           public boolean onMenuItemActionCollapse(MenuItem item) {
             radioGroup.setVisibility(View.VISIBLE);
             ((MainActivity) (requireActivity())).showBottomNavigation();
-            lastQuery = "";
+            lastQuery = null;
+
+            if (activeToggle.isChecked()) {
+              tipTextView.setText(R.string.favor_no_active_favor);
+              displayFavorList(activeFavorsOptions);
+            } else {
+              tipTextView.setText(R.string.favor_no_archived_favor);
+              displayFavorList(archiveFavorsOptions);
+            }
+
             return true;
           }
         });
