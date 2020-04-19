@@ -21,11 +21,11 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static androidx.navigation.Navigation.findNavController;
 import static androidx.test.espresso.Espresso.onView;
@@ -68,7 +68,6 @@ public class FavorDetailViewTest {
   @UiThreadTest
   public void setUp() {
     fakeFavor = FakeItemFactory.getFavor();
-    UserUtil.currentUserId = "USER";
     navController = findNavController(mainActivityTestRule.getActivity(), R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
     bundle.putParcelable(FavorFragmentFactory.FAVOR_ARGS, fakeFavor);
@@ -104,7 +103,7 @@ public class FavorDetailViewTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_respond_success_msg)));
     onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
+        .check(matches(withText(FavorStatus.ACCEPTED.toString())));
   }
 
   @Test
@@ -130,7 +129,7 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.accept_favor)));
     // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
-    anotherFavorWithSameId.setStatusId(Favor.Status.ACCEPTED);
+    anotherFavorWithSameId.setStatusIdToInt(FavorStatus.ACCEPTED_BY_OTHER);
     anotherFavorWithSameId.setAccepterId("another user");
     mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -138,7 +137,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(FavorViewStatus.ACCEPTED_BY_OTHER.getPrettyString())));
+        .check(matches(withText(FavorStatus.ACCEPTED_BY_OTHER.toString())));
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_remotely_changed_msg)));
@@ -151,14 +150,14 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.accept_favor)));
     // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
-    anotherFavorWithSameId.setStatusId(Favor.Status.CANCELLED_REQUESTER);
+    anotherFavorWithSameId.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
     mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(FavorViewStatus.CANCELLED_REQUESTER.getPrettyString())));
+        .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_remotely_changed_msg)));
@@ -181,8 +180,9 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check display is updated
     onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(FavorViewStatus.CANCELLED_ACCEPTER.getPrettyString())));
+        .check(matches(withText(FavorStatus.CANCELLED_ACCEPTER.toString())));
 
+    Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_cancel_success_msg)));
@@ -208,7 +208,7 @@ public class FavorDetailViewTest {
     Thread.sleep(500);
     // check display is updated
     onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
+        .check(matches(withText(FavorStatus.ACCEPTED.toString())));
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))

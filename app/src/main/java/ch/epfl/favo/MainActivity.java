@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;

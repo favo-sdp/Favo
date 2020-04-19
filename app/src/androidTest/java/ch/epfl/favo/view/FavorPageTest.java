@@ -8,7 +8,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
@@ -42,6 +41,7 @@ import static org.hamcrest.core.AllOf.allOf;
 @RunWith(AndroidJUnit4.class)
 public class FavorPageTest {
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
+
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -166,7 +166,6 @@ public class FavorPageTest {
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
 
-
   @Test
   public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
     // Click on favors tab
@@ -186,7 +185,7 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(4000); //wait for snackbar to hide
+    Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
     onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
