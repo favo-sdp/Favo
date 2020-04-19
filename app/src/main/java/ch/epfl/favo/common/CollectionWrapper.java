@@ -1,5 +1,7 @@
 package ch.epfl.favo.common;
 
+import com.google.firebase.firestore.Query;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -34,5 +36,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
 
   public CompletableFuture<List<T>> getAllDocuments() {
     return DatabaseWrapper.getAllDocuments(cls, collection);
+  }
+  public Query getDocumentsWithQuery(Map<String,Object> keyValuePairs){
+    return DatabaseWrapper.getDocumentsWithQuery(keyValuePairs,collection);
   }
 }

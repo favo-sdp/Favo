@@ -7,6 +7,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -87,8 +88,14 @@ public class DatabaseWrapper {
       Class<T> cls, String collection) {
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
-
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
+  }
+  static <T extends Document>  Query getDocumentsWithQuery(Map<String,Object> keyValuePairs,String collection){
+    Query query = getCollectionReference(collection);
+    for (Map.Entry<String,Object> entry : keyValuePairs.entrySet()){
+      query = query.whereEqualTo(entry.getKey(), entry.getValue());
+    }
+    return query;
   }
 
   private static CollectionReference getCollectionReference(String collection) {

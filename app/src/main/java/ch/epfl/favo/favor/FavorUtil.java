@@ -4,7 +4,10 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.firebase.firestore.Query;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -75,11 +78,15 @@ public class FavorUtil {
    *
    * @param userId Id of the user
    */
-  public ArrayList<Favor> retrieveAllActiveFavorsForGivenUser(String userId) {
+  public Query retrieveAllActiveFavorsForGivenUser(String userId) {
 
     // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except active ones
-    throw new NotImplementedException();
+    Map<String,Object> queryValues = new HashMap<String,Object>(){{
+      put(Favor.REQUESTER_ID,DependencyFactory.getCurrentFirebaseUser().getUid());
+      put(Favor.IS_ARCHIVED,false);
+    }};
+    return collection.getDocumentsWithQuery(queryValues);
   }
 
   /**
@@ -87,11 +94,15 @@ public class FavorUtil {
    *
    * @param userId Id of the user
    */
-  public ArrayList<Favor> retrieveAllPastFavorsForGivenUser(String userId) {
+  public Query retrieveAllPastFavorsForGivenUser(String userId) {
 
     // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except inactive (past) ones
-    throw new NotImplementedException();
+    Map<String,String> queryValues = new HashMap<String,String>(){{
+      put(Favor.REQUESTER_ID,DependencyFactory.getCurrentFirebaseUser().getUid());
+      put(Favor.IS_ARCHIVED,"true");
+    }};
+    return collection.getDocumentsWithQuery(queryValues);
   }
 
   /**
@@ -115,6 +126,7 @@ public class FavorUtil {
 
     // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except accepted
+
     throw new NotImplementedException();
   }
 

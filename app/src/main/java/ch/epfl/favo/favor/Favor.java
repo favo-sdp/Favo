@@ -30,7 +30,7 @@ public class Favor implements Parcelable, Document {
   public static final String LOCATION = "location";
   public static final String POSTED_TIME = "postedTime";
   public static final String STATUS_ID = "statusId";
-  private static final String IS_ARCHIVED = "isArchived";
+  public static final String IS_ARCHIVED = "isArchived";
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {

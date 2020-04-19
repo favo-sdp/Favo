@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
+import ch.epfl.favo.viewmodel.FavorViewModel;
 
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
 
@@ -37,7 +39,7 @@ import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
  * subclass.
  */
 public class FavorPage extends Fragment {
-
+  private FavorViewModel favorViewModel;
   private Map<String, Favor> activeFavors;
   private Map<String, Favor> archivedFavors;
   private TextView tipTextView;
@@ -57,9 +59,14 @@ public class FavorPage extends Fragment {
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
     // Extract two arrayLists from the main activity
+    FavorViewModel favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
     MainActivity activity = (MainActivity) Objects.requireNonNull(getActivity());
-    activeFavors = activity.activeFavors;
-    archivedFavors = activity.archivedFavors;
+    favorViewModel.getMyActiveFavors().observe(this, stringFavorMap -> {
+      activeFavors = stringFavorMap;
+    });
+    favorViewModel.getMyPastFavors().observe(this, stringFavorMap -> {
+      archivedFavors = stringFavorMap;
+    });
     setHasOptionsMenu(true);
   }
 
@@ -118,6 +125,7 @@ public class FavorPage extends Fragment {
   }
 
   private void displayFavorList(Map<String, Favor> favors, int textId) {
+    if (favors==null) showText((getString(textId)));
     if (favors.isEmpty()) showText((getString(textId)));
     else tipTextView.setVisibility(View.INVISIBLE);
     listView.setAdapter(new FavorAdapter(getContext(), new ArrayList<>(favors.values())));
