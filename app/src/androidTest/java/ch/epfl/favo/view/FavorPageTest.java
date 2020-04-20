@@ -9,7 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
@@ -24,6 +23,7 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
@@ -41,6 +41,7 @@ import static org.hamcrest.core.AllOf.allOf;
 @RunWith(AndroidJUnit4.class)
 public class FavorPageTest {
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
+
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -66,7 +67,7 @@ public class FavorPageTest {
   @Test
   public void testFavorPageElements() {
     // click on favors tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check that tab 2 is indeed opened
@@ -93,7 +94,7 @@ public class FavorPageTest {
   @Test
   public void testTextDisplayedWhenListEmpty() {
     // click on favors tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check that tab 2 is indeed opened
@@ -119,7 +120,7 @@ public class FavorPageTest {
   @Test
   public void testNewFavorButton() {
     // Click on favors tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check that tab 2 is indeed opened
@@ -137,7 +138,7 @@ public class FavorPageTest {
   @Test
   public void testFavorRequestUpdatesListView() {
     // Click on favors tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on new favor tab
@@ -155,18 +156,17 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on back button
-    onView(withId(R.id.back_button)).check(matches(isDisplayed())).perform(click());
+    onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check favor is displayed in active favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
 
-
   @Test
-  public void testFavorCancelUpdatesActiveAndArchivedListView() {
+  public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
     // Click on favors tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on new favor tab
@@ -182,13 +182,14 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
     onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Go back
-    onView(withId(R.id.back_button)).perform(click());
+    onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Check favor is not displayed in active list

@@ -24,18 +24,18 @@ import java.util.function.Function;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
 
 import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
 
-  private FavorViewStatus viewStatus;
+  private FavorStatus favorStatus;
   private Favor currentFavor;
   private FloatingActionButton locationAccessBtn;
   private Button acceptAndCancelFavorBtn;
@@ -49,8 +49,6 @@ public class FavorDetailView extends Fragment {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // hide bottom tabs and hamburger menu
-    setupView();
     // inflate view
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     setupButtons(rootView);
@@ -80,7 +78,7 @@ public class FavorDetailView extends Fragment {
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
         v -> {
-          if (currentFavor.getStatusId() == Favor.Status.REQUESTED) {
+          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) {
             acceptFavor();
           } else {
             cancelFavor();
@@ -89,9 +87,8 @@ public class FavorDetailView extends Fragment {
   }
 
   private void cancelFavor() {
-    CompletableFuture completableFuture =
-        FavorUtil.getSingleInstance()
-            .updateFavorStatus(currentFavor.getId(), Favor.Status.CANCELLED_ACCEPTER);
+    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
+    CompletableFuture completableFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
@@ -103,27 +100,24 @@ public class FavorDetailView extends Fragment {
       ((MainActivity) getActivity()).activeFavors.remove(currentFavor.getId());
       ((MainActivity) getActivity()).archivedFavors.remove(currentFavor.getId());
       // update UI
-      currentFavor.setStatusId(Favor.Status.CANCELLED_ACCEPTER);
-      viewStatus = convertFavorStatusToViewStatus(currentFavor);
+      currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
+      favorStatus = verifyFavorHasBeenAccepted(currentFavor);
       updateDisplayFromViewStatus();
     };
   }
 
-  private FavorViewStatus convertFavorStatusToViewStatus(Favor favor) {
-    // Equivalent mapping except for the accepted case. Here we check if the
-    // accepter Id matches the current user
-    Favor.Status favorStatus = favor.getStatusId();
-    FavorViewStatus resultStatus;
-    if (favorStatus.equals(Favor.Status.ACCEPTED)
-        && !favor.getRequesterId().equals(UserUtil.currentUserId)) {
-      resultStatus = FavorViewStatus.ACCEPTED_BY_OTHER;
-    } else { // need to ensure that the name is the same as the name in Favor class
-      resultStatus = FavorViewStatus.valueOf(favorStatus.toString());
+  // Verifies favor hasn't already been accepted
+  private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
+    FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
+    if (favorStatus.equals(FavorStatus.ACCEPTED)
+        && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+      favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
     }
-    return resultStatus;
+    return favorStatus;
   }
 
   private void acceptFavor() {
+    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     CompletableFuture<Favor> favorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db
@@ -135,8 +129,7 @@ public class FavorDetailView extends Fragment {
             displayFromFavor(getView(), favor);
           } else { // update DB with accepted status
             CompletableFuture updateFavorFuture =
-                FavorUtil.getSingleInstance()
-                    .updateFavorStatus(favor.getId(), Favor.Status.ACCEPTED);
+                FavorUtil.getSingleInstance().updateFavor(currentFavor);
             updateFavorFuture.thenAccept(favorAcceptedConsumer());
             updateFavorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
           }
@@ -158,8 +151,8 @@ public class FavorDetailView extends Fragment {
 
       ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       ((MainActivity) requireActivity()).otherActiveFavorsAround.remove(currentFavor.getId());
-      currentFavor.setStatusId(Favor.Status.ACCEPTED);
-      viewStatus = FavorViewStatus.ACCEPTED;
+      currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+      favorStatus = FavorStatus.ACCEPTED;
       updateDisplayFromViewStatus();
     };
   }
@@ -170,7 +163,7 @@ public class FavorDetailView extends Fragment {
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
     // update status string
-    viewStatus = convertFavorStatusToViewStatus(favor);
+    favorStatus = verifyFavorHasBeenAccepted(favor);
     updateDisplayFromViewStatus();
 
     setupTextView(rootView, R.id.datetime_accept_view, timeStr);
@@ -179,9 +172,9 @@ public class FavorDetailView extends Fragment {
   }
 
   private void updateDisplayFromViewStatus() {
-    statusText.setText(viewStatus.getPrettyString());
+    statusText.setText(favorStatus.toString());
     updateButtonDisplay();
-    switch (viewStatus) {
+    switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
         {
           enableButtons(false);
@@ -207,7 +200,7 @@ public class FavorDetailView extends Fragment {
     String displayMessage;
     int backgroundColor;
     Drawable img;
-    if (viewStatus == FavorViewStatus.ACCEPTED) {
+    if (favorStatus == FavorStatus.ACCEPTED) {
       displayMessage = getString(R.string.cancel_accept_button_display);
       backgroundColor = R.color.fui_transparent;
       img = getResources().getDrawable(R.drawable.ic_cancel_24dp);
@@ -230,9 +223,5 @@ public class FavorDetailView extends Fragment {
     TextView textView = rootView.findViewById(id);
     textView.setText(text);
     textView.setKeyListener(null);
-  }
-
-  private void setupView() {
-    ((ViewController) getActivity()).setupViewBotDestTab();
   }
 }

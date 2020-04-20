@@ -26,13 +26,14 @@ public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
@@ -64,35 +65,10 @@ public class FavorUtilTest {
         .when(mockDatabaseWrapper)
         .updateDocument(Mockito.anyString(), Mockito.anyMap());
     assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isDone());
-    CompletableFuture failedTask = new CompletableFuture<>();
-    failedTask.completeExceptionally(new RuntimeException());
-    assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isCompletedExceptionally());
   }
 
   @Test
-  public void testUpdateFavorStatus() {
-    CompletableFuture successfulTask = new CompletableFuture<>();
-    successfulTask.complete(null);
-    Mockito.doReturn(successfulTask)
-        .when(mockDatabaseWrapper)
-        .updateDocument(Mockito.anyString(), Mockito.anyMap());
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    assertTrue(
-        FavorUtil.getSingleInstance().updateFavorStatus("bla", Favor.Status.ACCEPTED).isDone());
-    CompletableFuture failedTask = new CompletableFuture<>();
-    failedTask.completeExceptionally(new RuntimeException());
-    Mockito.doReturn(failedTask)
-        .when(mockDatabaseWrapper)
-        .updateDocument(Mockito.anyString(), Mockito.anyMap());
-    assertTrue(
-        FavorUtil.getSingleInstance()
-            .updateFavorStatus("bla", Favor.Status.ACCEPTED)
-            .isCompletedExceptionally());
-  }
-
-  @Test
-  public void testGetSingleFavorThrowsRuntimeException()
-      throws ExecutionException, InterruptedException {
+  public void testGetSingleFavorThrowsRuntimeException() {
     Favor fakeFavor = FakeItemFactory.getFavor();
     Mockito.doThrow(new RuntimeException())
         .when(mockDatabaseWrapper)

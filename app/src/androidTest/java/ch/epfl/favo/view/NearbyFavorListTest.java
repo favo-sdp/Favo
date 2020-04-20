@@ -2,6 +2,7 @@ package ch.epfl.favo.view;
 
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.EditText;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
@@ -21,12 +22,12 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -64,13 +65,13 @@ public class NearbyFavorListTest {
 
     private void openSearchView(){
         try{
-            Thread.sleep(5000);
+            Thread.sleep(1000);
             // switch to nearby favor list view
             onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
             getInstrumentation().waitForIdleSync();
 
             //Click on searchView button
-            onView(withId(R.id.nearby_searchView)).check(matches(isDisplayed())).perform(click());
+            onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
             getInstrumentation().waitForIdleSync();
         }catch (Exception e){
             Log.d("listTest", e.getMessage());
@@ -79,10 +80,9 @@ public class NearbyFavorListTest {
 
     @Test
     public void testSearchViewFound() {
-
         openSearchView();
         //type the title of fake favor
-        onView(withId(R.id.nearby_searchView)).perform(typeText(favor.getTitle())).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(isAssignableFrom(EditText.class)).perform(typeText(favor.getTitle())).perform(pressKey(KeyEvent.KEYCODE_ENTER));
         getInstrumentation().waitForIdleSync();
 
         // check query is successful and click on found item
@@ -90,17 +90,12 @@ public class NearbyFavorListTest {
         getInstrumentation().waitForIdleSync();
 
         // Click on back button
-        onView(withId(R.id.back_button)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
-
-        // press two times of back button to quit search mode
-        pressBack();
-        pressBack();
 
         // check active favors are displayed in active favor list view
         onView(withText(favor.getDescription())).check(matches(isDisplayed()));
         getInstrumentation().waitForIdleSync();
-
     }
 
     @Test
@@ -108,7 +103,7 @@ public class NearbyFavorListTest {
         openSearchView();
 
         //type the title of fake favor
-        onView(withId(R.id.nearby_searchView)).perform(typeText("random words")).perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        onView(isAssignableFrom(EditText.class)).perform(typeText("random words")).perform(pressKey(KeyEvent.KEYCODE_ENTER));
         getInstrumentation().waitForIdleSync();
 
         // check the tip text is displayed when query failed
@@ -117,9 +112,10 @@ public class NearbyFavorListTest {
                 .check(matches(withText(R.string.query_failed)));
         onView(withText(favor.getDescription())).check(doesNotExist());
 
-        //Click on close searchView button
-        pressBack();
-        pressBack();
+        // Click on back button
+        onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
+        getInstrumentation().waitForIdleSync();
+
         // check active favors are displayed in active favor list view
         onView(withText(favor.getDescription())).check(matches(isDisplayed()));
         getInstrumentation().waitForIdleSync();
@@ -129,25 +125,26 @@ public class NearbyFavorListTest {
     public void testClickScreenHideKeyboard(){
         openSearchView();
         //Click on searchView button
-        onView(withId(R.id.nearby_searchView)).check(matches(isDisplayed())).perform(click());
+        onView(isAssignableFrom(EditText.class)).check(matches(isDisplayed())).perform(click());
         getInstrumentation().waitForIdleSync();
 
         //Click on upper left screen corner
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        device.click(10,50);
+        device.click(10,50);    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+
         // if keyboard is not displayed, one time of pressBack will return to Favor List view
-        pressBack();
+        onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
         // check favor is displayed in active favor list view
         //onData(anything()).inAdapterView(withId(R.id.nearby_favor_list)).atPosition(0).perform(click());
         onView(withText(favor.getTitle())).check(matches(isDisplayed()));
     }
 
     @Test
-    public void FavorDetailViewJumptoMapTest(){
-        // just wait and change to listView
-        openSearchView();
-        pressBack();
-        pressBack();
+    public void FavorDetailViewJumptoMapTest() throws InterruptedException {
+        Thread.sleep(1000);
+        // switch to nearby favor list view
+        onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
+        getInstrumentation().waitForIdleSync();
 
         // check test favor is found click on found item
         onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
@@ -155,6 +152,7 @@ public class NearbyFavorListTest {
 
         // Check and click on the location text
         onView(withId(R.id.location_accept_view_btn)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
     }
 }
 

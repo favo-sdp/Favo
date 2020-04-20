@@ -1,28 +1,16 @@
 package ch.epfl.favo.favor;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.location.Location;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.QuerySnapshot;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
-import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.TaskToFutureAdapter;
 
 /*
 This models the favor request.
@@ -60,21 +48,8 @@ public class FavorUtil {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
-    Map updates =
-        new HashMap<String, String>() {
-          {
-            put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
-            put(Favor.STATUS_ID, newStatus.toString());
-          }
-        };
-    return updateFavor(favorId, updates);
   }
 
   /**
@@ -83,14 +58,6 @@ public class FavorUtil {
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
     return collection.getDocument(favorId);
-  }
-
-  /**
-   * @param favorId the id of the favor to retrieve from DB.
-   * @return CompletableFuture<Favor>
-   */
-  public CompletableFuture updateFavor(String favorId, Map<String, Object> updates) {
-    return collection.updateDocument(favorId, updates);
   }
 
   /**

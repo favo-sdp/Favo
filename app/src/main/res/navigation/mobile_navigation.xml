@@ -32,7 +32,7 @@
             app:launchSingleTop="true"/>
         <action
             android:id="@+id/action_nav_map_to_nav_favorlist"
-            app:destination="@id/nav_favorlist"
+            app:destination="@id/nav_favorList"
             app:launchSingleTop="true"/>
         <action
             android:id="@+id/action_nav_map_to_favorRequestView"
@@ -66,12 +66,12 @@
 
 
     <fragment
-        android:id="@+id/nav_favorlist"
+        android:id="@+id/nav_favorList"
         android:name="ch.epfl.favo.view.tabs.FavorPage"
         android:label="FavorView"
         tools:layout="@layout/fragment_favorpage">
         <action
-            android:id="@+id/action_nav_favorlist_to_favorRequestView"
+            android:id="@+id/action_nav_favorList_to_favorRequestView"
             app:destination="@id/favorRequestView">
             <argument
                 android:name="FAVOR_ARGS"
@@ -91,7 +91,7 @@
         android:id="@+id/favorRequestView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorRequestView"
         android:label="FavorRequestView"
-        tools:layout="@layout/fragment_favor" />
+        tools:layout="@layout/fragment_favor_request_view" />
     <fragment
         android:id="@+id/favorDetailView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
@@ -111,6 +111,15 @@
             android:defaultValue="@null"
             app:argType="ch.epfl.favo.favor.Favor" />
     </action>
+    <action
+        android:id="@+id/action_global_favorRequestView"
+        app:destination="@id/favorRequestView">
+        <argument
+            android:name="FAVOR_ARGS"
+            android:defaultValue="@null"
+            app:argType="ch.epfl.favo.favor.Favor" />
+    </action>
+
     <action android:id="@+id/action_global_nav_account"
         app:destination="@id/nav_account"
         app:launchSingleTop="true" />

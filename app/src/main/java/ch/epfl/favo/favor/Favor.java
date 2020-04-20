@@ -1,5 +1,6 @@
 package ch.epfl.favo.favor;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,33 +8,29 @@ import android.os.Parcelable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.FavoLocation;
+
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
  * description, requester, accepter, location and status
  */
+@SuppressLint("NewApi")
 public class Favor implements Parcelable, Document {
-  public enum Status {
-    REQUESTED,
-    ACCEPTED,
-    EXPIRED,
-    CANCELLED_REQUESTER,
-    CANCELLED_ACCEPTER,
-    SUCCESSFULLY_COMPLETED
-  }
 
   // String constants for Map conversion
-  public static final String ID = "ID";
-  public static final String TITLE = "Title";
-  public static final String DESCRIPTION = "Description";
-  public static final String REQUESTER_ID = "RequesterID";
-  public static final String ACCEPTER_ID = "AccepterID";
-  public static final String LOCATION = "Location";
-  public static final String POSTED_TIME = "Posted time";
-  public static final String STATUS_ID = "Status ID";
+  public static final String ID = "id";
+  public static final String TITLE = "title";
+  public static final String DESCRIPTION = "description";
+  public static final String REQUESTER_ID = "requesterId";
+  public static final String ACCEPTER_ID = "accepterId";
+  public static final String LOCATION = "location";
+  public static final String POSTED_TIME = "postedTime";
+  public static final String STATUS_ID = "statusId";
+  private static final String IS_ARCHIVED = "isArchived";
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
@@ -54,16 +51,14 @@ public class Favor implements Parcelable, Document {
   private String accepterId;
   private FavoLocation location;
   private Date postedTime;
-  private Status statusId;
+  private int statusId;
+  private boolean isArchived;
 
   public Favor() {}
 
+  // General Constructor
   public Favor(
-      String title,
-      String description,
-      String requesterId,
-      FavoLocation location,
-      Status statusId) {
+      String title, String description, String requesterId, FavoLocation location, int statusId) {
 
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
@@ -73,6 +68,7 @@ public class Favor implements Parcelable, Document {
     this.postedTime = new Date();
     this.statusId = statusId;
     this.accepterId = null;
+    this.isArchived = false;
   }
 
   // Constructor to override default generated Id
@@ -82,9 +78,20 @@ public class Favor implements Parcelable, Document {
       String description,
       String requesterId,
       FavoLocation location,
-      Status statusId) {
+      int statusId) {
     this(title, description, requesterId, location, statusId);
     this.id = id;
+  }
+
+  // Constructor to make statusId int conversion implicit
+  public Favor(
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      FavorStatus statusId) {
+
+    this(title, description, requesterId, location, statusId.toInt());
   }
 
   /**
@@ -100,7 +107,8 @@ public class Favor implements Parcelable, Document {
     this.accepterId = (String) map.get(ACCEPTER_ID);
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
-    this.statusId = (Status) map.get(STATUS_ID);
+    this.statusId = (int) map.get(STATUS_ID);
+    this.isArchived = (boolean) map.get(IS_ARCHIVED);
   }
 
   /**
@@ -115,9 +123,9 @@ public class Favor implements Parcelable, Document {
     accepterId = in.readString();
     location = in.readParcelable(Location.class.getClassLoader());
     try {
-      statusId = Status.valueOf(in.readString());
-    } catch (Exception e) { // null pointer
-      statusId = null;
+      statusId = in.readInt();
+    } catch (Exception e) {
+      statusId = -1;
     }
   }
 
@@ -138,6 +146,7 @@ public class Favor implements Parcelable, Document {
         put(LOCATION, location);
         put(POSTED_TIME, postedTime);
         put(STATUS_ID, statusId);
+        put(IS_ARCHIVED, isArchived);
       }
     };
   }
@@ -158,6 +167,10 @@ public class Favor implements Parcelable, Document {
     return accepterId;
   }
 
+  public boolean getIsArchived() {
+    return isArchived;
+  }
+
   public void setAccepterId(String id) {
     this.accepterId = id;
   }
@@ -172,12 +185,25 @@ public class Favor implements Parcelable, Document {
    *
    * @return statusID
    */
-  public Status getStatusId() {
+  public int getStatusId() {
     return statusId;
   }
 
-  public void setStatusId(Status statusId) {
+  private void setStatusId(int statusId) {
     this.statusId = statusId;
+    if (IntStream.of(FavorStatus.archivedStates).anyMatch(i -> i == statusId)) {
+      this.setIsArchived(true);
+    } else {
+      this.setIsArchived(false);
+    }
+  }
+
+  public void setIsArchived(boolean val) {
+    this.isArchived = val;
+  }
+
+  public void setStatusIdToInt(FavorStatus statusId) {
+    setStatusId(statusId.toInt());
   }
 
   public FavoLocation getLocation() {
@@ -200,7 +226,7 @@ public class Favor implements Parcelable, Document {
     dest.writeString(requesterId);
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
-    dest.writeString(statusId.toString());
+    dest.writeInt(statusId);
   }
 
   public void updateToOther(Favor other) {
@@ -216,7 +242,7 @@ public class Favor implements Parcelable, Document {
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)
-        && this.statusId.equals(other.getStatusId())
+        && this.statusId == other.getStatusId()
         && this.location.equals(other.location);
   }
 }

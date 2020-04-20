@@ -16,19 +16,17 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:id="@+id/edit_buttons_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_bottom_button"
             android:gravity="center_horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageView">
+            app:layout_constraintTop_toBottomOf="@id/image_view_request_view">
 
             <Button
                 android:id="@+id/edit_favor_button"
@@ -89,8 +87,8 @@
             android:hint="@string/favor_details_hint"
             android:inputType="textMultiLine"
             android:lines="5"
-            android:maxLines="7"
-            android:minLines="5"
+            android:maxLines="5"
+            android:minLines="3"
             android:scrollbars="vertical"
 
             app:layout_constraintTop_toBottomOf="@id/title_request_view" />
@@ -99,7 +97,7 @@
             android:id="@+id/picture_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -126,12 +124,13 @@
 
         <ImageView
             android:id="@+id/image_view_request_view"
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="22dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginVertical="10dp"
             android:contentDescription="@string/favor_img_content_desc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/edit_buttons_layout"
 
             app:layout_constraintTop_toBottomOf="@id/picture_buttons" />
 

@@ -30,25 +30,23 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
-import static ch.epfl.favo.view.tabs.addFavor.FavorViewStatus.convertViewStatusToFavorStatus;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
 
-
   public static final int PICK_IMAGE_REQUEST = 1;
   public static final int USE_CAMERA_REQUEST = 2;
-  private FavorViewStatus viewStatus;
+  private FavorStatus favorStatus;
   private ImageView mImageView;
   private EditText mTitleView;
   private EditText mDescriptionView;
@@ -70,7 +68,7 @@ public class FavorRequestView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    View rootView = inflater.inflate(R.layout.fragment_favor, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
     setupButtons(rootView);
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
@@ -97,10 +95,10 @@ public class FavorRequestView extends Fragment {
 
   /** When fragment is launched with favor. */
   public void displayFavorInfo(View v) {
-    viewStatus = FavorViewStatus.valueOf(currentFavor.getStatusId().toString());
+    favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    mStatusView.setText(viewStatus.getPrettyString());
+    mStatusView.setText(favorStatus.toString());
 
     updateViewFromStatus(v);
   }
@@ -140,7 +138,7 @@ public class FavorRequestView extends Fragment {
     editFavorBtn.setOnClickListener(
         v -> {
           // if text is currently "Update Request"
-          if (viewStatus.equals(FavorViewStatus.EDIT)) {
+          if (favorStatus.equals(FavorStatus.EDIT)) {
             confirmUpdatedFavor();
           } else { // text is currently "Edit Request"
             startUpdatingFavor();
@@ -169,8 +167,8 @@ public class FavorRequestView extends Fragment {
    */
   private void requestFavor() {
     // update currentFavor
-    viewStatus = FavorViewStatus.REQUESTED;
-    getFavorFromView(viewStatus);
+    favorStatus = FavorStatus.REQUESTED;
+    getFavorFromView(favorStatus);
     // post to DB
     FavorUtil.getSingleInstance().postFavor(currentFavor);
     // Save the favor to local favorList
@@ -204,12 +202,13 @@ public class FavorRequestView extends Fragment {
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     currentFavorFuture.thenAccept(
         favor -> {
-          if (favor.getStatusId().equals(Favor.Status.ACCEPTED)) {
+          if (favor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
             CommonTools.showSnackbar(getView(), getString(R.string.fail_edit_favor_request_view));
-            currentFavor.setStatusId(favor.getStatusId());
-            viewStatus = FavorViewStatus.valueOf(favor.getStatusId().toString());
+            favorStatus = FavorStatus.toEnum(favor.getStatusId());
+            currentFavor.setStatusIdToInt(favorStatus);
+
           } else {
-            viewStatus = FavorViewStatus.EDIT;
+            favorStatus = FavorStatus.EDIT;
           }
           updateViewFromStatus(getView());
         });
@@ -222,8 +221,8 @@ public class FavorRequestView extends Fragment {
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
-    viewStatus = FavorViewStatus.REQUESTED;
-    getFavorFromView(viewStatus);
+    currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+    getFavorFromView(favorStatus);
     // update lists
     updateMainActivityLists(true);
     updateViewFromStatus(getView());
@@ -235,16 +234,15 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
-    currentFavor.setStatusId(Favor.Status.CANCELLED_REQUESTER);
-    viewStatus = FavorViewStatus.CANCELLED_REQUESTER;
+    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
+    favorStatus = FavorStatus.CANCELLED_REQUESTER;
     updateMainActivityLists(false);
     updateViewFromStatus(getView());
     // Show confirmation and minimize keyboard
     showSnackbar(getString(R.string.favor_cancel_success_msg));
 
     // DB call to update status
-    FavorUtil.getSingleInstance()
-        .updateFavorStatus(currentFavor.getId(), Favor.Status.CANCELLED_REQUESTER);
+    FavorUtil.getSingleInstance().updateFavor(currentFavor);
   }
 
   private void updateMainActivityLists(boolean favorIsActive) {
@@ -261,8 +259,8 @@ public class FavorRequestView extends Fragment {
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {
-    mStatusView.setText(viewStatus.getPrettyString());
-    switch (viewStatus) {
+    mStatusView.setText(favorStatus.toString());
+    switch (favorStatus) {
       case REQUESTED:
         {
           editFavorBtn.setText(R.string.edit_favor);
@@ -321,18 +319,18 @@ public class FavorRequestView extends Fragment {
     }
   }
 
-
   /** Extracts favor data from and assigns it to currentFavor. */
-  private void getFavorFromView(FavorViewStatus status) {
+  private void getFavorFromView(FavorStatus status) {
 
     // Extract details and post favor to Firebase
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
+    String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-    Favor.Status favorStatus = convertViewStatusToFavorStatus(status);
-    Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, favorStatus);
+    status = FavorStatus.convertTemporaryStatus(status);
+    Favor favor = new Favor(title, desc, userId, loc, status);
 
     // Updates the current favor
     if (currentFavor == null) {
@@ -430,7 +428,6 @@ public class FavorRequestView extends Fragment {
    */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    ((ViewController) Objects.requireNonNull(getActivity())).setupViewBotDestTab();
     if (mTitleView.getKeyListener() != null) {
       mTitleView.setTag(mTitleView.getKeyListener());
     }

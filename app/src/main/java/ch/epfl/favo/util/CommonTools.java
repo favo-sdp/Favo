@@ -57,7 +57,7 @@ public class CommonTools {
     return true;
   }
 
-  public static Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope) {
+  public static Map<String, Favor> findFavorByTitleDescription(String query, Map<String, Favor> searchScope) {
     Map<String, Favor> favorsFound = new HashMap<>();
     query = query.toLowerCase();
     for (Favor favor : searchScope.values()) {

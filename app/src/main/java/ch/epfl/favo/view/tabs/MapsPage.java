@@ -34,17 +34,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.ViewController;
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -61,6 +62,7 @@ public class MapsPage extends Fragment
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private boolean mLocationPermissionGranted = false;
   private MainActivity activity;
+  private View view;
 
   public MapsPage() {
     // Required empty public constructor
@@ -69,13 +71,13 @@ public class MapsPage extends Fragment
   @Override
   public View onCreateView(
           LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    setupView();
-    getLocationPermission();
+
     // this is another, maybe better, way to get location, but cannot pass cirrus testing
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
-    View view = inflater.inflate(R.layout.fragment_map, container, false);
+    getLocationPermission();
+    view = inflater.inflate(R.layout.fragment_map, container, false);
     // setup offline map button
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
@@ -83,12 +85,13 @@ public class MapsPage extends Fragment
       button.setVisibility(View.VISIBLE);
     else
       button.setVisibility(View.INVISIBLE);
+
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
     activity = (MainActivity) Objects.requireNonNull(getActivity());
-    updateNearbyList(view);
+    updateNearbyList();
     SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted)
       mapFragment.getMapAsync(this);
@@ -97,7 +100,6 @@ public class MapsPage extends Fragment
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
-    setupView();
     mMap = googleMap;
     mMap.clear();
     mMap.setMyLocationEnabled(true);
@@ -111,6 +113,7 @@ public class MapsPage extends Fragment
               .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
       marker.setSnippet(favor.getDescription());
       marker.showInfoWindow();
+      marker.setTag(favor.getId());
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
     }
     else{
@@ -139,15 +142,10 @@ public class MapsPage extends Fragment
 
   private void onToggleClick(View view){
     Navigation.findNavController(getView())
-            .navigate(R.id.action_nav_map_to_nearby_favor_list, null);
+            .navigate(R.id.action_nav_map_to_nearby_favor_list);
   }
 
-  private void setupView() {
-    ((ViewController) getActivity()).setupViewTopDestTab();
-    ((ViewController) getActivity()).checkMapViewButton();
-  }
-
-  private void updateNearbyList(View view){
+  private void updateNearbyList(){
     String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1 Km");
     double radius = Double.parseDouble(setting.split(" ")[0]);
     try{
@@ -158,8 +156,8 @@ public class MapsPage extends Fragment
               favors1 -> {
                 double latDif = Math.toDegrees(radius / 6371);
                 for (Favor favor : favors1)
-                  if (!favor.getRequesterId().equals(UserUtil.currentUserId)
-                          && favor.getStatusId().equals(Favor.Status.REQUESTED)
+                  if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+                          && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
                           && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
                           && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
                     activity.otherActiveFavorsAround.put(favor.getId(), favor);
@@ -203,7 +201,7 @@ public class MapsPage extends Fragment
       if (grantResults.length > 0
               && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
-        Navigation.findNavController(getView())
+        Navigation.findNavController(view)
                 .navigate(R.id.action_global_nav_map);
       }
     }
@@ -283,11 +281,11 @@ public class MapsPage extends Fragment
     return mWindow;
   }
 
-  private void setSpannableString(String content, TextView view) {
+  private void setSpannableString(String content, TextView textview) {
     if (content != null) {
       SpannableString snippetText = new SpannableString(content);
       snippetText.setSpan(new ForegroundColorSpan(Color.BLACK), 0, content.length(), 0);
-      view.setText(snippetText);
+      textview.setText(snippetText);
     }
   }
 
@@ -299,20 +297,13 @@ public class MapsPage extends Fragment
   @Override
   public void onInfoWindowClick(Marker marker) {
     if (marker.getTitle().equals(getString(R.string.self_location)))
-      Navigation.findNavController(getView()).navigate(R.id.action_nav_map_to_favorRequestView);
+      Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorRequestView);
     else {
-      Favor favor = findFavorInLocalList((String) marker.getTag());
+      Favor favor = activity.otherActiveFavorsAround.get(marker.getTitle());
       Bundle favorBundle = new Bundle();
       favorBundle.putParcelable("FAVOR_ARGS", favor);
-      Navigation.findNavController(getView())
+      Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
     }
-  }
-
-  private Favor findFavorInLocalList(String favorId) {
-    for (Favor favor : activity.otherActiveFavorsAround.values()) {
-      if (favor.getId().equals(favorId)) return favor;
-    }
-    return null;
   }
 }
