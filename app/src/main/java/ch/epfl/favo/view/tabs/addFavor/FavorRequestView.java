@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +24,8 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,6 +39,7 @@ import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.view.ViewController;
 
 import static android.app.Activity.RESULT_OK;
@@ -328,11 +332,28 @@ public class FavorRequestView extends Fragment {
     // Extract details and post favor to Firebase
     EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
     EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
+
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     Favor.Status favorStatus = convertViewStatusToFavorStatus(status);
+
     Favor favor = new Favor(title, desc, UserUtil.currentUserId, loc, favorStatus);
+
+    // Upload picture to database if it exists
+    if (mImageView.getDrawable() != null) {
+      Bitmap bitmap = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+      ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+
+      CompletableFuture<Uri> pictureUrl = PictureUtil.uploadPicture(bais);
+      pictureUrl.thenAccept(url -> favor.setPictureUrl(url));
+      pictureUrl.exceptionally(e -> {
+        // insert something about being unable to upload picture
+        return null;
+      });
+    }
 
     // Updates the current favor
     if (currentFavor == null) {

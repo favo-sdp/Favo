@@ -1,6 +1,7 @@
 package ch.epfl.favo.favor;
 
 import android.location.Location;
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -34,6 +35,7 @@ public class Favor implements Parcelable, Document {
   public static final String LOCATION = "Location";
   public static final String POSTED_TIME = "Posted time";
   public static final String STATUS_ID = "Status ID";
+  public static final String PICTURE_URL = "Picture URL";
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
@@ -55,6 +57,7 @@ public class Favor implements Parcelable, Document {
   private FavoLocation location;
   private Date postedTime;
   private Status statusId;
+  private Uri pictureUrl;
 
   public Favor() {}
 
@@ -101,6 +104,7 @@ public class Favor implements Parcelable, Document {
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
     this.statusId = (Status) map.get(STATUS_ID);
+    this.pictureUrl = (Uri) map.get(PICTURE_URL);
   }
 
   /**
@@ -138,6 +142,7 @@ public class Favor implements Parcelable, Document {
         put(LOCATION, location);
         put(POSTED_TIME, postedTime);
         put(STATUS_ID, statusId);
+        put(PICTURE_URL, pictureUrl);
       }
     };
   }
@@ -188,6 +193,10 @@ public class Favor implements Parcelable, Document {
     this.location = location;
   }
 
+  public Uri getPictureUrl() { return this.pictureUrl; }
+
+  public void setPictureUrl(Uri pictureUrl){ this.pictureUrl = pictureUrl; }
+
   @Override
   public int describeContents() {
     return 0;
@@ -201,6 +210,7 @@ public class Favor implements Parcelable, Document {
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
     dest.writeString(statusId.toString());
+    dest.writeString(pictureUrl.toString());
   }
 
   public void updateToOther(Favor other) {
@@ -211,12 +221,14 @@ public class Favor implements Parcelable, Document {
     this.location = other.getLocation();
     this.postedTime = other.getPostedTime();
     this.statusId = other.getStatusId();
+    this.pictureUrl = other.getPictureUrl();
   }
   // Overriding equals() to compare two Complex objects
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)
         && this.statusId.equals(other.getStatusId())
-        && this.location.equals(other.location);
+        && this.location.equals(other.location)
+        && this.pictureUrl.equals(other.pictureUrl);
   }
 }
