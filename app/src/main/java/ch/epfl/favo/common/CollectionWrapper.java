@@ -1,5 +1,6 @@
 package ch.epfl.favo.common;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
 
   @Override
-  public void addDocument(T document) throws RuntimeException {
-    DatabaseWrapper.addDocument(document, collection);
+  public CompletableFuture addDocument(T document) throws RuntimeException {
+    return DatabaseWrapper.addDocument(document, collection);
   }
 
   public void removeDocument(String key) {
@@ -39,5 +40,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
   public Query getDocumentsWithQuery(Map<String,Object> keyValuePairs){
     return DatabaseWrapper.getDocumentsWithQuery(keyValuePairs,collection);
+  }
+  public DocumentReference getDocumentQuery(String key){
+    return DatabaseWrapper.getDocumentQuery(key,collection);
   }
 }

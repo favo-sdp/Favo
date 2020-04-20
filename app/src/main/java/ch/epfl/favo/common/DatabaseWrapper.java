@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
@@ -57,22 +58,23 @@ public class DatabaseWrapper {
     return sb.toString();
   }
 
-  public static <T extends Document> void addDocument(T document, String collection) {
-    getCollectionReference(collection).document(document.getId()).set(document);
+  public static <T extends Document> CompletableFuture addDocument(T document, String collection) {
+    Task postTask = getDocumentQuery(document.getId(), collection).set(document);
+    return new TaskToFutureAdapter<>(postTask).getInstance();
   }
 
   static <T extends Document> void removeDocument(String key, String collection) {
-    getCollectionReference(collection).document(key).delete();
+    getDocumentQuery(key, collection).delete();
   }
 
   static CompletableFuture updateDocument(String key, Map<String, Object> updates, String collection) {
-    Task update = getCollectionReference(collection).document(key).update(updates);
+    Task update = getDocumentQuery(key, collection).update(updates);
     return new TaskToFutureAdapter<>(update).getInstance();
   }
 
   static <T extends Document> CompletableFuture<T> getDocument(
       String key, Class<T> cls, String collection) throws RuntimeException {
-    Task<DocumentSnapshot> getTask = getCollectionReference(collection).document(key).get();
+    Task<DocumentSnapshot> getTask = getDocumentQuery(key, collection).get();
     CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask).getInstance();
     return getFuture.thenApply(
         documentSnapshot -> {
@@ -82,6 +84,10 @@ public class DatabaseWrapper {
             throw new RuntimeException(String.format("Document %s does not exist ", key));
           }
         });
+  }
+
+  public static DocumentReference getDocumentQuery(String key, String collection) {
+    return getCollectionReference(collection).document(key);
   }
 
   static <T extends Document> CompletableFuture<List<T>> getAllDocuments(

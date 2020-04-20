@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -25,6 +26,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.viewmodel.FavorViewModel;
 
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
@@ -47,13 +49,26 @@ public class FavorDetailView extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     setupButtons(rootView);
     statusText = rootView.findViewById(R.id.status_text_accept_view);
-
+    FavorViewModel favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
     if (currentFavor == null) {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+      setupFavorListener(rootView, favorViewModel,currentFavor);
     }
-    displayFromFavor(rootView, currentFavor);
 
     return rootView;
+  }
+
+  public void setupFavorListener(View rootView, FavorViewModel favorViewModel,Favor favorArgument) {
+
+    favorViewModel.setObservedFavor(favorArgument.getId()).observe(getViewLifecycleOwner(), favor -> {
+      try{
+      currentFavor = favor;
+      displayFromFavor(rootView,currentFavor);
+      }
+      catch (Exception e){
+        CommonTools.showSnackbar(rootView,getString(R.string.unknown_error));
+      }
+    });
   }
 
   private void setupButtons(View rootView) {
@@ -83,12 +98,10 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
 
-      ((MainActivity) getActivity()).activeFavors.remove(currentFavor.getId());
-      ((MainActivity) getActivity()).archivedFavors.remove(currentFavor.getId());
       // update UI
       currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
       favorStatus = verifyFavorHasBeenAccepted(currentFavor);
-      updateDisplayFromViewStatus();
+      //updateDisplayFromViewStatus();
     };
   }
 
@@ -103,17 +116,16 @@ public class FavorDetailView extends Fragment {
   }
 
   private void acceptFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     CompletableFuture<Favor> favorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db
         .thenAccept(
         favor -> {
           if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
-            currentFavor.updateToOther(favor);
+//
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
-            displayFromFavor(getView(), favor);
           } else { // update DB with accepted status
+            currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
             CompletableFuture updateFavorFuture =
                 FavorUtil.getSingleInstance().updateFavor(currentFavor);
             updateFavorFuture.thenAccept(favorAcceptedConsumer());
@@ -126,6 +138,7 @@ public class FavorDetailView extends Fragment {
   private Function favorFailedToBeAcceptedConsumer() {
     return e -> {
       // if already accepted then change the status display and disable all the buttons
+      currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
       CommonTools.showSnackbar(getView(), getString(R.string.update_favor_error));
       return null;
     };
@@ -138,7 +151,6 @@ public class FavorDetailView extends Fragment {
       ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
       favorStatus = FavorStatus.ACCEPTED;
-      updateDisplayFromViewStatus();
     };
   }
 

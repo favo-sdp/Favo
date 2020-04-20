@@ -22,6 +22,8 @@ public class FavorViewModel extends ViewModel {
   FavorUtil favorRepository = FavorUtil.getSingleInstance();
   MutableLiveData<Map<String, Favor>> myActiveFavors = new MutableLiveData<>();
   MutableLiveData<Map<String, Favor>> myPastFavors = new MutableLiveData<>();
+  MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
+
   MutableLiveData<List<Favor>> myActiveFavorList = new MutableLiveData<>();
 
   // save address to firebase
@@ -57,13 +59,31 @@ public class FavorViewModel extends ViewModel {
     }
 
     List<Favor> favors = queryDocumentSnapshots.toObjects(Favor.class);
-    Map<String, Favor> favorMap = new HashMap<String,Favor>(){{
-      for (Favor favor : favors) {
-        put(favor.getId(), favor);
-      }
-    }};
+    Map<String, Favor> favorMap =
+        new HashMap<String, Favor>() {
+          {
+            for (Favor favor : favors) {
+              put(favor.getId(), favor);
+            }
+          }
+        };
 
     return favorMap;
+  }
+
+  public LiveData<Favor> setObservedFavor(String favorId) {
+    favorRepository
+        .getFavorReference(favorId)
+        .addSnapshotListener(
+                (documentSnapshot, e) -> {
+                  if (e != null) {
+                    Log.w(TAG, "Listen Failed", e);
+                    observedFavor = null;
+                    return;
+                  }
+                  observedFavor.setValue(documentSnapshot.toObject(Favor.class));
+                });
+    return observedFavor;
   }
 }
 
