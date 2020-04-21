@@ -53,6 +53,7 @@ public class UserAccountPageTest {
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
+    DependencyFactory.setCurrentGpsTracker(null);
   }
 
   @Test
@@ -68,6 +69,7 @@ public class UserAccountPageTest {
     // set mock user
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
 
     navigateToAccountTab();
@@ -81,6 +83,7 @@ public class UserAccountPageTest {
   public void testUserAlreadyLoggedIn_displayUserData_missingName() {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
@@ -89,6 +92,7 @@ public class UserAccountPageTest {
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingEmail() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, "", PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
@@ -97,6 +101,7 @@ public class UserAccountPageTest {
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingPhoto() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
@@ -107,6 +112,7 @@ public class UserAccountPageTest {
   @Test
   public void testUserAlreadyLoggedIn_signOut() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
@@ -115,6 +121,7 @@ public class UserAccountPageTest {
   @Test
   public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_cancelOperation() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
@@ -131,6 +138,7 @@ public class UserAccountPageTest {
   @Test
   public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_confirmOperation() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();

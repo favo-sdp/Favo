@@ -4,7 +4,6 @@ import android.net.Uri;
 
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 
 public class TestConstants {

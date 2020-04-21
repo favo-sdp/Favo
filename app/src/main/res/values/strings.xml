@@ -22,10 +22,11 @@
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb616130435602635</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <!-- TAB 1 (Huajian) -->
+    <!-- TAB 1 Map and Nearby List -->
     <string name="self_location">FavorRequest</string>
-
+    <string name="no_location_permission">No location permission granted</string>
+    <string name="no_location_found">Permission is granted, but no position is found</string>
+    <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <!-- TAB 2 (David) -->
     <string name="favor_greeting_str">Hello!</string>
     <string name="favor_title_hint">What\'s up?</string>
@@ -57,6 +58,11 @@
     <string name="search_hint">Search title/description</string>
     <string name="query_failed"> No results found</string>
     <string name="empty"> </string>
+
+    <!--Nearby Favor View -->
+    <string name="favor_no_nearby_favor">There is no favor around you</string>
+    <string name="list_toggle">List</string>
+    <string name="map_toggle">Map</string>
 
     <!--Favor Accepting View -->
     <string name="accept_favor">Accept Favor</string>

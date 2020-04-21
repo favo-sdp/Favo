@@ -17,7 +17,6 @@ import org.junit.function.ThrowingRunnable;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +42,7 @@ public class MapUnitTests extends FragmentActivity {
     // Given a mocked Context injected into the object under test...
     when(locationManagerMock.isProviderEnabled(LocationManager.GPS_PROVIDER)).thenReturn(false);
     when(locationManagerMock.isProviderEnabled(LocationManager.NETWORK_PROVIDER)).thenReturn(false);
-    assertThrows(NoPositionFoundException.class, () -> new GpsTracker(contextMock).getLocation());
+    assertThrows( NoPositionFoundException.class, ()->new GpsTracker(contextMock).getLocation());
   }
 
   @Test

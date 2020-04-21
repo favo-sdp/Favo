@@ -5,7 +5,7 @@ import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
@@ -120,12 +120,12 @@ public class FavorUtil {
 
   /**
    * Returns all the favors that are active in a given radius.
-   *
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-  public ArrayList<Favor> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
 
-    throw new NotImplementedException();
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
+    /**It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface**/
+    return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 }

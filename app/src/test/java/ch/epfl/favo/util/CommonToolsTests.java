@@ -4,15 +4,22 @@ import org.junit.Test;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.common.DatabaseWrapper;
+import ch.epfl.favo.favor.Favor;
 
+import static ch.epfl.favo.TestConstants.DESCRIPTION;
+import static ch.epfl.favo.TestConstants.LOCATION;
+import static ch.epfl.favo.TestConstants.REQUESTER_ID;
+import static ch.epfl.favo.TestConstants.TITLE;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 public class CommonToolsTests {
-  CommonTools commonTools = new CommonTools();
 
   @Test
   public void ConvertTimeTest() {

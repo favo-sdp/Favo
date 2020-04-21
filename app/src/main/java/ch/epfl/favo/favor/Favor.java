@@ -201,7 +201,7 @@ public class Favor implements Parcelable, Document {
     }
   }
 
-  public void setIsArchived(boolean val) {
+  private void setIsArchived(boolean val) {
     this.isArchived = val;
   }
 
@@ -213,7 +213,7 @@ public class Favor implements Parcelable, Document {
     return location;
   }
 
-  void setLocation(FavoLocation location) {
+  public void setLocation(FavoLocation location) {
     this.location = location;
   }
 

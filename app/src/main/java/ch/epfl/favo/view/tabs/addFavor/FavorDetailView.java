@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,9 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,6 +30,8 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+
+import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
@@ -64,6 +70,14 @@ public class FavorDetailView extends Fragment {
     acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
+
+    locationAccessBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        ((MainActivity)(Objects.requireNonNull(getActivity()))).focusedFavor = currentFavor;
+        findNavController(getActivity(), R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
+      }
+    });
 
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
@@ -146,6 +160,8 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
 
+      ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
+      ((MainActivity) requireActivity()).otherActiveFavorsAround.remove(currentFavor.getId());
       currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
       favorStatus = FavorStatus.ACCEPTED;
       updateDisplayFromViewStatus();
