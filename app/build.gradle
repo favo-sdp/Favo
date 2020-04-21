@@ -97,8 +97,6 @@ dependencies {
     implementation "com.google.android.material:material:1.2.0-alpha06"
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
-    androidTestImplementation 'org.mockito:mockito-core:3.3.0'
-    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.25.1'
 
     //fragment navigation
     implementation 'androidx.navigation:navigation-fragment:2.2.2'

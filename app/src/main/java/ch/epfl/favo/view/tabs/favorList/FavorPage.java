@@ -27,7 +27,6 @@ import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.firebase.ui.firestore.paging.LoadingState;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import ch.epfl.favo.MainActivity;
@@ -67,10 +66,7 @@ public class FavorPage extends Fragment {
 
   private String lastQuery;
 
-  private static Query baseQuery =
-      DependencyFactory.getCurrentFirestore()
-          .collection("favors")
-          .orderBy("postedTime", Query.Direction.DESCENDING);
+  private Query baseQuery;
 
   public FavorPage() {
     // Required empty public constructor
@@ -98,7 +94,10 @@ public class FavorPage extends Fragment {
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
     baseQuery =
-        baseQuery.whereEqualTo("requesterId", DependencyFactory.getCurrentFirebaseUser().getUid());
+        DependencyFactory.getCurrentFirestore()
+            .collection("favors")
+            .orderBy("postedTime", Query.Direction.DESCENDING)
+            .whereArrayContains("userIds", DependencyFactory.getCurrentFirebaseUser().getUid());
 
     activeFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", false));
     archiveFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", true));
@@ -179,7 +178,9 @@ public class FavorPage extends Fragment {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putParcelable("FAVOR_ARGS", favor);
                   // if favor was requested, open request view
-                  if (favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+                  if (favor
+                      .getRequesterId()
+                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
                     Navigation.findNavController(requireView())
                         .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
                   } else { // if favor was accepted, open accept view

@@ -114,6 +114,7 @@ public class FavorDetailView extends Fragment {
 
   private void acceptFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     CompletableFuture<Favor> favorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db

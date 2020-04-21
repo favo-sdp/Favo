@@ -10,7 +10,7 @@ import ch.epfl.favo.favor.FavorStatus;
 public class TestConstants {
 
   // User related test constants
-  public static final String USER_ID = "3487293";
+  public static final String USER_ID = "FAKE USER ID";
   public static final String DEVICE_ID = "23a48d9hj";
   public static final String EMAIL = "test@example.com";
   public static final String NAME = "Test Testerson";
