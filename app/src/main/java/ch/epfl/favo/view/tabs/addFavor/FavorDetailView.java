@@ -142,6 +142,7 @@ public class FavorDetailView extends Fragment {
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
           } else { // update DB with accepted status
             currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+            currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
             CompletableFuture updateFavorFuture =
                 FavorUtil.getSingleInstance().updateFavor(currentFavor);
             updateFavorFuture.thenAccept(favorAcceptedConsumer());

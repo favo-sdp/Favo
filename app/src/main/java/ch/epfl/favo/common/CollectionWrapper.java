@@ -52,6 +52,7 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     return DatabaseWrapper.getDocumentsWithQuery(keyValuePairs, collection);
   }
 
+
   public DocumentReference getDocumentQuery(String key) {
     return DatabaseWrapper.getDocumentQuery(key, collection);
   }

@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,16 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.viewmodel.FavorViewModel;
+
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -56,22 +54,26 @@ public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
+  private FavorViewModel favorViewModel;
+  private Map<String, Favor> favorsAroundMe;
+  private double radiusThreshold;
   private GoogleMap mMap;
   private Location mLocation;
   private boolean first = true;
-  //private FusedLocationProviderClient mFusedLocationProviderClient;
+  // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private boolean mLocationPermissionGranted = false;
   private MainActivity activity;
   private View view;
-  private int i=0;
+  private int i = 0;
+
   public MapsPage() {
     // Required empty public constructor
   }
 
   @Override
   public View onCreateView(
-          LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
     // this is another, maybe better, way to get location, but cannot pass cirrus testing
     // mFusedLocationProviderClient =
@@ -82,20 +84,20 @@ public class MapsPage extends Fragment
     // setup offline map button
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
+
     if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext())))
       button.setVisibility(View.VISIBLE);
-    else
-      button.setVisibility(View.INVISIBLE);
-
+    else button.setVisibility(View.INVISIBLE);
+    favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
     activity = (MainActivity) Objects.requireNonNull(getActivity());
-    updateNearbyList();
-    SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    if (mapFragment != null && mLocationPermissionGranted)
-      mapFragment.getMapAsync(this);
+    setupNearbyFavorsListener();
+    SupportMapFragment mapFragment =
+        (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+    if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
     return view;
   }
 
@@ -106,18 +108,22 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    if(activity.focusedFavor != null){
+    if (activity.focusedFavor != null) {
       Favor favor = activity.focusedFavor;
       activity.focusedFavor = null;
-      LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
-      Marker marker = mMap.addMarker(new MarkerOptions().position(latLng).title(favor.getTitle())
-              .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+      LatLng latLng =
+          new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
+      Marker marker =
+          mMap.addMarker(
+              new MarkerOptions()
+                  .position(latLng)
+                  .title(favor.getTitle())
+                  .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
       marker.setSnippet(favor.getDescription());
       marker.showInfoWindow();
       marker.setTag(favor.getId());
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
-    }
-    else{
+    } else {
       drawSelfLocationMarker();
       drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
     }
@@ -141,108 +147,118 @@ public class MapsPage extends Fragment
         .show();
   }
 
-  private void onToggleClick(View view){
-    Navigation.findNavController(getView())
-            .navigate(R.id.action_nav_map_to_nearby_favor_list);
+  private void onToggleClick(View view) {
+    Navigation.findNavController(getView()).navigate(R.id.action_nav_map_to_nearby_favor_list);
   }
 
-  private void updateNearbyList(){
+  private void setupNearbyFavorsListener() {
     String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1 Km");
-    double radius = Double.parseDouble(setting.split(" ")[0]);
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
 
-    try{
-      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-      CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
-              .retrieveAllFavorsInGivenRadius(mLocation, radius);
-      favors.thenAccept(
-          favors1 -> {
-            ArrayList<Favor> favors2 = (ArrayList<Favor>) favors1;
-            double latDif = Math.toDegrees(radius / 6371);
-            for (Favor favor : favors2)
-              if (!favor
-                      .getRequesterId()
-                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid())
-                  && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
-                  && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
-                  && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
-                activity.otherActiveFavorsAround.put(favor.getId(), favor);
-          });
-      favors.exceptionally(
-              e -> {
-                CommonTools.showSnackbar(view, getString(R.string.nearby_favors_exception));
-                return null;
-              });
-      favors.whenComplete((e, res)->{
-        Log.d("pasS", "complete");
-        if (first) {
-          drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
-          first = false;
-        }
-      });
-    }catch (RuntimeException e){
-      CommonTools.showSnackbar(view, e.getMessage());
-    }
+    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+    favorViewModel
+        .getFavorsAroundMe(mLocation, radiusThreshold)
+        .observe(
+            getViewLifecycleOwner(),
+            stringFavorMap -> {
+              try {
+                favorsAroundMe = stringFavorMap;
+                drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+                first = false;
+              } catch (Exception e) {
+                CommonTools.showSnackbar(getView(), getString(R.string.nearby_favors_exception));
+              }
+            });
   }
+  //      CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
+  //              .retrieveAllFavorsInGivenRadius(mLocation, radius);
+  //      favors.thenAccept(
+  //          favors1 -> {
+  //            ArrayList<Favor> favors2 = (ArrayList<Favor>) favors1;
+  //            double latDif = Math.toDegrees(radius / 6371);
+  //            for (Favor favor : favors2)
+  //              if (!favor
+  //                      .getRequesterId()
+  //                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+  //                  && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
+  //                  && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
+  //                  && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
+  //                activity.otherActiveFavorsAround.put(favor.getId(), favor);
+  //          });
+  //      favors.exceptionally(
+  //              e -> {
+  //                CommonTools.showSnackbar(view, getString(R.string.nearby_favors_exception));
+  //                return null;
+  //              });
+  //      favors.whenComplete((e, res)->{
+  //        Log.d("pasS", "complete");
+  //        if (first) {
+  //          drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+  //          first = false;
+  //        }
+  //      });
+  //    }catch (RuntimeException e){
+  //      CommonTools.showSnackbar(view, e.getMessage());
+  //    }
 
   private void getLocationPermission() {
-    /**
-     * Request location permission, so that we can get the location of the
-     * device.
-     **/
-    if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()).getApplicationContext(),
-            android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      requestPermissions(new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
-              PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+    /** Request location permission, so that we can get the location of the device. */
+    if (ContextCompat.checkSelfPermission(
+            Objects.requireNonNull(getActivity()).getApplicationContext(),
+            android.Manifest.permission.ACCESS_FINE_LOCATION)
+        != PackageManager.PERMISSION_GRANTED) {
+      requestPermissions(
+          new String[] {android.Manifest.permission.ACCESS_FINE_LOCATION},
+          PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
       mLocationPermissionGranted = false;
-    } else{
+    } else {
       mLocationPermissionGranted = true;
     }
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode,
-                                         @NonNull String[] permissions,
-                                         @NonNull int[] grantResults) {
-    if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {// If request is cancelled, the result arrays are empty.
-      if (grantResults.length > 0
-              && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+  public void onRequestPermissionsResult(
+      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    if (requestCode
+        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If request is cancelled, the result arrays
+                                                       // are empty.
+      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
-        Navigation.findNavController(view)
-                .navigate(R.id.action_global_nav_map);
+        Navigation.findNavController(view).navigate(R.id.action_global_nav_map);
       }
     }
   }
 
   /*
-    private void checkPlayServices() {
-      GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-      int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
-      if (resultCode != ConnectionResult.SUCCESS) {
-        gApi.makeGooglePlayServicesAvailable(getActivity());
+      private void checkPlayServices() {
+        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+        int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
+        if (resultCode != ConnectionResult.SUCCESS) {
+          gApi.makeGooglePlayServicesAvailable(getActivity());
+        }
       }
-    }
 
-    public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-      getLocationPermission();
-      if (mLocationPermissionGranted) {
-        LocationRequest request = new LocationRequest();
-        request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        request.setInterval(15 * 60 * 1000);
-        request.setMaxWaitTime(30 * 60 * 1000);
-        Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-        locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
-          @Override
-          public void onComplete(@NonNull Task<Location> task) {
-            if (task.isSuccessful()) {
-              // Set the map's camera position to the current location of the device.
-              mLocation = task.getResult();
-              GpsTracker.setLastKnownLocation(mLocation);
+      public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
+        getLocationPermission();
+        if (mLocationPermissionGranted) {
+          LocationRequest request = new LocationRequest();
+          request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+          request.setInterval(15 * 60 * 1000);
+          request.setMaxWaitTime(30 * 60 * 1000);
+          Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
+          locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+              if (task.isSuccessful()) {
+                // Set the map's camera position to the current location of the device.
+                mLocation = task.getResult();
+                GpsTracker.setLastKnownLocation(mLocation);
+              }
             }
-          }
-        });
+          });
+        }
       }
-    }
-*/
+  */
 
   private void drawSelfLocationMarker() {
     // Add a marker at my location and move the camera
@@ -266,8 +282,13 @@ public class MapsPage extends Fragment
       return;
     }
     for (Favor favor : favors) {
-      LatLng latLng = new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
-      Marker marker = mMap.addMarker( new MarkerOptions().position(latLng).title(favor.getTitle())
+      LatLng latLng =
+          new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
+      Marker marker =
+          mMap.addMarker(
+              new MarkerOptions()
+                  .position(latLng)
+                  .title(favor.getTitle())
                   .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
       marker.setSnippet(favor.getDescription());
       marker.setTag(favor.getId());

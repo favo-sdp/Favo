@@ -15,7 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -24,13 +26,43 @@ public class FavorViewModel extends ViewModel {
   FavorUtil favorRepository = FavorUtil.getSingleInstance();
   MutableLiveData<Map<String, Favor>> myActiveFavors = new MutableLiveData<>();
   MutableLiveData<Map<String, Favor>> myPastFavors = new MutableLiveData<>();
-  MutableLiveData<List<Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
   MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-
 
   // save address to firebase
   public CompletableFuture postFavor(Favor favor) {
     return favorRepository.postFavor(favor);
+  }
+
+  public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius) {
+    favorRepository
+        .getNearbyFavors(loc, radius)
+        .addSnapshotListener(
+            (queryDocumentSnapshots, e) -> {
+              handleException(e);
+
+              Map<String, Favor> favors = new HashMap<>();
+              // Filter latitude because Firebase only filters longitude
+              double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
+              for (Favor favor : queryDocumentSnapshots.toObjects(Favor.class))
+                if (!favor
+                        .getRequesterId()
+                        .equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+                    && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
+                    && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
+                    && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
+                  favors.put(favor.getId(), favor);
+                }
+              activeFavorsAroundMe.setValue(favors);
+            });
+    return activeFavorsAroundMe;
+  }
+
+  public void handleException(FirebaseFirestoreException e) {
+    if (e != null) {
+      Log.w(TAG, "Listen Failed", e);
+      throw new RuntimeException(e.getMessage());
+    }
   }
 
   public LiveData<Map<String, Favor>> getMyActiveFavors() {
@@ -47,26 +79,14 @@ public class FavorViewModel extends ViewModel {
     favorRepository
         .retrieveAllPastFavorsForGivenUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .addSnapshotListener(
-            (queryDocumentSnapshots, e) -> myPastFavors.setValue(getFavorMapFromQuery(queryDocumentSnapshots, e)));
+            (queryDocumentSnapshots, e) ->
+                myPastFavors.setValue(getFavorMapFromQuery(queryDocumentSnapshots, e)));
     return myPastFavors;
-  }
-  public LiveData<List<Favor>> getNearbyFavors(Location loc, Double radius){
-    favorRepository.getNearbyFavors(loc,radius).addSnapshotListener(((queryDocumentSnapshots, e) -> {
-      if (e!=null){
-        Log.w(TAG,"Listen Failed",e);
-      }
-      List<Favor> favors = queryDocumentSnapshots.toObjects(Favor.class);
-      activeFavorsAroundMe.setValue(favors);
-    }));
-    return activeFavorsAroundMe;
   }
 
   private Map<String, Favor> getFavorMapFromQuery(
       QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
-    if (e != null) {
-      Log.w(TAG, "Listen Failed", e);
-      return new HashMap<>();
-    }
+    handleException(e);
 
     List<Favor> favors = queryDocumentSnapshots.toObjects(Favor.class);
     Map<String, Favor> favorMap =
@@ -85,42 +105,14 @@ public class FavorViewModel extends ViewModel {
     favorRepository
         .getFavorReference(favorId)
         .addSnapshotListener(
-                (documentSnapshot, e) -> {
-                  if (e != null) {
-                    Log.w(TAG, "Listen Failed", e);
-                    observedFavor = null;
-                    return;
-                  }
-                  observedFavor.setValue(documentSnapshot.toObject(Favor.class));
-                });
+            (documentSnapshot, e) -> {
+              if (e != null) {
+                Log.w(TAG, "Listen Failed", e);
+                observedFavor = null;
+                return;
+              }
+              observedFavor.setValue(documentSnapshot.toObject(Favor.class));
+            });
     return observedFavor;
   }
-
 }
-
-//  // get realtime updates from firebase regarding saved addresses
-//  fun getSavedAddresses(): LiveData<List<AddressItem>>{
-//    firebaseRepository.getSavedAddress().addSnapshotListener(EventListener<QuerySnapshot> { value,
-// e ->
-//    if (e != null) {
-//      Log.w(TAG, "Listen failed.", e)
-//      savedAddresses.value = null
-//      return@EventListener
-//    }
-//
-//    var savedAddressList : MutableList<AddressItem> = mutableListOf()
-//    for (doc in value!!) {
-//      var addressItem = doc.toObject(AddressItem::class.java)
-//      savedAddressList.add(addressItem)
-//    }
-//    savedAddresses.value = savedAddressList
-//        })
-//
-//    return savedAddresses
-//  }
-//
-//  // delete an address from firebase
-//  fun deleteAddress(addressItem: AddressItem){
-//    firebaseRepository.deleteAddress(addressItem).addOnFailureListener {
-//      Log.e(TAG,"Failed to delete Address")
-//    }

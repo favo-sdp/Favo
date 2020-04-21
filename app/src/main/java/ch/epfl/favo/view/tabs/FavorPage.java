@@ -117,8 +117,8 @@ public class FavorPage extends Fragment {
   }
 
   private void displayFavorList(Map<String, Favor> favors, int textId) {
-    if (favors==null) showText((getString(textId)));
-    if (favors.isEmpty()) showText((getString(textId)));
+    if (favors==null) {showText((getString(textId)));return;}
+    else if (favors.isEmpty()) showText((getString(textId)));
     else tipTextView.setVisibility(View.INVISIBLE);
     listView.setAdapter(new FavorAdapter(getContext(), new ArrayList<>(favors.values())));
   }
