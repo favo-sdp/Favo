@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
@@ -190,13 +191,15 @@ public class FavorRequestView extends Fragment {
     View currentView = getView();
     favorStatus = FavorStatus.REQUESTED;
     getFavorFromView(favorStatus);
-    
+
     // post to DB
     CompletableFuture postFavorFuture = FavorUtil.getSingleInstance().postFavor(currentFavor);
-    postFavorFuture.thenAccept(o -> {
-      setupFavorListener(currentView);
-      CommonTools.showSnackbar(currentView,getString(R.string.favor_request_success_msg));
-    });
+    postFavorFuture.thenAccept(
+        o -> {
+          setupFavorListener(currentView);
+          ((MainActivity) getActivity()).activeFavors.put(currentFavor.getId(),currentFavor);
+          CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+        });
     postFavorFuture.exceptionally(onFailedResult(currentView));
 
     // Show confirmation and minimize keyboard
@@ -207,8 +210,8 @@ public class FavorRequestView extends Fragment {
 
   private Function onFailedResult(View currentView) {
     return o -> {
-      CommonTools.showSnackbar(currentView,getString(R.string.unknown_error));
-      Log.e(TAG,((Exception)o).getMessage());
+      CommonTools.showSnackbar(currentView, getString(R.string.unknown_error));
+      Log.e(TAG, ((Exception) o).getMessage());
       return null;
     };
   }
@@ -228,25 +231,21 @@ public class FavorRequestView extends Fragment {
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
+    View rootView = getView();
     CompletableFuture<Favor> currentFavorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     currentFavorFuture.thenAccept(
         favor -> {
           if (favor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
-            CommonTools.showSnackbar(getView(), getString(R.string.fail_edit_favor_request_view));
+            CommonTools.showSnackbar(rootView, getString(R.string.fail_edit_favor_request_view));
             favorStatus = FavorStatus.toEnum(favor.getStatusId());
             currentFavor.setStatusIdToInt(favorStatus);
-
           } else {
             favorStatus = FavorStatus.EDIT;
           }
-          updateViewFromStatus(getView());
+          updateViewFromStatus(rootView);
         });
-    currentFavorFuture.exceptionally(
-        e -> {
-          showSnackbar(getString(R.string.update_favor_error));
-          return null;
-        });
+    currentFavorFuture.exceptionally(onFailedResult(rootView));
   }
 
   /** Gets called once favor has been updated on view. */
@@ -255,23 +254,20 @@ public class FavorRequestView extends Fragment {
     getFavorFromView(favorStatus);
     // DB call to update Favor details
     CompletableFuture updateFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
-    updateFuture.thenAccept(o -> {
-      showSnackbar(getString(R.string.favor_edit_success_msg));
-    });
+    updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
   }
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    favorStatus = FavorStatus.CANCELLED_REQUESTER;
+//    favorStatus = FavorStatus.CANCELLED_REQUESTER;
 
     // DB call to update status
     CompletableFuture cancelFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }
-
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {

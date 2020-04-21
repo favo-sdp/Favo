@@ -1,5 +1,7 @@
 package ch.epfl.favo.common;
 
+import android.location.Location;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
@@ -43,5 +45,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
   public DocumentReference getDocumentQuery(String key){
     return DatabaseWrapper.getDocumentQuery(key,collection);
+  }
+  public Query locationBoundQuery(Location loc, double radius){
+    return DatabaseWrapper.locationBoundQuery(loc,radius,collection);
   }
 }

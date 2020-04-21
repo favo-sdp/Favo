@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
@@ -52,15 +51,15 @@ public class FavorDetailView extends Fragment {
     FavorViewModel favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
     if (currentFavor == null) {
       currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView, favorViewModel,currentFavor);
+      setupFavorListener(rootView, favorViewModel);
     }
 
     return rootView;
   }
 
-  public void setupFavorListener(View rootView, FavorViewModel favorViewModel,Favor favorArgument) {
+  public void setupFavorListener(View rootView, FavorViewModel favorViewModel) {
 
-    favorViewModel.setObservedFavor(favorArgument.getId()).observe(getViewLifecycleOwner(), favor -> {
+    favorViewModel.setObservedFavor(currentFavor.getId()).observe(getViewLifecycleOwner(), favor -> {
       try{
       currentFavor = favor;
       displayFromFavor(rootView,currentFavor);
@@ -122,7 +121,6 @@ public class FavorDetailView extends Fragment {
         .thenAccept(
         favor -> {
           if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
-//
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
           } else { // update DB with accepted status
             currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
@@ -138,7 +136,6 @@ public class FavorDetailView extends Fragment {
   private Function favorFailedToBeAcceptedConsumer() {
     return e -> {
       // if already accepted then change the status display and disable all the buttons
-      currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
       CommonTools.showSnackbar(getView(), getString(R.string.update_favor_error));
       return null;
     };
@@ -147,10 +144,6 @@ public class FavorDetailView extends Fragment {
   private Consumer favorAcceptedConsumer() {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
-
-      ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
-      currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-      favorStatus = FavorStatus.ACCEPTED;
     };
   }
 

@@ -1,5 +1,6 @@
 package ch.epfl.favo.viewmodel;
 
+import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -12,6 +13,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -22,13 +24,13 @@ public class FavorViewModel extends ViewModel {
   FavorUtil favorRepository = FavorUtil.getSingleInstance();
   MutableLiveData<Map<String, Favor>> myActiveFavors = new MutableLiveData<>();
   MutableLiveData<Map<String, Favor>> myPastFavors = new MutableLiveData<>();
+  MutableLiveData<List<Favor>> activeFavorsAroundMe = new MutableLiveData<>();
   MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
 
-  MutableLiveData<List<Favor>> myActiveFavorList = new MutableLiveData<>();
 
   // save address to firebase
-  public void postFavor(Favor favor) {
-    favorRepository.postFavor(favor);
+  public CompletableFuture postFavor(Favor favor) {
+    return favorRepository.postFavor(favor);
   }
 
   public LiveData<Map<String, Favor>> getMyActiveFavors() {
@@ -45,10 +47,18 @@ public class FavorViewModel extends ViewModel {
     favorRepository
         .retrieveAllPastFavorsForGivenUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .addSnapshotListener(
-            (queryDocumentSnapshots, e) -> {
-              myPastFavors.setValue(getFavorMapFromQuery(queryDocumentSnapshots, e));
-            });
+            (queryDocumentSnapshots, e) -> myPastFavors.setValue(getFavorMapFromQuery(queryDocumentSnapshots, e)));
     return myPastFavors;
+  }
+  public LiveData<List<Favor>> getNearbyFavors(Location loc, Double radius){
+    favorRepository.getNearbyFavors(loc,radius).addSnapshotListener(((queryDocumentSnapshots, e) -> {
+      if (e!=null){
+        Log.w(TAG,"Listen Failed",e);
+      }
+      List<Favor> favors = queryDocumentSnapshots.toObjects(Favor.class);
+      activeFavorsAroundMe.setValue(favors);
+    }));
+    return activeFavorsAroundMe;
   }
 
   private Map<String, Favor> getFavorMapFromQuery(
@@ -85,6 +95,7 @@ public class FavorViewModel extends ViewModel {
                 });
     return observedFavor;
   }
+
 }
 
 //  // get realtime updates from firebase regarding saved addresses

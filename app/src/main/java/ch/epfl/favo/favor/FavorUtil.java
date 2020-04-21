@@ -84,6 +84,9 @@ public class FavorUtil {
     }};
     return collection.getDocumentsWithQuery(queryValues);
   }
+  public Query getNearbyFavors(Location loc, Double radius){
+    return collection.locationBoundQuery(loc,radius);
+  }
 
   /**
    * Returns all inactive (past) favors for a given user.

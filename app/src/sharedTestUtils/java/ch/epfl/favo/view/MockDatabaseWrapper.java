@@ -1,5 +1,10 @@
 package ch.epfl.favo.view;
 
+import android.location.Location;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -10,6 +15,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   private T mockDocument;
   private CompletableFuture mockResult;
+  private Query mockQuery;
   private boolean throwError = false;
 
   public MockDatabaseWrapper() {}
@@ -40,9 +46,14 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   public void setMockResult(CompletableFuture result) {
     this.mockResult = result;
   }
+  public void setMockQueryResult(Query query){
+    this.mockQuery = query;
+  }
 
   @Override
-  public void addDocument(T favor) {}
+  public CompletableFuture addDocument(T favor) {
+    return mockResult;
+  }
 
   @Override
   public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
@@ -59,5 +70,20 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
     if (throwError) future.completeExceptionally(new RuntimeException());
     else future.complete(mockDocument);
     return future;
+  }
+
+  @Override
+  public Query getDocumentsWithQuery(Map<String, Object> keyValuePairs) {
+    return mockQuery;
+  }
+
+  @Override
+  public DocumentReference getDocumentQuery(String key) {
+    return mockQuery;
+  }
+
+  @Override
+  public Query locationBoundQuery(Location loc, double radius) {
+    return null;
   }
 }

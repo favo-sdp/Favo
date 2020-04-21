@@ -1,6 +1,7 @@
 package ch.epfl.favo.common;
 
 import android.annotation.SuppressLint;
+import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -103,6 +104,22 @@ public class DatabaseWrapper {
     }
     return query;
   }
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
+          Location loc, double radius, Class<T> cls, String collection) {
+    Query getDocumentsQuery = locationBoundQuery(loc, radius, collection);
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getDocumentsQuery.get()).getInstance();
+    CompletableFuture<List<T>> documents = getAllFuture.thenApply(
+            querySnapshot -> querySnapshot.toObjects(cls));
+    return documents;
+  }
+
+  static Query locationBoundQuery(Location loc, double radius, String collection) {
+    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    return getCollectionReference(collection)
+            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+            .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(30);
+  }
+
 
   private static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);
