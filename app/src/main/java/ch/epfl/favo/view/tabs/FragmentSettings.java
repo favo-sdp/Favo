@@ -22,7 +22,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
     super.onStart();
     LocalCache.storeKeyValue(getContext(), "key1", "value1");
     Log.d(TAG, "onCreatePreferences: stored key1 value1 ");
-    String val = LocalCache.getValueFromCache(getContext(), "key1");
+    String val = LocalCache.getValueFromCacheStr(getContext(), "radius");
     Log.d(TAG, String.format("onCreatePreferences: retrieved %s", val));
   }
 }

@@ -8,24 +8,21 @@ public class LocalCache {
 
   private LocalCache() {}
 
-  private static final LocalCache SINGLE_INSTANCE = new LocalCache();
-
-  public static LocalCache getSingleInstance() {
-    return SINGLE_INSTANCE;
-  }
-
   public static void storeKeyValue(Context context, String key, String value) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     SharedPreferences.Editor editor = preferences.edit();
     editor.putString(key, value);
-    editor.commit(); // use .apply() for async performance
+    editor.apply();
   }
 
-  public static String getValueFromCache(Context context, String key){
+  public static String getValueFromCacheStr(Context context, String key){
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    String name = preferences.getString(key, "");
+    return preferences.getString(key, "");
+  }
 
-    return name;
+  public static Boolean getValueFromCacheBool(Context context, String key) {
+    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    return preferences.getBoolean(key, false);
   }
 
 }
