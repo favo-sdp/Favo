@@ -79,10 +79,10 @@ public class ChatPageTest {
     getInstrumentation().waitForIdleSync();
 
     // wait for snackbar
-    Thread.sleep(4000);
+    Thread.sleep(3000);
 
     // Click on chat button
-    onView(withText(R.string.open_chat)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.id.chat_button)).perform(click());
     getInstrumentation().waitForIdleSync();
   }
 
