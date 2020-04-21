@@ -82,7 +82,7 @@ public class ChatPageTest {
     Thread.sleep(3000);
 
     // Click on chat button
-    onView(withText(R.id.chat_button)).perform(click());
+    onView(withId(R.id.chat_button)).perform(click());
     getInstrumentation().waitForIdleSync();
   }
 
