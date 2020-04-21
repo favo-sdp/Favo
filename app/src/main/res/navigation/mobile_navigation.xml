@@ -72,7 +72,16 @@
         android:id="@+id/favorRequestView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorRequestView"
         android:label="FavorRequestView"
-        tools:layout="@layout/fragment_favor_request_view" />
+        tools:layout="@layout/fragment_favor_request_view">
+        <action
+            android:id="@+id/action_nav_favorRequestView_to_chatView"
+            app:destination="@id/chatView">
+            <argument
+                android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="ch.epfl.favo.favor.Favor" />
+        </action>
+    </fragment>
     <action
         android:id="@+id/action_global_nav_map"
         app:destination="@id/nav_map"
@@ -110,8 +119,11 @@
             app:argType="ch.epfl.favo.favor.Favor" />
     </action>
 
-    <action android:id="@+id/action_global_nav_account"
+    <action
+        android:id="@+id/action_global_nav_account"
         app:destination="@id/nav_account"
         app:launchSingleTop="true" />
-    <action android:id="@+id/action_global_nav_share" app:destination="@id/nav_share" />
+    <action
+        android:id="@+id/action_global_nav_share"
+        app:destination="@id/nav_share" />
 </navigation>

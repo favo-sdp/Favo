@@ -119,6 +119,13 @@
                 android:drawableRight="@drawable/ic_photo_camera_24dp"
                 android:text="Take" />
 
+            <Button
+                android:id="@+id/chat_button"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="0dp"
+                android:text="@string/open_chat" />
+
         </LinearLayout>
 
 

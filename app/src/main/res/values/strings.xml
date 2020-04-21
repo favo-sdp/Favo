@@ -133,6 +133,7 @@
     <string name="actionbar_spinner">ActionBar Spinner</string>
 
     <!-- Chat -->
+    <string name="open_chat">Open chat</string>
     <string name="start_chatting">No messages</string>
     <string name="hint_message">Write message</string>
     <string name="send">Send</string>

@@ -20,12 +20,12 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
@@ -139,6 +139,16 @@ public class FavorRequestView extends Fragment {
           } else { // text is currently "Edit Request"
             startUpdatingFavor();
           }
+        });
+
+    // Chat button
+    Button startChatBtn = rootView.findViewById(R.id.chat_button);
+    startChatBtn.setOnClickListener(
+        v -> {
+          Bundle favorBundle = new Bundle();
+          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+          Navigation.findNavController(requireView())
+              .navigate(R.id.action_nav_favorRequestView_to_chatView, favorBundle);
         });
   }
 

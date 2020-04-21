@@ -1,13 +1,19 @@
 package ch.epfl.favo.view;
 
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import com.google.android.gms.tasks.Tasks;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,31 +29,28 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class FavorPageTest {
-  // private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -57,9 +60,6 @@ public class FavorPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          //          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
-          //          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
-          //          mockDatabaseWrapper.setThrowError(false);
         }
       };
 
@@ -72,7 +72,6 @@ public class FavorPageTest {
     cleanupDatabase();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    // DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   private void cleanupDatabase() throws ExecutionException, InterruptedException {
@@ -95,6 +94,25 @@ public class FavorPageTest {
                         }));
   }
 
+  public static ViewAction withCustomConstraints(final ViewAction action, final Matcher<View> constraints) {
+    return new ViewAction() {
+      @Override
+      public Matcher<View> getConstraints() {
+        return constraints;
+      }
+
+      @Override
+      public String getDescription() {
+        return action.getDescription();
+      }
+
+      @Override
+      public void perform(UiController uiController, View view) {
+        action.perform(uiController, view);
+      }
+    };
+  }
+
   @Test
   public void testFavorPageElements() {
     // click on favors tab
@@ -111,43 +129,23 @@ public class FavorPageTest {
 
     onView(withText(R.string.favor_no_active_favor)).check(matches(isDisplayed()));
 
+    onView(withId(R.id.swipe_refresh_layout))
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+
     onView(withId(R.id.archived_toggle)).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
 
     onView(withText(R.string.favor_no_archived_favor)).check(matches(isDisplayed()));
 
+    onView(withId(R.id.swipe_refresh_layout))
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+
     onView(withId(R.id.active_toggle)).perform(click());
   }
 
   @Test
-  public void testTextDisplayedWhenListEmpty() {
-    // click on favors tab
-    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
-
-    // check the tip text is displayed when active favor list is empty
-    onView(withId(R.id.tip))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(R.string.favor_no_active_favor)));
-
-    // go to archived list
-    onView(withId(R.id.spinner)).perform(click());
-    onData(allOf(is(instanceOf(String.class)), is("Archived"))).perform(click());
-    onView(withId(R.id.spinner)).check(matches(withSpinnerText(containsString("Archived"))));
-
-    // check the tip text is displayed when archived favor list is empty
-    onView(withId(R.id.tip))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(R.string.favor_no_archived_favor)));
-  }
-
-  @Test
-  public void testFavorRequestUpdatesListView() throws InterruptedException {
+  public void testFavorRequestUpdatesListView() {
     // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -167,14 +165,8 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on back button
-    onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+    pressBack();
     getInstrumentation().waitForIdleSync();
-
-    // wait to refresh
-    Thread.sleep(1000);
-
-    // check favor is displayed in active favor list view
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
 
   @Test
@@ -203,18 +195,74 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     // Go back
-    onView(withContentDescription(R.string.abc_action_bar_up_description)).perform(click());
+    pressBack();
+    getInstrumentation().waitForIdleSync();
+  }
+
+  private void requestFavorAndSearch() {
+    // Click on favors tab
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Check favor is not displayed in active list
-    onView(withText(favor.getTitle())).check(doesNotExist());
-
-    // go to archived list
-    onView(withId(R.id.spinner)).perform(click());
-    onData(allOf(is(instanceOf(String.class)), is("Archived"))).perform(click());
+    // Click on new favor tab
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // check favor is displayed in archived favor list view
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
+    // Fill in text views with fake favor
+    Favor favor = FakeItemFactory.getFavor();
+
+    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
+
+    // Click on request button
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // Click on back button
+    pressBack();
+    getInstrumentation().waitForIdleSync();
+
+    // Click on searchView button
+    onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+  }
+
+  @Test
+  public void testSearchViewFound() {
+
+    requestFavorAndSearch();
+
+    Favor favor = FakeItemFactory.getFavor();
+
+    onView(isAssignableFrom(EditText.class)).perform(typeText(favor.getTitle()));
+
+    getInstrumentation().waitForIdleSync();
+  }
+
+  @Test
+  public void testSearchViewNotFound() {
+
+    requestFavorAndSearch();
+
+    // type the title of fake favor
+    onView(isAssignableFrom(EditText.class))
+        .perform(typeText("random words"), pressImeActionButton());
+
+    // check the tip text is displayed when query failed
+    onView(withId(R.id.tip))
+        .check(matches(isDisplayed()))
+        .check(matches(withText(R.string.query_failed)));
+  }
+
+  @Test
+  public void testClickScreenHideKeyboard() {
+    requestFavorAndSearch();
+
+    // Click on upper left screen corner
+    UiDevice device = UiDevice.getInstance(getInstrumentation());
+    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+
+    // if keyboard hidden, one time of pressBack will return to Favor List view
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
   }
 }
