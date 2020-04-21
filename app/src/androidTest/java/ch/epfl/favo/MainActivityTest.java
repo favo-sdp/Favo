@@ -42,7 +42,6 @@ public class MainActivityTest {
       new ActivityTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
@@ -55,7 +54,6 @@ public class MainActivityTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentCollectionWrapper(null);
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
   }

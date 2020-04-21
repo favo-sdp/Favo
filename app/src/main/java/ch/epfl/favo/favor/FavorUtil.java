@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
@@ -18,6 +19,7 @@ This models the favor request.
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
+  private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static DatabaseUpdater collection =
       DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
@@ -30,6 +32,7 @@ public class FavorUtil {
   }
 
   public static FavorUtil getSingleInstance() {
+    collection = DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
     return SINGLE_INSTANCE;
   }
 

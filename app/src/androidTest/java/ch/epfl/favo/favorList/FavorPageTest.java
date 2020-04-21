@@ -51,7 +51,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
-public class FavorPage {
+public class FavorPageTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -78,7 +78,7 @@ public class FavorPage {
     TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    DependencyFactory.setCurrentFavorCollection("favors");
+    //DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   public static ViewAction withCustomConstraints(

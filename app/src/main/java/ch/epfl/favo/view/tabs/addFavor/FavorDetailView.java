@@ -14,7 +14,6 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -49,9 +48,6 @@ public class FavorDetailView extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // inflate view
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
-
-    ((MainActivity) requireActivity()).hideBottomNavigation();
-
     setupButtons(rootView);
     statusText = rootView.findViewById(R.id.status_text_accept_view);
 
@@ -68,13 +64,12 @@ public class FavorDetailView extends Fragment {
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
 
-    locationAccessBtn.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        ((MainActivity)(requireActivity())).focusedFavor = currentFavor;
-        findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
-      }
-    });
+    locationAccessBtn.setOnClickListener(
+        v -> {
+          ((MainActivity) (requireActivity())).focusedFavor = currentFavor;
+          findNavController(requireActivity(), R.id.nav_host_fragment)
+              .popBackStack(R.id.nav_map, false);
+        });
 
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
@@ -96,11 +91,9 @@ public class FavorDetailView extends Fragment {
   }
 
   private void cancelFavor() {
+    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
     CompletableFuture completableFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
-    completableFuture.thenAccept(o -> {
-      currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
-      successfullyCancelledConsumer();
-    });
+    completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
 
@@ -126,7 +119,6 @@ public class FavorDetailView extends Fragment {
   }
 
   private void acceptFavor() {
-    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     CompletableFuture<Favor> favorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db
