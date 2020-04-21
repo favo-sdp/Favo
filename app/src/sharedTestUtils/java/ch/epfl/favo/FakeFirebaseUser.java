@@ -16,10 +16,12 @@ import com.google.firebase.auth.zzz;
 
 import java.util.List;
 
+import static ch.epfl.favo.TestConstants.REQUESTER_ID;
+
 public class FakeFirebaseUser extends FirebaseUser {
 
   // Default test uid
-  private final String uid = "testUserId";
+  private final String uid = REQUESTER_ID;
 
   private String displayName;
   private String email;

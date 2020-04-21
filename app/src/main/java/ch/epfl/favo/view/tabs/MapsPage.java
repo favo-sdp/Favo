@@ -328,7 +328,7 @@ public class MapsPage extends Fragment
     else {
       Favor favor = activity.otherActiveFavorsAround.get(marker.getTag());
       Bundle favorBundle = new Bundle();
-      favorBundle.putParcelable("FAVOR_ARGS", favor);
+      favorBundle.putString("FAVOR_ARGS", favor.getId());
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
     }

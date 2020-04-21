@@ -43,7 +43,7 @@
             <argument
                 android:name="FAVOR_ARGS"
                 android:defaultValue="@null"
-                app:argType="ch.epfl.favo.favor.Favor" />
+                app:argType="string" />
         </action>
 
     </fragment>
@@ -59,7 +59,7 @@
             <argument
                 android:name="FAVOR_ARGS"
                 android:defaultValue="@null"
-                app:argType="ch.epfl.favo.favor.Favor" />
+                app:argType="string" />
         </action>
 
     </fragment>
@@ -76,7 +76,7 @@
             <argument
                 android:name="FAVOR_ARGS"
                 android:defaultValue="@null"
-                app:argType="ch.epfl.favo.favor.Favor" />
+                app:argType="string" />
         </action>
         <action
             android:id="@+id/action_nav_favorlist_to_favorDetailView"
@@ -84,7 +84,7 @@
             <argument
                 android:name="FAVOR_ARGS"
                 android:defaultValue="@null"
-                app:argType="ch.epfl.favo.favor.Favor" />
+                app:argType="string" />
         </action>
     </fragment>
     <fragment
@@ -109,7 +109,7 @@
         <argument
             android:name="FAVOR_ARGS"
             android:defaultValue="@null"
-            app:argType="ch.epfl.favo.favor.Favor" />
+            app:argType="string" />
     </action>
     <action
         android:id="@+id/action_global_favorRequestView"
@@ -117,7 +117,7 @@
         <argument
             android:name="FAVOR_ARGS"
             android:defaultValue="@null"
-            app:argType="ch.epfl.favo.favor.Favor" />
+            app:argType="string" />
     </action>
 
     <action android:id="@+id/action_global_nav_account"

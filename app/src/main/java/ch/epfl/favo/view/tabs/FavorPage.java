@@ -104,7 +104,7 @@ public class FavorPage extends Fragment {
         (parent, view, position, id) -> {
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", favor);
+          favorBundle.putString("FAVOR_ARGS", favor.getId());
           // if favor was requested, open request view
           if (favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
             Navigation.findNavController(Objects.requireNonNull(getView()))

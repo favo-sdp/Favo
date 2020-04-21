@@ -30,7 +30,6 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
@@ -226,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
           favor -> {
             // otherActiveFavorsAround.put(favor.getId(), favor);
             Bundle favorBundle = new Bundle();
-            favorBundle.putParcelable("FAVOR_ARGS", favor);
+            favorBundle.putString("FAVOR_ARGS", favor.getId());
             navController.navigate(R.id.action_global_favorDetailView, favorBundle);
           });
     }

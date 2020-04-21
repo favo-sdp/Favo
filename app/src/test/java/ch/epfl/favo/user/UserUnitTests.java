@@ -3,7 +3,6 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;
@@ -16,7 +15,7 @@ import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.TestUtil;
+import ch.epfl.favo.util.TestUtils;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static org.junit.Assert.assertEquals;
@@ -146,7 +145,7 @@ public class UserUnitTests {
   @Test
   public void userShouldNotLoginWithInvalidPassword() {
     String username = TestConstants.USERNAME;
-    String pw = TestUtil.generateRandomString(10);
+    String pw = TestUtils.generateRandomString(10);
     assertThrows(
         NotImplementedException.class,
         new ThrowingRunnable() {

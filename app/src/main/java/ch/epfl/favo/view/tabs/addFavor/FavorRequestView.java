@@ -29,7 +29,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
@@ -90,16 +89,16 @@ public class FavorRequestView extends Fragment {
     // Inject argument
     favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
     if (getArguments() != null) {
-      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView);
+      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+      setupFavorListener(rootView,favorId);
     }
     return rootView;
   }
 
-  public void setupFavorListener(View rootView) {
+  public void setupFavorListener(View rootView,String favorId) {
 
     favorViewModel
-        .setObservedFavor(currentFavor.getId())
+        .setObservedFavor(favorId)
         .observe(
             getViewLifecycleOwner(),
             favor -> {
@@ -196,8 +195,7 @@ public class FavorRequestView extends Fragment {
     CompletableFuture postFavorFuture = FavorUtil.getSingleInstance().postFavor(currentFavor);
     postFavorFuture.thenAccept(
         o -> {
-          setupFavorListener(currentView);
-          ((MainActivity) getActivity()).activeFavors.put(currentFavor.getId(),currentFavor);
+          setupFavorListener(getView(),currentFavor.getId());
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
