@@ -5,6 +5,7 @@ import android.location.Location;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,7 +18,10 @@ public interface DatabaseUpdater<T> {
   void removeDocument(String key);
 
   CompletableFuture<T> getDocument(String key);
-  Query getDocumentsWithQuery(Map<String,Object> keyValuePairs);
+
   DocumentReference getDocumentQuery(String key);
+
   Query locationBoundQuery(Location loc, double radius);
+  Query getDocumentsWithQuery(Map<String, Object> keyValuePairs);
+  CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
 }

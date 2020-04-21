@@ -24,10 +24,12 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     return DatabaseWrapper.addDocument(document, collection);
   }
 
+  @Override
   public void removeDocument(String key) {
     DatabaseWrapper.removeDocument(key, collection);
   }
 
+  @Override
   public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
     return DatabaseWrapper.updateDocument(key, updates, collection);
   }
@@ -37,16 +39,24 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     return DatabaseWrapper.getDocument(key, cls, collection);
   }
 
+  @Override
+  public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
+    return DatabaseWrapper.getAllDocumentsLongitudeBounded(loc, radius, cls, collection);
+  }
+
   public CompletableFuture<List<T>> getAllDocuments() {
     return DatabaseWrapper.getAllDocuments(cls, collection);
   }
-  public Query getDocumentsWithQuery(Map<String,Object> keyValuePairs){
-    return DatabaseWrapper.getDocumentsWithQuery(keyValuePairs,collection);
+
+  public Query getDocumentsWithQuery(Map<String, Object> keyValuePairs) {
+    return DatabaseWrapper.getDocumentsWithQuery(keyValuePairs, collection);
   }
-  public DocumentReference getDocumentQuery(String key){
-    return DatabaseWrapper.getDocumentQuery(key,collection);
+
+  public DocumentReference getDocumentQuery(String key) {
+    return DatabaseWrapper.getDocumentQuery(key, collection);
   }
-  public Query locationBoundQuery(Location loc, double radius){
-    return DatabaseWrapper.locationBoundQuery(loc,radius,collection);
+
+  public Query locationBoundQuery(Location loc, double radius) {
+    return DatabaseWrapper.locationBoundQuery(loc, radius, collection);
   }
 }

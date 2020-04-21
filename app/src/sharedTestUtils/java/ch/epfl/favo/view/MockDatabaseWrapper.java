@@ -5,9 +5,11 @@ import android.location.Location;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.Document;
 
@@ -46,7 +48,8 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   public void setMockResult(CompletableFuture result) {
     this.mockResult = result;
   }
-  public void setMockQueryResult(Query query){
+
+  public void setMockQueryResult(Query query) {
     this.mockQuery = query;
   }
 
@@ -65,8 +68,8 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   @Override
   public CompletableFuture<T> getDocument(String key) {
-    CompletableFuture<T> future = new CompletableFuture<>();
 
+    CompletableFuture<T> future = new CompletableFuture<>();
     if (throwError) future.completeExceptionally(new RuntimeException());
     else future.complete(mockDocument);
     return future;
@@ -74,7 +77,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   @Override
   public Query getDocumentsWithQuery(Map<String, Object> keyValuePairs) {
-    return mockQuery;
+    return null;
   }
 
   @Override
@@ -85,5 +88,15 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   @Override
   public Query locationBoundQuery(Location loc, double radius) {
     return null;
+  }
+
+  public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
+    CompletableFuture<List<T>> future = new CompletableFuture<>();
+    if (this.throwError) {
+      future.completeExceptionally(new RuntimeException("Error db"));
+    } else {
+      future.complete((List<T>) FakeItemFactory.getFavorList());
+    }
+    return future;
   }
 }

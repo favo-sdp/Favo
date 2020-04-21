@@ -68,7 +68,8 @@ public class DatabaseWrapper {
     getDocumentQuery(key, collection).delete();
   }
 
-  static CompletableFuture updateDocument(String key, Map<String, Object> updates, String collection) {
+  static CompletableFuture updateDocument(
+      String key, Map<String, Object> updates, String collection) {
     Task update = getDocumentQuery(key, collection).update(updates);
     return new TaskToFutureAdapter<>(update).getInstance();
   }
@@ -76,7 +77,8 @@ public class DatabaseWrapper {
   static <T extends Document> CompletableFuture<T> getDocument(
       String key, Class<T> cls, String collection) throws RuntimeException {
     Task<DocumentSnapshot> getTask = getDocumentQuery(key, collection).get();
-    CompletableFuture<DocumentSnapshot> getFuture = new TaskToFutureAdapter<>(getTask).getInstance();
+    CompletableFuture<DocumentSnapshot> getFuture =
+        new TaskToFutureAdapter<>(getTask).getInstance();
     return getFuture.thenApply(
         documentSnapshot -> {
           if (documentSnapshot.exists()) {
@@ -94,32 +96,48 @@ public class DatabaseWrapper {
   static <T extends Document> CompletableFuture<List<T>> getAllDocuments(
       Class<T> cls, String collection) {
     Task<QuerySnapshot> getAllTask = getCollectionReference(collection).get();
-    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
+    CompletableFuture<QuerySnapshot> getAllFuture =
+        new TaskToFutureAdapter<>(getAllTask).getInstance();
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
-  static <T extends Document>  Query getDocumentsWithQuery(Map<String,Object> keyValuePairs,String collection){
+
+  static <T extends Document> Query getDocumentsWithQuery(
+      Map<String, Object> keyValuePairs, String collection) {
     Query query = getCollectionReference(collection);
-    for (Map.Entry<String,Object> entry : keyValuePairs.entrySet()){
+    for (Map.Entry<String, Object> entry : keyValuePairs.entrySet()) {
       query = query.whereEqualTo(entry.getKey(), entry.getValue());
     }
     return query;
-  }
-  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
-          Location loc, double radius, Class<T> cls, String collection) {
-    Query getDocumentsQuery = locationBoundQuery(loc, radius, collection);
-    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getDocumentsQuery.get()).getInstance();
-    CompletableFuture<List<T>> documents = getAllFuture.thenApply(
-            querySnapshot -> querySnapshot.toObjects(cls));
-    return documents;
   }
 
   static Query locationBoundQuery(Location loc, double radius, String collection) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
-            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
-            .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(30);
+        .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+        .whereLessThan("location.longitude", loc.getLongitude() + longDif)
+        .limit(30);
   }
 
+  /**
+   * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
+   * This function retrieve longitude bounded documents because firebase only supports one range
+   * query field For some reason, reading from db is very slow when adding one more whereEqualTo
+   * query field TODO: use firebase functions or other server code to perform customized filtering
+   * and fetch the result
+   */
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
+      Location loc, double radius, Class<T> cls, String collection) {
+    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    Task<QuerySnapshot> getAllTask =
+        getCollectionReference(collection)
+            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+            .whereLessThan("location.longitude", loc.getLongitude() + longDif)
+            .limit(30)
+            .get();
+    CompletableFuture<QuerySnapshot> getAllFuture =
+        new TaskToFutureAdapter<>(getAllTask).getInstance();
+    return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
+  }
 
   private static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);

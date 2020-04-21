@@ -12,6 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockDatabaseWrapper;
+import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
@@ -39,6 +41,8 @@ public class MainActivityTest {
       new ActivityTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
+          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
         }
@@ -50,6 +54,8 @@ public class MainActivityTest {
 
   @After
   public void tearDown() {
+    DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
   }
 

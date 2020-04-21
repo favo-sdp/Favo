@@ -14,10 +14,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
@@ -26,6 +28,8 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.viewmodel.FavorViewModel;
+
+import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
@@ -59,22 +63,35 @@ public class FavorDetailView extends Fragment {
 
   public void setupFavorListener(View rootView, FavorViewModel favorViewModel) {
 
-    favorViewModel.setObservedFavor(currentFavor.getId()).observe(getViewLifecycleOwner(), favor -> {
-      try{
-      currentFavor = favor;
-      displayFromFavor(rootView,currentFavor);
-      }
-      catch (Exception e){
-        CommonTools.showSnackbar(rootView,getString(R.string.unknown_error));
-        enableButtons(false);
-      }
-    });
+    favorViewModel
+        .setObservedFavor(currentFavor.getId())
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              try {
+                currentFavor = favor;
+                displayFromFavor(rootView, currentFavor);
+              } catch (Exception e) {
+                CommonTools.showSnackbar(rootView, getString(R.string.unknown_error));
+                enableButtons(false);
+              }
+            });
   }
 
   private void setupButtons(View rootView) {
     acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
+
+    locationAccessBtn.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            ((MainActivity) (Objects.requireNonNull(getActivity()))).focusedFavor = currentFavor;
+            findNavController(getActivity(), R.id.nav_host_fragment)
+                .popBackStack(R.id.nav_map, false);
+          }
+        });
 
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
@@ -101,7 +118,7 @@ public class FavorDetailView extends Fragment {
       // update UI
       currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
       favorStatus = verifyFavorHasBeenAccepted(currentFavor);
-      //updateDisplayFromViewStatus();
+      // updateDisplayFromViewStatus();
     };
   }
 

@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
   public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
   public Map<String, Favor> archivedFavors;
+  public Favor focusedFavor = null;
 
 
   @RequiresApi(api = Build.VERSION_CODES.M)

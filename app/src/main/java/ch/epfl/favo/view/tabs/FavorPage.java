@@ -27,6 +27,7 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 import ch.epfl.favo.viewmodel.FavorViewModel;
@@ -84,25 +85,16 @@ public class FavorPage extends Fragment {
     return rootView;
   }
 
-  private Map<String, Favor> doQuery(String query, Map<String, Favor> searchScope) {
-    Map<String, Favor> favorsFound = new HashMap<>();
-    query = query.toLowerCase();
-    for (Favor favor : searchScope.values()) {
-      if (favor.getTitle().toLowerCase().contains(query)
-          || favor.getDescription().toLowerCase().contains(query))
-        favorsFound.put(favor.getId(), favor);
-    }
-    return favorsFound;
-  }
-
   private void setupSearchMode() {
     spinnerItem.setVisible(false);
+    searchView.setOnQueryTextListener(new OnQueryListener());
     displayFavorList(favorsFound, R.string.empty);
   }
 
   private void quitSearchMode() {
     favorsFound.clear();
     spinnerItem.setVisible(true);
+    searchView.setOnQueryTextListener(null);
     if (lastPosition == 0) displayFavorList(activeFavors, R.string.favor_no_active_favor);
     else displayFavorList(archivedFavors, R.string.favor_no_archived_favor);
   }
@@ -193,32 +185,31 @@ public class FavorPage extends Fragment {
             return true;
           }
         });
+  }
 
-    searchView.setOnQueryTextListener(
-        new SearchView.OnQueryTextListener() {
-          @Override
-          public boolean onQueryTextSubmit(String query) {
+     class OnQueryListener implements SearchView.OnQueryTextListener {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
             // lastQuery = query;
-            favorsFound = doQuery(query, activeFavors);
-            favorsFound.putAll(doQuery(query, archivedFavors));
+            favorsFound = CommonTools.findFavorByTitleDescription(query, activeFavors);
+            favorsFound.putAll(CommonTools.findFavorByTitleDescription(query, archivedFavors));
             displayFavorList(favorsFound, R.string.query_failed);
             return false;
-          }
+        }
 
-          @Override
-          public boolean onQueryTextChange(String newText) {
+        @Override
+        public boolean onQueryTextChange(String newText) {
             // replace irrelevant items on listView with last query results or empty view
             // lastQuery = newText;
             if (newText.equals("")) favorsFound = new HashMap<>();
             else {
-              favorsFound = doQuery(newText, activeFavors);
-              favorsFound.putAll(doQuery(newText, archivedFavors));
+                favorsFound = CommonTools.findFavorByTitleDescription(newText, activeFavors);
+                favorsFound.putAll(CommonTools.findFavorByTitleDescription(newText, archivedFavors));
             }
             displayFavorList(favorsFound, R.string.query_failed);
             return false;
-          }
-        });
-  }
+        }
+    }
 
   private void setupSpinner(Menu menu) {
     spinnerItem = menu.findItem(R.id.spinner);

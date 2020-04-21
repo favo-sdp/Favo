@@ -89,8 +89,8 @@ public class AddFavorTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
