@@ -2,7 +2,6 @@ package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,6 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -74,8 +71,8 @@ public class FavorDetailView extends Fragment {
     locationAccessBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        ((MainActivity)(Objects.requireNonNull(getActivity()))).focusedFavor = currentFavor;
-        findNavController(getActivity(), R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
+        ((MainActivity)(requireActivity())).focusedFavor = currentFavor;
+        findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
       }
     });
 
@@ -99,9 +96,11 @@ public class FavorDetailView extends Fragment {
   }
 
   private void cancelFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
     CompletableFuture completableFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
-    completableFuture.thenAccept(successfullyCancelledConsumer());
+    completableFuture.thenAccept(o -> {
+      currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
+      successfullyCancelledConsumer();
+    });
     completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
 
@@ -127,13 +126,13 @@ public class FavorDetailView extends Fragment {
   }
 
   private void acceptFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     CompletableFuture<Favor> favorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db
         .thenAccept(
         favor -> {
+          currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
           if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
             currentFavor.updateToOther(favor);
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
@@ -160,7 +159,6 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
 
-      ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       ((MainActivity) requireActivity()).otherActiveFavorsAround.remove(currentFavor.getId());
       currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
       favorStatus = FavorStatus.ACCEPTED;

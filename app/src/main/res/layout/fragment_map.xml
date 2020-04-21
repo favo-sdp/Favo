@@ -34,46 +34,46 @@
         tools:context=".view.tabs.MapsPage" />
 
     <RadioGroup
-        android:checkedButton="@+id/list_switch"
         android:id="@+id/toggle"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_marginBottom="0dp"
         android:layout_marginLeft="100dp"
+        android:layout_marginTop="13dp"
         android:layout_marginRight="100dp"
-        android:layout_marginTop="0dp"
-        android:background="@drawable/toggle_green_outline"
-        android:orientation="horizontal">
+        android:background="@drawable/green_outline"
+        android:elevation="1dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <RadioButton
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="1dp"
-            android:layout_marginStart="1dp"
             android:id="@+id/map_switch"
-            android:background="@drawable/toggle_widget_background"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
             android:layout_weight="1"
+            android:background="@color/material_green_500"
             android:button="@null"
             android:gravity="center"
             android:text="@string/map_toggle"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/material_gray_300" />
+            android:textColor="@android:color/white" />
 
         <RadioButton
-            android:layout_marginEnd="1dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginBottom="1dp"
             android:id="@+id/list_switch"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
             android:layout_weight="1"
-            android:background="@drawable/toggle_widget_background"
+            android:background="@android:color/white"
             android:button="@null"
             android:gravity="center"
             android:text="@string/list_toggle"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/material_green_500" />
+            android:textColor="@android:color/tertiary_text_dark" />
     </RadioGroup>
 
 </FrameLayout>
