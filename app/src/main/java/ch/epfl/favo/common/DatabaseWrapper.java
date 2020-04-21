@@ -113,9 +113,8 @@ public class DatabaseWrapper {
             .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
             .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(30).get();
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
-    CompletableFuture<List<T>> documents = getAllFuture.thenApply(
+    return getAllFuture.thenApply(
             querySnapshot -> querySnapshot.toObjects(cls));
-    return documents;
   }
 
   private static CollectionReference getCollectionReference(String collection) {

@@ -19,6 +19,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -39,23 +40,28 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
+    MockDatabaseWrapper databaseWrapper;
     private Favor favor = FakeItemFactory.getFavor();
     @Rule
     public final ActivityTestRule<MainActivity> mainActivityTestRule =
             new ActivityTestRule<MainActivity>(MainActivity.class) {
                 @Override
                 protected void beforeActivityLaunched() {
-                    MockDatabaseWrapper databaseWrapper = new MockDatabaseWrapper<Favor>();
-                    databaseWrapper.setMockDocument(favor);
-                    DependencyFactory.setCurrentCollectionWrapper(databaseWrapper);
                     DependencyFactory.setCurrentFirebaseUser(
                             new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+                    // setup mock gps
                     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+                    // setup mock db
+                    databaseWrapper = new MockDatabaseWrapper();
+                    databaseWrapper.setThrowError(false);
+                    DependencyFactory.setCurrentCollectionWrapper(databaseWrapper);
                 }
             };
     @Rule
     public GrantPermissionRule permissionRule =
             GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+
     @After
     public void tearDown() {
         DependencyFactory.setCurrentCollectionWrapper(null);
@@ -65,8 +71,14 @@ public class NearbyFavorListTest {
 
     private void openSearchView(){
         try{
-            Thread.sleep(1000);
+            databaseWrapper.setThrowError(false);
+            FavorUtil.getSingleInstance().updateCollectionWrapper(databaseWrapper);
             // switch to nearby favor list view
+            onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
+            getInstrumentation().waitForIdleSync();
+
+            onView(withId(R.id.map_switch)).check(matches(isDisplayed())).perform(click());
+            getInstrumentation().waitForIdleSync();
             onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
             getInstrumentation().waitForIdleSync();
 
@@ -80,7 +92,11 @@ public class NearbyFavorListTest {
 
     @Test
     public void testSearchViewFound() {
+        databaseWrapper.setMockDocument(favor);
+        databaseWrapper.setThrowError(false);
+        FavorUtil.getSingleInstance().updateCollectionWrapper(databaseWrapper);
         openSearchView();
+
         //type the title of fake favor
         onView(isAssignableFrom(EditText.class)).perform(typeText(favor.getTitle())).perform(pressKey(KeyEvent.KEYCODE_ENTER));
         getInstrumentation().waitForIdleSync();
@@ -130,12 +146,11 @@ public class NearbyFavorListTest {
 
         //Click on upper left screen corner
         UiDevice device = UiDevice.getInstance(getInstrumentation());
-        device.click(10,50);    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+        device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
 
         // if keyboard is not displayed, one time of pressBack will return to Favor List view
         onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
         // check favor is displayed in active favor list view
-        //onData(anything()).inAdapterView(withId(R.id.nearby_favor_list)).atPosition(0).perform(click());
         onView(withText(favor.getTitle())).check(matches(isDisplayed()));
     }
 

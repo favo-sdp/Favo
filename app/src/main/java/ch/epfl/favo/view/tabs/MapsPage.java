@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +64,7 @@ public class MapsPage extends Fragment
   private boolean mLocationPermissionGranted = false;
   private MainActivity activity;
   private View view;
-
+  private int i=0;
   public MapsPage() {
     // Required empty public constructor
   }
@@ -148,26 +149,31 @@ public class MapsPage extends Fragment
   private void updateNearbyList(){
     String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1 Km");
     double radius = Double.parseDouble(setting.split(" ")[0]);
+
     try{
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
       CompletableFuture<List<Favor>> favors = FavorUtil.getSingleInstance()
               .retrieveAllFavorsInGivenRadius(mLocation, radius);
       favors.thenAccept(
-              favors1 -> {
-                double latDif = Math.toDegrees(radius / 6371);
-                for (Favor favor : favors1)
-                  if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
-                          && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
-                          && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
-                          && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
-                    activity.otherActiveFavorsAround.put(favor.getId(), favor);
-              });
+          favors1 -> {
+            ArrayList<Favor> favors2 = (ArrayList<Favor>) favors1;
+            double latDif = Math.toDegrees(radius / 6371);
+            for (Favor favor : favors2)
+              if (!favor
+                      .getRequesterId()
+                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+                  && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
+                  && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
+                  && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
+                activity.otherActiveFavorsAround.put(favor.getId(), favor);
+          });
       favors.exceptionally(
               e -> {
                 CommonTools.showSnackbar(view, getString(R.string.nearby_favors_exception));
                 return null;
               });
       favors.whenComplete((e, res)->{
+        Log.d("pasS", "complete");
         if (first) {
           drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
           first = false;
@@ -299,7 +305,7 @@ public class MapsPage extends Fragment
     if (marker.getTitle().equals(getString(R.string.self_location)))
       Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorRequestView);
     else {
-      Favor favor = activity.otherActiveFavorsAround.get(marker.getTitle());
+      Favor favor = activity.otherActiveFavorsAround.get(marker.getTag());
       Bundle favorBundle = new Bundle();
       favorBundle.putParcelable("FAVOR_ARGS", favor);
       Navigation.findNavController(view)

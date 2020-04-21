@@ -40,7 +40,7 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        //execution 'ANDROIDX_TEST_ORCHESTRATOR'
 
         unitTests {
             includeAndroidResources = true
@@ -124,8 +124,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-nearby:17.0.0'
     implementation 'com.google.maps.android:android-maps-utils:1.0.0'
     // for revoke permission before every test
-    androidTestUtil 'androidx.test:orchestrator:1.2.0'
-
+    //androidTestUtil 'androidx.test:orchestrator:1.2.0'
 }
 
 tasks.withType(Test) {

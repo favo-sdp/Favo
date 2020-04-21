@@ -2,6 +2,7 @@ package ch.epfl.favo.view;
 
 import android.app.Activity;
 import android.location.Location;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,9 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.favor.Favor;
+
+import static ch.epfl.favo.TestConstants.LATITUDE;
+import static ch.epfl.favo.TestConstants.LONGITUDE;
 
 public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<T> {
 
@@ -62,6 +66,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   @Override
   public CompletableFuture<T> getDocument(String key) {
+
     CompletableFuture<T> future = new CompletableFuture<>();
     if (throwError) future.completeExceptionally(new RuntimeException());
     else future.complete(mockDocument);
@@ -71,7 +76,9 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   @Override
   public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
     CompletableFuture<List<T>> future = new CompletableFuture<>();
-    if (throwError) future.completeExceptionally(new RuntimeException("Error db"));
+    if (this.throwError) {
+      future.completeExceptionally(new RuntimeException("Error db"));
+    }
     else {
       future.complete((List<T>) FakeItemFactory.getFavorList());
     }

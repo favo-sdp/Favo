@@ -71,7 +71,7 @@ public class NearbyFavorList extends Fragment{
         RadioButton toggle = rootView.findViewById(R.id.map_switch);
         toggle.setOnClickListener(this::onToggleClick);
 
-        displayFavorList(activity.otherActiveFavorsAround, R.string.empty);
+        displayFavorList(activity.otherActiveFavorsAround, R.string.favor_no_nearby_favor);
         return rootView;
     }
 
