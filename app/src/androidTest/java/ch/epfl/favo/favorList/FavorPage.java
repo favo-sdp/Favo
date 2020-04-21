@@ -1,6 +1,5 @@
 package ch.epfl.favo.favorList;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -10,8 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
-
-import com.google.android.gms.tasks.Tasks;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -25,7 +22,7 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
@@ -71,29 +68,9 @@ public class FavorPage {
 
   @After
   public void tearDown() throws ExecutionException, InterruptedException {
-    cleanupDatabase();
+    TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-  }
-
-  private void cleanupDatabase() throws ExecutionException, InterruptedException {
-    Tasks.await(
-            DependencyFactory.getCurrentFirestore()
-                .collection("favors")
-                .whereArrayContains("userIds", TestConstants.USER_ID)
-                .get())
-        .getDocuments()
-        .forEach(
-            documentSnapshot ->
-                documentSnapshot
-                    .getReference()
-                    .delete()
-                    .addOnSuccessListener(
-                        aVoid -> Log.d("FavorPageTests", "DocumentSnapshot successfully deleted!"))
-                    .addOnFailureListener(
-                        e -> {
-                          Log.e("FavorPageTests", "Error deleting document", e);
-                        }));
   }
 
   public static ViewAction withCustomConstraints(
