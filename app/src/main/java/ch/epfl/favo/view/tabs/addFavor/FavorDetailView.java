@@ -66,6 +66,7 @@ public class FavorDetailView extends Fragment {
       }
       catch (Exception e){
         CommonTools.showSnackbar(rootView,getString(R.string.unknown_error));
+        enableButtons(false);
       }
     });
   }

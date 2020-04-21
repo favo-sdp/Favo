@@ -17,13 +17,10 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
-import com.google.firebase.firestore.Query;
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,7 +61,6 @@ import static org.hamcrest.Matchers.not;
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
-  private Query mockQueryResult = Mockito.mock(Query.class);
 
   @Rule
   public final ActivityTestRule<MainActivity> activityTestRule =
@@ -74,10 +70,12 @@ public class AddFavorTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
-          mockDatabaseWrapper.setThrowError(false);
-          mockDatabaseWrapper.setMockQueryResult(mockQueryResult);
-          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+          DependencyFactory.setCurrentFavorCollectionReference("favors-test");
+          DependencyFactory.setCurrentCollectionWrapper(null);
+//          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
+//          mockDatabaseWrapper.setThrowError(false);
+//
+//          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
         }
       };
 

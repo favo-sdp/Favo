@@ -86,7 +86,7 @@ public class FavorRequestView extends Fragment {
     // Get dependencies
     mGpsTracker =
         DependencyFactory.getCurrentGpsTracker(
-            Objects.requireNonNull(getActivity()).getApplicationContext());
+            requireActivity().getApplicationContext());
     // Inject argument
     favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
     if (getArguments() != null) {
@@ -135,7 +135,7 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn = rootView.findViewById(R.id.request_button);
     confirmFavorBtn.setOnClickListener(v -> requestFavor());
 
-    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+    if (DependencyFactory.isOfflineMode(requireContext())) {
       confirmFavorBtn.setText(R.string.request_favor_draft);
     }
 
@@ -203,7 +203,7 @@ public class FavorRequestView extends Fragment {
     postFavorFuture.exceptionally(onFailedResult(currentView));
 
     // Show confirmation and minimize keyboard
-    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext()))) {
+    if (DependencyFactory.isOfflineMode(requireContext())) {
       showSnackbar(getString(R.string.save_draft_message));
     }
   }
@@ -335,8 +335,8 @@ public class FavorRequestView extends Fragment {
   private void getFavorFromView(FavorStatus status) {
 
     // Extract details and post favor to Firebase
-    EditText titleElem = Objects.requireNonNull(getView()).findViewById(R.id.title_request_view);
-    EditText descElem = Objects.requireNonNull(getView()).findViewById(R.id.details);
+    EditText titleElem = requireView().findViewById(R.id.title_request_view);
+    EditText descElem = requireView().findViewById(R.id.details);
     String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
@@ -366,15 +366,15 @@ public class FavorRequestView extends Fragment {
   /** Called when camera button is clicked Method calls camera intent. */
   public void takePicture() {
     if (ContextCompat.checkSelfPermission(
-            Objects.requireNonNull(getContext()), Manifest.permission.CAMERA)
+            requireContext(), Manifest.permission.CAMERA)
         != PackageManager.PERMISSION_GRANTED) {
-      Objects.requireNonNull(getActivity())
+      requireActivity()
           .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
 
       if (takePictureIntent.resolveActivity(
-              Objects.requireNonNull(getActivity()).getPackageManager())
+              requireActivity().getPackageManager())
           != null) {
         startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
       }
@@ -383,7 +383,7 @@ public class FavorRequestView extends Fragment {
 
   private boolean isCameraAvailable() {
     boolean hasCamera =
-        Objects.requireNonNull(getActivity())
+        requireActivity()
             .getPackageManager()
             .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     int numberOfCameras = Camera.getNumberOfCameras();
@@ -429,7 +429,7 @@ public class FavorRequestView extends Fragment {
    * @param errorMessageRes error message.
    */
   public void showSnackbar(String errorMessageRes) {
-    Snackbar.make(Objects.requireNonNull(getView()), errorMessageRes, Snackbar.LENGTH_LONG).show();
+    Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
   /**
@@ -450,7 +450,7 @@ public class FavorRequestView extends Fragment {
     view.findViewById(R.id.constraint_layout_req_view)
         .setOnTouchListener(
             (v, event) -> {
-              hideKeyboardFrom(Objects.requireNonNull(getContext()), v);
+              hideKeyboardFrom(requireContext(), v);
               return false;
             });
   }

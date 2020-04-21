@@ -79,7 +79,7 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   @Override
   public DocumentReference getDocumentQuery(String key) {
-    return mockQuery;
+    return null;
   }
 
   @Override
