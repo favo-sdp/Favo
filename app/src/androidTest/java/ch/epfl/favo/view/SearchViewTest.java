@@ -37,6 +37,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class SearchViewTest {
+  private Favor favor = FakeItemFactory.getFavor();
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -97,8 +98,6 @@ public class SearchViewTest {
 
     typeFavors();
 
-    Favor favor = FakeItemFactory.getFavor();
-
     onView(isAssignableFrom(EditText.class))
         .perform(typeText(favor.getTitle()), pressImeActionButton());
 
@@ -130,6 +129,14 @@ public class SearchViewTest {
     onView(withId(R.id.tip))
         .check(matches(isDisplayed()))
         .check(matches(withText(R.string.query_failed)));
+
+    // Click on back button
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check active favors are displayed in active favor list view
+    onView(withText(favor.getDescription())).check(matches(isDisplayed()));
+    getInstrumentation().waitForIdleSync();
   }
 
   @Test
@@ -142,7 +149,7 @@ public class SearchViewTest {
 
     // if keyboard hidden, one time of pressBack will return to Favor List view
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-    Favor favor = FakeItemFactory.getFavor();
+
     // check favor is displayed in active favor list view
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
   }

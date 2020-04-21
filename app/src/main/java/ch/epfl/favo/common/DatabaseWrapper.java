@@ -1,6 +1,9 @@
 package ch.epfl.favo.common;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -9,10 +12,16 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.R;
+import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -29,7 +38,7 @@ public class DatabaseWrapper {
   private DatabaseWrapper() {
     FirebaseFirestore.setLoggingEnabled(true);
     FirebaseFirestoreSettings settings =
-        new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
+            new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
     try {
       firestore = DependencyFactory.getCurrentFirestore();
       firestore.setFirestoreSettings(settings);
@@ -89,6 +98,23 @@ public class DatabaseWrapper {
     CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
 
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
+  }
+
+  /**
+   * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
+   * This function retrieve longitude bounded documents because firebase only supports one range query field
+   * For some reason, reading from db is very slow when adding one more whereEqualTo query field
+   * TODO: use firebase functions or other server code to perform customized filtering and fetch the result
+   */
+  static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
+      Location loc, double radius, Class<T> cls, String collection) {
+    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    Task<QuerySnapshot> getAllTask = getCollectionReference(collection)
+            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+            .whereLessThan("location.longitude", loc.getLongitude() + longDif).limit(30).get();
+    CompletableFuture<QuerySnapshot> getAllFuture = new TaskToFutureAdapter<>(getAllTask).getInstance();
+    return getAllFuture.thenApply(
+            querySnapshot -> querySnapshot.toObjects(cls));
   }
 
   private static CollectionReference getCollectionReference(String collection) {

@@ -6,9 +6,13 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.util.Date;
 import java.util.UUID;
+
+import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockGpsTracker;
 
 import static ch.epfl.favo.TestConstants.NOTIFICATION_BODY;
 import static ch.epfl.favo.TestConstants.NOTIFICATION_TITLE;
