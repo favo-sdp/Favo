@@ -45,7 +45,7 @@ public class DatabaseWrapperTest {
     mockCollectionReference = Mockito.mock(CollectionReference.class);
     mockDocumentReference = Mockito.mock(DocumentReference.class);
     testFavor = FakeItemFactory.getFavor();
-    collectionWrapper = new CollectionWrapper<>("favors", Favor.class);
+    collectionWrapper = new CollectionWrapper<>(DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
     // return collection refernece from firestore object
     Mockito.doReturn(mockCollectionReference).when(mockFirestore).collection(anyString());

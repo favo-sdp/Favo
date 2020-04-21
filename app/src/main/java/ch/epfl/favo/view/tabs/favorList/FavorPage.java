@@ -95,7 +95,7 @@ public class FavorPage extends Fragment {
 
     baseQuery =
         FirebaseFirestore.getInstance()
-            .collection("favors")
+            .collection(DependencyFactory.getCurrentFavorCollection())
             .orderBy("postedTime", Query.Direction.DESCENDING)
             .whereArrayContains("userIds", DependencyFactory.getCurrentFirebaseUser().getUid());
 
@@ -216,11 +216,11 @@ public class FavorPage extends Fragment {
         }
       }
 
-//      @Override
-//      protected void onError(@NonNull Exception e) {
-//        mSwipeRefreshLayout.setRefreshing(false);
-//        Log.e("FavorsPage", e.getMessage(), e);
-//      }
+      //      @Override
+      //      protected void onError(@NonNull Exception e) {
+      //        mSwipeRefreshLayout.setRefreshing(false);
+      //        Log.e("FavorsPage", e.getMessage(), e);
+      //      }
     };
   }
 

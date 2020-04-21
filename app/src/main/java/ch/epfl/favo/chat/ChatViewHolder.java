@@ -1,7 +1,5 @@
 package ch.epfl.favo.chat;
 
-import android.graphics.BlendMode;
-import android.graphics.BlendModeColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.GradientDrawable;

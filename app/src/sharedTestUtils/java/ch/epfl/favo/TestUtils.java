@@ -38,7 +38,7 @@ public class TestUtils {
   public static void cleanupFavorsCollection() throws ExecutionException, InterruptedException {
     Tasks.await(
             DependencyFactory.getCurrentFirestore()
-                .collection("favors")
+                .collection(DependencyFactory.getCurrentFavorCollection())
                 .whereArrayContains("userIds", TestConstants.USER_ID)
                 .get())
         .getDocuments()

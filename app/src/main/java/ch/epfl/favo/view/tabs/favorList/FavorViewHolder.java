@@ -11,18 +11,18 @@ import ch.epfl.favo.favor.Favor;
 
 class FavorViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView mTitleView;
-    private TextView mDescriptionView;
+  private TextView mTitleView;
+  private TextView mDescriptionView;
 
-    FavorViewHolder(@NonNull View itemView) {
-        super(itemView);
+  FavorViewHolder(@NonNull View itemView) {
+    super(itemView);
 
-        mTitleView = itemView.findViewById(R.id.item_title);
-        mDescriptionView = itemView.findViewById(R.id.item_desc);
-    }
+    mTitleView = itemView.findViewById(R.id.item_title);
+    mDescriptionView = itemView.findViewById(R.id.item_desc);
+  }
 
-    void bind(@NonNull Favor favor) {
-        mTitleView.setText(favor.getTitle());
-        mDescriptionView.setText(String.valueOf(favor.getDescription()));
-    }
+  void bind(@NonNull Favor favor) {
+    mTitleView.setText(favor.getTitle());
+    mDescriptionView.setText(String.valueOf(favor.getDescription()));
+  }
 }

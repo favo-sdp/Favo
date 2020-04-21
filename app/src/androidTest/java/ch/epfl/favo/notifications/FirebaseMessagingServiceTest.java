@@ -67,7 +67,7 @@ public class FirebaseMessagingServiceTest {
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
-    DependencyFactory.setCurrentCollectionWrapper(new CollectionWrapper("favors", Favor.class));
+    DependencyFactory.setCurrentCollectionWrapper(new CollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class));
     Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
     mainActivityTestRule.getActivity().sendBroadcast(closeIntent);
   }

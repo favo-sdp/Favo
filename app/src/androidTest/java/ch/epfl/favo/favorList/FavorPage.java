@@ -12,6 +12,7 @@ import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
@@ -66,15 +68,21 @@ public class FavorPage {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+  @Before
+  public void setUp() {
+    DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+  }
+
   @After
   public void tearDown() throws ExecutionException, InterruptedException {
     TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   public static ViewAction withCustomConstraints(
-      final ViewAction action, final Matcher<View> constraints) {
+          final ViewAction action, final Matcher<View> constraints) {
     return new ViewAction() {
       @Override
       public Matcher<View> getConstraints() {

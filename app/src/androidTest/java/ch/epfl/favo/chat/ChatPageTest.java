@@ -5,6 +5,7 @@ import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -14,12 +15,12 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
-import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -52,11 +53,17 @@ public class ChatPageTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+  @Before
+  public void setUp() {
+    DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+  }
+
   @After
   public void tearDown() throws ExecutionException, InterruptedException {
     TestUtils.cleanupDatabase();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   private void navigateToChatPage() throws InterruptedException {

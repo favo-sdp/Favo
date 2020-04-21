@@ -55,6 +55,7 @@ public class FavorRequestView extends Fragment {
   private Button addPictureFromCameraBtn;
   private Button cancelFavorBtn;
   private Button editFavorBtn;
+  private Button chatBtn;
 
   private Favor currentFavor;
 
@@ -142,8 +143,8 @@ public class FavorRequestView extends Fragment {
         });
 
     // Chat button
-    Button startChatBtn = rootView.findViewById(R.id.chat_button);
-    startChatBtn.setOnClickListener(
+    chatBtn = rootView.findViewById(R.id.chat_button);
+    chatBtn.setOnClickListener(
         v -> {
           Bundle favorBundle = new Bundle();
           favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
@@ -196,6 +197,7 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn.setVisibility(View.INVISIBLE);
     editFavorBtn.setVisibility(View.VISIBLE);
     cancelFavorBtn.setVisibility(View.VISIBLE);
+    chatBtn.setVisibility(View.VISIBLE);
     toggleTextViewsEditable(false);
     updateViewFromStatus(v);
   }

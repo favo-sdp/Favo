@@ -20,7 +20,7 @@ public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static DatabaseUpdater collection =
-      DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class);
+      DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
