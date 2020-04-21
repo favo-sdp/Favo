@@ -1,4 +1,4 @@
-package ch.epfl.favo.view;
+package ch.epfl.favo.chat;
 
 import android.util.Log;
 
@@ -21,6 +21,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
@@ -122,10 +123,10 @@ public class ChatPageTest {
     getInstrumentation().waitForIdleSync();
 
     // wait for snackbar
-    Thread.sleep(4000);
+    Thread.sleep(3000);
 
     // Click on chat button
-    onView(withId(R.id.chat_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.chat_button)).perform(click());
     getInstrumentation().waitForIdleSync();
   }
 

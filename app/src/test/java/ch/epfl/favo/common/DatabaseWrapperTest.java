@@ -83,7 +83,7 @@ public class DatabaseWrapperTest {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirestore(null);
   }

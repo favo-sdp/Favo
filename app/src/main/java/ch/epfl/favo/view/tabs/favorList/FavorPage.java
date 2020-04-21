@@ -27,6 +27,7 @@ import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.firebase.ui.firestore.paging.LoadingState;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import ch.epfl.favo.MainActivity;
@@ -94,7 +95,7 @@ public class FavorPage extends Fragment {
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
     baseQuery =
-        DependencyFactory.getCurrentFirestore()
+        FirebaseFirestore.getInstance()
             .collection("favors")
             .orderBy("postedTime", Query.Direction.DESCENDING)
             .whereArrayContains("userIds", DependencyFactory.getCurrentFirebaseUser().getUid());
