@@ -22,6 +22,7 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -114,6 +115,8 @@ public class ChatPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
+    closeSoftKeyboard();
+
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -149,13 +152,17 @@ public class ChatPageTest {
     onView(withId(R.id.fragment_favors)).check(matches(isDisplayed()));
   }
 
-  @Test
-  public void testSendMessageWithSendButton() throws InterruptedException {
+  private void typeMessage(String message) throws InterruptedException {
     navigateToChatPage();
 
     // Fill in text views with fake message
-    String message = "Fake message";
     onView(withId(R.id.messageEdit)).perform(typeText(message));
+  }
+
+  @Test
+  public void testSendMessageWithSendButton() throws InterruptedException {
+    String message = "Fake message";
+    typeMessage(message);
 
     // send message
     onView(withId(R.id.sendButton)).perform(click());
@@ -166,11 +173,8 @@ public class ChatPageTest {
 
   @Test
   public void testSendMessageWithKeyboard() throws InterruptedException {
-    navigateToChatPage();
-
-    // Fill in text views with fake message
     String message = "Fake message";
-    onView(withId(R.id.messageEdit)).perform(typeText(message));
+    typeMessage(message);
 
     onView(withId(R.id.messageEdit)).perform(pressImeActionButton());
 
@@ -181,11 +185,8 @@ public class ChatPageTest {
   @Test
   public void testClickScreenHideKeyboard() throws InterruptedException {
 
-    navigateToChatPage();
-
-    // Fill in text views with fake message
     String message = "Fake message";
-    onView(withId(R.id.messageEdit)).perform(typeText(message));
+    typeMessage(message);
 
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());

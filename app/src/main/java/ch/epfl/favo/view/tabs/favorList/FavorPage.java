@@ -216,11 +216,11 @@ public class FavorPage extends Fragment {
         }
       }
 
-      @Override
-      protected void onError(@NonNull Exception e) {
-        mSwipeRefreshLayout.setRefreshing(false);
-        Log.e("FavorsPage", e.getMessage(), e);
-      }
+//      @Override
+//      protected void onError(@NonNull Exception e) {
+//        mSwipeRefreshLayout.setRefreshing(false);
+//        Log.e("FavorsPage", e.getMessage(), e);
+//      }
     };
   }
 
