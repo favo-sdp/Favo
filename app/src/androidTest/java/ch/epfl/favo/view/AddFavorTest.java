@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -32,15 +31,13 @@ import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestUtils;
-import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -77,13 +74,7 @@ public class AddFavorTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          FavorUtil.getSingleInstance()
-              .updateCollectionWrapper(new CollectionWrapper("favors-test", Favor.class));
-          DependencyFactory.setCurrentCollectionWrapper(null);
-          //          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
-          //          mockDatabaseWrapper.setThrowError(false);
-          //
-          //          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
 
@@ -104,7 +95,6 @@ public class AddFavorTest {
   }
 
   public FavorRequestView launchFragment(Favor favor) throws Throwable {
-
     MainActivity activity = activityTestRule.getActivity();
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     if (favor != null) {
@@ -132,7 +122,6 @@ public class AddFavorTest {
 
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(1000);
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -171,11 +160,14 @@ public class AddFavorTest {
 
   @Test
   public void testCanHideKeyboardOnClickOutsideOfTextView() throws Throwable {
-    launchFragment(null);
+    FavorRequestView favorRequestView = launchFragment(null);
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(4000); // wait for snackbar to hide
+    FakeViewModel viewModel = (FakeViewModel) favorRequestView.getViewModel();
+    fakeFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+    runOnUiThread(() -> viewModel.setObservedFavorResult(fakeFavor));
+    Thread.sleep(2000); // wait for snackbar to hide
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
@@ -217,7 +209,6 @@ public class AddFavorTest {
 
   @Test
   public void requestedFavorViewIsUpdatedCorrectly() throws Throwable {
-    FavorUtil.getSingleInstance().postFavor(fakeFavor);
     getInstrumentation().waitForIdleSync();
     launchFragment(fakeFavor);
     // Check request button is gone
@@ -235,58 +226,38 @@ public class AddFavorTest {
 
   @Test
   public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
+
     Favor fakeFavor = FakeItemFactory.getFavor();
-    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    FavorUtil.getSingleInstance().postFavor(fakeFavor);
+
     FavorRequestView fragment = launchFragment(fakeFavor);
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
+    runOnUiThread(() -> viewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
     checkAcceptedView(fakeFavor);
     fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
-    FavorUtil.getSingleInstance().updateFavor(fakeFavor);
+    runOnUiThread(() -> viewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
     checkCompletedView(fakeFavor);
   }
 
   @Test
-  public void testFavorCannotBeEditedIfAcceptedBySomeoneElse() {
-
-    Favor fakeFavor = FakeItemFactory.getFavor();
-    FavorRequestView fragment = new FavorRequestView();
-    launchFragmentWithFakeFavor(fragment, fakeFavor);
-    getInstrumentation().waitForIdleSync();
-    // set status to accepted
-    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    // inject result
-    mockDatabaseWrapper.setMockDocument(fakeFavor);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-    // check accepted view
-    checkAcceptedView(fakeFavor);
-    // Check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.fail_edit_favor_request_view)));
-  }
-
-  @Test
-  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabaseWhenTryingToEdit() {
+  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabase()
+      throws Throwable {
     // make the collection wrapper throw an error
-    mockDatabaseWrapper.setThrowError(true);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+
     // instantiate view
     Favor fakeFavor = FakeItemFactory.getFavor();
-    FavorRequestView fragment = new FavorRequestView();
-    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    FavorRequestView fragment = launchFragment(fakeFavor);
     getInstrumentation().waitForIdleSync();
     // Try to click on edit
-    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    runOnUiThread(() -> viewModel.setObservedFavorResult((Favor)null));
     getInstrumentation().waitForIdleSync();
     // check error message is printed
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.update_favor_error)));
-    mockDatabaseWrapper.setThrowError(false);
+        .check(matches(withText(R.string.unknown_error)));
   }
 
   public void checkCompletedView(Favor fakeFavor) {
@@ -308,9 +279,8 @@ public class AddFavorTest {
   }
 
   @Test
-  public void testEditFavorFlow() {
-    Favor fakeFavor = FakeItemFactory.getFavor();
-    launchFragmentWithFakeFavor(new FavorRequestView(), fakeFavor);
+  public void testEditFavorFlow() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(fakeFavor);//requested status
     getInstrumentation().waitForIdleSync();
     // Click on edit
     onView(withId(R.id.edit_favor_button))
@@ -331,9 +301,9 @@ public class AddFavorTest {
   }
 
   @Test
-  public void cancelActiveFavorUpdatesViewCorrectly() {
-    Favor fakeFavor = FakeItemFactory.getFavor();
-    launchFragmentWithFakeFavor(new FavorRequestView(), fakeFavor);
+  public void cancelActiveFavorUpdatesViewCorrectly() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(fakeFavor);//requested status
+    FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
     getInstrumentation().waitForIdleSync();
 
     // Click on cancel
@@ -341,11 +311,12 @@ public class AddFavorTest {
         .check(matches(isDisplayed()))
         .check(matches(withText(R.string.cancel_request))) // check contains right text
         .perform(click());
+    fakeFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
+    runOnUiThread(()->fakeViewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_cancel_success_msg)));
-
     // Check upload picture button is not clickable
     onView(withId(R.id.add_picture_button))
         .check(matches(isDisplayed()))
@@ -358,16 +329,38 @@ public class AddFavorTest {
     onView(withId(R.id.favor_status_text))
         .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
   }
-
-  private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
-    // Launch view
-    //activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
-    FragmentTransaction ft =
-        activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
-    ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor, fragment));
-    ft.addToBackStack(null);
-    ft.commit();
+  @Test
+  public void testSnackBarShowsWhenFailPostToDb() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(null);
+    FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
+    runOnUiThread(()->fakeViewModel.setThrowError(true));
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.unknown_error)));
   }
+  @Test
+  public void testSnackBarShowsWhenFailUpdateToDb() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(fakeFavor);
+    FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    runOnUiThread(()->fakeViewModel.setThrowError(true));
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.unknown_error)));
+  }
+  @Test
+  public void testSnackBarShowsWhenFailCancelToDb() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(fakeFavor);
+    FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
+    runOnUiThread(()->fakeViewModel.setThrowError(true));
+    onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.unknown_error)));
+  }
+
 
   public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap) {
 

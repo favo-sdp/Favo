@@ -22,22 +22,26 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
-public class FavorViewModel extends ViewModel {
+public class FavorViewModel extends ViewModel implements FavorDataController {
   String TAG = "FIRESTORE_VIEW_MODEL";
   FavorUtil favorRepository = FavorUtil.getSingleInstance();
 
-  MutableLiveData<Map<String, Favor>> myActiveFavors = new MutableLiveData<>();
-  MutableLiveData<Map<String, Favor>> myPastFavors = new MutableLiveData<>();
   MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
   // save address to firebase
+  @Override
   public CompletableFuture postFavor(Favor favor) {
     return favorRepository.postFavor(favor);
   }
+  public CompletableFuture updateFavor(Favor favor){
+    return favorRepository.updateFavor(favor);
+  }
 
+
+  @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius) {
     favorRepository
         .getNearbyFavors(loc, radius)
@@ -89,6 +93,7 @@ public class FavorViewModel extends ViewModel {
     return favorMap;
   }
 
+  @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
     favorRepository
         .getFavorReference(favorId)
@@ -105,6 +110,7 @@ public class FavorViewModel extends ViewModel {
     return observedFavor;
   }
 
+  @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
   }

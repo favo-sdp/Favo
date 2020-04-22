@@ -22,6 +22,7 @@ import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
   private static Locator currentGpsTracker;
@@ -35,6 +36,7 @@ public class DependencyFactory {
   private static CompletableFuture currentCompletableFuture;
   private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
+  private static Class currentViewModelClass;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -151,5 +153,14 @@ public class DependencyFactory {
   @VisibleForTesting
   public static void setCurrentFavorCollection(String collection) {
     currentFavorCollection = collection;
+  }
+  @VisibleForTesting
+  public static void setCurrentViewModelClass(Class dependency){
+    testMode = true;
+    currentViewModelClass = dependency;
+  }
+  public static Class getCurrentViewModelClass(){
+    if (testMode && currentViewModelClass!=null) {return currentViewModelClass;}
+    return FavorViewModel.class;
   }
 }

@@ -17,8 +17,8 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
 
   private T mockDocument;
   private CompletableFuture mockResult;
-  private Query mockQuery;
   private boolean throwError = false;
+  private DocumentReference mockDocumentReference;
 
   public MockDatabaseWrapper() {}
 
@@ -49,8 +49,8 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
     this.mockResult = result;
   }
 
-  public void setMockQueryResult(Query query) {
-    this.mockQuery = query;
+  public void setMockDocumentReference(DocumentReference docRef) {
+    this.mockDocumentReference = docRef;
   }
 
   @Override
@@ -73,11 +73,6 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
     if (throwError) future.completeExceptionally(new RuntimeException());
     else future.complete(mockDocument);
     return future;
-  }
-
-  @Override
-  public Query getDocumentsWithQuery(Map<String, Object> keyValuePairs) {
-    return null;
   }
 
   @Override

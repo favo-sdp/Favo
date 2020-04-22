@@ -41,7 +41,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.viewmodel.FavorViewModel;
+import ch.epfl.favo.viewmodel.FavorDataController;
 
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
@@ -52,7 +52,7 @@ public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
-  private FavorViewModel favorViewModel;
+  private FavorDataController favorViewModel;
   private Map<String, Favor> favorsAroundMe;
   private double radiusThreshold;
   private GoogleMap mMap;
@@ -84,17 +84,17 @@ public class MapsPage extends Fragment
 
     if (DependencyFactory.isOfflineMode(requireContext())) button.setVisibility(View.VISIBLE);
     else button.setVisibility(View.INVISIBLE);
-    favorViewModel = new ViewModelProvider(requireActivity()).get(FavorViewModel.class);
+    favorViewModel =
+        (FavorDataController)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
-
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
-    setupNearbyFavorsListener();
-    setupFocusedFavorListen();
     return view;
   }
 
@@ -110,6 +110,8 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
+    setupNearbyFavorsListener();
+    setupFocusedFavorListen();
     if (focusedFavor == null) centerViewOnMyLocation();
   }
 
@@ -265,7 +267,7 @@ public class MapsPage extends Fragment
 
   private void centerViewOnMyLocation() {
     // Add a marker at my location and move the camera
-      focusViewOnLocation(mLocation);
+    focusViewOnLocation(mLocation);
   }
 
   private void drawFavorMarkers(List<Favor> favors) {

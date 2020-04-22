@@ -34,12 +34,11 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.viewmodel.FavorViewModel;
+import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
@@ -49,7 +48,7 @@ public class FavorRequestView extends Fragment {
   private String TAG = "FavorRequestView";
   public static final int PICK_IMAGE_REQUEST = 1;
   public static final int USE_CAMERA_REQUEST = 2;
-  private FavorViewModel favorViewModel;
+  private FavorDataController favorViewModel;
   private FavorStatus favorStatus;
   private ImageView mImageView;
   private EditText mTitleView;
@@ -87,7 +86,10 @@ public class FavorRequestView extends Fragment {
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
-    favorViewModel = new ViewModelProvider(requireActivity()).get(FavorViewModel.class);
+    favorViewModel =
+        (FavorDataController)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
     if (getArguments() != null) {
       String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
       setupFavorListener(rootView, favorId);
@@ -95,9 +97,13 @@ public class FavorRequestView extends Fragment {
     return rootView;
   }
 
+  public FavorDataController getViewModel() {
+    return favorViewModel;
+  }
+
   public void setupFavorListener(View rootView, String favorId) {
 
-    favorViewModel
+    getViewModel()
         .setObservedFavor(favorId)
         .observe(
             getViewLifecycleOwner(),
@@ -202,7 +208,7 @@ public class FavorRequestView extends Fragment {
     getFavorFromView(favorStatus);
 
     // post to DB
-    CompletableFuture postFavorFuture = FavorUtil.getSingleInstance().postFavor(currentFavor);
+    CompletableFuture postFavorFuture = getViewModel().postFavor(currentFavor);
     postFavorFuture.thenAccept(
         o -> {
           setupFavorListener(getView(), currentFavor.getId());
@@ -250,7 +256,7 @@ public class FavorRequestView extends Fragment {
     currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
     getFavorFromView(favorStatus);
     // DB call to update Favor details
-    CompletableFuture updateFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
+    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
   }
@@ -261,7 +267,7 @@ public class FavorRequestView extends Fragment {
     //    favorStatus = FavorStatus.CANCELLED_REQUESTER;
 
     // DB call to update status
-    CompletableFuture cancelFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
+    CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }

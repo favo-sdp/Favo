@@ -1,7 +1,9 @@
 package ch.epfl.favo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ch.epfl.favo.favor.Favor;
 
@@ -25,5 +27,13 @@ public class FakeItemFactory {
         add(getFavor());
       }
     };
+  }
+  public static Map<String,Favor> getFavorListMap(){
+    List<Favor> favorList = getFavorList();
+    Map<String,Favor> result = new HashMap<>(favorList.size());
+    for (Favor favor: favorList){
+      result.put(favor.getId(),favor);
+    }
+    return result;
   }
 }
