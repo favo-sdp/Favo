@@ -35,12 +35,10 @@
     <string name="favor_datetime_hint">Now</string>
     <string name="favor_details_hint">Add more details?</string>
     <string name="favor_confirm_button">Request Favor</string>
-    <string-array name="favor_list_spinner">
-        <item>Active</item>
-        <item>Archived</item>
-    </string-array>
     <string name="favor_no_active_favor">You have no active favors</string>
     <string name="favor_no_archived_favor">You have no archived favors</string>
+    <string name="active_favors_text">Active</string>
+    <string name="archived_favors_text">Archived</string>
 
     <string name="tab2_description">2</string>
     <string name="share">Share</string>
@@ -58,7 +56,7 @@
     <!--Favor search bar -->
     <string name="searchView_title">Search View</string>
     <string name="search_hint">Search title/description</string>
-    <string name="query_failed"> No match found</string>>
+    <string name="query_failed"> No results found</string>
     <string name="empty"> </string>
 
     <!--Nearby Favor View -->
@@ -139,5 +137,11 @@
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>
     <string name="actionbar_spinner">ActionBar Spinner</string>
+
+    <!-- Chat -->
+    <string name="open_chat">Open chat</string>
+    <string name="start_chatting">No messages</string>
+    <string name="hint_message">Write message</string>
+    <string name="send">Send</string>
 
 </resources>

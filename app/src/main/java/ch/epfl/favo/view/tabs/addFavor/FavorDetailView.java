@@ -2,7 +2,6 @@ package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +10,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -67,13 +64,12 @@ public class FavorDetailView extends Fragment {
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
 
-    locationAccessBtn.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        ((MainActivity)(Objects.requireNonNull(getActivity()))).focusedFavor = currentFavor;
-        findNavController(getActivity(), R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
-      }
-    });
+    locationAccessBtn.setOnClickListener(
+        v -> {
+          ((MainActivity) (requireActivity())).focusedFavor = currentFavor;
+          findNavController(requireActivity(), R.id.nav_host_fragment)
+              .popBackStack(R.id.nav_map, false);
+        });
 
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
@@ -83,6 +79,14 @@ public class FavorDetailView extends Fragment {
           } else {
             cancelFavor();
           }
+        });
+
+    chatBtn.setOnClickListener(
+        v -> {
+          Bundle favorBundle = new Bundle();
+          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+          Navigation.findNavController(requireView())
+              .navigate(R.id.action_nav_favorDetailView_to_chatView, favorBundle);
         });
   }
 
@@ -97,8 +101,6 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
 
-      ((MainActivity) getActivity()).activeFavors.remove(currentFavor.getId());
-      ((MainActivity) getActivity()).archivedFavors.remove(currentFavor.getId());
       // update UI
       currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
       favorStatus = verifyFavorHasBeenAccepted(currentFavor);
@@ -117,12 +119,12 @@ public class FavorDetailView extends Fragment {
   }
 
   private void acceptFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     CompletableFuture<Favor> favorFuture =
         FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
     favorFuture // get updated favor from db
         .thenAccept(
         favor -> {
+          currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
           if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
             currentFavor.updateToOther(favor);
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
@@ -149,7 +151,6 @@ public class FavorDetailView extends Fragment {
     return o -> {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
 
-      ((MainActivity) requireActivity()).activeFavors.put(currentFavor.getId(), currentFavor);
       ((MainActivity) requireActivity()).otherActiveFavorsAround.remove(currentFavor.getId());
       currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
       favorStatus = FavorStatus.ACCEPTED;

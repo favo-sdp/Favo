@@ -46,7 +46,7 @@ public class UserAccountPageTest {
     onView(withId(R.id.hamburger_menu_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // Click on account icon
-    onView(anyOf(withText(R.string.account), withId(R.id.nav_account))).perform(click());
+    onView(withId(R.id.nav_account)).perform(click());
     getInstrumentation().waitForIdleSync();
   }
 
