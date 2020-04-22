@@ -347,8 +347,9 @@ public class FavorRequestView extends Fragment {
       bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
       ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
 
-      CompletableFuture<Uri> pictureUrl = PictureUtil.uploadPicture(bais);
-      pictureUrl.thenAccept(url -> favor.setPictureUrl(url));
+      // Good idea to display the result of uploading the picture (not sure how to do this)
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(bais);
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
       pictureUrl.exceptionally(e -> {
         // insert something about being unable to upload picture
         return null;

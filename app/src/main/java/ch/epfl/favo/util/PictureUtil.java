@@ -27,7 +27,7 @@ public class PictureUtil {
    * @param pictureStream stream of picture to be uploaded to Firebase Cloud Storage
    * @return CompletableFuture of the resulting url
    */
-  public static CompletableFuture<Uri> uploadPicture(InputStream pictureStream) {
+  public static CompletableFuture<String> uploadPicture(InputStream pictureStream) {
     StorageReference storageRef =
         storage.getReference().child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
 
@@ -43,7 +43,7 @@ public class PictureUtil {
                 });
 
     CompletableFuture<Uri> urlFuture = new TaskToFutureAdapter<>(urlTask);
-    return urlFuture;
+    return urlFuture.thenApply(url -> url.toString());
   }
 
   /**
@@ -52,9 +52,9 @@ public class PictureUtil {
    * @param pictureUrl url of the picture
    * @return CompletableFuture of the picture represented as a Bitmap
    */
-  public static CompletableFuture<Bitmap> downloadPicture(Uri pictureUrl) {
+  public static CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
-        storage.getReferenceFromUrl(pictureUrl.toString()).getBytes(ONE_MEGABYTE);
+        storage.getReferenceFromUrl(pictureUrl).getBytes(ONE_MEGABYTE);
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();

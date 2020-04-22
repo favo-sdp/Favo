@@ -1,7 +1,6 @@
 package ch.epfl.favo.favor;
 
 import android.location.Location;
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -57,7 +56,7 @@ public class Favor implements Parcelable, Document {
   private FavoLocation location;
   private Date postedTime;
   private Status statusId;
-  private Uri pictureUrl;
+  private String pictureUrl;
 
   public Favor() {}
 
@@ -104,7 +103,7 @@ public class Favor implements Parcelable, Document {
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
     this.statusId = (Status) map.get(STATUS_ID);
-    this.pictureUrl = (Uri) map.get(PICTURE_URL);
+    this.pictureUrl = (String) map.get(PICTURE_URL);
   }
 
   /**
@@ -193,9 +192,9 @@ public class Favor implements Parcelable, Document {
     this.location = location;
   }
 
-  public Uri getPictureUrl() { return this.pictureUrl; }
+  public String getPictureUrl() { return this.pictureUrl; }
 
-  public void setPictureUrl(Uri pictureUrl){ this.pictureUrl = pictureUrl; }
+  public void setPictureUrl(String pictureUrl){ this.pictureUrl = pictureUrl; }
 
   @Override
   public int describeContents() {
@@ -210,7 +209,7 @@ public class Favor implements Parcelable, Document {
     dest.writeString(accepterId);
     dest.writeParcelable(location, flags);
     dest.writeString(statusId.toString());
-    dest.writeString(pictureUrl.toString());
+    dest.writeString(pictureUrl);
   }
 
   public void updateToOther(Favor other) {

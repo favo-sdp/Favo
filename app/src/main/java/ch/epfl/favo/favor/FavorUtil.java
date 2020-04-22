@@ -154,4 +154,17 @@ public class FavorUtil {
 
     throw new NotImplementedException();
   }
+
+  /**
+   * Update the Favor photo url and update the database to match if not done already
+   *
+   * @param favor to get url updated
+   * @param url of photo
+   */
+  public void updateFavorPhoto(Favor favor, String url) {
+    Map<String, Object> updates = new HashMap<>();
+    updates.put("pictureUrl", url);
+    collection.updateDocument(favor.getId(), updates);
+    favor.setPictureUrl(url);
+  }
 }
