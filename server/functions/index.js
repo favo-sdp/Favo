@@ -17,7 +17,7 @@ function distanceInKm(lon1, lat1, lon2, lat2) {
     return R * c;
 }
 
-function sendMessage(message, usersIds) {
+function sendMulticastMessage(message, usersIds) {
     admin.messaging().sendMulticast(message)
         .then((response) => {
             if (response.failureCount > 0) {
@@ -39,13 +39,20 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
 
         // get new favor that has just been posted
         const newFavor = change.data();
-        var latFav = newFavor.location.latitude;
-        var longFav = newFavor.location.longitude;
-        var posterId = newFavor.requesterId;
-        var title = newFavor.title;
+        const latFav = newFavor.location.latitude;
+        const longFav = newFavor.location.longitude;
+
+        const ids = newFavor.userIds;
+
+        if (ids == null) {
+            return;
+        }
+
+        const posterId = ids[0];
+        const title = newFavor.title;
+        const maxDistance = 100.0; // in km
+
         var usersIds = [];
-        var maxDistance = 100.0; // in km
-        var id = newFavor.id;
 
         const message = {
             data: {
@@ -54,9 +61,6 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
             notification: {
                 title: 'New favor nearby: ' + title,
                 body: 'Click to check out the post details',
-            },
-            data: {
-                "FavorId": newFavor.id,
             },
             tokens: usersIds
         };
@@ -70,12 +74,12 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                     var latUser = user.location.latitude;
                     var longUser = user.location.longitude;
                     var distance = distanceInKm(longFav, latFav, longUser, latUser);
-                    if (distance < maxDistance) {
+                    if (distance < maxDistance && user.id !== posterId) {
                         usersIds.push(user.notificationId)
                     }
                 });
 
-                sendMessage(message, usersIds);
+                sendMulticastMessage(message, usersIds);
 
             })
             .catch((err) => {
@@ -83,40 +87,101 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
             });
     });
 
-// send notification to the user who accepted the favor for any update
+// send new favor notification to users on updates
 exports.sendNotificationOnUpdate = functions.firestore
     .document('/favors/{favorId}')
-    .onWrite((change) => {
+    .onUpdate((change) => {
 
-        // get new favor that has just been posted
-        const newFavor = change.data();
-        var accepterId = newFavor.accepter;
-        var favorTitle = newFavor.title;
-        var usersIds = [];
+        const oldFavor = change.before.data();
+        const updatedFavor = change.after.data();
+        const oldStatus = oldFavor.statusId;
+        const newStatus = updatedFavor.statusId;
 
-        const message = {
-            notification: {
-                title: 'Favor + ' + favorTitle + ' has been updated',
-                body: 'Check out the new details',
-            },
-            tokens: usersIds
-        };
+        const favorTitle = updatedFavor.title;
 
-        // go through all the users
-        db.collection('/users').get()
-            .then((snapshot) => {
-                snapshot.forEach((doc) => {
-                    var user = doc.data();
-                    var userID = user.id;
-                    if (userID === accepterId) {
-                        usersIds.push(user.notificationId);
-                    }
+        const userIds = updatedFavor.userIds;
+
+        if (userIds == null) {
+            return;
+        }
+
+        // that's always present
+        const requesterId = userIds[0];
+
+        // get accepterId, if it exists
+        var accepterId = "";
+        if (userIds.length > 1) {
+            accepterId = userIds[1];
+        }
+
+        var titleToSend = "";
+        var userReceiver = "";
+
+        // send notification if new status
+        if (oldStatus !== newStatus) {
+
+            //console.log('Status has changed');
+
+            // favor has been accepted, send notification to requester
+            if (newStatus === 1) {
+                //console.log('Favor has been accepted');
+                //titleToSend = "Favor " + favorTitle + " has been accepted";
+                userReceiver = requesterId;
+            }
+
+            // favor has been cancelled by requester, send notification to accepter, if it exists
+            if (newStatus === 3) {
+                //console.log('Favor has been cancelled by the requester');
+                titleToSend = "Favor " + favorTitle + " has been cancelled by the requester";
+                userReceiver = accepterId;
+            }
+
+            // favor has been cancelled by accepter, send notification to requester
+            if (newStatus === 4) {
+                //console.log('Favor has been cancelled by the accepter');
+                titleToSend = "Favor " + favorTitle + " has been cancelled by the accepter";
+                userReceiver = requesterId;
+            }
+
+        } else { // if status is not different, there must have been an update of some other field, so notify the accepter
+            //console.log('Favor has changed');
+
+            titleToSend = "Favor " + favorTitle + " has been modified";
+            userReceiver = accepterId;
+        }
+
+        // console.log('Title ', titleToSend);
+        // console.log('Receiver ', userReceiver);
+
+        if (userReceiver !== "") {
+
+            var receivers = [];
+
+            // prepare message
+            const message = {
+                data: {
+                    FavorId: updatedFavor.id,
+                },
+                notification: {
+                    title: titleToSend,
+                    body: 'Click to check out the post details',
+                },
+
+                tokens: receivers
+            };
+
+            db.collection('/users').where("id", "==", userReceiver).get()
+                .then((snapshot) => {
+                    snapshot.forEach((doc) => {
+                        var user = doc.data();
+                        receivers.push(user.notificationId);
+
+                        //console.log('One matching user', user.id);
+                    });
+
+                    //console.log('Users found: ', receivers);
+
+                    sendMulticastMessage(message, receivers);
                 });
-
-                sendMessage(message, usersIds);
-
-            })
-            .catch((err) => {
-                console.log('Error getting documents', err);
-            });
+        }
     });

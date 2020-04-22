@@ -6,7 +6,7 @@ public enum FavorStatus {
   EXPIRED("Expired", 2),
   CANCELLED_REQUESTER("Cancelled by requester", 3),
   CANCELLED_ACCEPTER("Cancelled by accepter", 4),
-  SUCCESSFULLY_COMPLETED("Succesfully Completed", 5),
+  SUCCESSFULLY_COMPLETED("Successfully Completed", 5),
   ACCEPTED_BY_OTHER("Accepted by other", 6), // additional state
   EDIT("Edit mode", 7);
 
