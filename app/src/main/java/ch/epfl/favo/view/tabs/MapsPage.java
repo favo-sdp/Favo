@@ -36,7 +36,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -83,18 +82,19 @@ public class MapsPage extends Fragment
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
 
-    if (DependencyFactory.isOfflineMode(Objects.requireNonNull(getContext())))
-      button.setVisibility(View.VISIBLE);
+    if (DependencyFactory.isOfflineMode(requireContext())) button.setVisibility(View.VISIBLE);
     else button.setVisibility(View.INVISIBLE);
     favorViewModel = new ViewModelProvider(requireActivity()).get(FavorViewModel.class);
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
-    setupNearbyFavorsListener();
+
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
+    setupNearbyFavorsListener();
+    setupFocusedFavorListen();
     return view;
   }
 
@@ -110,6 +110,10 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
+    if (focusedFavor == null) centerViewOnMyLocation();
+  }
+
+  private void setupFocusedFavorListen() {
     favorViewModel
         .getObservedFavor()
         .observe(
@@ -127,7 +131,6 @@ public class MapsPage extends Fragment
                 focusViewOnLocation(focusedFavor.getLocation());
               }
             });
-    if (focusedFavor == null) centerViewOnMyLocation();
   }
 
   private Marker drawFavorMarker(Favor favor, boolean isRequested) {
@@ -204,7 +207,7 @@ public class MapsPage extends Fragment
   private void getLocationPermission() {
     /** Request location permission, so that we can get the location of the device. */
     if (ContextCompat.checkSelfPermission(
-            Objects.requireNonNull(getActivity()).getApplicationContext(),
+            requireActivity().getApplicationContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION)
         != PackageManager.PERMISSION_GRANTED) {
       requestPermissions(
@@ -262,10 +265,7 @@ public class MapsPage extends Fragment
 
   private void centerViewOnMyLocation() {
     // Add a marker at my location and move the camera
-    if (first) {
-      first = false;
       focusViewOnLocation(mLocation);
-    }
   }
 
   private void drawFavorMarkers(List<Favor> favors) {

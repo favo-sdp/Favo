@@ -7,12 +7,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
@@ -80,13 +77,7 @@ public class FavorUtil {
    */
   public Query retrieveAllActiveFavorsForGivenUser(String userId) {
 
-    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
-    // Filter out all favors except active ones
-    Map<String,Object> queryValues = new HashMap<String,Object>(){{
-      put(Favor.REQUESTER_ID,DependencyFactory.getCurrentFirebaseUser().getUid());
-      put(Favor.IS_ARCHIVED,false);
-    }};
-    return collection.getDocumentsWithQuery(queryValues);
+    throw new NotImplementedException();
   }
   public Query getNearbyFavors(Location loc, Double radius){
     return collection.locationBoundQuery(loc,radius);
@@ -97,15 +88,9 @@ public class FavorUtil {
    *
    * @param userId Id of the user
    */
-  public Query retrieveAllPastFavorsForGivenUser(String userId) {
+  public ArrayList<Favor> retrieveAllPastFavorsForGivenUser(String userId) {
 
-    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
-    // Filter out all favors except inactive (past) ones
-    Map<String,Object> queryValues = new HashMap<String,Object>(){{
-      put(Favor.REQUESTER_ID,DependencyFactory.getCurrentFirebaseUser().getUid());
-      put(Favor.IS_ARCHIVED,true);
-    }};
-    return collection.getDocumentsWithQuery(queryValues);
+    throw new NotImplementedException();
   }
   public DocumentReference getFavorReference(String id){
     return collection.getDocumentQuery(id);

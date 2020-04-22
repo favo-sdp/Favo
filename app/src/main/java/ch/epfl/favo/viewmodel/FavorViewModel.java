@@ -30,10 +30,8 @@ public class FavorViewModel extends ViewModel {
   MutableLiveData<Map<String, Favor>> myPastFavors = new MutableLiveData<>();
   MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
-
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
-
 
   // save address to firebase
   public CompletableFuture postFavor(Favor favor) {
@@ -74,25 +72,6 @@ public class FavorViewModel extends ViewModel {
     }
   }
 
-  public LiveData<Map<String, Favor>> getMyActiveFavors() {
-    favorRepository
-        .retrieveAllActiveFavorsForGivenUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .addSnapshotListener(
-            (queryDocumentSnapshots, e) -> {
-              myActiveFavors.setValue(getFavorMapFromQuery(queryDocumentSnapshots, e));
-            });
-    return myActiveFavors;
-  }
-
-  public LiveData<Map<String, Favor>> getMyPastFavors() {
-    favorRepository
-        .retrieveAllPastFavorsForGivenUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .addSnapshotListener(
-            (queryDocumentSnapshots, e) ->
-                myPastFavors.setValue(getFavorMapFromQuery(queryDocumentSnapshots, e)));
-    return myPastFavors;
-  }
-
   private Map<String, Favor> getFavorMapFromQuery(
       QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
     handleException(e);
@@ -112,17 +91,17 @@ public class FavorViewModel extends ViewModel {
 
   public LiveData<Favor> setObservedFavor(String favorId) {
     favorRepository
-            .getFavorReference(favorId)
-            .addSnapshotListener(
-                    (documentSnapshot, e) -> {
-                      if (e != null) {
-                        Log.w(TAG, "Listen Failed", e);
-                        observedFavor = null;
-                        return;
-                      }
-                      // observedFavor.postValue(documentSnapshot.toObject(Favor.class));
-                      observedFavor.setValue(documentSnapshot.toObject(Favor.class));
-                    });
+        .getFavorReference(favorId)
+        .addSnapshotListener(
+            (documentSnapshot, e) -> {
+              if (e != null) {
+                Log.w(TAG, "Listen Failed", e);
+                observedFavor = null;
+                return;
+              }
+              // observedFavor.postValue(documentSnapshot.toObject(Favor.class));
+              observedFavor.setValue(documentSnapshot.toObject(Favor.class));
+            });
     return observedFavor;
   }
 
