@@ -1,6 +1,5 @@
 package ch.epfl.favo.common;
 
-import android.app.Activity;
 import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
@@ -27,7 +26,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;

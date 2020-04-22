@@ -5,9 +5,6 @@ import android.graphics.BitmapFactory;
 
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 

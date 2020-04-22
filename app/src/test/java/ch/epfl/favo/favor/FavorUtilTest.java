@@ -1,8 +1,5 @@
 package ch.epfl.favo.favor;
 
-import android.app.Activity;
-import android.location.Location;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
