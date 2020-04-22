@@ -202,25 +202,26 @@ public class FavorPage extends Fragment {
 
       @Override
       protected void onLoadingStateChanged(@NonNull LoadingState state) {
-        mSwipeRefreshLayout.setRefreshing(false);
+        switch (state) {
+          case LOADING_INITIAL:
+            mSwipeRefreshLayout.setRefreshing(true);
+            break;
+          case LOADED:
+          case FINISHED:
+            mSwipeRefreshLayout.setRefreshing(false);
+            break;
+          case ERROR:
+            Toast.makeText(
+                    getContext(),
+                    "An error occurred. Check your internet connection.",
+                    Toast.LENGTH_SHORT)
+                .show();
 
-        if (state == LoadingState.ERROR) {
-          Toast.makeText(
-                  getContext(),
-                  "An error occurred. Check your internet connection.",
-                  Toast.LENGTH_SHORT)
-              .show();
-
-          // remove this to repeat toast every time
-          // retry();
+            // remove this to repeat toast every time
+            // retry();
+            break;
         }
       }
-
-      //      @Override
-      //      protected void onError(@NonNull Exception e) {
-      //        mSwipeRefreshLayout.setRefreshing(false);
-      //        Log.e("FavorsPage", e.getMessage(), e);
-      //      }
     };
   }
 
