@@ -60,7 +60,7 @@
         android:focusable="true"
         android:onClick="onFabClick"
         android:src="@drawable/ic_add_black_24dp"
-        app:backgroundTint="#4CAF50"
+        app:backgroundTint="@color/material_green_500"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation_view"
         app:layout_constraintEnd_toEndOf="parent" />
 

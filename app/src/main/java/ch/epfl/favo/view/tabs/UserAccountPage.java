@@ -77,12 +77,12 @@ public class UserAccountPage extends Fragment {
 
   private void signOut(View view) {
     AuthUI.getInstance()
-        .signOut(Objects.requireNonNull(getActivity()))
+        .signOut(requireActivity())
         .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
   }
 
   private void deleteAccountClicked(View view) {
-    new AlertDialog.Builder(Objects.requireNonNull(getActivity()))
+    new AlertDialog.Builder(requireActivity())
         .setMessage("Are you sure you want to delete this account?")
         .setPositiveButton("Yes", (dialogInterface, i) -> deleteAccount())
         .setNegativeButton("No", null)
@@ -91,7 +91,7 @@ public class UserAccountPage extends Fragment {
 
   private void deleteAccount() {
     AuthUI.getInstance()
-        .delete(Objects.requireNonNull(getActivity()))
+        .delete(requireActivity())
         .addOnCompleteListener(task -> onComplete(task, R.string.delete_account_failed));
   }
 

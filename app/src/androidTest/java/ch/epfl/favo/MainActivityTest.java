@@ -20,6 +20,7 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -30,7 +31,7 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -41,7 +42,6 @@ public class MainActivityTest {
       new ActivityTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
@@ -54,7 +54,6 @@ public class MainActivityTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentCollectionWrapper(null);
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
   }
@@ -62,10 +61,10 @@ public class MainActivityTest {
   @Test
   public void testMapViewIsLaunched() {
     // Click on map tab
-    onView(withId(R.id.nav_map)).check(matches(isDisplayed())).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     // Check that the current fragment is the map tab
-    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -74,14 +73,14 @@ public class MainActivityTest {
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 
   @Test
   public void testMenuDrawerCanBeLaunchedFromMapView() {
     // Click on map tab
-    onView(withId(R.id.nav_map)).check(matches(isDisplayed())).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on menu tab
@@ -117,7 +116,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.account), withId(nav_account))).perform(click());
+    onView(withId(nav_account)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -134,7 +133,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.settings), withId(R.id.nav_settings))).perform(click());
+    onView(withId(R.id.nav_settings)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -150,7 +149,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.about), withId(nav_about))).perform(click());
+    onView(withId(nav_about)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -167,7 +166,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
+    onView(withId(R.id.nav_share)).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that share intent is indeed opened
@@ -186,8 +185,7 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    // Click on account icon
-    onView(withId(R.id.nav_map)).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription(not("Map")))).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -203,7 +201,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // Click on account icon
-    onView(anyOf(withText(R.string.about), withId(R.id.nav_share))).perform(click());
+    onView(withId(nav_about)).perform(click());
 
     getInstrumentation().waitForIdleSync();
 
@@ -212,7 +210,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
-    onView(withId(R.id.nav_map)).check(matches(isDisplayed()));
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -224,7 +222,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // click share
-    onView(anyOf(withText(R.string.share), withId(R.id.nav_share))).perform(click());
+    onView(withId(R.id.nav_share)).perform(click());
 
     getInstrumentation().waitForIdleSync();
 
@@ -258,7 +256,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the favor list page
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 
@@ -279,7 +277,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the favor list page
-    onView(allOf(withId(R.id.fragment_tab2), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 }

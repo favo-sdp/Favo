@@ -18,9 +18,6 @@ import java.util.List;
 
 public class FakeFirebaseUser extends FirebaseUser {
 
-  // Default test uid
-  private final String uid = "testUserId";
-
   private String displayName;
   private String email;
   private Uri photo;
@@ -36,7 +33,7 @@ public class FakeFirebaseUser extends FirebaseUser {
   @NonNull
   @Override
   public String getUid() {
-    return uid;
+    return TestConstants.USER_ID;
   }
 
   @NonNull

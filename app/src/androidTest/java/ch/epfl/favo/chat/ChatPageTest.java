@@ -1,31 +1,32 @@
-package ch.epfl.favo.view;
+package ch.epfl.favo.chat;
 
-import android.widget.EditText;
-
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.typeText;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -35,9 +36,8 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 
-@RunWith(AndroidJUnit4.class)
-public class SearchViewTest {
-  private Favor favor = FakeItemFactory.getFavor();
+public class ChatPageTest {
+
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -46,6 +46,7 @@ public class SearchViewTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          //DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
         }
       };
 
@@ -53,13 +54,20 @@ public class SearchViewTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-  @After
-  public void tearDown() {
-    DependencyFactory.setCurrentFirebaseUser(null);
-    DependencyFactory.setCurrentGpsTracker(null);
+  @Before
+  public void setUp() {
+    DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
   }
 
-  private void typeFavors() {
+  @After
+  public void tearDown() throws ExecutionException, InterruptedException {
+    TestUtils.cleanupDatabase();
+    DependencyFactory.setCurrentFirebaseUser(null);
+    DependencyFactory.setCurrentGpsTracker(null);
+    //DependencyFactory.setCurrentFavorCollection("favors");
+  }
+
+  private void navigateToChatPage() throws InterruptedException {
     // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -78,79 +86,79 @@ public class SearchViewTest {
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Click on back button
-    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
+    // wait for snackbar
+    Thread.sleep(3000);
 
-    // Click on searchView button
-    onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // check spinner is invisible and favor list is empty
-    onView(withText(favor.getTitle())).check(doesNotExist());
-
-    // no need for that because the spinner is not in the layout anymore
-    // onView(withId(R.id.spinner)).check(matches(not(isDisplayed())));
-  }
-
-  @Test
-  public void testSearchViewFound() {
-
-    typeFavors();
-
-    onView(isAssignableFrom(EditText.class))
-        .perform(typeText(favor.getTitle()), pressImeActionButton());
-
-    getInstrumentation().waitForIdleSync();
-
-    // check query is successful and click on found item
-    onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // Click on back button
-    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // check favor is displayed in active favor list view
-    onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
+    // Click on chat button
+    onView(withId(R.id.chat_button)).perform(click());
     getInstrumentation().waitForIdleSync();
   }
 
   @Test
-  public void testSearchViewNotFound() {
+  public void testChatPageLayout() throws InterruptedException {
 
-    typeFavors();
+    navigateToChatPage();
 
-    // type the title of fake favor
-    onView(isAssignableFrom(EditText.class))
-        .perform(typeText("random words"), pressImeActionButton());
+    // check title displayed
+    onView(withText(FakeItemFactory.getFavor().getTitle())).check(matches(isDisplayed()));
 
-    // check the tip text is displayed when query failed
-    onView(withId(R.id.tip))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(R.string.query_failed)));
+    // check no messages displayed
+    onView(withId(R.id.emptyTextView)).check(matches(isDisplayed()));
 
-    // Click on back button
-    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
+    // Go back to request page
+    pressBack();
+
+    // go back to list
+    pressBack();
+
     getInstrumentation().waitForIdleSync();
 
-    // check active favors are displayed in active favor list view
-    onView(withText(favor.getDescription())).check(matches(isDisplayed()));
-    getInstrumentation().waitForIdleSync();
+    // Check we're back to favor page
+    onView(withId(R.id.fragment_favors)).check(matches(isDisplayed()));
+  }
+
+  private void typeMessage(String message) throws InterruptedException {
+    navigateToChatPage();
+
+    // Fill in text views with fake message
+    onView(withId(R.id.messageEdit)).perform(typeText(message));
   }
 
   @Test
-  public void testClickScreenHideKeyboard() {
-    typeFavors();
+  public void testSendMessageWithSendButton() throws InterruptedException {
+    String message = "Fake message";
+    typeMessage(message);
+
+    // send message
+    onView(withId(R.id.sendButton)).perform(click());
+
+    Thread.sleep(1000);
+
+    // check message is displayed
+    onView(withText(message)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testSendMessageWithKeyboard() throws InterruptedException {
+    String message = "Fake message";
+    typeMessage(message);
+
+    onView(withId(R.id.messageEdit)).perform(pressImeActionButton());
+
+    Thread.sleep(1000);
+
+    // check message is displayed
+    onView(withText(message)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testClickScreenHideKeyboard() throws InterruptedException {
+
+    String message = "Fake message";
+    typeMessage(message);
 
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
     device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
-
-    // if keyboard hidden, one time of pressBack will return to Favor List view
-    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-
-    // check favor is displayed in active favor list view
-    onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
   }
 }
