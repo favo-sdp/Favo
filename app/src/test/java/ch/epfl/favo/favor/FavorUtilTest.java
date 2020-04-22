@@ -34,7 +34,7 @@ public class FavorUtilTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentCollectionWrapper(new CollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class));
   }
 
   @Test

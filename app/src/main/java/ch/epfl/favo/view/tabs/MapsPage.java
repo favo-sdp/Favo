@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
@@ -64,9 +63,7 @@ public class MapsPage extends Fragment
   // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private boolean mLocationPermissionGranted = false;
-  private MainActivity activity;
   private View view;
-  private int i = 0;
 
   public MapsPage() {
     // Required empty public constructor
@@ -94,7 +91,6 @@ public class MapsPage extends Fragment
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
-    activity = (MainActivity) Objects.requireNonNull(getActivity());
     setupNearbyFavorsListener();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -106,6 +102,11 @@ public class MapsPage extends Fragment
   public void onMapReady(GoogleMap googleMap) {
     mMap = googleMap;
     mMap.clear();
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      requireView().findViewById(R.id.offline_map_button).setVisibility(View.VISIBLE);
+    } else {
+      requireView().findViewById(R.id.offline_map_button).setVisibility(View.INVISIBLE);
+    }
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
@@ -116,7 +117,7 @@ public class MapsPage extends Fragment
             favor -> {
               if (favor != null) {
                 focusedFavor = favor;
-                boolean isRequested = //check if favor is requested
+                boolean isRequested = // check if favor is requested
                     favor
                         .getRequesterId()
                         .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
@@ -157,7 +158,7 @@ public class MapsPage extends Fragment
   }
 
   private void onOfflineMapClick(View view) {
-    new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+    new AlertDialog.Builder(requireContext())
         .setTitle(R.string.offline_mode_dialog_title)
         .setMessage(R.string.offline_mode_instructions)
         .setPositiveButton(android.R.string.yes, null)
@@ -175,11 +176,12 @@ public class MapsPage extends Fragment
   }
 
   private void onToggleClick(View view) {
-    Navigation.findNavController(getView()).navigate(R.id.action_nav_map_to_nearby_favor_list);
+    Navigation.findNavController(requireView()).navigate(R.id.action_nav_map_to_nearby_favor_list);
   }
 
   private void setupNearbyFavorsListener() {
-    String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    String setting =
+        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
 
     mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
@@ -198,6 +200,7 @@ public class MapsPage extends Fragment
             });
   }
 
+  /** Request location permission, so that we can get the location of the device. */
   private void getLocationPermission() {
     /** Request location permission, so that we can get the location of the device. */
     if (ContextCompat.checkSelfPermission(
@@ -303,9 +306,9 @@ public class MapsPage extends Fragment
 
   @Override
   public void onInfoWindowClick(Marker marker) {
-    List <Object> markerInfo = (List<Object>) marker.getTag();
+    List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
-    boolean isRequested = (boolean)markerInfo.get(1);
+    boolean isRequested = (boolean) markerInfo.get(1);
     Bundle favorBundle = new Bundle();
     favorBundle.putString("FAVOR_ARGS", favorId);
 

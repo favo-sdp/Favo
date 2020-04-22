@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
@@ -60,11 +61,8 @@ public class MainActivity extends AppCompatActivity {
 
   private int currentMenuItem;
 
-  public Map<String, Favor> activeFavors;
   public Map<String, Favor> otherActiveFavorsAround;
-  public Map<String, Favor> archivedFavors;
   public Favor focusedFavor = null;
-
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -86,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
       showNoConnectionSnackbar();
     }
 
-    activeFavors = new HashMap<>();
-    archivedFavors = new HashMap<>();
     otherActiveFavorsAround = new HashMap<>();
   }
 
@@ -139,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
   public void showBottomNavigation() {
     bottomNavigationView.setVisibility(View.VISIBLE);
     findViewById(R.id.floatingActionButton).setVisibility(View.VISIBLE);
-    // NavigationUI.setupWithNavController(bottomNavigationView, navController);
   }
 
   private void setupNavController() {
@@ -170,20 +165,19 @@ public class MainActivity extends AppCompatActivity {
           return true;
         });
     bottomNavigationView.setOnNavigationItemSelectedListener(
-            item -> {
-              int itemId = item.getItemId();
-              if (itemId == currentMenuItem) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return false;
-              }
+        item -> {
+          int itemId = item.getItemId();
+          if (itemId == currentMenuItem) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+          }
 
-              if(itemId == R.id.nav_map)
-                navController.popBackStack(R.id.nav_map, false);
-              else navController.navigate(R.id.nav_favorList);
+          if (itemId == R.id.nav_map) navController.popBackStack(R.id.nav_map, false);
+          else navController.navigate(R.id.nav_favorList);
 
-              currentMenuItem = itemId;
-              return false;
-            });
+          currentMenuItem = itemId;
+          return false;
+        });
   }
 
   private void showNoConnectionSnackbar() {
@@ -233,33 +227,34 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-//    if (onBackPressedListener != null) onBackPressedListener.doBack();
-//    else {
-      DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
-      if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-      else {
-        NavHostFragment host =
-            (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        Fragment f =
-            Objects.requireNonNull(host)
-                .getChildFragmentManager()
-                .findFragmentById(R.id.nav_host_fragment);
+    DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+    if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+      mDrawerLayout.closeDrawer(GravityCompat.START);
+    else {
+      NavHostFragment host =
+          (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+      Fragment f =
+          Objects.requireNonNull(host)
+              .getChildFragmentManager()
+              .findFragmentById(R.id.nav_host_fragment);
 
-        if (f instanceof UserAccountPage
-            || f instanceof FragmentAbout
-            || f instanceof FragmentSettings) {
-          navController.popBackStack(R.id.nav_map, false);
-          currentMenuItem = R.id.nav_map;
-        } else {
-          super.onBackPressed();
-        }
+      if (f instanceof UserAccountPage
+          || f instanceof FragmentAbout
+          || f instanceof FragmentSettings) {
+        navController.popBackStack(R.id.nav_map, false);
+        currentMenuItem = R.id.nav_map;
+      } else {
+        super.onBackPressed();
       }
-    //}
+    }
   }
 
   @Override
   public boolean onSupportNavigateUp() {
+
+    // close keyboard if open
+    CommonTools.hideSoftKeyboard(this);
+
     return NavigationUI.navigateUp(navController, appBarConfiguration)
         || super.onSupportNavigateUp();
   }
@@ -267,26 +262,4 @@ public class MainActivity extends AppCompatActivity {
   public void onFabClick(View view) {
     navController.navigate(R.id.action_global_favorRequestView);
   }
-
-//  @Override
-//  public boolean onCreateOptionsMenu(Menu menu) {
-//    // Inflate the menu; this adds items to the action bar if it is present.
-//    getMenuInflater().inflate(R.menu.options_menu, menu);
-//
-//    MenuItem myActionMenuItem = menu.findItem(R.id.search);
-//    SearchView searchView = (SearchView) myActionMenuItem.getActionView();
-//    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//      @Override
-//      public boolean onQueryTextSubmit(String query) {
-//        // Toast like print
-//        return false;
-//      }
-//      @Override
-//      public boolean onQueryTextChange(String s) {
-//        return false;
-//      }
-//    });
-//
-//    return true;
-//  }
 }

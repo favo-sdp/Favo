@@ -1,48 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_tab2"
+    android:id="@+id/fragment_favors"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.FavorPage">
+    tools:context=".view.tabs.favorList.FavorPage">
 
-    <!-- TODO: Update blank fragment layout -->
+    <RadioGroup
+        android:id="@+id/radio_toggle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginRight="100dp"
+        android:background="@drawable/green_outline"
+        android:checkedButton="@+id/active_toggle"
+        android:elevation="1dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+        <RadioButton
+            android:id="@+id/active_toggle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_widget_background"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/active_favors_text"
+            android:textColor="@color/toggle_widget_text" />
+
+        <RadioButton
+            android:id="@+id/archived_toggle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/toggle_widget_background"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/archived_favors_text"
+            android:textColor="@color/toggle_widget_text" />
+    </RadioGroup>
+
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp"
-        android:text="@string/tab2_description"
-        android:id="@+id/constraint_layout_favor_view">
+        android:layout_marginTop="@dimen/toolbar_height">
 
-        <ListView
-            android:id="@+id/favor_list"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/paging_recycler"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:clickable="true"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-        </ListView>
-
-        <TextView
-            android:id="@+id/tip"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/favor_list"
-            app:layout_constraintBottom_toBottomOf="@id/favor_list"
-            android:textSize="20sp"
-            android:visibility="invisible"
-            android:textAlignment="center">
-        </TextView>
+            android:layout_below="@+id/paging_loading"
+            android:clipToPadding="false"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingRight="16dp"
+            tools:listitem="@layout/favor_list_item" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/tip"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:text="@string/favor_no_active_favor"
+        app:layout_constraintBottom_toBottomOf="@id/swipe_refresh_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/swipe_refresh_layout" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

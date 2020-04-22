@@ -34,6 +34,7 @@ public class DependencyFactory {
   private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
   private static Settings.Secure deviceSettings;
+  private static String currentFavorCollection = "favors";
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -41,7 +42,7 @@ public class DependencyFactory {
   }
 
   public static boolean isTestMode() {
-    return testMode && currentCompletableFuture!=null;
+    return testMode && currentCompletableFuture != null;
   }
 
   @VisibleForTesting
@@ -131,7 +132,7 @@ public class DependencyFactory {
     if (testMode || contentResolver == null) {
       return "22f523fgg3";
     }
-    return deviceSettings.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
   }
 
   public static <T> CompletableFuture<T> getCurrentCompletableFuture() {
@@ -143,4 +144,12 @@ public class DependencyFactory {
     DependencyFactory.currentCompletableFuture = currentCompletableFuture;
   }
 
+  public static String getCurrentFavorCollection() {
+    return currentFavorCollection;
+  }
+
+  @VisibleForTesting
+  public static void setCurrentFavorCollection(String collection) {
+    currentFavorCollection = collection;
+  }
 }

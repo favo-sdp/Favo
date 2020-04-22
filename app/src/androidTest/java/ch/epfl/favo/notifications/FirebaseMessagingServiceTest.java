@@ -26,6 +26,8 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 import ch.epfl.favo.view.MockGpsTracker;
@@ -71,7 +73,7 @@ public class FirebaseMessagingServiceTest {
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
-    DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentCollectionWrapper(new CollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class));
     DependencyFactory.setCurrentGpsTracker(null);
     Intent closeIntent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
     mainActivityTestRule.getActivity().sendBroadcast(closeIntent);

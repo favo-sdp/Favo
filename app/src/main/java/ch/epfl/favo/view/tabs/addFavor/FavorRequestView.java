@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -41,7 +42,7 @@ import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 import static android.app.Activity.RESULT_OK;
-import static ch.epfl.favo.util.CommonTools.hideKeyboardFrom;
+import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
@@ -60,6 +61,7 @@ public class FavorRequestView extends Fragment {
   private Button addPictureFromCameraBtn;
   private Button cancelFavorBtn;
   private Button editFavorBtn;
+  private Button chatBtn;
 
   private Favor currentFavor;
 
@@ -162,6 +164,16 @@ public class FavorRequestView extends Fragment {
             startUpdatingFavor();
           }
         });
+
+    // Chat button
+    chatBtn = rootView.findViewById(R.id.chat_button);
+    chatBtn.setOnClickListener(
+        v -> {
+          Bundle favorBundle = new Bundle();
+          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+          Navigation.findNavController(requireView())
+              .navigate(R.id.action_nav_favorRequestView_to_chatView, favorBundle);
+        });
   }
 
   /**
@@ -221,6 +233,7 @@ public class FavorRequestView extends Fragment {
     confirmFavorBtn.setVisibility(View.INVISIBLE);
     editFavorBtn.setVisibility(View.VISIBLE);
     cancelFavorBtn.setVisibility(View.VISIBLE);
+    chatBtn.setVisibility(View.VISIBLE);
     toggleTextViewsEditable(false);
     updateViewFromStatus(v);
   }
@@ -304,7 +317,7 @@ public class FavorRequestView extends Fragment {
     editFavorBtn.setEnabled(editButtonEnabled);
     cancelFavorBtn.setEnabled(cancelButtonEnabled);
     if (hideKeyboard) {
-      hideKeyboardFrom(getContext(), view);
+      hideSoftKeyboard(requireActivity());
     }
   }
 
@@ -429,7 +442,7 @@ public class FavorRequestView extends Fragment {
     view.findViewById(R.id.constraint_layout_req_view)
         .setOnTouchListener(
             (v, event) -> {
-              hideKeyboardFrom(requireContext(), v);
+              hideSoftKeyboard(requireActivity());
               return false;
             });
   }
