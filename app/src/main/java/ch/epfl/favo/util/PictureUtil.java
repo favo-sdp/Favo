@@ -18,7 +18,7 @@ import ch.epfl.favo.common.DatabaseWrapper;
 public class PictureUtil {
 
   private static final String PICTURE_FILE_EXTENSION = ".jpeg";
-  private static final long ONE_MEGABYTE = 1024 * 1024;
+  private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
   private static final FirebaseStorage storage = FirebaseStorage.getInstance();
 
   /**
@@ -54,7 +54,7 @@ public class PictureUtil {
    */
   public static CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
-        storage.getReferenceFromUrl(pictureUrl).getBytes(ONE_MEGABYTE);
+        storage.getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
