@@ -5,7 +5,9 @@ import android.location.Location;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.CollectionWrapper;
@@ -140,7 +142,7 @@ public class FavorUtil {
    */
   public void updateFavorPhoto(Favor favor, String url) {
     Map<String, Object> updates = new HashMap<>();
-    updates.put("pictureUrl", url);
+    updates.put(Favor.PICTURE_URL, url);
     collection.updateDocument(favor.getId(), updates);
     favor.setPictureUrl(url);
   }
