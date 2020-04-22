@@ -34,6 +34,7 @@ public class DependencyFactory {
   private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
   private static Settings.Secure deviceSettings;
+  private static String currentFavorCollection = "favors";
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -41,7 +42,7 @@ public class DependencyFactory {
   }
 
   public static boolean isTestMode() {
-    return testMode;
+    return testMode && currentCompletableFuture!=null;
   }
 
   @VisibleForTesting
@@ -141,5 +142,14 @@ public class DependencyFactory {
   public static void setCurrentCompletableFuture(CompletableFuture currentCompletableFuture) {
     testMode = true;
     DependencyFactory.currentCompletableFuture = currentCompletableFuture;
+  }
+
+  public static String getCurrentFavorCollection() {
+    return currentFavorCollection;
+  }
+
+  @VisibleForTesting
+  public static void setCurrentFavorCollection(String collection) {
+    currentFavorCollection = collection;
   }
 }

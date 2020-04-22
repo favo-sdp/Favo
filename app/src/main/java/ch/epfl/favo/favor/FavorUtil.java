@@ -2,19 +2,15 @@ package ch.epfl.favo.favor;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
@@ -23,9 +19,10 @@ This models the favor request.
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
+  private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static DatabaseUpdater collection =
-      DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class);
+      DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
@@ -35,6 +32,7 @@ public class FavorUtil {
   }
 
   public static FavorUtil getSingleInstance() {
+    collection = DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
     return SINGLE_INSTANCE;
   }
 
@@ -53,21 +51,8 @@ public class FavorUtil {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  public CompletableFuture updateFavorStatus(String favorId, Favor.Status newStatus) {
-    Map updates =
-        new HashMap<String, String>() {
-          {
-            put(Favor.ACCEPTER_ID, UserUtil.currentUserId);
-            put(Favor.STATUS_ID, newStatus.toString());
-          }
-        };
-    return updateFavor(favorId, updates);
   }
 
   /**
@@ -76,14 +61,6 @@ public class FavorUtil {
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
     return collection.getDocument(favorId);
-  }
-
-  /**
-   * @param favorId the id of the favor to retrieve from DB.
-   * @return CompletableFuture<Favor>
-   */
-  public CompletableFuture updateFavor(String favorId, Map<String, Object> updates) {
-    return collection.updateDocument(favorId, updates);
   }
 
   /**
@@ -146,13 +123,13 @@ public class FavorUtil {
 
   /**
    * Returns all the favors that are active in a given radius.
-   *
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-  public ArrayList<Favor> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
 
-    throw new NotImplementedException();
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
+    /**It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface**/
+    return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 
   /**

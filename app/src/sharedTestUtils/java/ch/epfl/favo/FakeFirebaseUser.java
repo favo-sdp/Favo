@@ -33,7 +33,7 @@ public class FakeFirebaseUser extends FirebaseUser {
   @NonNull
   @Override
   public String getUid() {
-    return null;
+    return TestConstants.USER_ID;
   }
 
   @NonNull

@@ -22,10 +22,11 @@
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb616130435602635</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <!-- TAB 1 (Huajian) -->
+    <!-- TAB 1 Map and Nearby List -->
     <string name="self_location">FavorRequest</string>
-
+    <string name="no_location_permission">No location permission granted</string>
+    <string name="no_location_found">Permission is granted, but no position is found</string>
+    <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <!-- TAB 2 (David) -->
     <string name="favor_greeting_str">Hello!</string>
     <string name="favor_title_hint">What\'s up?</string>
@@ -34,12 +35,10 @@
     <string name="favor_datetime_hint">Now</string>
     <string name="favor_details_hint">Add more details?</string>
     <string name="favor_confirm_button">Request Favor</string>
-    <string-array name="favor_list_spinner">
-        <item>Active</item>
-        <item>Archived</item>
-    </string-array>
     <string name="favor_no_active_favor">You have no active favors</string>
     <string name="favor_no_archived_favor">You have no archived favors</string>
+    <string name="active_favors_text">Active</string>
+    <string name="archived_favors_text">Archived</string>
 
     <string name="tab2_description">2</string>
     <string name="share">Share</string>
@@ -55,9 +54,15 @@
     <string name="detail">descriptions</string>
 
     <!--Favor search bar -->
-    <string name="search_hint">search title/description</string>
-    <string name="query_failed"> No match found</string>>
+    <string name="searchView_title">Search View</string>
+    <string name="search_hint">Search title/description</string>
+    <string name="query_failed"> No results found</string>
     <string name="empty"> </string>
+
+    <!--Nearby Favor View -->
+    <string name="favor_no_nearby_favor">There is no favor around you</string>
+    <string name="list_toggle">List</string>
+    <string name="map_toggle">Map</string>
 
     <!--Favor Accepting View -->
     <string name="accept_favor">Accept Favor</string>
@@ -87,5 +92,56 @@
 
     <!-- request view -->
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Account</string>
+    <string name="notification_header">Notifications</string>
+    <string name="help_header">Help</string>
+
+    <!-- Account Preferences -->
+    <string name="username_title">Username</string>
+
+    <!-- Notification Preferences -->
+    <string name="notification_title">Enable new favor notifications</string>
+    <string name="notification_summary">Be notified when new favors are posted in the area</string>
+    <string name="notification_radius_title">Notifications radius</string>
+
+    <string name="notification_delete_title">Enable delete notifications</string>
+    <string name="notification_delete_summary">Be notified when favors that you joined are deleted</string>
+
+    <string name="notification_update_title">Enable updates notifications</string>
+    <string name="notification_update_summary">Be notified when the poster modifies a favor you joined</string>
+
+    <string name="notification_join_title">Enable join notification</string>
+    <string name="notification_join_summary">Be notified when a user joins a favor you posted</string>
+
+    <string name="notification_chat_title">Enable chat notifications</string>
+    <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
+
+    <!-- Help preferences -->
+    <string name="help_title">Send feedback</string>
+    <string name="help_subtitle">Report technical issues or suggest new features</string>
+    <string name="request_favor_draft">Save favor draft</string>
+    <string name="edit_favor">Edit Request</string>
+    <string name="cancel_request">Cancel Request</string>
+    <string name="confirm_favor_edit">Confirm Update</string>
+    <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
+    <string name="favor_edit_success_msg">Favor successfully updated</string>
+    <string name="chat_message_detail_view">Start a chat</string>
+    <string name="update_favor_error">Failed to update</string>
+    <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
+    <string name="cancel_accept_button_display">Cancel</string>
+    <string name="restart_request">re-enable</string>
+    <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
+
+    <string name="title_map">Map</string>
+    <string name="title_favors">Favors</string>
+    <string name="actionbar_spinner">ActionBar Spinner</string>
+
+    <!-- Chat -->
+    <string name="open_chat">Open chat</string>
+    <string name="start_chatting">No messages</string>
+    <string name="hint_message">Write message</string>
+    <string name="send">Send</string>
 
 </resources>

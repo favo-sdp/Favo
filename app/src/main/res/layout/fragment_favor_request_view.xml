@@ -16,29 +16,27 @@
         android:clickable="true"
         android:focusable="true"
         android:focusableInTouchMode="true"
-        android:paddingHorizontal="20dp"
-        android:paddingTop="20dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:id="@+id/edit_buttons_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_bottom_button"
             android:gravity="center_horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/imageView">
+            app:layout_constraintTop_toBottomOf="@id/image_view_request_view">
 
             <Button
                 android:id="@+id/edit_favor_button"
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:drawableRight="@drawable/ic_edit_24dp"
+                android:drawableEnd="@drawable/ic_edit_24dp"
                 android:text="@string/edit_favor"
                 android:visibility="invisible"
-                app:layout_constraintRight_toLeftOf="@id/request_button"
+                app:layout_constraintRight_toLeftOf="@id/cancel_favor_button"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
@@ -46,12 +44,24 @@
                 android:layout_width="0dip"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/fui_transparent"
                 android:drawableEnd="@drawable/ic_cancel_24dp"
                 android:text="@string/cancel_request"
                 android:visibility="invisible"
                 app:layout_constraintLeft_toRightOf="@id/edit_favor_button"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintRight_toLeftOf="@id/chat_button"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/chat_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:layout_weight="1"
+                android:text="@string/open_chat"
+                android:drawableEnd="@drawable/ic_chat_24dp"
+                app:layout_constraintLeft_toRightOf="@id/cancel_favor_button"
+                app:layout_constraintTop_toTopOf="parent"
+                />
         </LinearLayout>
 
         <Button
@@ -89,8 +99,8 @@
             android:hint="@string/favor_details_hint"
             android:inputType="textMultiLine"
             android:lines="5"
-            android:maxLines="7"
-            android:minLines="5"
+            android:maxLines="5"
+            android:minLines="3"
             android:scrollbars="vertical"
 
             app:layout_constraintTop_toBottomOf="@id/title_request_view" />
@@ -99,7 +109,7 @@
             android:id="@+id/picture_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -120,19 +130,19 @@
                 android:layout_height="match_parent"
                 android:drawableRight="@drawable/ic_photo_camera_24dp"
                 android:text="Take" />
-
         </LinearLayout>
-
 
         <ImageView
             android:id="@+id/image_view_request_view"
-            android:layout_width="300dp"
-            android:layout_height="200dp"
-            android:layout_marginTop="22dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginVertical="10dp"
             android:contentDescription="@string/favor_img_content_desc"
+            app:layout_constraintBottom_toTopOf="@id/edit_buttons_layout"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
 
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/picture_buttons" />
 
         <TextView

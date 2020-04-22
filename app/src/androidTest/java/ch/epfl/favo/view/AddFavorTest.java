@@ -32,11 +32,11 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
-import ch.epfl.favo.view.tabs.addFavor.FavorViewStatus;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -86,15 +86,15 @@ public class AddFavorTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   @Test
   public void addFavorShowsSnackBar() {
     // Click on fav list tab
-    onView(withId(R.id.nav_favor_list_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
 
@@ -149,7 +149,7 @@ public class AddFavorTest {
   }
 
   @Test
-  public void testCanHideKeyboardOnClickOutsideOfTextView() {
+  public void testCanHideKeyboardOnClickOutsideOfTextView() throws InterruptedException {
     mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
     mockDatabaseWrapper.setThrowError(false);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -158,13 +158,14 @@ public class AddFavorTest {
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_favor_button)).perform(click());
+    Thread.sleep(4000); //wait for snackbar to hide
+    onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
 
     // click outside of text view
     UiDevice device = UiDevice.getInstance(getInstrumentation());
-    device.click(10, device.getDisplayHeight() * 3 / 4);
+    device.click(1, device.getDisplayHeight() * 1 / 3);
     // check button is visible
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed()));
   }
@@ -214,18 +215,18 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorViewStatus.REQUESTED.getPrettyString())));
+        .check(matches(withText(FavorStatus.REQUESTED.toString())));
   }
 
   @Test
   public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
     Favor fakeFavor = FakeItemFactory.getFavor();
     FavorRequestView fragment = new FavorRequestView();
-    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
     checkAcceptedView(fakeFavor);
-    fakeFavor.setStatusId(Favor.Status.SUCCESSFULLY_COMPLETED);
+    fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
     View v = activityTestRule.getActivity().getCurrentFocus();
     runOnUiThread(
         () -> {
@@ -243,7 +244,7 @@ public class AddFavorTest {
     launchFragmentWithFakeFavor(fragment, fakeFavor);
     getInstrumentation().waitForIdleSync();
     // set status to accepted
-    fakeFavor.setStatusId(Favor.Status.ACCEPTED);
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     // inject result
     mockDatabaseWrapper.setMockDocument(fakeFavor);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
@@ -280,7 +281,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(FavorViewStatus.SUCCESSFULLY_COMPLETED.getPrettyString())));
+        .check(matches(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString())));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -290,7 +291,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorViewStatus.ACCEPTED.getPrettyString())));
+        .check(matches(withText(FavorStatus.ACCEPTED.toString())));
   }
 
   @Test
@@ -342,12 +343,12 @@ public class AddFavorTest {
 
     // Check updated status string
     onView(withId(R.id.favor_status_text))
-        .check(matches(withText(FavorViewStatus.CANCELLED_REQUESTER.getPrettyString())));
+        .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
   }
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
     // Launch view
-    activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
+    //activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor, fragment));

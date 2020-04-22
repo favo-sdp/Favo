@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/material_green_50"
+    android:id="@+id/fragment_nearby_favor_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.tabs.MapsPage">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:text="@string/tab2_description"
+        android:id="@+id/constraint_layout_nearby_favor_view">
+
+        <ListView
+            android:id="@+id/nearby_favor_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+        </ListView>
+
+        <TextView
+            android:id="@+id/nearby_tip"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/nearby_favor_list"
+            app:layout_constraintBottom_toBottomOf="@id/nearby_favor_list"
+            android:textSize="20sp"
+            android:visibility="invisible"
+            android:textAlignment="center">
+        </TextView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <RadioGroup
+        android:id="@+id/toggle"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginRight="100dp"
+        android:background="@drawable/green_outline"
+        android:elevation="1dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/map_switch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="1dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_weight="1"
+            android:background="@android:color/white"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/map_toggle"
+            android:textColor="@android:color/tertiary_text_dark" />
+
+        <RadioButton
+            android:id="@+id/list_switch"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:layout_weight="1"
+            android:background="@color/material_green_500"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/list_toggle"
+            android:textColor="@android:color/white" />
+    </RadioGroup>
+
+</FrameLayout>
