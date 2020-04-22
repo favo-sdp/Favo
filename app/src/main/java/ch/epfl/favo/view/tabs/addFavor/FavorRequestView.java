@@ -332,13 +332,10 @@ public class FavorRequestView extends Fragment {
 
     // Upload picture to database if it exists
     if (mImageView.getDrawable() != null) {
-      Bitmap bitmap = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-      ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
 
       // Good idea to display the result of uploading the picture (not sure how to do this)
-      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(bais);
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
       pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
       pictureUrl.exceptionally(e -> {
         // insert something about being unable to upload picture

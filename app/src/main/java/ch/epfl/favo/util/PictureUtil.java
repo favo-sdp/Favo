@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.text.InputType;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
@@ -24,16 +25,17 @@ public class PictureUtil {
   /**
    * Uploads given picture to Firebase Cloud Storage and returns URI of where it was placed
    *
-   * @param pictureStream stream of picture to be uploaded to Firebase Cloud Storage
+   * @param picture to be uploaded to Firebase Cloud Storage
    * @return CompletableFuture of the resulting url
    */
-  public static CompletableFuture<String> uploadPicture(InputStream pictureStream) {
+  public static CompletableFuture<String> uploadPicture(Bitmap picture) {
+    InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
     StorageReference storageRef =
         storage.getReference().child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
 
     Task<Uri> urlTask =
         storageRef
-            .putStream(pictureStream)
+            .putStream(is)
             .continueWithTask(
                 task -> {
                   if (!task.isSuccessful()) {
@@ -58,10 +60,7 @@ public class PictureUtil {
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
-    return downloadFuture.thenApply(bytes -> byteArrayToBitmap(bytes));
+    return downloadFuture.thenApply(bytes -> BitmapConversionUtil.byteArrayToBitmap(bytes));
   }
 
-  private static Bitmap byteArrayToBitmap(byte[] byteArray) {
-    return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-  }
 }
