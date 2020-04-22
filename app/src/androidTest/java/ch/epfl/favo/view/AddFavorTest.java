@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
@@ -102,8 +101,6 @@ public class AddFavorTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
     TestUtils.cleanupFavorsCollection();
-    // FavorUtil.getSingleInstance().updateCollectionWrapper(new
-    // CollectionWrapper("favors",Favor.class));
   }
 
   public FavorRequestView launchFragment(Favor favor) throws Throwable {
@@ -178,7 +175,7 @@ public class AddFavorTest {
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(6000); // wait for snackbar to hide
+    Thread.sleep(4000); // wait for snackbar to hide
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
@@ -239,18 +236,16 @@ public class AddFavorTest {
   @Test
   public void testViewIsCorrectlyUpdatedWhenFavorHasBeenCompleted() throws Throwable {
     Favor fakeFavor = FakeItemFactory.getFavor();
-    FavorRequestView fragment = new FavorRequestView();
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    launchFragmentWithFakeFavor(fragment, fakeFavor);
+    FavorUtil.getSingleInstance().postFavor(fakeFavor);
+    FavorRequestView fragment = launchFragment(fakeFavor);
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
     checkAcceptedView(fakeFavor);
     fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
-    View v = activityTestRule.getActivity().getCurrentFocus();
-    runOnUiThread(
-        () -> {
-          fragment.displayFavorInfo(v);
-        });
+    FavorUtil.getSingleInstance().updateFavor(fakeFavor);
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
     checkCompletedView(fakeFavor);
   }
 

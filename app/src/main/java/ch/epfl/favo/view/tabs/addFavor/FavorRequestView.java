@@ -83,19 +83,17 @@ public class FavorRequestView extends Fragment {
     mImageView = rootView.findViewById(R.id.image_view_request_view);
 
     // Get dependencies
-    mGpsTracker =
-        DependencyFactory.getCurrentGpsTracker(
-            requireActivity().getApplicationContext());
+    mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
-    favorViewModel = new ViewModelProvider(this).get(FavorViewModel.class);
+    favorViewModel = new ViewModelProvider(requireActivity()).get(FavorViewModel.class);
     if (getArguments() != null) {
       String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView,favorId);
+      setupFavorListener(rootView, favorId);
     }
     return rootView;
   }
 
-  public void setupFavorListener(View rootView,String favorId) {
+  public void setupFavorListener(View rootView, String favorId) {
 
     favorViewModel
         .setObservedFavor(favorId)
@@ -195,7 +193,7 @@ public class FavorRequestView extends Fragment {
     CompletableFuture postFavorFuture = FavorUtil.getSingleInstance().postFavor(currentFavor);
     postFavorFuture.thenAccept(
         o -> {
-          setupFavorListener(getView(),currentFavor.getId());
+          setupFavorListener(getView(), currentFavor.getId());
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
@@ -230,20 +228,8 @@ public class FavorRequestView extends Fragment {
   /** When edit button is clicked */
   private void startUpdatingFavor() {
     View rootView = getView();
-    CompletableFuture<Favor> currentFavorFuture =
-        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
-    currentFavorFuture.thenAccept(
-        favor -> {
-          if (favor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
-            CommonTools.showSnackbar(rootView, getString(R.string.fail_edit_favor_request_view));
-            favorStatus = FavorStatus.toEnum(favor.getStatusId());
-            currentFavor.setStatusIdToInt(favorStatus);
-          } else {
-            favorStatus = FavorStatus.EDIT;
-          }
-          updateViewFromStatus(rootView);
-        });
-    currentFavorFuture.exceptionally(onFailedResult(rootView));
+    favorStatus = FavorStatus.EDIT;
+    updateViewFromStatus(rootView);
   }
 
   /** Gets called once favor has been updated on view. */
@@ -259,7 +245,7 @@ public class FavorRequestView extends Fragment {
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-//    favorStatus = FavorStatus.CANCELLED_REQUESTER;
+    //    favorStatus = FavorStatus.CANCELLED_REQUESTER;
 
     // DB call to update status
     CompletableFuture cancelFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
@@ -363,17 +349,14 @@ public class FavorRequestView extends Fragment {
 
   /** Called when camera button is clicked Method calls camera intent. */
   public void takePicture() {
-    if (ContextCompat.checkSelfPermission(
-            requireContext(), Manifest.permission.CAMERA)
+    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         != PackageManager.PERMISSION_GRANTED) {
       requireActivity()
           .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
 
-      if (takePictureIntent.resolveActivity(
-              requireActivity().getPackageManager())
-          != null) {
+      if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
         startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
       }
     }
@@ -381,9 +364,7 @@ public class FavorRequestView extends Fragment {
 
   private boolean isCameraAvailable() {
     boolean hasCamera =
-        requireActivity()
-            .getPackageManager()
-            .hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+        requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     int numberOfCameras = Camera.getNumberOfCameras();
     return (hasCamera && numberOfCameras != 0);
   }
