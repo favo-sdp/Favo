@@ -98,11 +98,6 @@ public class MapsPage extends Fragment
   public void onMapReady(GoogleMap googleMap) {
     mMap = googleMap;
     mMap.clear();
-    if (DependencyFactory.isOfflineMode(requireContext())) {
-      requireView().findViewById(R.id.offline_map_button).setVisibility(View.VISIBLE);
-    } else {
-      requireView().findViewById(R.id.offline_map_button).setVisibility(View.INVISIBLE);
-    }
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
