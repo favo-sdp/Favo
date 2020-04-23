@@ -22,5 +22,6 @@ public interface DatabaseUpdater<T> {
   DocumentReference getDocumentQuery(String key);
 
   Query locationBoundQuery(Location loc, double radius);
+
   CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
 }

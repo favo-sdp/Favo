@@ -71,7 +71,7 @@ public class AddFavorOfflineTest {
     getInstrumentation().waitForIdleSync();
 
     // check snackbar shows with the different message
-//    onView(withId(com.google.android.material.R.id.snackbar_text))
-//        .check(matches(withText(R.string.save_draft_message)));
+    //    onView(withId(com.google.android.material.R.id.snackbar_text))
+    //        .check(matches(withText(R.string.save_draft_message)));
   }
 }

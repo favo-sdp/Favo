@@ -113,6 +113,6 @@ public class UserUtil {
   }
 
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
-    this.collection = collectionWrapper;
+    collection = collectionWrapper;
   }
 }

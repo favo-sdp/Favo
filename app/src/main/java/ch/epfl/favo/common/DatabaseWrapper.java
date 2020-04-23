@@ -33,8 +33,8 @@ public class DatabaseWrapper {
     FirebaseFirestore.setLoggingEnabled(true);
     FirebaseFirestoreSettings settings =
         new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
-      firestore = DependencyFactory.getCurrentFirestore();
-      firestore.setFirestoreSettings(settings);
+    firestore = DependencyFactory.getCurrentFirestore();
+    firestore.setFirestoreSettings(settings);
   }
 
   private static DatabaseWrapper getInstance() {
@@ -96,7 +96,6 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-
   static Query locationBoundQuery(Location loc, double radius, String collection) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
@@ -104,8 +103,6 @@ public class DatabaseWrapper {
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
         .limit(30);
   }
-
-
 
   /**
    * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
@@ -117,9 +114,7 @@ public class DatabaseWrapper {
   static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
       Location loc, double radius, Class<T> cls, String collection) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
-    Task<QuerySnapshot> getAllTask =
-        locationBoundQuery(loc,radius,collection)
-            .get();
+    Task<QuerySnapshot> getAllTask = locationBoundQuery(loc, radius, collection).get();
     CompletableFuture<QuerySnapshot> getAllFuture =
         new TaskToFutureAdapter<>(getAllTask).getInstance();
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));

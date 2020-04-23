@@ -9,9 +9,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,7 +25,6 @@ public class CommonTools {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
-
   public static String convertTime(long time) {
     Date date = new Date(time);
     Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
@@ -36,7 +32,8 @@ public class CommonTools {
   }
 
   public static void hideSoftKeyboard(Activity activity) {
-    final InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    final InputMethodManager inputMethodManager =
+        (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
     if (inputMethodManager.isActive()) {
       if (activity.getCurrentFocus() != null) {
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
@@ -51,16 +48,15 @@ public class CommonTools {
     if (connectivity != null) {
       NetworkCapabilities network =
           connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
-      if (network != null
-          && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-              || network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
-        return false;
-      }
+      return network == null
+          || (!network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+              && !network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
     }
     return true;
   }
 
-  public static Map<String, Favor> findFavorByTitleDescription(String query, Map<String, Favor> searchScope) {
+  public static Map<String, Favor> findFavorByTitleDescription(
+      String query, Map<String, Favor> searchScope) {
     Map<String, Favor> favorsFound = new HashMap<>();
     query = query.toLowerCase();
     for (Favor favor : searchScope.values()) {

@@ -10,21 +10,21 @@ import androidx.appcompat.widget.Toolbar;
 
 public class NonClickableToolbar extends Toolbar {
 
-    public NonClickableToolbar(Context context) {
-        super(context);
-    }
+  public NonClickableToolbar(Context context) {
+    super(context);
+  }
 
-    public NonClickableToolbar(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public NonClickableToolbar(Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    public NonClickableToolbar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+  public NonClickableToolbar(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+  }
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        return false;
-    }
+  @SuppressLint("ClickableViewAccessibility")
+  @Override
+  public boolean onTouchEvent(MotionEvent ev) {
+    return false;
+  }
 }

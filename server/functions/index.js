@@ -5,6 +5,13 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 var db = admin.firestore();
 
+// global constants
+const maxDistance = 100.0; // in km
+
+const accepted = 1;
+const cancelledByRequester = 3;
+const cancelledByAccepter = 4;
+
 // function to calculate the distance between two points given their coordinates
 function distanceInKm(lon1, lat1, lon2, lat2) {
     var R = 6371; // Radius of the earth in km
@@ -27,7 +34,10 @@ function sendMulticastMessage(message, usersIds) {
                         failedTokens.push(usersIds[idx]);
                     }
                 });
-                console.log('List of tokens that caused failures: ' + failedTokens);
+
+                if (failedTokens.length > 0) {
+                    console.log('List of tokens that caused failures: ' + failedTokens);
+                }
             }
         });
 }
@@ -50,7 +60,6 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
 
         const posterId = ids[0];
         const title = newFavor.title;
-        const maxDistance = 100.0; // in km
 
         var usersIds = [];
 
@@ -86,6 +95,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                 console.log('Error getting documents', err);
             });
     });
+
 
 // send new favor notification to users on updates
 exports.sendNotificationOnUpdate = functions.firestore
@@ -123,21 +133,21 @@ exports.sendNotificationOnUpdate = functions.firestore
             //console.log('Status has changed');
 
             // favor has been accepted, send notification to requester
-            if (newStatus === 1) {
+            if (newStatus === accepted) {
                 //console.log('Favor has been accepted');
-                //titleToSend = "Favor " + favorTitle + " has been accepted";
+                titleToSend = "Favor " + favorTitle + " has been accepted";
                 userReceiver = requesterId;
             }
 
             // favor has been cancelled by requester, send notification to accepter, if it exists
-            if (newStatus === 3) {
+            if (newStatus === cancelledByRequester) {
                 //console.log('Favor has been cancelled by the requester');
                 titleToSend = "Favor " + favorTitle + " has been cancelled by the requester";
                 userReceiver = accepterId;
             }
 
             // favor has been cancelled by accepter, send notification to requester
-            if (newStatus === 4) {
+            if (newStatus === cancelledByAccepter) {
                 //console.log('Favor has been cancelled by the accepter');
                 titleToSend = "Favor " + favorTitle + " has been cancelled by the accepter";
                 userReceiver = requesterId;

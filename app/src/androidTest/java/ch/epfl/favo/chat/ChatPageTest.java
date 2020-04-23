@@ -46,7 +46,7 @@ public class ChatPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          //DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+          // DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
         }
       };
 
@@ -64,7 +64,7 @@ public class ChatPageTest {
     TestUtils.cleanupDatabase();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    //DependencyFactory.setCurrentFavorCollection("favors");
+    // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   private void navigateToChatPage() throws InterruptedException {

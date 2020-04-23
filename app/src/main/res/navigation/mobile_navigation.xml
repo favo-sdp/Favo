@@ -33,11 +33,11 @@
         <action
             android:id="@+id/action_nav_map_to_nearby_favor_list"
             app:destination="@id/nav_nearby_favor_list"
-            app:launchSingleTop="true"/>
+            app:launchSingleTop="true" />
         <action
             android:id="@+id/action_nav_map_to_nav_favorlist"
             app:destination="@id/nav_favorList"
-            app:launchSingleTop="true"/>
+            app:launchSingleTop="true" />
         <action
             android:id="@+id/action_nav_map_to_favorRequestView"
             app:destination="@id/favorRequestView" />
