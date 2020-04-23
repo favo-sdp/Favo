@@ -34,7 +34,6 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.DependencyFactory;
@@ -90,8 +89,7 @@ public class AddFavorTest {
   public void tearDown() throws ExecutionException, InterruptedException {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
-    DependencyFactory.setCurrentCollectionWrapper(null);
-    TestUtils.cleanupFavorsCollection();
+    DependencyFactory.setCurrentViewModelClass(null);
   }
 
   public FavorRequestView launchFragment(Favor favor) throws Throwable {
