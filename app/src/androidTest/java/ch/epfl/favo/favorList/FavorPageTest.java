@@ -70,7 +70,6 @@ public class FavorPageTest {
 
   @Before
   public void setUp() throws ExecutionException, InterruptedException {
-    TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
   }
 
