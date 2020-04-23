@@ -48,11 +48,9 @@ public class CommonTools {
     if (connectivity != null) {
       NetworkCapabilities network =
           connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
-      if (network != null
-          && (network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-              || network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))) {
-        return false;
-      }
+      return network == null
+              || (!network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+              && !network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
     }
     return true;
   }
