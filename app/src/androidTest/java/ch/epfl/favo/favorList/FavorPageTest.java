@@ -263,7 +263,7 @@ public class FavorPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
-    Thread.sleep(2000);
+    Thread.sleep(3000);
 
     // check query is successful and click on found item
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());

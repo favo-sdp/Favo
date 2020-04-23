@@ -65,15 +65,13 @@ public class FavorDetailViewTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-
-
-
   @After
   public void tearDown() {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentViewModelClass(null);
   }
+
   public FavorDetailView launchFragment(Favor favor) throws Throwable {
 
     MainActivity activity = mainActivityTestRule.getActivity();
@@ -82,16 +80,18 @@ public class FavorDetailViewTest {
     bundle.putString(FAVOR_ARGS, favor.getId());
     runOnUiThread(() -> navController.navigate(R.id.action_nav_map_to_favorDetailView, bundle));
     Fragment navHostFragment =
-            activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
     getInstrumentation().waitForIdleSync();
     return (FavorDetailView) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
+
   @Before
   public void setup() throws Throwable {
     fakeFavor = FakeItemFactory.getFavor();
     detailViewFragment = launchFragment(fakeFavor);
     fakeViewModel = (FakeViewModel) detailViewFragment.getViewModel();
   }
+
   @Test
   public void favorDetailViewIsLaunched() {
     // check that detailed view is indeed opened
@@ -115,12 +115,12 @@ public class FavorDetailViewTest {
     Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_respond_success_msg)));
+        .check(matches(withText(R.string.favor_respond_success_msg)));
   }
 
   @Test
   public void testAcceptButtonShowsFailSnackBar() throws Throwable {
-    runOnUiThread(()->fakeViewModel.setThrowError(true));
+    runOnUiThread(() -> fakeViewModel.setThrowError(true));
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
@@ -138,7 +138,7 @@ public class FavorDetailViewTest {
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
     anotherFavorWithSameId.setStatusIdToInt(FavorStatus.ACCEPTED);
     anotherFavorWithSameId.setAccepterId("another user");
-    runOnUiThread(()->fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
@@ -148,23 +148,23 @@ public class FavorDetailViewTest {
   @Test
   public void testFavorFailsToBeAcceptedIfPreviouslyCancelled() throws Throwable {
     onView(withId(R.id.accept_button))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(R.string.accept_favor)));
+        .check(matches(isDisplayed()))
+        .check(matches(withText(R.string.accept_favor)));
     // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
     anotherFavorWithSameId.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    runOnUiThread(()->fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
-            .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
+        .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
   }
 
   @Test
   public void testFavorCanBeCancelled() throws InterruptedException {
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500); //wait for snackbar
+    Thread.sleep(500); // wait for snackbar
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());
@@ -188,7 +188,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
 
     // now inject throwable to see reaction in the UI
-    runOnUiThread(()->fakeViewModel.setThrowError(true));
+    runOnUiThread(() -> fakeViewModel.setThrowError(true));
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());
@@ -201,6 +201,20 @@ public class FavorDetailViewTest {
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.update_favor_error)));
+    getInstrumentation().waitForIdleSync();
+  }
+
+  @Test
+  public void testFavorShowsFailureSnackbarIfDbCallbackFails() throws Throwable {
+
+    // now inject throwable to see reaction in the UI
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(null)); // invoke error
+    Thread.sleep(500);
+    // check display is updated
+
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.unknown_error)));
     getInstrumentation().waitForIdleSync();
   }
 
