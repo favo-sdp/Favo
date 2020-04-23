@@ -16,17 +16,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.concurrent.CompletableFuture;
-
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
@@ -110,10 +106,6 @@ public class FavorDetailViewTest {
 
   @Test
   public void testAcceptButtonShowsSnackBarAndUpdatesDisplay() throws Throwable {
-    fakeFavor.setAccepterId(TestConstants.USER_ID);
-    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    runOnUiThread(()->fakeViewModel.setObservedFavorResult(fakeFavor));
-    Log.d("pasS", "during Detail Test 3");
     onView(withId(R.id.accept_button)).perform(click());
     Log.d("pasS", "during Detail Test 4");
     getInstrumentation().waitForIdleSync();
@@ -128,13 +120,8 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testAcceptButtonShowsFailSnackBar() throws InterruptedException {
-    CompletableFuture failedResult = new CompletableFuture();
-    failedResult.completeExceptionally(new RuntimeException());
-    // mockDatabaseWrapper.setMockDocument(fakeFavor); // set favor in db
-    mockDatabaseWrapper.setMockResult(failedResult);
-    mockDatabaseWrapper.setThrowError(true);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+  public void testAcceptButtonShowsFailSnackBar() throws Throwable {
+    runOnUiThread(()->fakeViewModel.setThrowError(true));
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
@@ -144,57 +131,41 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testFavorFailsToBeAcceptedIfPreviouslyAccepted() {
+  public void testFavorFailsToBeAcceptedIfPreviouslyAccepted() throws Throwable {
     onView(withId(R.id.accept_button))
         .check(matches(isDisplayed()))
         .check(matches(withText(R.string.accept_favor)));
     // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
-    anotherFavorWithSameId.setStatusIdToInt(FavorStatus.ACCEPTED_BY_OTHER);
+    anotherFavorWithSameId.setStatusIdToInt(FavorStatus.ACCEPTED);
     anotherFavorWithSameId.setAccepterId("another user");
-    mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    onView(withId(R.id.accept_button)).perform(click());
+    runOnUiThread(()->fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
         .check(matches(withText(FavorStatus.ACCEPTED_BY_OTHER.toString())));
-    // check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.favor_remotely_changed_msg)));
   }
 
   @Test
-  public void testFavorFailsToBeAcceptedIfPreviouslyCancelled() {
+  public void testFavorFailsToBeAcceptedIfPreviouslyCancelled() throws Throwable {
     onView(withId(R.id.accept_button))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(R.string.accept_favor)));
+            .check(matches(isDisplayed()))
+            .check(matches(withText(R.string.accept_favor)));
     // Another user accepts favor
     Favor anotherFavorWithSameId = FakeItemFactory.getFavor();
     anotherFavorWithSameId.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    mockDatabaseWrapper.setMockDocument(anotherFavorWithSameId);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    onView(withId(R.id.accept_button)).perform(click());
+    runOnUiThread(()->fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
-        .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
-    // check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.favor_remotely_changed_msg)));
+            .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
   }
 
   @Test
   public void testFavorCanBeCancelled() throws InterruptedException {
-    mockDatabaseWrapper.setMockDocument(fakeFavor);
-    CompletableFuture successfulResult = new CompletableFuture();
-    successfulResult.complete(null);
-    mockDatabaseWrapper.setMockResult(successfulResult);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500);
+    Thread.sleep(500); //wait for snackbar
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());
@@ -211,18 +182,14 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testFavorShowsFailureSnackbarIfCancelFails() throws InterruptedException {
+  public void testFavorShowsFailureSnackbarIfCancelFails() throws Throwable {
     Log.d("pasS", "failure test");
-    mockDatabaseWrapper.setMockDocument(fakeFavor);
-    mockDatabaseWrapper.setThrowError(false);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // now inject throwable to see reaction in the UI
-    mockDatabaseWrapper.setThrowError(true);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    runOnUiThread(()->fakeViewModel.setThrowError(true));
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());

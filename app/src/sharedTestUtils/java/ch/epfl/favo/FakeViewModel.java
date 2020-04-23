@@ -51,6 +51,7 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
 
   @Override
   public CompletableFuture updateFavor(Favor favor) {
+    if (!throwError) setObservedFavorResult(favor);
     return result;
   }
 
