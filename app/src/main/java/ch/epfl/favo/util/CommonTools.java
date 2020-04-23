@@ -49,7 +49,7 @@ public class CommonTools {
       NetworkCapabilities network =
           connectivity.getNetworkCapabilities(connectivity.getActiveNetwork());
       return network == null
-              || (!network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+          || (!network.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
               && !network.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
     }
     return true;

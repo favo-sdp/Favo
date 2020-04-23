@@ -22,21 +22,18 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-
 public class UserSettingsTest {
 
-  @Mock
-  Context mockContext;
-  @Mock
-  SharedPreferences mockPrefs;
-  @Mock
-  SharedPreferences.Editor mockEditor;
+  @Mock Context mockContext;
+  @Mock SharedPreferences mockPrefs;
+  @Mock SharedPreferences.Editor mockEditor;
 
   @Before
   public void before() {
     new UserSettings(); // for test coverage
     Mockito.when(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockPrefs);
-    Mockito.when(mockContext.getSharedPreferences(anyString(), anyInt()).edit()).thenReturn(mockEditor);
+    Mockito.when(mockContext.getSharedPreferences(anyString(), anyInt()).edit())
+        .thenReturn(mockEditor);
     Mockito.when(mockPrefs.getBoolean("notifications_chat", false)).thenReturn(true);
     Mockito.when(mockPrefs.getBoolean("notifications_join", false)).thenReturn(true);
     Mockito.when(mockPrefs.getBoolean("notifications_update", false)).thenReturn(true);
@@ -81,5 +78,4 @@ public class UserSettingsTest {
     Mockito.when(mockPrefs.getBoolean("notifications_new", true)).thenReturn(false);
     assertEquals("disabled", getNotificationRadius(mockContext));
   }
-
 }

@@ -19,17 +19,16 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class LocalCacheTest {
 
-  @Mock
-  Context mockContext;
-  @Mock
-  SharedPreferences mockSharedPreferences;
-  @Mock
-  SharedPreferences.Editor mockEditor;
+  @Mock Context mockContext;
+  @Mock SharedPreferences mockSharedPreferences;
+  @Mock SharedPreferences.Editor mockEditor;
 
   @Before
   public void before() {
-//    Mockito.when(PreferenceManager.getDefaultSharedPreferences(mockContext)).thenReturn(mockSharedPreferences);
-    Mockito.when(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockSharedPreferences);
+    //
+    // Mockito.when(PreferenceManager.getDefaultSharedPreferences(mockContext)).thenReturn(mockSharedPreferences);
+    Mockito.when(mockContext.getSharedPreferences(anyString(), anyInt()))
+        .thenReturn(mockSharedPreferences);
     Mockito.when(mockSharedPreferences.edit()).thenReturn(mockEditor);
     Mockito.when(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor);
     Mockito.when(mockSharedPreferences.getString(anyString(), anyString())).thenReturn("");
