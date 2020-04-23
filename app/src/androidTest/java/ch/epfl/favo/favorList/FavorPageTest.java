@@ -147,11 +147,11 @@ public class FavorPageTest {
 
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
-
+    //
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-
+    Thread.sleep(1000);
     // Click on back button
     pressBack();
     getInstrumentation().waitForIdleSync();
@@ -234,7 +234,7 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-
+    Thread.sleep(1000);
     // Click on back button
     pressBack();
     getInstrumentation().waitForIdleSync();
@@ -295,14 +295,19 @@ public class FavorPageTest {
   @Test
   public void testClickScreenHideKeyboard() throws InterruptedException {
     requestFavorAndSearch();
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
 
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
     device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
-
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     // if keyboard hidden, one time of pressBack will return to Favor List view
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     Favor favor = FakeItemFactory.getFavor();
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
 
     // check favor is displayed in active favor list view
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());

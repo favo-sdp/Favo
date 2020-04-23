@@ -71,6 +71,11 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     return favorsAroundMeResult;
   }
 
+  @Override
+  public LiveData<Map<String, Favor>> getFavorsAroundMe() {
+    return favorsAroundMeResult;
+  }
+
   private MutableLiveData<Favor> observedFavorResult =
       new MutableLiveData<Favor>() {
         {

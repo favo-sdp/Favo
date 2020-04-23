@@ -14,7 +14,8 @@ public interface FavorDataController {
   CompletableFuture postFavor(Favor favor);
   CompletableFuture updateFavor(Favor favor);
 
-  LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius);
+  LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); //used in map view
+  LiveData<Map<String, Favor>> getFavorsAroundMe();//used in nearbylistview
 
   LiveData<Favor> setObservedFavor(String favorId);
 

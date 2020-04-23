@@ -119,7 +119,7 @@ public class ChatPageTest {
 
   private void typeMessage(String message) throws InterruptedException {
     navigateToChatPage();
-
+    Thread.sleep(1000);
     // Fill in text views with fake message
     onView(withId(R.id.messageEdit)).perform(typeText(message));
   }
@@ -149,6 +149,7 @@ public class ChatPageTest {
 
     // check message is displayed
     onView(withText(message)).check(matches(isDisplayed()));
+    getInstrumentation().waitForIdleSync();
   }
 
   @Test

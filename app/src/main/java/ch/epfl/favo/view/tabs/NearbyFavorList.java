@@ -15,17 +15,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
+import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static androidx.navigation.Navigation.findNavController;
 
@@ -40,9 +43,10 @@ public class NearbyFavorList extends Fragment {
   private ListView listView;
   private SearchView searchView;
   private MenuItem searchMenuItem;
-  private MainActivity activity;
   private View rootView;
   private Map<String, Favor> favorsFound = new HashMap<>();
+  private Map<String,Favor> nearbyFavors;
+  private FavorDataController viewModel;
 
   public NearbyFavorList() {
     // Required empty public constructor
@@ -51,7 +55,6 @@ public class NearbyFavorList extends Fragment {
   @Override
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
-    activity = (MainActivity) requireActivity();
     setHasOptionsMenu(true);
   }
 
@@ -70,8 +73,32 @@ public class NearbyFavorList extends Fragment {
     RadioButton toggle = rootView.findViewById(R.id.map_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
-    displayFavorList(activity.otherActiveFavorsAround, R.string.favor_no_nearby_favor);
+    viewModel =
+            (FavorDataController)
+                    new ViewModelProvider(requireActivity())
+                            .get(DependencyFactory.getCurrentViewModelClass());
+    try{
+    setupNearbyFavorsListener();
+    }catch (Exception e){
+      CommonTools.showSnackbar(requireView(),getString(R.string.unknown_error));
+    }
     return rootView;
+  }
+  public void setupNearbyFavorsListener(){
+    getViewModel().getFavorsAroundMe().observe(getViewLifecycleOwner(), new Observer<Map<String, Favor>>() {
+      @Override
+      public void onChanged(Map<String, Favor> stringFavorMap) {
+        try{nearbyFavors = stringFavorMap;
+        displayFavorList(nearbyFavors,R.string.empty);}
+        catch(Exception e){
+          CommonTools.showSnackbar(requireView(),getString(R.string.unknown_error));
+        }
+      }
+    });
+  }
+
+  public FavorDataController getViewModel(){
+    return viewModel;
   }
 
   @Override
@@ -87,7 +114,8 @@ public class NearbyFavorList extends Fragment {
   }
 
   private void onToggleClick(View view) {
-    findNavController(activity, R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
+    findNavController(requireView()).popBackStack(R.id.action_global_nav_map,false);
+    //findNavController(activity, R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
   }
 
   private void setupSearchMode() {
@@ -100,7 +128,7 @@ public class NearbyFavorList extends Fragment {
     rootView.findViewById(R.id.toggle).setVisibility(View.VISIBLE);
     favorsFound.clear();
     searchView.setOnQueryTextListener(null);
-    displayFavorList(activity.otherActiveFavorsAround, R.string.empty);
+    displayFavorList(nearbyFavors, R.string.empty);
   }
 
   private void displayFavorList(Map<String, Favor> favors, int textId) {
@@ -132,7 +160,7 @@ public class NearbyFavorList extends Fragment {
     @Override
     public boolean onQueryTextSubmit(String query) {
       favorsFound =
-          CommonTools.findFavorByTitleDescription(query, activity.otherActiveFavorsAround);
+          CommonTools.findFavorByTitleDescription(query, nearbyFavors);
       displayFavorList(favorsFound, R.string.query_failed);
       return false;
     }
@@ -142,7 +170,7 @@ public class NearbyFavorList extends Fragment {
       if (newText.equals("")) favorsFound = new HashMap<>();
       else
         favorsFound =
-            CommonTools.findFavorByTitleDescription(newText, activity.otherActiveFavorsAround);
+            CommonTools.findFavorByTitleDescription(newText, nearbyFavors);
       displayFavorList(favorsFound, R.string.query_failed);
       return false;
     }
@@ -154,7 +182,7 @@ public class NearbyFavorList extends Fragment {
           CommonTools.hideSoftKeyboard(requireActivity());
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", favor);
+          favorBundle.putString("FAVOR_ARGS", favor.getId());
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
         });

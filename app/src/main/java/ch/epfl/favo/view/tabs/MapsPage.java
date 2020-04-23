@@ -110,27 +110,37 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
+    try{//TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
     setupNearbyFavorsListener();
-    setupFocusedFavorListen();
+
+    setupFocusedFavorListen();}
+    catch(Exception e){
+      CommonTools.showSnackbar(requireView(),getString(R.string.unknown_error));
+    }
     if (focusedFavor == null) centerViewOnMyLocation();
   }
 
   private void setupFocusedFavorListen() {
+
     favorViewModel
         .getObservedFavor()
         .observe(
             getViewLifecycleOwner(),
             favor -> {
-              if (favor != null) {
-                focusedFavor = favor;
-                boolean isRequested = // check if favor is requested
-                    favor
-                        .getRequesterId()
-                        .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+              try {
+                if (favor != null) {
+                  focusedFavor = favor;
+                  boolean isRequested = // check if favor is requested
+                      favor
+                          .getRequesterId()
+                          .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
 
-                Marker marker = drawFavorMarker(focusedFavor, isRequested);
-                marker.showInfoWindow();
-                focusViewOnLocation(focusedFavor.getLocation());
+                  Marker marker = drawFavorMarker(focusedFavor, isRequested);
+                  marker.showInfoWindow();
+                  focusViewOnLocation(focusedFavor.getLocation());
+                }
+              } catch (Exception e) {
+                CommonTools.showSnackbar(requireView(), getString(R.string.unknown_error));
               }
             });
   }
@@ -190,6 +200,7 @@ public class MapsPage extends Fragment
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
 
     mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+
     favorViewModel
         .getFavorsAroundMe(mLocation, radiusThreshold)
         .observe(
@@ -200,10 +211,12 @@ public class MapsPage extends Fragment
                 drawFavorMarkers(new ArrayList<>(favorsAroundMe.values()));
                 first = false;
               } catch (Exception e) {
-                CommonTools.showSnackbar(getView(), getString(R.string.nearby_favors_exception));
+                CommonTools.showSnackbar(requireView(),getString(R.string.nearby_favors_exception));
               }
             });
+
   }
+
 
   /** Request location permission, so that we can get the location of the device. */
   private void getLocationPermission() {

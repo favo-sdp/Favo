@@ -52,6 +52,10 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
             (queryDocumentSnapshots, e) ->
                 activeFavorsAroundMe.setValue(
                     getNearbyFavorsFromQuery(loc, radius, queryDocumentSnapshots, e)));
+    return getFavorsAroundMe();
+  }
+
+  public LiveData<Map<String, Favor>> getFavorsAroundMe() {
     return activeFavorsAroundMe;
   }
 
@@ -65,13 +69,15 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     Map<String, Favor> favorsMap = new HashMap<>();
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
-    for (Favor favor : favorsList)
+    for (Favor favor : favorsList) {
+      if (favor.getRequesterId() == null) continue;
       if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
           && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
         favorsMap.put(favor.getId(), favor);
       }
+    }
     return favorsMap;
   }
 
@@ -81,7 +87,6 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
       throw new RuntimeException(e.getMessage());
     }
   }
-
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
