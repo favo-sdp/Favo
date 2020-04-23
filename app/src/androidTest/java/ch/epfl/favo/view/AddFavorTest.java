@@ -345,7 +345,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.error_database_sync)));
+            .check(matches(withText(R.string.update_favor_error)));
   }
   @Test
   public void testSnackBarShowsWhenFailCancelToDb() throws Throwable {
