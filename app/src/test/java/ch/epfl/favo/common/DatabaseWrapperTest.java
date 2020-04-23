@@ -1,6 +1,5 @@
 package ch.epfl.favo.common;
 
-import android.app.Activity;
 import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
@@ -27,7 +26,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -87,6 +85,7 @@ public class DatabaseWrapperTest {
     Mockito.doReturn(mockDocumentReference).when(mockCollectionReference).document();
     Task mockEmptyTask = Mockito.mock(Task.class);
     Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).update(anyMap());
+    Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).set(any());
     // mock return task
     documentSnapshotTask = Mockito.mock(Task.class);
     // mock document returned by task
@@ -163,5 +162,16 @@ public class DatabaseWrapperTest {
             .getAllDocumentsLongitudeBounded(new Location("null"), 1.0);
     List<Favor> obtainedFavors = obtainedFuture.get();
     assertEquals(expectedFavors, obtainedFavors);
+  }
+  @Test
+  public void testGetDocumentQuery() {
+    String key = "any";
+    collectionWrapper.getDocumentQuery(key);
+  }
+
+  @Test
+  public void testLocationBoundQuery() {
+    collectionWrapper
+            .locationBoundQuery(new Location("null"), 1.0);
   }
 }

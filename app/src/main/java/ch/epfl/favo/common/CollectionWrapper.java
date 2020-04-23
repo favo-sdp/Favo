@@ -48,14 +48,12 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     return DatabaseWrapper.getAllDocuments(cls, collection);
   }
 
-  public Query getDocumentsWithQuery(Map<String, Object> keyValuePairs) {
-    return DatabaseWrapper.getDocumentsWithQuery(keyValuePairs, collection);
-  }
 
 
   public DocumentReference getDocumentQuery(String key) {
     return DatabaseWrapper.getDocumentQuery(key, collection);
   }
+
 
   public Query locationBoundQuery(Location loc, double radius) {
     return DatabaseWrapper.locationBoundQuery(loc, radius, collection);

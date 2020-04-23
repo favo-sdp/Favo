@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.viewmodel.FavorViewModel;
@@ -37,6 +38,7 @@ public class DependencyFactory {
   private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
+  private static FavorUtil currentRepository;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -162,5 +164,14 @@ public class DependencyFactory {
   public static Class getCurrentViewModelClass(){
     if (testMode && currentViewModelClass!=null) {return currentViewModelClass;}
     return FavorViewModel.class;
+  }
+  @VisibleForTesting
+  public static void setCurrentRepository(FavorUtil dependency){
+    testMode = true;
+    currentRepository = dependency;
+  }
+  public static FavorUtil getCurrentRepository(){
+    if (testMode && currentRepository!=null) return currentRepository;
+    return FavorUtil.getSingleInstance();
   }
 }

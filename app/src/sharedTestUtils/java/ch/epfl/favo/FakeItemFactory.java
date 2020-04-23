@@ -1,5 +1,7 @@
 package ch.epfl.favo;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,9 @@ public class FakeItemFactory {
         TestConstants.REQUESTER_ID,
         TestConstants.LOCATION,
         TestConstants.FAVOR_STATUS.toInt());
+  }
+  public static FirebaseUser getUser(){
+    return new FakeFirebaseUser(TestConstants.NAME,TestConstants.EMAIL,TestConstants.PHOTO_URI,TestConstants.PROVIDER);
   }
 
   public static List<Favor> getFavorList() {

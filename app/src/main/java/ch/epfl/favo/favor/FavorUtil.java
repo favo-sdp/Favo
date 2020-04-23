@@ -17,13 +17,15 @@ import ch.epfl.favo.util.DependencyFactory;
 /*
 This models the favor request.
 */
+//TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static DatabaseUpdater collection =
-      DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
+      DependencyFactory.getCurrentCollectionWrapper(
+          DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
@@ -33,7 +35,9 @@ public class FavorUtil {
   }
 
   public static FavorUtil getSingleInstance() {
-    collection = DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
+    collection =
+        DependencyFactory.getCurrentCollectionWrapper(
+            DependencyFactory.getCurrentFavorCollection(), Favor.class);
     return SINGLE_INSTANCE;
   }
 
@@ -44,7 +48,7 @@ public class FavorUtil {
    * @throws RuntimeException Unable to post to DB.
    */
   public CompletableFuture postFavor(Favor favor) throws RuntimeException {
-      return collection.addDocument(favor);
+    return collection.addDocument(favor);
   }
 
   public CompletableFuture updateFavor(Favor favor) {
@@ -79,8 +83,9 @@ public class FavorUtil {
 
     throw new NotImplementedException();
   }
-  public Query getNearbyFavors(Location loc, Double radius){
-    return collection.locationBoundQuery(loc,radius);
+
+  public Query getNearbyFavors(Location loc, Double radius) {
+    return collection.locationBoundQuery(loc, radius);
   }
 
   /**
@@ -92,7 +97,8 @@ public class FavorUtil {
 
     throw new NotImplementedException();
   }
-  public DocumentReference getFavorReference(String id){
+
+  public DocumentReference getFavorReference(String id) {
     return collection.getDocumentQuery(id);
   }
 
@@ -123,12 +129,15 @@ public class FavorUtil {
 
   /**
    * Returns all the favors that are active in a given radius.
+   *
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
-    /**It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface**/
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(
+      Location loc, double radius) {
+    /**
+     * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*
+     */
     return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 }

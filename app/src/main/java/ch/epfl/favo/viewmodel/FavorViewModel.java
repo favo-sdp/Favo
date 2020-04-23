@@ -24,49 +24,55 @@ import ch.epfl.favo.util.DependencyFactory;
 
 public class FavorViewModel extends ViewModel implements FavorDataController {
   String TAG = "FIRESTORE_VIEW_MODEL";
-  FavorUtil favorRepository = FavorUtil.getSingleInstance();
 
   MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
+  public FavorUtil getRepository() {
+    return DependencyFactory.getCurrentRepository();
+  }
+
   // save address to firebase
   @Override
   public CompletableFuture postFavor(Favor favor) {
-    return favorRepository.postFavor(favor);
-  }
-  public CompletableFuture updateFavor(Favor favor){
-    return favorRepository.updateFavor(favor);
+    return getRepository().postFavor(favor);
   }
 
+  public CompletableFuture updateFavor(Favor favor) {
+    return getRepository().updateFavor(favor);
+  }
 
   @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius) {
-    favorRepository
+    getRepository()
         .getNearbyFavors(loc, radius)
         .addSnapshotListener(
-            (queryDocumentSnapshots, e) -> {
-              try {
-                if (e != null) throw new RuntimeException(e.getMessage());
-                Map<String, Favor> favors = new HashMap<>();
-                // Filter latitude because Firebase only filters longitude
-                double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
-                for (Favor favor : queryDocumentSnapshots.toObjects(Favor.class))
-                  if (!favor
-                          .getRequesterId()
-                          .equals(DependencyFactory.getCurrentFirebaseUser().getUid())
-                      && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
-                      && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
-                      && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
-                    favors.put(favor.getId(), favor);
-                  }
-                activeFavorsAroundMe.setValue(favors);
-              } catch (Exception ex) {
-                Log.d(TAG, ex.getMessage());
-              }
-            });
+            (queryDocumentSnapshots, e) ->
+                activeFavorsAroundMe.setValue(
+                    getNearbyFavorsFromQuery(loc, radius, queryDocumentSnapshots, e)));
     return activeFavorsAroundMe;
+  }
+
+  public Map<String, Favor> getNearbyFavorsFromQuery(
+      Location loc,
+      double radius,
+      QuerySnapshot queryDocumentSnapshots,
+      FirebaseFirestoreException e) {
+    handleException(e);
+    List<Favor> favorsList = queryDocumentSnapshots.toObjects(Favor.class);
+    Map<String, Favor> favorsMap = new HashMap<>();
+    // Filter latitude because Firebase only filters longitude
+    double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
+    for (Favor favor : favorsList)
+      if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+          && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
+          && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
+          && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
+        favorsMap.put(favor.getId(), favor);
+      }
+    return favorsMap;
   }
 
   public void handleException(FirebaseFirestoreException e) {
@@ -76,35 +82,14 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     }
   }
 
-  private Map<String, Favor> getFavorMapFromQuery(
-      QuerySnapshot queryDocumentSnapshots, FirebaseFirestoreException e) {
-    handleException(e);
-
-    List<Favor> favors = queryDocumentSnapshots.toObjects(Favor.class);
-    Map<String, Favor> favorMap =
-        new HashMap<String, Favor>() {
-          {
-            for (Favor favor : favors) {
-              put(favor.getId(), favor);
-            }
-          }
-        };
-
-    return favorMap;
-  }
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    favorRepository
+    getRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
             (documentSnapshot, e) -> {
-              if (e != null) {
-                Log.w(TAG, "Listen Failed", e);
-                observedFavor = null;
-                return;
-              }
-              // observedFavor.postValue(documentSnapshot.toObject(Favor.class));
+              handleException(e);
               observedFavor.setValue(documentSnapshot.toObject(Favor.class));
             });
     return observedFavor;

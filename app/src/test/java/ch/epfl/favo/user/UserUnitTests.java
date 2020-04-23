@@ -15,7 +15,7 @@ import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.TestUtils;
+import ch.epfl.favo.util.TestUtil;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static org.junit.Assert.assertEquals;
@@ -114,9 +114,11 @@ public class UserUnitTests {
 
   @Test
   public void userSuccessfullyPostsToDB() {
-    DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+
     CollectionWrapper collection = Mockito.mock(CollectionWrapper.class);
-    Mockito.doNothing().when(collection).addDocument(any(User.class));
+    CompletableFuture successfulFuture = new CompletableFuture(){{complete(null);}};
+    Mockito.doReturn(successfulFuture).when(collection).addDocument(any(User.class));
+    DependencyFactory.setCurrentCollectionWrapper(collection);
 
     String id = TestConstants.USER_ID;
     String name = TestConstants.NAME;
@@ -145,7 +147,7 @@ public class UserUnitTests {
   @Test
   public void userShouldNotLoginWithInvalidPassword() {
     String username = TestConstants.USERNAME;
-    String pw = TestUtils.generateRandomString(10);
+    String pw = TestUtil.generateRandomString(10);
     assertThrows(
         NotImplementedException.class,
         new ThrowingRunnable() {

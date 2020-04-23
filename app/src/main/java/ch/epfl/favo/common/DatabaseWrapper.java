@@ -33,13 +33,8 @@ public class DatabaseWrapper {
     FirebaseFirestore.setLoggingEnabled(true);
     FirebaseFirestoreSettings settings =
         new FirebaseFirestoreSettings.Builder().setPersistenceEnabled(true).build();
-    try {
       firestore = DependencyFactory.getCurrentFirestore();
       firestore.setFirestoreSettings(settings);
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException("Failed to initialize FirebaseFirestore");
-    }
   }
 
   private static DatabaseWrapper getInstance() {
@@ -101,14 +96,6 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-  static <T extends Document> Query getDocumentsWithQuery(
-      Map<String, Object> keyValuePairs, String collection) {
-    Query query = getCollectionReference(collection);
-    for (Map.Entry<String, Object> entry : keyValuePairs.entrySet()) {
-      query = query.whereEqualTo(entry.getKey(), entry.getValue());
-    }
-    return query;
-  }
 
   static Query locationBoundQuery(Location loc, double radius, String collection) {
     double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
@@ -117,6 +104,8 @@ public class DatabaseWrapper {
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
         .limit(30);
   }
+
+
 
   /**
    * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
