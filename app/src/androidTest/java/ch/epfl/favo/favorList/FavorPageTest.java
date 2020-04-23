@@ -69,7 +69,8 @@ public class FavorPageTest {
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
   @Before
-  public void setUp() {
+  public void setUp() throws ExecutionException, InterruptedException {
+    TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
   }
 
@@ -78,11 +79,11 @@ public class FavorPageTest {
     TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    //DependencyFactory.setCurrentFavorCollection("favors");
+    // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   public static ViewAction withCustomConstraints(
-          final ViewAction action, final Matcher<View> constraints) {
+      final ViewAction action, final Matcher<View> constraints) {
     return new ViewAction() {
       @Override
       public Matcher<View> getConstraints() {

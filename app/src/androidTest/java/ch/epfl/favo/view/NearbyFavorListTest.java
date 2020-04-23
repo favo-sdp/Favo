@@ -58,8 +58,6 @@ public class NearbyFavorListTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           // setup mock gps
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          // setup mock view model
-          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
 
@@ -69,6 +67,8 @@ public class NearbyFavorListTest {
 
   @Before
   public void setup() throws Throwable {
+    // setup mock view model
+    DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
     MainActivity activity = mainActivityTestRule.getActivity();
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     runOnUiThread(() -> navController.navigate(R.id.nav_nearby_favor_list));
