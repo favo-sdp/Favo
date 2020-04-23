@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
@@ -45,7 +44,7 @@ public class NearbyFavorList extends Fragment {
   private MenuItem searchMenuItem;
   private View rootView;
   private Map<String, Favor> favorsFound = new HashMap<>();
-  private Map<String,Favor> nearbyFavors;
+  private Map<String, Favor> nearbyFavors;
   private FavorDataController viewModel;
 
   public NearbyFavorList() {
@@ -74,30 +73,30 @@ public class NearbyFavorList extends Fragment {
     toggle.setOnClickListener(this::onToggleClick);
 
     viewModel =
-            (FavorDataController)
-                    new ViewModelProvider(requireActivity())
-                            .get(DependencyFactory.getCurrentViewModelClass());
-    try{
+        (FavorDataController)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
+
     setupNearbyFavorsListener();
-    }catch (Exception e){
-      CommonTools.showSnackbar(requireView(),getString(R.string.unknown_error));
-    }
     return rootView;
   }
-  public void setupNearbyFavorsListener(){
-    getViewModel().getFavorsAroundMe().observe(getViewLifecycleOwner(), new Observer<Map<String, Favor>>() {
-      @Override
-      public void onChanged(Map<String, Favor> stringFavorMap) {
-        try{nearbyFavors = stringFavorMap;
-        displayFavorList(nearbyFavors,R.string.empty);}
-        catch(Exception e){
-          CommonTools.showSnackbar(requireView(),getString(R.string.unknown_error));
-        }
-      }
-    });
+
+  public void setupNearbyFavorsListener() {
+    getViewModel()
+        .getFavorsAroundMe()
+        .observe(
+            getViewLifecycleOwner(),
+            stringFavorMap -> {
+              try {
+                nearbyFavors = stringFavorMap;
+                displayFavorList(nearbyFavors, R.string.empty);
+              } catch (Exception e) {
+                CommonTools.showSnackbar(requireView(), getString(R.string.unknown_error));
+              }
+            });
   }
 
-  public FavorDataController getViewModel(){
+  public FavorDataController getViewModel() {
     return viewModel;
   }
 
@@ -114,8 +113,8 @@ public class NearbyFavorList extends Fragment {
   }
 
   private void onToggleClick(View view) {
-    findNavController(requireView()).popBackStack(R.id.action_global_nav_map,false);
-    //findNavController(activity, R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
+    findNavController(requireView()).popBackStack(R.id.action_global_nav_map, false);
+    // findNavController(activity, R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
   }
 
   private void setupSearchMode() {
@@ -159,8 +158,7 @@ public class NearbyFavorList extends Fragment {
   class onQueryListener implements SearchView.OnQueryTextListener {
     @Override
     public boolean onQueryTextSubmit(String query) {
-      favorsFound =
-          CommonTools.findFavorByTitleDescription(query, nearbyFavors);
+      favorsFound = CommonTools.findFavorByTitleDescription(query, nearbyFavors);
       displayFavorList(favorsFound, R.string.query_failed);
       return false;
     }
@@ -168,9 +166,7 @@ public class NearbyFavorList extends Fragment {
     @Override
     public boolean onQueryTextChange(String newText) {
       if (newText.equals("")) favorsFound = new HashMap<>();
-      else
-        favorsFound =
-            CommonTools.findFavorByTitleDescription(newText, nearbyFavors);
+      else favorsFound = CommonTools.findFavorByTitleDescription(newText, nearbyFavors);
       displayFavorList(favorsFound, R.string.query_failed);
       return false;
     }

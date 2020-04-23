@@ -218,6 +218,14 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
   }
 
+  @Test
+  public void testSuccessfullyCompletedView() throws Throwable {
+    fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
+    String expectedDisplay = FavorStatus.SUCCESSFULLY_COMPLETED.toString();
+    onView(withId(R.id.status_text_accept_view)).check(matches(withText(expectedDisplay)));
+  }
+
   // removing this test because favors in the second tab will concern the user directly and it's not
   // possible to accept a favor from there anymore
 
