@@ -114,7 +114,7 @@ public class FavorRequestView extends Fragment {
                 setFavorActivatedView(rootView);
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-                CommonTools.showSnackbar(rootView, getString(R.string.unknown_error));
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
   }
@@ -224,7 +224,7 @@ public class FavorRequestView extends Fragment {
 
   private Function onFailedResult(View currentView) {
     return o -> {
-      CommonTools.showSnackbar(currentView, getString(R.string.unknown_error));
+      CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
       Log.e(TAG, ((Exception) o).getMessage());
       return null;
     };

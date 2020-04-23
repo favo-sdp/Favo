@@ -78,7 +78,7 @@ public class FavorDetailView extends Fragment {
                 currentFavor = favor;
                 displayFromFavor(rootView, currentFavor);
               } catch (Exception e) {
-                CommonTools.showSnackbar(rootView, getString(R.string.unknown_error));
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
               }
             });

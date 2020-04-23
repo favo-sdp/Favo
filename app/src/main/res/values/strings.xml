@@ -99,6 +99,7 @@
     <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
 
     <!-- Help preferences -->
+    <string name="error_database_sync">Failed connecting to Database</string>
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
     <string name="request_favor_draft">Save favor draft</string>

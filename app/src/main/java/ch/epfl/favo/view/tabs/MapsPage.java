@@ -105,12 +105,12 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    try{//TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
-    setupNearbyFavorsListener();
+    try { // TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
+      setupNearbyFavorsListener();
 
-    setupFocusedFavorListen();}
-    catch(Exception e){
-      CommonTools.showSnackbar(requireView(),getString(R.string.unknown_error));
+      setupFocusedFavorListen();
+    } catch (Exception e) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
     if (focusedFavor == null) centerViewOnMyLocation();
   }
@@ -135,7 +135,7 @@ public class MapsPage extends Fragment
                   focusViewOnLocation(focusedFavor.getLocation());
                 }
               } catch (Exception e) {
-                CommonTools.showSnackbar(requireView(), getString(R.string.unknown_error));
+                CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
   }
@@ -206,12 +206,11 @@ public class MapsPage extends Fragment
                 drawFavorMarkers(new ArrayList<>(favorsAroundMe.values()));
                 first = false;
               } catch (Exception e) {
-                CommonTools.showSnackbar(requireView(),getString(R.string.nearby_favors_exception));
+                CommonTools.showSnackbar(
+                    requireView(), getString(R.string.nearby_favors_exception));
               }
             });
-
   }
-
 
   /** Request location permission, so that we can get the location of the device. */
   private void getLocationPermission() {

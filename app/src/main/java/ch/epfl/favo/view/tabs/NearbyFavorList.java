@@ -91,7 +91,7 @@ public class NearbyFavorList extends Fragment {
                 nearbyFavors = stringFavorMap;
                 displayFavorList(nearbyFavors, R.string.empty);
               } catch (Exception e) {
-                CommonTools.showSnackbar(requireView(), getString(R.string.unknown_error));
+                CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
   }
