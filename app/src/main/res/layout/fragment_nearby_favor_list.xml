@@ -24,8 +24,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" >
-        </ListView>
+            app:layout_constraintTop_toTopOf="parent"></ListView>
 
         <TextView
             android:id="@+id/nearby_tip"
@@ -37,10 +36,8 @@
             app:layout_constraintBottom_toBottomOf="@id/nearby_favor_list"
             android:textSize="20sp"
             android:visibility="invisible"
-            android:textAlignment="center">
-        </TextView>
+            android:textAlignment="center"></TextView>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 
     <RadioGroup

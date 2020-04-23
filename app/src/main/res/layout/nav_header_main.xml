@@ -18,6 +18,7 @@
         android:elevation="12dp"
         android:id="@+id/view2"
         app:cardCornerRadius="40dp">
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
@@ -26,7 +27,7 @@
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:background="@android:color/white"
             android:src="@drawable/logo"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
 
     <TextView

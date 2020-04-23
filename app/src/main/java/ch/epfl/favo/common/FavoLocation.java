@@ -28,7 +28,6 @@ public class FavoLocation extends Location {
     }
     FavoLocation other = (FavoLocation) o;
 
-    return this.getLongitude() == other.getLongitude()
-            && this.getLatitude() == other.getLatitude();
+    return this.getLongitude() == other.getLongitude() && this.getLatitude() == other.getLatitude();
   }
 }

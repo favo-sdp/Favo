@@ -1,37 +1,37 @@
-//package ch.epfl.favo.auth;
+// package ch.epfl.favo.auth;
 //
-//import android.os.RemoteException;
-//import android.widget.EditText;
+// import android.os.RemoteException;
+// import android.widget.EditText;
 //
-//import androidx.test.ext.junit.runners.AndroidJUnit4;
-//import androidx.test.platform.app.InstrumentationRegistry;
-//import androidx.test.rule.ActivityTestRule;
-//import androidx.test.uiautomator.By;
-//import androidx.test.uiautomator.UiDevice;
-//import androidx.test.uiautomator.UiObject;
-//import androidx.test.uiautomator.UiObject2;
-//import androidx.test.uiautomator.UiObjectNotFoundException;
-//import androidx.test.uiautomator.UiSelector;
-//import androidx.test.uiautomator.Until;
+// import androidx.test.ext.junit.runners.AndroidJUnit4;
+// import androidx.test.platform.app.InstrumentationRegistry;
+// import androidx.test.rule.ActivityTestRule;
+// import androidx.test.uiautomator.By;
+// import androidx.test.uiautomator.UiDevice;
+// import androidx.test.uiautomator.UiObject;
+// import androidx.test.uiautomator.UiObject2;
+// import androidx.test.uiautomator.UiObjectNotFoundException;
+// import androidx.test.uiautomator.UiSelector;
+// import androidx.test.uiautomator.Until;
 //
-//import org.junit.Rule;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
+// import org.junit.Rule;
+// import org.junit.Test;
+// import org.junit.runner.RunWith;
 //
-//import ch.epfl.favo.R;
-//import ch.epfl.favo.util.DependencyFactory;
+// import ch.epfl.favo.R;
+// import ch.epfl.favo.util.DependencyFactory;
 //
-//import static androidx.test.espresso.Espresso.onView;
-//import static androidx.test.espresso.action.ViewActions.click;
-//import static androidx.test.espresso.assertion.ViewAssertions.matches;
-//import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-//import static androidx.test.espresso.matcher.ViewMatchers.withId;
-//import static androidx.test.espresso.matcher.ViewMatchers.withText;
-//import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-//import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
+// import static androidx.test.espresso.Espresso.onView;
+// import static androidx.test.espresso.action.ViewActions.click;
+// import static androidx.test.espresso.assertion.ViewAssertions.matches;
+// import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+// import static androidx.test.espresso.matcher.ViewMatchers.withId;
+// import static androidx.test.espresso.matcher.ViewMatchers.withText;
+// import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+// import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 //
-//@RunWith(AndroidJUnit4.class)
-//public class LoginFlowTest {
+// @RunWith(AndroidJUnit4.class)
+// public class LoginFlowTest {
 //
 //  @Rule
 //  public final ActivityTestRule<SignInActivity> mActivityRule =
@@ -183,4 +183,4 @@
 //    if (!mDevice.findObject(new UiSelector().textContains("Sign in with google")).exists())
 //      mDevice.pressBack();
 //  }
-//}
+// }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
@@ -22,7 +21,8 @@ public class FavorUtil {
   private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static DatabaseUpdater collection =
-      DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
+      DependencyFactory.getCurrentCollectionWrapper(
+          DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
@@ -32,7 +32,9 @@ public class FavorUtil {
   }
 
   public static FavorUtil getSingleInstance() {
-    collection = DependencyFactory.getCurrentCollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class);
+    collection =
+        DependencyFactory.getCurrentCollectionWrapper(
+            DependencyFactory.getCurrentFavorCollection(), Favor.class);
     return SINGLE_INSTANCE;
   }
 
@@ -123,12 +125,15 @@ public class FavorUtil {
 
   /**
    * Returns all the favors that are active in a given radius.
+   *
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(Location loc, double radius) {
-    /**It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface**/
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(
+      Location loc, double radius) {
+    /**
+     * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*
+     */
     return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 }

@@ -1,39 +1,39 @@
-//package ch.epfl.favo.view;
+// package ch.epfl.favo.view;
 //
-//import androidx.test.espresso.matcher.ViewMatchers;
-//import androidx.test.ext.junit.runners.AndroidJUnit4;
-//import androidx.test.platform.app.InstrumentationRegistry;
-//import androidx.test.rule.ActivityTestRule;
-//import androidx.test.rule.GrantPermissionRule;
-//import androidx.test.uiautomator.UiDevice;
-//import androidx.test.uiautomator.UiObjectNotFoundException;
-//import androidx.test.uiautomator.UiSelector;
+// import androidx.test.espresso.matcher.ViewMatchers;
+// import androidx.test.ext.junit.runners.AndroidJUnit4;
+// import androidx.test.platform.app.InstrumentationRegistry;
+// import androidx.test.rule.ActivityTestRule;
+// import androidx.test.rule.GrantPermissionRule;
+// import androidx.test.uiautomator.UiDevice;
+// import androidx.test.uiautomator.UiObjectNotFoundException;
+// import androidx.test.uiautomator.UiSelector;
 //
-//import org.junit.After;
-//import org.junit.Rule;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
+// import org.junit.After;
+// import org.junit.Rule;
+// import org.junit.Test;
+// import org.junit.runner.RunWith;
 //
-//import ch.epfl.favo.FakeFirebaseUser;
-//import ch.epfl.favo.MainActivity;
-//import ch.epfl.favo.R;
-//import ch.epfl.favo.util.DependencyFactory;
+// import ch.epfl.favo.FakeFirebaseUser;
+// import ch.epfl.favo.MainActivity;
+// import ch.epfl.favo.R;
+// import ch.epfl.favo.util.DependencyFactory;
 //
-//import static androidx.test.espresso.Espresso.onView;
-//import static androidx.test.espresso.action.ViewActions.click;
-//import static androidx.test.espresso.assertion.ViewAssertions.matches;
-//import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-//import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
-//import static androidx.test.espresso.matcher.ViewMatchers.withId;
-//import static androidx.test.espresso.matcher.ViewMatchers.withText;
-//import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
-//import static ch.epfl.favo.TestConstants.EMAIL;
-//import static ch.epfl.favo.TestConstants.NAME;
-//import static ch.epfl.favo.TestConstants.PHOTO_URI;
-//import static ch.epfl.favo.TestConstants.PROVIDER;
+// import static androidx.test.espresso.Espresso.onView;
+// import static androidx.test.espresso.action.ViewActions.click;
+// import static androidx.test.espresso.assertion.ViewAssertions.matches;
+// import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+// import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+// import static androidx.test.espresso.matcher.ViewMatchers.withId;
+// import static androidx.test.espresso.matcher.ViewMatchers.withText;
+// import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
+// import static ch.epfl.favo.TestConstants.EMAIL;
+// import static ch.epfl.favo.TestConstants.NAME;
+// import static ch.epfl.favo.TestConstants.PHOTO_URI;
+// import static ch.epfl.favo.TestConstants.PROVIDER;
 //
-//@RunWith(AndroidJUnit4.class)
-//public class MapPageOfflineTest {
+// @RunWith(AndroidJUnit4.class)
+// public class MapPageOfflineTest {
 //
 //  @Rule
 //  public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -128,4 +128,4 @@
 //    mDevice.pressBack();
 //    mDevice.pressBack();
 //  }
-//}
+// }

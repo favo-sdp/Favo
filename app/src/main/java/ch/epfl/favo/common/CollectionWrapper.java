@@ -1,6 +1,5 @@
 package ch.epfl.favo.common;
 
-import android.app.Activity;
 import android.location.Location;
 
 import java.util.List;

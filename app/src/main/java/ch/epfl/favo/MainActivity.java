@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
   public Map<String, Favor> otherActiveFavorsAround;
   public Favor focusedFavor = null;
 
-
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -166,20 +165,19 @@ public class MainActivity extends AppCompatActivity {
           return true;
         });
     bottomNavigationView.setOnNavigationItemSelectedListener(
-            item -> {
-              int itemId = item.getItemId();
-              if (itemId == currentMenuItem) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return false;
-              }
+        item -> {
+          int itemId = item.getItemId();
+          if (itemId == currentMenuItem) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+          }
 
-              if(itemId == R.id.nav_map)
-                navController.popBackStack(R.id.nav_map, false);
-              else navController.navigate(R.id.nav_favorList);
+          if (itemId == R.id.nav_map) navController.popBackStack(R.id.nav_map, false);
+          else navController.navigate(R.id.nav_favorList);
 
-              currentMenuItem = itemId;
-              return false;
-            });
+          currentMenuItem = itemId;
+          return false;
+        });
   }
 
   private void showNoConnectionSnackbar() {
