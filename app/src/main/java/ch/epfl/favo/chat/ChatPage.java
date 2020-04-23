@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.auth.util.ui.ImeHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -37,11 +36,8 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 public class ChatPage extends Fragment {
 
-  private static final CollectionReference sChatCollection =
-      FirebaseFirestore.getInstance().collection("chats");
-
   private View view;
-  private Favor favor;
+  private Favor currentFavor;
 
   @Override
   public View onCreateView(
@@ -51,7 +47,7 @@ public class ChatPage extends Fragment {
     setupView();
 
     if (getArguments() != null) {
-      favor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
     }
 
     return view;
@@ -69,18 +65,18 @@ public class ChatPage extends Fragment {
     manager.setReverseLayout(true);
     manager.setStackFromEnd(true);
 
-    RecyclerView mRecyclerView = view.findViewById(R.id.messagesList);
-    mRecyclerView.setHasFixedSize(true);
-    mRecyclerView.setLayoutManager(manager);
+    RecyclerView recyclerView = view.findViewById(R.id.messagesList);
+    recyclerView.setHasFixedSize(true);
+    recyclerView.setLayoutManager(manager);
 
-    mRecyclerView.addOnLayoutChangeListener(
+    recyclerView.addOnLayoutChangeListener(
         (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
           if (bottom < oldBottom) {
-            mRecyclerView.postDelayed(() -> mRecyclerView.smoothScrollToPosition(0), 100);
+            recyclerView.postDelayed(() -> recyclerView.smoothScrollToPosition(0), 100);
           }
         });
 
-    mRecyclerView.setOnTouchListener(
+    recyclerView.setOnTouchListener(
         (v, event) -> {
           hideSoftKeyboard(requireActivity());
           return false;
@@ -98,7 +94,7 @@ public class ChatPage extends Fragment {
     toolbar.setTitleTextColor(Color.WHITE);
     Objects.requireNonNull(toolbar.getNavigationIcon())
         .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
-    toolbar.setTitle(favor.getTitle());
+    toolbar.setTitle(currentFavor.getTitle());
   }
 
   @Override
@@ -136,14 +132,15 @@ public class ChatPage extends Fragment {
             DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
             mMessageEdit.getText().toString(),
             DependencyFactory.getCurrentFirebaseUser().getUid(),
-            favor.getId()));
+            currentFavor.getId()));
     mMessageEdit.setText("");
   }
 
   private FirestoreRecyclerOptions<ChatModel> getFirestoreRecyclerOptions() {
     Query sChatQuery =
-        sChatCollection
-            .whereEqualTo("favorId", favor.getId())
+        FirebaseFirestore.getInstance()
+            .collection("chats")
+            .whereEqualTo("favorId", currentFavor.getId())
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(50);
 
@@ -178,7 +175,8 @@ public class ChatPage extends Fragment {
   }
 
   private void onAddMessage(@NonNull ChatModel chatModel) {
-    sChatCollection
+    FirebaseFirestore.getInstance()
+        .collection("chats")
         .add(chatModel)
         .addOnFailureListener(
             requireActivity(),
