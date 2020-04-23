@@ -27,7 +27,10 @@ function sendMulticastMessage(message, usersIds) {
                         failedTokens.push(usersIds[idx]);
                     }
                 });
-                console.log('List of tokens that caused failures: ' + failedTokens);
+
+                if (failedTokens.length > 0) {
+                    console.log('List of tokens that caused failures: ' + failedTokens);
+                }
             }
         });
 }
@@ -125,7 +128,7 @@ exports.sendNotificationOnUpdate = functions.firestore
             // favor has been accepted, send notification to requester
             if (newStatus === 1) {
                 //console.log('Favor has been accepted');
-                //titleToSend = "Favor " + favorTitle + " has been accepted";
+                titleToSend = "Favor " + favorTitle + " has been accepted";
                 userReceiver = requesterId;
             }
 
