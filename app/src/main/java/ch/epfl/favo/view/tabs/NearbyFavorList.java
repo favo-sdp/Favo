@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -113,8 +112,7 @@ public class NearbyFavorList extends Fragment {
   }
 
   private void onToggleClick(View view) {
-    findNavController(requireView()).popBackStack(R.id.action_global_nav_map, false);
-    // findNavController(activity, R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
+    findNavController(requireActivity(), R.id.nav_host_fragment).popBackStack(R.id.nav_map, false);
   }
 
   private void setupSearchMode() {
@@ -179,7 +177,7 @@ public class NearbyFavorList extends Fragment {
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
           favorBundle.putString("FAVOR_ARGS", favor.getId());
-          Navigation.findNavController(requireView())
+          findNavController(requireView())
               .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
         });
   }

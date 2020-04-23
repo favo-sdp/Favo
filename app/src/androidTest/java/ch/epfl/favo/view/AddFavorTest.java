@@ -254,7 +254,7 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // check error message is printed
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.unknown_error)));
+        .check(matches(withText(R.string.error_database_sync)));
   }
 
   public void checkCompletedView(Favor fakeFavor) {
@@ -334,7 +334,7 @@ public class AddFavorTest {
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.unknown_error)));
+            .check(matches(withText(R.string.error_database_sync)));
   }
   @Test
   public void testSnackBarShowsWhenFailUpdateToDb() throws Throwable {
@@ -345,7 +345,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.unknown_error)));
+            .check(matches(withText(R.string.error_database_sync)));
   }
   @Test
   public void testSnackBarShowsWhenFailCancelToDb() throws Throwable {
@@ -355,7 +355,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.unknown_error)));
+            .check(matches(withText(R.string.error_database_sync)));
   }
 
 

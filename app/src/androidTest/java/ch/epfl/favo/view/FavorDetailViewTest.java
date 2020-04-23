@@ -214,7 +214,7 @@ public class FavorDetailViewTest {
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.unknown_error)));
+        .check(matches(withText(R.string.error_database_sync)));
     getInstrumentation().waitForIdleSync();
   }
 
