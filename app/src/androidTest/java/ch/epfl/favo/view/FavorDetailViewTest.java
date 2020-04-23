@@ -47,7 +47,6 @@ public class FavorDetailViewTest {
   private Favor fakeFavor;
   private FavorDetailView detailViewFragment;
   private FakeViewModel fakeViewModel;
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =

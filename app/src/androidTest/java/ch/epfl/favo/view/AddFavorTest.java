@@ -62,7 +62,6 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
   private Favor fakeFavor = FakeItemFactory.getFavor();
 
   @Rule

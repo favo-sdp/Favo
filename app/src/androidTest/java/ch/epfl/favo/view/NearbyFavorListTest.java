@@ -45,7 +45,6 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
-  MockDatabaseWrapper databaseWrapper;
   private Favor favor = FakeItemFactory.getFavor();
   private NearbyFavorList listView;
   private FakeViewModel fakeViewModel;

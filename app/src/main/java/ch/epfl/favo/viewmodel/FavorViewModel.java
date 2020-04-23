@@ -70,8 +70,8 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
-      if (favor.getRequesterId() == null) continue;
-      if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+      if (favor.getRequesterId() != null
+          && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
           && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
