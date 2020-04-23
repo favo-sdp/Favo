@@ -14,29 +14,29 @@ import ch.epfl.favo.favor.Favor;
 
 public class FavorAdapter extends ArrayAdapter<Favor> {
 
-    public FavorAdapter(Context context, ArrayList<Favor> favors) {
-        super(context, 0, favors);
-    }
+  public FavorAdapter(Context context, ArrayList<Favor> favors) {
+    super(context, 0, favors);
+  }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-        Favor favor = getItem(position);
-        assert favor != null;
-        // Check if an existing view is being reused, otherwise inflate the view
-        if (convertView == null) {
-            convertView =
-                    LayoutInflater.from(getContext()).inflate(R.layout.nearby_favor_list_item, parent, false);
-        }
-        // Lookup view for data population
-        TextView favorTitle = convertView.findViewById(R.id.title);
-        TextView favorDesc = convertView.findViewById(R.id.desc);
-        // Populate the data into the template view using the data object
-        assert favor.getTitle() != null;
-        assert favor.getDescription() != null;
-        favorTitle.setText(favor.getTitle());
-        favorDesc.setText(favor.getDescription());
-        // Return the completed view to render on screen
-        return convertView;
+  @Override
+  public View getView(int position, View convertView, ViewGroup parent) {
+    // Get the data item for this position
+    Favor favor = getItem(position);
+    assert favor != null;
+    // Check if an existing view is being reused, otherwise inflate the view
+    if (convertView == null) {
+      convertView =
+          LayoutInflater.from(getContext()).inflate(R.layout.nearby_favor_list_item, parent, false);
     }
+    // Lookup view for data population
+    TextView favorTitle = convertView.findViewById(R.id.title);
+    TextView favorDesc = convertView.findViewById(R.id.desc);
+    // Populate the data into the template view using the data object
+    assert favor.getTitle() != null;
+    assert favor.getDescription() != null;
+    favorTitle.setText(favor.getTitle());
+    favorDesc.setText(favor.getDescription());
+    // Return the completed view to render on screen
+    return convertView;
+  }
 }

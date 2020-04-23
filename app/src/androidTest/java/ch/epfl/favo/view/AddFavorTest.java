@@ -158,7 +158,7 @@ public class AddFavorTest {
     onView(withId(R.id.title_request_view)).perform(typeText("bla"));
     onView(withId(R.id.request_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(4000); //wait for snackbar to hide
+    Thread.sleep(4000); // wait for snackbar to hide
     onView(withId(R.id.edit_favor_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.title_request_view)).perform(typeText("ble"));
@@ -348,7 +348,7 @@ public class AddFavorTest {
 
   private void launchFragmentWithFakeFavor(Fragment fragment, Favor favor) {
     // Launch view
-    //activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
+    // activityTestRule.getActivity().activeFavors.put(favor.getId(), favor);
     FragmentTransaction ft =
         activityTestRule.getActivity().getSupportFragmentManager().beginTransaction();
     ft.replace(R.id.nav_host_fragment, FavorFragmentFactory.instantiate(favor, fragment));

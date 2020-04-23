@@ -5,7 +5,6 @@ import android.content.Context;
 import static ch.epfl.favo.cache.LocalCache.getValueFromCacheBool;
 import static ch.epfl.favo.cache.LocalCache.getValueFromCacheStr;
 
-
 class UserSettings {
 
   static Boolean getPreferenceNotifNew(Context context) {
@@ -13,8 +12,7 @@ class UserSettings {
   }
 
   static String getNotificationRadius(Context context) {
-    if (getPreferenceNotifNew(context))
-      return getValueFromCacheStr(context, "radius");
+    if (getPreferenceNotifNew(context)) return getValueFromCacheStr(context, "radius");
     return "disabled";
   }
 
@@ -33,5 +31,4 @@ class UserSettings {
   static Boolean getPreferenceNotifJoin(Context context) {
     return getValueFromCacheBool(context, "notifications_join");
   }
-
 }

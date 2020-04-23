@@ -1,8 +1,5 @@
 package ch.epfl.favo.favor;
 
-import android.app.Activity;
-import android.location.Location;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +31,8 @@ public class FavorUtilTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentCollectionWrapper(new CollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class));
+    DependencyFactory.setCurrentCollectionWrapper(
+        new CollectionWrapper(DependencyFactory.getCurrentFavorCollection(), Favor.class));
   }
 
   @Test
@@ -111,8 +109,6 @@ public class FavorUtilTest {
         NotImplementedException.class,
         () -> FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId));
   }
-
-
 
   @Test
   public void favorCanRetrieveAllPastFavors() {

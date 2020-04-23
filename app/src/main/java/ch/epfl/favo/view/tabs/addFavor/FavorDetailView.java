@@ -112,7 +112,7 @@ public class FavorDetailView extends Fragment {
   private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
     FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
     if (favorStatus.equals(FavorStatus.ACCEPTED)
-        && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+        && !favor.getAccepterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
       favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
     }
     return favorStatus;
@@ -124,12 +124,13 @@ public class FavorDetailView extends Fragment {
     favorFuture // get updated favor from db
         .thenAccept(
         favor -> {
-          currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
           if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
             currentFavor.updateToOther(favor);
             CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
             displayFromFavor(getView(), favor);
           } else { // update DB with accepted status
+            currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+            currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
             CompletableFuture updateFavorFuture =
                 FavorUtil.getSingleInstance().updateFavor(currentFavor);
             updateFavorFuture.thenAccept(favorAcceptedConsumer());

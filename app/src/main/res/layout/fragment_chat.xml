@@ -48,7 +48,7 @@
             android:importantForAutofill="no"
             android:inputType="text"
             tools:ignore="UnusedAttribute"
-            android:background="@drawable/custom_border"/>
+            android:background="@drawable/custom_border" />
 
         <Button
             android:id="@+id/sendButton"

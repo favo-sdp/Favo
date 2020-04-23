@@ -3,7 +3,6 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.mockito.Mockito;

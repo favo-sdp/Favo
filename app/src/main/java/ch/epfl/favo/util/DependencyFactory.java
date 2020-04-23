@@ -42,7 +42,7 @@ public class DependencyFactory {
   }
 
   public static boolean isTestMode() {
-    return testMode && currentCompletableFuture!=null;
+    return testMode && currentCompletableFuture != null;
   }
 
   @VisibleForTesting
@@ -132,7 +132,7 @@ public class DependencyFactory {
     if (testMode || contentResolver == null) {
       return "22f523fgg3";
     }
-    return deviceSettings.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
   }
 
   public static <T> CompletableFuture<T> getCurrentCompletableFuture() {

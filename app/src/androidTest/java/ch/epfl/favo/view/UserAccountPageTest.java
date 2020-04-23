@@ -26,7 +26,6 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
@@ -116,7 +115,8 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
-    onView(withId(R.id.sign_out)).perform(click());}
+    onView(withId(R.id.sign_out)).perform(click());
+  }
 
   @Test
   public void testUserAlreadyLoggedIn_deleteAccount_alertShowed_cancelOperation() {

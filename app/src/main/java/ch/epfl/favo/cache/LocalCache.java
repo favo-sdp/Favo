@@ -2,6 +2,7 @@ package ch.epfl.favo.cache;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import androidx.preference.PreferenceManager;
 
 public class LocalCache {
@@ -15,7 +16,7 @@ public class LocalCache {
     editor.apply();
   }
 
-  public static String getValueFromCacheStr(Context context, String key){
+  public static String getValueFromCacheStr(Context context, String key) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     return preferences.getString(key, "");
   }
@@ -24,5 +25,4 @@ public class LocalCache {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     return preferences.getBoolean(key, false);
   }
-
 }

@@ -31,8 +31,7 @@ public class TestTask extends Task<String> {
   // value of the successful task, constant for testing
   final String value = "Hello world!";
   // exception to throw if task is not successful
-  final RuntimeException exception =
-      new RuntimeException("Task was not finished successfully");
+  final RuntimeException exception = new RuntimeException("Task was not finished successfully");
 
   @Override
   public boolean isComplete() {
