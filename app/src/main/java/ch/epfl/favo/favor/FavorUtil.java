@@ -7,7 +7,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseUpdater;
@@ -139,5 +141,18 @@ public class FavorUtil {
      * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*
      */
     return collection.getAllDocumentsLongitudeBounded(loc, radius);
+  }
+
+  /**
+   * Update the Favor photo url and update the database to match if not done already
+   *
+   * @param favor to get url updated
+   * @param url of photo
+   */
+  public void updateFavorPhoto(Favor favor, String url) {
+    Map<String, Object> updates = new HashMap<>();
+    updates.put(Favor.PICTURE_URL, url);
+    collection.updateDocument(favor.getId(), updates);
+    favor.setPictureUrl(url);
   }
 }

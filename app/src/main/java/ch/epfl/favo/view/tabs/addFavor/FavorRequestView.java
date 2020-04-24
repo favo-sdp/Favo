@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,10 +35,12 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
@@ -340,12 +343,27 @@ public class FavorRequestView extends Fragment {
     // Extract details and post favor to Firebase
     EditText titleElem = requireView().findViewById(R.id.title_request_view);
     EditText descElem = requireView().findViewById(R.id.details);
+
     String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     status = FavorStatus.convertTemporaryStatus(status);
+
     Favor favor = new Favor(title, desc, userId, loc, status);
+
+    // Upload picture to database if it exists
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+
+      // Good idea to display the result of uploading the picture (not sure how to do this)
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
+      pictureUrl.exceptionally(e -> {
+        // insert something about being unable to upload picture
+        return null;
+      });
+    }
 
     // Updates the current favor
     if (currentFavor == null) {
