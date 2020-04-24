@@ -15,6 +15,7 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -59,6 +60,9 @@ public class FavorDetailView extends Fragment {
     if (currentFavor == null && getArguments() != null) {
       String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
       setupFavorListener(rootView, favorId);
+    }
+    else{
+      displayFromFavor(rootView, Objects.requireNonNull(currentFavor)); //TODO: fix in case current favor is null
     }
 
     return rootView;
