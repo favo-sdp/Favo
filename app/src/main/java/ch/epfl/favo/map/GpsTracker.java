@@ -13,7 +13,6 @@ import android.os.IBinder;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import ch.epfl.favo.R;
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
@@ -33,8 +32,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
    * @throws RuntimeException Should check if location is finally found
    * @return the location of phone
    */
-
-  public static void setLastKnownLocation(Location location){
+  public static void setLastKnownLocation(Location location) {
     // update from mapPage, it has its own position request method based on callback
     mLastUpdate = System.currentTimeMillis();
     mLastKnownLocation = location;
@@ -42,7 +40,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
 
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
     // if last update of location is less than 5 minutes, then return last result
-    if(mLastKnownLocation != null && ((System.currentTimeMillis() - mLastUpdate)/1000) < 300)
+    if (mLastKnownLocation != null && ((System.currentTimeMillis() - mLastUpdate) / 1000) < 300)
       return mLastKnownLocation;
     LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
     boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -56,7 +54,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
       if (isGPSEnabled) provider = LocationManager.GPS_PROVIDER;
       else if (isNetworkEnabled) provider = LocationManager.NETWORK_PROVIDER;
       if (provider != null) {
-         locationManager.requestLocationUpdates(provider, 10000, 10, this);
+        locationManager.requestLocationUpdates(provider, 10000, 10, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(provider);
       }
       if (mLastKnownLocation == null) {

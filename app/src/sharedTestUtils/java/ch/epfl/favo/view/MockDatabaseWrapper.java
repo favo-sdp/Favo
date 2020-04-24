@@ -1,28 +1,24 @@
 package ch.epfl.favo.view;
 
-import android.app.Activity;
 import android.location.Location;
-import android.util.Log;
 
-import java.util.ArrayList;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.Document;
-import ch.epfl.favo.favor.Favor;
-
-import static ch.epfl.favo.TestConstants.LATITUDE;
-import static ch.epfl.favo.TestConstants.LONGITUDE;
 
 public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<T> {
 
   private T mockDocument;
   private CompletableFuture mockResult;
   private boolean throwError = false;
+  private DocumentReference mockDocumentReference;
 
   public MockDatabaseWrapper() {}
 
@@ -49,12 +45,10 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
     this.mockDocument = document;
   }
 
-  public void setMockResult(CompletableFuture result) {
-    this.mockResult = result;
-  }
-
   @Override
-  public void addDocument(T favor) {}
+  public CompletableFuture addDocument(T favor) {
+    return mockResult;
+  }
 
   @Override
   public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
@@ -74,15 +68,22 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
   }
 
   @Override
+  public DocumentReference getDocumentQuery(String key) {
+    return null;
+  }
+
+  @Override
+  public Query locationBoundQuery(Location loc, double radius) {
+    return null;
+  }
+
   public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
     CompletableFuture<List<T>> future = new CompletableFuture<>();
     if (this.throwError) {
       future.completeExceptionally(new RuntimeException("Error db"));
-    }
-    else {
+    } else {
       future.complete((List<T>) FakeItemFactory.getFavorList());
     }
     return future;
   }
-
 }

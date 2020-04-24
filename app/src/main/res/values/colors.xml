@@ -3,7 +3,6 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="blue">#FF005a9c</color>
 
     <color name="material_green_50">#E8F5E9</color>
     <color name="material_green_500">#4CAF50</color>
@@ -22,8 +21,6 @@
     <color name="accepted_status_bg">#6ED172</color>
     <color name="completed_status_bg">#6ED172</color>
     <color name="cancelled_status_bg">#F79790</color>
-
-    <color name="text_shadow_color">#67CDDC39</color>
 
 
 </resources>

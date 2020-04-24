@@ -46,7 +46,7 @@ public class ChatPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          //DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+          // DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
         }
       };
 
@@ -64,7 +64,7 @@ public class ChatPageTest {
     TestUtils.cleanupDatabase();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    //DependencyFactory.setCurrentFavorCollection("favors");
+    // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   private void navigateToChatPage() throws InterruptedException {
@@ -119,7 +119,7 @@ public class ChatPageTest {
 
   private void typeMessage(String message) throws InterruptedException {
     navigateToChatPage();
-
+    Thread.sleep(1000);
     // Fill in text views with fake message
     onView(withId(R.id.messageEdit)).perform(typeText(message));
   }
@@ -149,6 +149,7 @@ public class ChatPageTest {
 
     // check message is displayed
     onView(withText(message)).check(matches(isDisplayed()));
+    getInstrumentation().waitForIdleSync();
   }
 
   @Test

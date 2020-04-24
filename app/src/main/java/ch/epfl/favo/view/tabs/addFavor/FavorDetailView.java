@@ -10,22 +10,23 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static androidx.navigation.Navigation.findNavController;
 
@@ -38,6 +39,7 @@ public class FavorDetailView extends Fragment {
   private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
   private TextView statusText;
+  private FavorDataController favorViewModel;
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -51,12 +53,39 @@ public class FavorDetailView extends Fragment {
     setupButtons(rootView);
     statusText = rootView.findViewById(R.id.status_text_accept_view);
 
-    if (currentFavor == null) {
-      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+    favorViewModel =
+        (FavorDataController)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
+    if (currentFavor == null && getArguments() != null) {
+      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+      setupFavorListener(rootView, favorId);
     }
-    displayFromFavor(rootView, currentFavor);
+    else{
+      displayFromFavor(rootView, Objects.requireNonNull(currentFavor)); //TODO: fix in case current favor is null
+    }
 
     return rootView;
+  }
+  public FavorDataController getViewModel(){
+    return favorViewModel;
+  }
+
+  private void setupFavorListener(View rootView, String favorId) {
+
+    getViewModel()
+        .setObservedFavor(favorId)
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              try {
+                currentFavor = favor;
+                displayFromFavor(rootView, currentFavor);
+              } catch (Exception e) {
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
+                enableButtons(false);
+              }
+            });
   }
 
   private void setupButtons(View rootView) {
@@ -65,11 +94,9 @@ public class FavorDetailView extends Fragment {
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
 
     locationAccessBtn.setOnClickListener(
-        v -> {
-          ((MainActivity) (requireActivity())).focusedFavor = currentFavor;
-          findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
-        });
+        v ->
+            findNavController(requireActivity(), R.id.nav_host_fragment)
+                .popBackStack(R.id.nav_map, false));
 
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
@@ -92,7 +119,8 @@ public class FavorDetailView extends Fragment {
 
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
-    CompletableFuture completableFuture = FavorUtil.getSingleInstance().updateFavor(currentFavor);
+    CompletableFuture completableFuture =
+            getViewModel().updateFavor(currentFavor);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
@@ -104,39 +132,31 @@ public class FavorDetailView extends Fragment {
       // update UI
       currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
       favorStatus = verifyFavorHasBeenAccepted(currentFavor);
-      updateDisplayFromViewStatus();
+      // updateDisplayFromViewStatus();
     };
   }
 
   // Verifies favor hasn't already been accepted
   private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
     FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
-    if (favorStatus.equals(FavorStatus.ACCEPTED)
-        && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
-      favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
+    if (favor.getAccepterId() != null) {
+      if (favorStatus.equals(FavorStatus.ACCEPTED)
+          && !favor.getAccepterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+        favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
+      }
     }
     return favorStatus;
   }
 
   private void acceptFavor() {
-    CompletableFuture<Favor> favorFuture =
-        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
-    favorFuture // get updated favor from db
-        .thenAccept(
-        favor -> {
-          currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-          if (!favor.contentEquals(currentFavor)) { // if favor changed, update the view
-            currentFavor.updateToOther(favor);
-            CommonTools.showSnackbar(getView(), getString(R.string.favor_remotely_changed_msg));
-            displayFromFavor(getView(), favor);
-          } else { // update DB with accepted status
-            CompletableFuture updateFavorFuture =
-                FavorUtil.getSingleInstance().updateFavor(currentFavor);
-            updateFavorFuture.thenAccept(favorAcceptedConsumer());
-            updateFavorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
-          }
-        });
-    favorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
+    // update DB with accepted status
+    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    CompletableFuture updateFavorFuture =
+            getViewModel().updateFavor(currentFavor);
+    updateFavorFuture.thenAccept(
+        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
+    updateFavorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
 
   private Function favorFailedToBeAcceptedConsumer() {
@@ -144,17 +164,6 @@ public class FavorDetailView extends Fragment {
       // if already accepted then change the status display and disable all the buttons
       CommonTools.showSnackbar(getView(), getString(R.string.update_favor_error));
       return null;
-    };
-  }
-
-  private Consumer favorAcceptedConsumer() {
-    return o -> {
-      CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
-
-      ((MainActivity) requireActivity()).otherActiveFavorsAround.remove(currentFavor.getId());
-      currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-      favorStatus = FavorStatus.ACCEPTED;
-      updateDisplayFromViewStatus();
     };
   }
 

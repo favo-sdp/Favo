@@ -89,7 +89,7 @@
                 android:textIsSelectable="true"
                 android:textSize="15sp"
                 android:textColor="#FFFFFF"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="10dp" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/location_accept_view_btn"

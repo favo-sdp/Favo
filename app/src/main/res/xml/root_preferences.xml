@@ -12,12 +12,12 @@
 
     <PreferenceCategory android:title="@string/notification_header">
         <SwitchPreferenceCompat
-            app:key="notifications"
+            app:key="notifications_new"
             app:summary="@string/notification_summary"
             app:title="@string/notification_title" />
         <ListPreference
             app:defaultValue="1 Km"
-            app:dependency="notifications"
+            app:dependency="notifications_new"
             app:entries="@array/notification_radius"
             app:entryValues="@array/notification_radius"
             app:key="radius"
@@ -28,7 +28,7 @@
             app:summary="@string/notification_update_summary"
             app:title="@string/notification_update_title" />
         <SwitchPreferenceCompat
-            app:key="notifications_update"
+            app:key="notifications_delete"
             app:summary="@string/notification_delete_summary"
             app:title="@string/notification_delete_title" />
         <SwitchPreferenceCompat

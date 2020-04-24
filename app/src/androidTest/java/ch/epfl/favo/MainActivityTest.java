@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.MockDatabaseWrapper;
 import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -61,7 +60,9 @@ public class MainActivityTest {
   @Test
   public void testMapViewIsLaunched() {
     // Click on map tab
-    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed())).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map")))
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     // Check that the current fragment is the map tab
     onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
@@ -80,7 +81,9 @@ public class MainActivityTest {
   @Test
   public void testMenuDrawerCanBeLaunchedFromMapView() {
     // Click on map tab
-    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed())).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map")))
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on menu tab
@@ -185,7 +188,9 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    onView(allOf(withId(R.id.nav_map), withContentDescription(not("Map")))).check(matches(isDisplayed())).perform(click());
+    onView(allOf(withId(R.id.nav_map), withContentDescription(not("Map"))))
+        .check(matches(isDisplayed()))
+        .perform(click());
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
@@ -210,7 +215,8 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
-    onView(allOf(withId(R.id.nav_map), withContentDescription("Map"))).check(matches(isDisplayed()));
+    onView(allOf(withId(R.id.nav_map), withContentDescription("Map")))
+        .check(matches(isDisplayed()));
   }
 
   @Test

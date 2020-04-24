@@ -250,7 +250,6 @@ public class Favor implements Parcelable, Document {
     this.statusId = other.getStatusId();
     this.pictureUrl = other.getPictureUrl();
   }
-  // Overriding equals() to compare two Complex objects
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)

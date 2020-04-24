@@ -176,7 +176,7 @@ public class FavorPage extends Fragment {
                 Favor favor = doc.toObject(Favor.class);
                 if (favor != null) {
                   Bundle favorBundle = new Bundle();
-                  favorBundle.putParcelable("FAVOR_ARGS", favor);
+                  favorBundle.putString("FAVOR_ARGS", favor.getId());
                   // if favor was requested, open request view
                   if (favor
                       .getRequesterId()

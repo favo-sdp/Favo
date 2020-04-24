@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,15 +35,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.viewmodel.FavorDataController;
+
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -53,13 +52,16 @@ public class MapsPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
+  private FavorDataController favorViewModel;
+  private Map<String, Favor> favorsAroundMe;
+  private double radiusThreshold;
   private GoogleMap mMap;
   private Location mLocation;
+  private Favor focusedFavor;
   private boolean first = true;
   // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private boolean mLocationPermissionGranted = false;
-  private MainActivity activity;
   private View view;
 
   public MapsPage() {
@@ -79,15 +81,17 @@ public class MapsPage extends Fragment
     // setup offline map button
     FloatingActionButton button = view.findViewById(R.id.offline_map_button);
     button.setOnClickListener(this::onOfflineMapClick);
+
     if (DependencyFactory.isOfflineMode(requireContext())) button.setVisibility(View.VISIBLE);
     else button.setVisibility(View.INVISIBLE);
-
+    favorViewModel =
+        (FavorDataController)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
 
-    activity = (MainActivity) requireActivity();
-    updateNearbyList();
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
@@ -101,25 +105,66 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    if (activity.focusedFavor != null) {
-      Favor favor = activity.focusedFavor;
-      activity.focusedFavor = null;
-      LatLng latLng =
-          new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
-      Marker marker =
-          mMap.addMarker(
-              new MarkerOptions()
-                  .position(latLng)
-                  .title(favor.getTitle())
-                  .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
-      marker.setSnippet(favor.getDescription());
-      marker.showInfoWindow();
-      marker.setTag(favor.getId());
-      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
-    } else {
-      drawSelfLocationMarker();
-      drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
+    try { // TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
+      setupNearbyFavorsListener();
+
+      setupFocusedFavorListen();
+    } catch (Exception e) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
+    if (focusedFavor == null) centerViewOnMyLocation();
+  }
+
+  private void setupFocusedFavorListen() {
+
+    favorViewModel
+        .getObservedFavor()
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              try {
+                if (favor != null) {
+                  focusedFavor = favor;
+                  boolean isRequested = // check if favor is requested
+                      favor
+                          .getRequesterId()
+                          .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+
+                  Marker marker = drawFavorMarker(focusedFavor, isRequested);
+                  marker.showInfoWindow();
+                  focusViewOnLocation(focusedFavor.getLocation());
+                }
+              } catch (Exception e) {
+                CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
+              }
+            });
+  }
+
+  private Marker drawFavorMarker(Favor favor, boolean isRequested) {
+    LatLng latLng =
+        new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
+    float markerColor =
+        isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
+    Marker marker =
+        mMap.addMarker(
+            new MarkerOptions()
+                .position(latLng)
+                .title(favor.getTitle())
+                .icon(BitmapDescriptorFactory.defaultMarker(markerColor)));
+    marker.setSnippet(favor.getDescription());
+    marker.setTag(
+        new ArrayList<Object>() {
+          {
+            add(favor.getId());
+            add(isRequested);
+          }
+        });
+    return marker;
+  }
+
+  private void focusViewOnLocation(Location location) {
+    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
   }
 
   private void onOfflineMapClick(View view) {
@@ -144,47 +189,32 @@ public class MapsPage extends Fragment
     Navigation.findNavController(requireView()).navigate(R.id.action_nav_map_to_nearby_favor_list);
   }
 
-  private void updateNearbyList() {
-    String setting = activity.getPreferences(Context.MODE_PRIVATE).getString("radius", "1 Km");
-    double radius = Double.parseDouble(setting.split(" ")[0]);
+  private void setupNearbyFavorsListener() {
+    String setting =
+        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
 
-    try {
-      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-      CompletableFuture<List<Favor>> favors =
-          FavorUtil.getSingleInstance().retrieveAllFavorsInGivenRadius(mLocation, radius);
-      favors.thenAccept(
-          favors1 -> {
-            ArrayList<Favor> favors2 = (ArrayList<Favor>) favors1;
-            double latDif = Math.toDegrees(radius / 6371);
-            for (Favor favor : favors2)
-              if (!favor
-                      .getRequesterId()
-                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid())
-                  && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
-                  && favor.getLocation().getLatitude() > mLocation.getLatitude() - latDif
-                  && favor.getLocation().getLongitude() < mLocation.getLatitude() + latDif)
-                activity.otherActiveFavorsAround.put(favor.getId(), favor);
-          });
-      favors.exceptionally(
-          e -> {
-            CommonTools.showSnackbar(view, getString(R.string.nearby_favors_exception));
-            return null;
-          });
-      favors.whenComplete(
-          (e, res) -> {
-            Log.d("pasS", "complete");
-            if (first) {
-              drawFavorMarker(new ArrayList<>(activity.otherActiveFavorsAround.values()));
-              first = false;
-            }
-          });
-    } catch (RuntimeException e) {
-      CommonTools.showSnackbar(view, e.getMessage());
-    }
+    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+
+    favorViewModel
+        .getFavorsAroundMe(mLocation, radiusThreshold)
+        .observe(
+            getViewLifecycleOwner(),
+            stringFavorMap -> {
+              try {
+                favorsAroundMe = stringFavorMap;
+                drawFavorMarkers(new ArrayList<>(favorsAroundMe.values()));
+                first = false;
+              } catch (Exception e) {
+                CommonTools.showSnackbar(
+                    requireView(), getString(R.string.nearby_favors_exception));
+              }
+            });
   }
 
   /** Request location permission, so that we can get the location of the device. */
   private void getLocationPermission() {
+    /** Request location permission, so that we can get the location of the device. */
     if (ContextCompat.checkSelfPermission(
             requireActivity().getApplicationContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -242,38 +272,18 @@ public class MapsPage extends Fragment
       }
   */
 
-  private void drawSelfLocationMarker() {
+  private void centerViewOnMyLocation() {
     // Add a marker at my location and move the camera
-    LatLng myLocation = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
-    Marker me =
-        mMap.addMarker(
-            new MarkerOptions()
-                .position(myLocation)
-                .title("FavorRequest")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-    if (first) {
-      first = false;
-      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, mMap.getMaxZoomLevel() - 5));
-    }
+    focusViewOnLocation(mLocation);
   }
 
-  private void drawFavorMarker(List<Favor> favors) {
+  private void drawFavorMarkers(List<Favor> favors) {
     if (favors.isEmpty()) {
       first = true;
       return;
     }
     for (Favor favor : favors) {
-      LatLng latLng =
-          new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
-      Marker marker =
-          mMap.addMarker(
-              new MarkerOptions()
-                  .position(latLng)
-                  .title(favor.getTitle())
-                  .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-      marker.setSnippet(favor.getDescription());
-      marker.setTag(favor.getId());
+      drawFavorMarker(favor, false);
     }
   }
 
@@ -305,12 +315,15 @@ public class MapsPage extends Fragment
 
   @Override
   public void onInfoWindowClick(Marker marker) {
-    if (marker.getTitle().equals(getString(R.string.self_location)))
-      Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorRequestView);
-    else {
-      Favor favor = activity.otherActiveFavorsAround.get(marker.getTag());
-      Bundle favorBundle = new Bundle();
-      favorBundle.putParcelable("FAVOR_ARGS", favor);
+    List<Object> markerInfo = (List<Object>) marker.getTag();
+    String favorId = markerInfo.get(0).toString();
+    boolean isRequested = (boolean) markerInfo.get(1);
+    Bundle favorBundle = new Bundle();
+    favorBundle.putString("FAVOR_ARGS", favorId);
+
+    if (isRequested) {
+      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
+    } else {
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
     }

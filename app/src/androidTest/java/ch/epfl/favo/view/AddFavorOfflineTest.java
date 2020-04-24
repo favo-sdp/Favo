@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
@@ -37,7 +38,7 @@ public class AddFavorOfflineTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
           DependencyFactory.setOfflineMode(true);
         }
       };
@@ -63,13 +64,14 @@ public class AddFavorOfflineTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
 
     // check that different message is displayed
     onView(withText(R.string.request_favor_draft)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check snackbar shows with the different message
-//    onView(withId(com.google.android.material.R.id.snackbar_text))
-//        .check(matches(withText(R.string.save_draft_message)));
+    //    onView(withId(com.google.android.material.R.id.snackbar_text))
+    //        .check(matches(withText(R.string.save_draft_message)));
   }
 }

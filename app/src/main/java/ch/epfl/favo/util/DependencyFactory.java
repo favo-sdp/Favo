@@ -20,8 +20,10 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
   private static Locator currentGpsTracker;
@@ -35,6 +37,8 @@ public class DependencyFactory {
   private static CompletableFuture currentCompletableFuture;
   private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
+  private static Class currentViewModelClass;
+  private static FavorUtil currentRepository;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -42,7 +46,7 @@ public class DependencyFactory {
   }
 
   public static boolean isTestMode() {
-    return testMode && currentCompletableFuture!=null;
+    return testMode && currentCompletableFuture != null;
   }
 
   @VisibleForTesting
@@ -132,7 +136,7 @@ public class DependencyFactory {
     if (testMode || contentResolver == null) {
       return "22f523fgg3";
     }
-    return deviceSettings.getString(contentResolver, Settings.Secure.ANDROID_ID);
+    return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
   }
 
   public static <T> CompletableFuture<T> getCurrentCompletableFuture() {
@@ -151,5 +155,23 @@ public class DependencyFactory {
   @VisibleForTesting
   public static void setCurrentFavorCollection(String collection) {
     currentFavorCollection = collection;
+  }
+  @VisibleForTesting
+  public static void setCurrentViewModelClass(Class dependency){
+    testMode = true;
+    currentViewModelClass = dependency;
+  }
+  public static Class getCurrentViewModelClass(){
+    if (testMode && currentViewModelClass!=null) {return currentViewModelClass;}
+    return FavorViewModel.class;
+  }
+  @VisibleForTesting
+  public static void setCurrentRepository(FavorUtil dependency){
+    testMode = true;
+    currentRepository = dependency;
+  }
+  public static FavorUtil getCurrentRepository(){
+    if (testMode && currentRepository!=null) return currentRepository;
+    return FavorUtil.getSingleInstance();
   }
 }

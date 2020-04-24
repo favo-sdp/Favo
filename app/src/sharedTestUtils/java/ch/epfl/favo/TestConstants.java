@@ -37,4 +37,3 @@ public class TestConstants {
   // Test collection constant
   public static final String TEST_COLLECTION = "favors-test";
 }
-
