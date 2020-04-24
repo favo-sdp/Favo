@@ -23,8 +23,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -61,9 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
   private int currentMenuItem;
 
-  public Map<String, Favor> otherActiveFavorsAround;
-  public Favor focusedFavor = null;
-
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
     if (DependencyFactory.isOfflineMode(this)) {
       showNoConnectionSnackbar();
     }
-
-    otherActiveFavorsAround = new HashMap<>();
   }
 
   private void setupActivity() {
@@ -219,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
           favor -> {
             // otherActiveFavorsAround.put(favor.getId(), favor);
             Bundle favorBundle = new Bundle();
-            favorBundle.putParcelable("FAVOR_ARGS", favor);
+            favorBundle.putString("FAVOR_ARGS", favor.getId());
             navController.navigate(R.id.action_global_favorDetailView, favorBundle);
           });
     }

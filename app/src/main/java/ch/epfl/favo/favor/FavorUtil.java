@@ -2,7 +2,9 @@ package ch.epfl.favo.favor;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
-import android.util.Log;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import ch.epfl.favo.util.DependencyFactory;
 /*
 This models the favor request.
 */
+//TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
@@ -44,13 +47,8 @@ public class FavorUtil {
    * @param favor A favor object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public void postFavor(Favor favor) throws RuntimeException {
-
-    try {
-      collection.addDocument(favor);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to add document to db.");
-    }
+  public CompletableFuture postFavor(Favor favor) throws RuntimeException {
+    return collection.addDocument(favor);
   }
 
   public CompletableFuture updateFavor(Favor favor) {
@@ -62,6 +60,7 @@ public class FavorUtil {
    * @return CompletableFuture<Favor>
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
+    CompletableFuture document = collection.getDocument(favorId);
     return collection.getDocument(favorId);
   }
 
@@ -80,11 +79,13 @@ public class FavorUtil {
    *
    * @param userId Id of the user
    */
-  public ArrayList<Favor> retrieveAllActiveFavorsForGivenUser(String userId) {
+  public Query retrieveAllActiveFavorsForGivenUser(String userId) {
 
-    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
-    // Filter out all favors except active ones
     throw new NotImplementedException();
+  }
+
+  public Query getNearbyFavors(Location loc, Double radius) {
+    return collection.locationBoundQuery(loc, radius);
   }
 
   /**
@@ -94,9 +95,11 @@ public class FavorUtil {
    */
   public ArrayList<Favor> retrieveAllPastFavorsForGivenUser(String userId) {
 
-    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
-    // Filter out all favors except inactive (past) ones
     throw new NotImplementedException();
+  }
+
+  public DocumentReference getFavorReference(String id) {
+    return collection.getDocumentQuery(id);
   }
 
   /**
@@ -120,6 +123,7 @@ public class FavorUtil {
 
     // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
     // Filter out all favors except accepted
+
     throw new NotImplementedException();
   }
 

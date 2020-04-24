@@ -2,6 +2,9 @@ package ch.epfl.favo.common;
 
 import android.location.Location;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -17,8 +20,8 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
   }
 
   @Override
-  public void addDocument(T document) throws RuntimeException {
-    DatabaseWrapper.addDocument(document, collection);
+  public CompletableFuture addDocument(T document) throws RuntimeException {
+    return DatabaseWrapper.addDocument(document, collection);
   }
 
   @Override
@@ -43,5 +46,16 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
 
   public CompletableFuture<List<T>> getAllDocuments() {
     return DatabaseWrapper.getAllDocuments(cls, collection);
+  }
+
+
+
+  public DocumentReference getDocumentQuery(String key) {
+    return DatabaseWrapper.getDocumentQuery(key, collection);
+  }
+
+
+  public Query locationBoundQuery(Location loc, double radius) {
+    return DatabaseWrapper.locationBoundQuery(loc, radius, collection);
   }
 }

@@ -9,6 +9,7 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.method.KeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,30 +21,34 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
-
+  private String TAG = "FavorRequestView";
   public static final int PICK_IMAGE_REQUEST = 1;
   public static final int USE_CAMERA_REQUEST = 2;
+  private FavorDataController favorViewModel;
   private FavorStatus favorStatus;
   private ImageView mImageView;
   private EditText mTitleView;
@@ -81,13 +86,37 @@ public class FavorRequestView extends Fragment {
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
-
+    favorViewModel =
+        (FavorDataController)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
     if (getArguments() != null) {
-      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
-      displayFavorInfo(rootView);
-      setFavorActivatedView(rootView);
+      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+      setupFavorListener(rootView, favorId);
     }
     return rootView;
+  }
+
+  public FavorDataController getViewModel() {
+    return favorViewModel;
+  }
+
+  public void setupFavorListener(View rootView, String favorId) {
+
+    getViewModel()
+        .setObservedFavor(favorId)
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              try {
+                currentFavor = favor;
+                displayFavorInfo(rootView);
+                setFavorActivatedView(rootView);
+              } catch (Exception e) {
+                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
+              }
+            });
   }
 
   /** When fragment is launched with favor. */
@@ -174,20 +203,33 @@ public class FavorRequestView extends Fragment {
    */
   private void requestFavor() {
     // update currentFavor
+    View currentView = getView();
     favorStatus = FavorStatus.REQUESTED;
     getFavorFromView(favorStatus);
+
     // post to DB
-    FavorUtil.getSingleInstance().postFavor(currentFavor);
+    CompletableFuture postFavorFuture = getViewModel().postFavor(currentFavor);
+    postFavorFuture.thenAccept(
+        o -> {
+          setupFavorListener(getView(), currentFavor.getId());
+          CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+        });
+    postFavorFuture.exceptionally(onFailedResult(currentView));
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
       showSnackbar(getString(R.string.save_draft_message));
-    } else {
-      showSnackbar(getString(R.string.favor_request_success_msg));
     }
-    setFavorActivatedView(getView());
-    updateViewFromStatus(getView());
   }
+
+  private Function onFailedResult(View currentView) {
+    return o -> {
+      CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      Log.e(TAG, ((Exception) o).getMessage());
+      return null;
+    };
+  }
+
   /**
    * Once favor has been requested.
    *
@@ -204,48 +246,30 @@ public class FavorRequestView extends Fragment {
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    CompletableFuture<Favor> currentFavorFuture =
-        FavorUtil.getSingleInstance().retrieveFavor(currentFavor.getId());
-    currentFavorFuture.thenAccept(
-        favor -> {
-          if (favor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
-            CommonTools.showSnackbar(getView(), getString(R.string.fail_edit_favor_request_view));
-            favorStatus = FavorStatus.toEnum(favor.getStatusId());
-            currentFavor.setStatusIdToInt(favorStatus);
-
-          } else {
-            favorStatus = FavorStatus.EDIT;
-          }
-          updateViewFromStatus(getView());
-        });
-    currentFavorFuture.exceptionally(
-        e -> {
-          showSnackbar(getString(R.string.update_favor_error));
-          return null;
-        });
+    View rootView = getView();
+    favorStatus = FavorStatus.EDIT;
+    updateViewFromStatus(rootView);
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
     getFavorFromView(favorStatus);
-    updateViewFromStatus(getView());
-    showSnackbar(getString(R.string.favor_edit_success_msg));
-
     // DB call to update Favor details
-    FavorUtil.getSingleInstance().postFavor(currentFavor);
+    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
+    updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
+    updateFuture.exceptionally(onFailedResult(getView()));
   }
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    favorStatus = FavorStatus.CANCELLED_REQUESTER;
-    updateViewFromStatus(getView());
-    // Show confirmation and minimize keyboard
-    showSnackbar(getString(R.string.favor_cancel_success_msg));
+    //    favorStatus = FavorStatus.CANCELLED_REQUESTER;
 
     // DB call to update status
-    FavorUtil.getSingleInstance().updateFavor(currentFavor);
+    CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor);
+    cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
+    cancelFuture.exceptionally(onFailedResult(getView()));
   }
 
   /** Updates status text and button visibility on favor status changes. */

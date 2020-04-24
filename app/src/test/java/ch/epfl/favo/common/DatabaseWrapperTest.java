@@ -88,6 +88,7 @@ public class DatabaseWrapperTest {
     Mockito.doReturn(mockDocumentReference).when(mockCollectionReference).document();
     Task mockEmptyTask = Mockito.mock(Task.class);
     Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).update(anyMap());
+    Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).set(any());
     // mock return task
     documentSnapshotTask = Mockito.mock(Task.class);
     // mock document returned by task
@@ -164,5 +165,16 @@ public class DatabaseWrapperTest {
         collectionWrapper.getAllDocumentsLongitudeBounded(new Location("null"), 1.0);
     List<Favor> obtainedFavors = obtainedFuture.get();
     assertEquals(expectedFavors, obtainedFavors);
+  }
+  @Test
+  public void testGetDocumentQuery() {
+    String key = "any";
+    collectionWrapper.getDocumentQuery(key);
+  }
+
+  @Test
+  public void testLocationBoundQuery() {
+    collectionWrapper
+            .locationBoundQuery(new Location("null"), 1.0);
   }
 }

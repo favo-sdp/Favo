@@ -3,6 +3,7 @@ package ch.epfl.favo.common;
 import android.location.Location;
 
 public class FavoLocation extends Location {
+  public static double EARTH_RADIUS = 6371.0;
   public FavoLocation() {
     super("FavoLocation");
   }

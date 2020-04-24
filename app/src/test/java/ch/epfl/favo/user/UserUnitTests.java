@@ -114,9 +114,11 @@ public class UserUnitTests {
 
   @Test
   public void userSuccessfullyPostsToDB() {
-    DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
+
     CollectionWrapper collection = Mockito.mock(CollectionWrapper.class);
-    Mockito.doNothing().when(collection).addDocument(any(User.class));
+    CompletableFuture successfulFuture = new CompletableFuture(){{complete(null);}};
+    Mockito.doReturn(successfulFuture).when(collection).addDocument(any(User.class));
+    DependencyFactory.setCurrentCollectionWrapper(collection);
 
     String id = TestConstants.USER_ID;
     String name = TestConstants.NAME;

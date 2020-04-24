@@ -1,26 +1,30 @@
 package ch.epfl.favo.view;
 
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.NearbyFavorList;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -32,6 +36,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
@@ -40,8 +45,9 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
-  MockDatabaseWrapper databaseWrapper;
   private Favor favor = FakeItemFactory.getFavor();
+  private NearbyFavorList listView;
+  private FakeViewModel fakeViewModel;
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -52,10 +58,6 @@ public class NearbyFavorListTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           // setup mock gps
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          // setup mock db
-          databaseWrapper = new MockDatabaseWrapper();
-          databaseWrapper.setThrowError(false);
-          DependencyFactory.setCurrentCollectionWrapper(databaseWrapper);
         }
       };
 
@@ -63,42 +65,33 @@ public class NearbyFavorListTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
+  @Before
+  public void setup() throws Throwable {
+    // setup mock view model
+    DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
+    MainActivity activity = mainActivityTestRule.getActivity();
+    NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
+    runOnUiThread(() -> navController.navigate(R.id.nav_nearby_favor_list));
+    getInstrumentation().waitForIdleSync();
+    Fragment navHostFragment =
+        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+    listView = (NearbyFavorList) navHostFragment.getChildFragmentManager().getFragments().get(0);
+  }
+
   @After
   public void tearDown() {
     DependencyFactory.setCurrentCollectionWrapper(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-  }
-
-  private void openSearchView() {
-    try {
-      databaseWrapper.setThrowError(false);
-      FavorUtil.getSingleInstance().updateCollectionWrapper(databaseWrapper);
-      // switch to nearby favor list view
-      onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
-
-      onView(withId(R.id.map_switch)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
-      onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
-
-      // Click on searchView button
-      onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
-    } catch (Exception e) {
-      Log.d("listTest", e.getMessage());
-    }
+    DependencyFactory.setCurrentViewModelClass(null);
   }
 
   @Test
   public void testSearchViewFound() {
-    databaseWrapper.setMockDocument(favor);
-    databaseWrapper.setThrowError(false);
-    FavorUtil.getSingleInstance().updateCollectionWrapper(databaseWrapper);
-    openSearchView();
 
-    // type the title of fake favor
+    // Click on searchView button
+    onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
     onView(isAssignableFrom(EditText.class))
         .perform(typeText(favor.getTitle()))
         .perform(pressKey(KeyEvent.KEYCODE_ENTER));
@@ -119,8 +112,10 @@ public class NearbyFavorListTest {
 
   @Test
   public void testSearchViewNotFound() {
-    openSearchView();
 
+    // Click on searchView button
+    onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
     // type the title of fake favor
     onView(isAssignableFrom(EditText.class))
         .perform(typeText("random words"))
@@ -144,7 +139,9 @@ public class NearbyFavorListTest {
 
   @Test
   public void testClickScreenHideKeyboard() {
-    openSearchView();
+    // Click on searchView button
+    onView(withId(R.id.search_item)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
     // Click on searchView button
     onView(isAssignableFrom(EditText.class)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -161,11 +158,6 @@ public class NearbyFavorListTest {
 
   @Test
   public void FavorDetailViewJumptoMapTest() throws InterruptedException {
-    Thread.sleep(1000);
-    // switch to nearby favor list view
-    onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
     // check test favor is found click on found item
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();

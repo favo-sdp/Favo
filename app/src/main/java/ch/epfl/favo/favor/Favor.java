@@ -31,7 +31,7 @@ public class Favor implements Parcelable, Document {
   public static final String LOCATION = "location";
   public static final String POSTED_TIME = "postedTime";
   public static final String STATUS_ID = "statusId";
-  private static final String IS_ARCHIVED = "isArchived";
+  public static final String IS_ARCHIVED = "isArchived";
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
@@ -240,7 +240,6 @@ public class Favor implements Parcelable, Document {
     this.postedTime = other.getPostedTime();
     this.statusId = other.getStatusId();
   }
-  // Overriding equals() to compare two Complex objects
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)

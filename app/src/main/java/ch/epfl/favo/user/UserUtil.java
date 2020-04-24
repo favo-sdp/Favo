@@ -39,7 +39,7 @@ public class UserUtil {
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public void postUser(User user) throws RuntimeException {
+  public void postUser(User user) throws RuntimeException { //TODO: catch exception in view not here
     try {
       collection.addDocument(user);
     } catch (RuntimeException e) {
