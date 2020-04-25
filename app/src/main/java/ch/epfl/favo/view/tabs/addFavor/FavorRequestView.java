@@ -355,10 +355,11 @@ public class FavorRequestView extends Fragment {
       // Good idea to display the result of uploading the picture (not sure how to do this)
       CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
       pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(e -> {
-        // insert something about being unable to upload picture
-        return null;
-      });
+      pictureUrl.exceptionally(
+          e -> {
+            // insert something about being unable to upload picture
+            return null;
+          });
     }
 
     // Updates the current favor
