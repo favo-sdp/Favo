@@ -24,10 +24,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
@@ -205,16 +202,10 @@ public class MainActivity extends AppCompatActivity {
     super.onNewIntent(intent);
     Bundle extras = intent.getExtras();
     if (extras != null) {
-      String favor_id = extras.getString("FavorId");
-      CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-
-      favorFuture.thenAccept(
-          favor -> {
-            // otherActiveFavorsAround.put(favor.getId(), favor);
-            Bundle favorBundle = new Bundle();
-            favorBundle.putString("FAVOR_ARGS", favor.getId());
-            navController.navigate(R.id.action_global_favorDetailView, favorBundle);
-          });
+      Bundle favorBundle = new Bundle();
+      String favorId = extras.getString("FavorId");
+      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+      navController.navigate(R.id.action_global_favorDetailView, favorBundle);
     }
   }
 

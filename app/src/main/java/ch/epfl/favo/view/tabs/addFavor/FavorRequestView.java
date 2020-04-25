@@ -39,7 +39,6 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
@@ -94,7 +93,7 @@ public class FavorRequestView extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     if (getArguments() != null) {
-      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+      String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
       setupFavorListener(rootView, favorId);
     }
     return rootView;
@@ -211,7 +210,7 @@ public class FavorRequestView extends Fragment {
     getFavorFromView(favorStatus);
 
     // post to DB
-    CompletableFuture postFavorFuture = getViewModel().postFavor(currentFavor);
+    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
     postFavorFuture.thenAccept(
         o -> {
           setupFavorListener(getView(), currentFavor.getId());
@@ -264,13 +263,10 @@ public class FavorRequestView extends Fragment {
     updateFuture.exceptionally(onFailedResult(getView()));
   }
 
-  /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
+  /** Updates favor on DB. */
   private void cancelFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    //    favorStatus = FavorStatus.CANCELLED_REQUESTER;
 
-    // DB call to update status
-    CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor);
+    CompletableFuture cancelFuture = getViewModel().cancelFavor(currentFavor, true);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }

@@ -105,7 +105,7 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    try { // TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
+    try {
       setupNearbyFavorsListener();
 
       setupFocusedFavorListen();
@@ -117,7 +117,7 @@ public class MapsPage extends Fragment
 
   private void setupFocusedFavorListen() {
 
-    favorViewModel
+    getViewModel()
         .getObservedFavor()
         .observe(
             getViewLifecycleOwner(),
@@ -138,6 +138,10 @@ public class MapsPage extends Fragment
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
+  }
+
+  public FavorDataController getViewModel() {
+    return favorViewModel;
   }
 
   private Marker drawFavorMarker(Favor favor, boolean isRequested) {
@@ -196,7 +200,7 @@ public class MapsPage extends Fragment
 
     mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
 
-    favorViewModel
+    getViewModel()
         .getFavorsAroundMe(mLocation, radiusThreshold)
         .observe(
             getViewLifecycleOwner(),

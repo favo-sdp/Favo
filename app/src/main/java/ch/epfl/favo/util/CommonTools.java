@@ -21,6 +21,7 @@ import java.util.Map;
 import ch.epfl.favo.favor.Favor;
 
 public class CommonTools {
+  public static final String FAVOR_ARGS = "FAVOR_ARGS";
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }

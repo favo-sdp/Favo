@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -33,6 +34,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 
 @RunWith(AndroidJUnit4.class)
 public class MapPageTest {
+  private FakeViewModel fakeViewModel;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
 
   @Rule
@@ -44,6 +46,7 @@ public class MapPageTest {
           mockDatabaseWrapper.setThrowError(true);
           DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
 

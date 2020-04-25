@@ -1,5 +1,6 @@
 package ch.epfl.favo.user;
 
+import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.location.Location;
 import android.util.Log;
@@ -17,6 +18,7 @@ import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
+@SuppressLint("NewApi")
 public class UserUtil {
   /*
   TODO: Design singleton constructor and logic
@@ -39,12 +41,34 @@ public class UserUtil {
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public void postUser(User user) throws RuntimeException { //TODO: catch exception in view not here
+  public void postUser(User user)
+      throws RuntimeException { // TODO: catch exception in view not here
     try {
       collection.addDocument(user);
     } catch (RuntimeException e) {
       Log.d(TAG, "unable to add document to db.");
     }
+  }
+
+  /**
+   * @param isRequested : if true favor is requested. If false favor is accepted
+   * @return
+   */
+  public CompletableFuture addFavorToUser(boolean isRequested) {
+    return collection
+        .getDocument(DependencyFactory.getCurrentFirebaseUser().getUid())
+        .thenCompose(
+            (object) -> {
+              User user = ((User) object);
+              if (isRequested) user.changeActiveRequestedFavorCount(1);
+              else user.changeActiveAcceptedFavorCount(1);
+              return updateUser(user);
+            });
+  }
+
+  public CompletableFuture updateUser(User user) {
+    return collection.updateDocument(
+        DependencyFactory.getCurrentFirebaseUser().getUid(), user.toMap());
   }
 
   /** @param id A FireBase Uid to search for in Users table. */

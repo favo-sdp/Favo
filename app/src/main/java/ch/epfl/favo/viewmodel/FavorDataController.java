@@ -11,8 +11,11 @@ import ch.epfl.favo.favor.Favor;
 
 public interface FavorDataController {
   // save address to firebase
-  CompletableFuture postFavor(Favor favor);
+  CompletableFuture requestFavor(Favor favor);
+  CompletableFuture acceptFavor(Favor favor);
+  CompletableFuture cancelFavor(Favor favor,boolean isRequested);
   CompletableFuture updateFavor(Favor favor);
+  CompletableFuture completeFavor(Favor favor, boolean isRequested);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); //used in map view
   LiveData<Map<String, Favor>> getFavorsAroundMe();//used in nearbylistview

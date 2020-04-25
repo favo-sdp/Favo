@@ -38,7 +38,7 @@ public class FavorUtilTest {
   @Test
   public void testPostFavorFlow() {
     Favor favor = FakeItemFactory.getFavor();
-    FavorUtil.getSingleInstance().postFavor(favor);
+    FavorUtil.getSingleInstance().requestFavor(favor);
   }
 
   @Test
@@ -72,7 +72,7 @@ public class FavorUtilTest {
         .when(mockDatabaseWrapper)
         .addDocument(Mockito.any(Favor.class));
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    assertThrows(Exception.class,()->FavorUtil.getSingleInstance().postFavor(fakeFavor));
+    assertThrows(Exception.class,()->FavorUtil.getSingleInstance().requestFavor(fakeFavor));
   }
 
   @Test

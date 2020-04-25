@@ -36,6 +36,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
@@ -57,7 +58,6 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static ch.epfl.favo.util.FavorFragmentFactory.FAVOR_ARGS;
 import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
@@ -96,7 +96,7 @@ public class AddFavorTest {
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     if (favor != null) {
       Bundle bundle = new Bundle();
-      bundle.putString(FAVOR_ARGS, favor.getId());
+      bundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorRequestView, bundle));
     } else {
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorRequestView));

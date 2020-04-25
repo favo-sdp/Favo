@@ -43,7 +43,7 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
 
 
   @Override
-  public CompletableFuture postFavor(Favor favor) {
+  public CompletableFuture requestFavor(Favor favor) {
     return result;
   }
 

@@ -29,8 +29,8 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
@@ -47,7 +47,7 @@ public class ChatPage extends Fragment {
     setupView();
 
     if (getArguments() != null) {
-      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+      currentFavor = getArguments().getParcelable(CommonTools.FAVOR_ARGS);
     }
 
     return view;

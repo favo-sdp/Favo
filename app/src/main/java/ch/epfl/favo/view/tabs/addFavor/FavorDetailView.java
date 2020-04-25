@@ -15,7 +15,6 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -25,7 +24,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -57,13 +55,11 @@ public class FavorDetailView extends Fragment {
         (FavorDataController)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    if (currentFavor == null && getArguments() != null) {
-      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView, favorId);
-    }
-    else{
-      displayFromFavor(rootView, Objects.requireNonNull(currentFavor)); //TODO: fix in case current favor is null
-    }
+    String favorId="";
+    if (currentFavor!=null) favorId = currentFavor.getId();
+    if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
+    setupFavorListener(rootView, favorId);
+
 
     return rootView;
   }
@@ -118,9 +114,8 @@ public class FavorDetailView extends Fragment {
   }
 
   private void cancelFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
     CompletableFuture completableFuture =
-            getViewModel().updateFavor(currentFavor);
+            getViewModel().cancelFavor(currentFavor,false);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
@@ -150,10 +145,8 @@ public class FavorDetailView extends Fragment {
 
   private void acceptFavor() {
     // update DB with accepted status
-    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     CompletableFuture updateFavorFuture =
-            getViewModel().updateFavor(currentFavor);
+            getViewModel().acceptFavor(currentFavor);
     updateFavorFuture.thenAccept(
         o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
     updateFavorFuture.exceptionally(favorFailedToBeAcceptedConsumer());

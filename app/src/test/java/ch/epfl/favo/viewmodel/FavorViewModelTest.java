@@ -34,24 +34,24 @@ public class FavorViewModelTest {
     repository = Mockito.mock(FavorUtil.class);
     successfulResult = new CompletableFuture(){{complete(null);}};
     failedResult = new CompletableFuture(){{completeExceptionally(new RuntimeException("mock fail"));}};
-    DependencyFactory.setCurrentRepository(repository);
+    DependencyFactory.setCurrentFavorRepository(repository);
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getUser());
     viewModel = new FavorViewModel();
   }
   @After
   public void tearDown(){
-    DependencyFactory.setCurrentRepository(null);
+    DependencyFactory.setCurrentFavorRepository(null);
   }
   @Test
   public void testRepositoryBehaviourIsUnchangedOnPostFavor() {
-    Mockito.doReturn(successfulResult).when(repository).postFavor(any(Favor.class));
-    Assert.assertEquals(successfulResult,viewModel.postFavor(FakeItemFactory.getFavor()));
+    Mockito.doReturn(successfulResult).when(repository).requestFavor(any(Favor.class));
+    Assert.assertEquals(successfulResult,viewModel.requestFavor(FakeItemFactory.getFavor()));
   }
 
   @Test
   public void testRepositoryDoesNotThrowErrorOnRepositoryPostFavorFailedResult() {
-    Mockito.doReturn(failedResult).when(repository).postFavor(any(Favor.class));
-    Assert.assertEquals(failedResult,viewModel.postFavor(FakeItemFactory.getFavor()));
+    Mockito.doReturn(failedResult).when(repository).requestFavor(any(Favor.class));
+    Assert.assertEquals(failedResult,viewModel.requestFavor(FakeItemFactory.getFavor()));
   }
   @Test
   public void testUpdateBehaviourIsUnchanged(){
@@ -67,7 +67,7 @@ public class FavorViewModelTest {
     List<Favor> fakeList = FakeItemFactory.getFavorList();
 
     Mockito.doReturn(mockQuery).when(repository).getNearbyFavors(any(Location.class),Mockito.anyDouble());
-    DependencyFactory.setCurrentRepository(repository);
+    DependencyFactory.setCurrentFavorRepository(repository);
 
 
     Location centralLocation = fakeList.get(0).getLocation();

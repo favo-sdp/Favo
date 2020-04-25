@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.common.Document;
@@ -14,15 +15,26 @@ import ch.epfl.favo.common.FavoLocation;
  */
 public class User implements Document {
 
+  public static final int MAX_ACCEPTING_FAVORS = 1;
+  public static final int MAX_REQUESTING_FAVORS = 5;
   private String id;
+  public static final String ID = "id";
   private String name;
+  public static final String NAME = "name";
   private String email;
+  public static final String EMAIL = "email";
   private String deviceId;
+  public static final String DEVICE_ID = "deviceId";
   private String notificationId;
+  public static final String NOTIFICATION_ID = "notificationId";
   private Date birthDate;
+  public static final String BIRTH_DATE = "birthDate";
   private FavoLocation location;
+  public static final String LOCATION = "location";
   private int activeAcceptingFavors;
+  public static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
   private int activeRequestingFavors;
+  public static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
 
   public User() {}
 
@@ -52,7 +64,19 @@ public class User implements Document {
 
   @Override
   public Map<String, Object> toMap() {
-    return null;
+    return new HashMap<String, Object>() {
+      {
+        put(ID, id);
+        put(NAME, name);
+        put(EMAIL, email);
+        put(DEVICE_ID, deviceId);
+        put(NOTIFICATION_ID, notificationId);
+        put(BIRTH_DATE, birthDate);
+        put(LOCATION, location);
+        put(ACTIVE_ACCEPTING_FAVORS, activeAcceptingFavors);
+        put(ACTIVE_REQUESTING_FAVORS, activeRequestingFavors);
+      }
+    };
   }
 
   public String getName() {
@@ -95,6 +119,19 @@ public class User implements Document {
     this.activeRequestingFavors = activeRequestingFavors;
   }
 
+  public void changeActiveAcceptedFavorCount(int change){
+    if (activeAcceptingFavors+change<0) throw new RuntimeException("Cannot remove more favors.");
+    if (canAccept() || change<0) setActiveAcceptingFavors(activeAcceptingFavors+=change);
+    else throw new RuntimeException("Cannot accept more favors.");
+  }
+
+  public void changeActiveRequestedFavorCount(int change){
+    if (activeRequestingFavors+change<0) throw new RuntimeException("Cannot remove more favors.");
+    if (canRequest() || change<0) setActiveRequestingFavors(activeRequestingFavors+change);
+    else throw new RuntimeException("Cannot accept more favors.");
+  }
+
+
   public void setNotificationId(String notificationId) {
     this.notificationId = notificationId;
   }
@@ -109,10 +146,10 @@ public class User implements Document {
 
   // Can only accept or request favors
   boolean canAccept() {
-    return activeAcceptingFavors + activeRequestingFavors < 1;
+    return activeAcceptingFavors < MAX_ACCEPTING_FAVORS;
   }
 
   boolean canRequest() {
-    return activeAcceptingFavors + activeRequestingFavors < 1;
+    return activeRequestingFavors < MAX_REQUESTING_FAVORS;
   }
 }

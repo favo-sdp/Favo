@@ -1,4 +1,4 @@
-package ch.epfl.favo.util;
+package ch.epfl.favo;
 
 import android.location.Location;
 

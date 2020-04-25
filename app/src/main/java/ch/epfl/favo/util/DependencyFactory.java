@@ -23,6 +23,7 @@ import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
@@ -38,7 +39,8 @@ public class DependencyFactory {
   private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
-  private static FavorUtil currentRepository;
+  private static FavorUtil currentFavorRepository;
+  private static UserUtil currentUserRepository;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -166,12 +168,21 @@ public class DependencyFactory {
     return FavorViewModel.class;
   }
   @VisibleForTesting
-  public static void setCurrentRepository(FavorUtil dependency){
+  public static void setCurrentFavorRepository(FavorUtil dependency){
     testMode = true;
-    currentRepository = dependency;
+    currentFavorRepository = dependency;
   }
-  public static FavorUtil getCurrentRepository(){
-    if (testMode && currentRepository!=null) return currentRepository;
+  public static FavorUtil getCurrentFavorRepository(){
+    if (testMode && currentFavorRepository !=null) return currentFavorRepository;
     return FavorUtil.getSingleInstance();
+  }
+  @VisibleForTesting
+  public static void setCurrentUserRepository(UserUtil dependency){
+    testMode = true;
+    currentUserRepository = dependency;
+  }
+  public static UserUtil getCurrentUserRepository(){
+    if (testMode && currentUserRepository !=null) return currentUserRepository;
+    return UserUtil.getSingleInstance();
   }
 }

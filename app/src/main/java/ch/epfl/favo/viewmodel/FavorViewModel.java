@@ -1,5 +1,6 @@
 package ch.epfl.favo.viewmodel;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.util.Log;
 
@@ -17,11 +18,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
+@SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements FavorDataController {
   String TAG = "FIRESTORE_VIEW_MODEL";
 
@@ -30,23 +34,43 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
-  public FavorUtil getRepository() {
-    return DependencyFactory.getCurrentRepository();
+  public FavorUtil getFavorRepository() {
+    return DependencyFactory.getCurrentFavorRepository();
+  }
+
+  public UserUtil getUserRepository() {
+    return DependencyFactory.getCurrentUserRepository();
   }
 
   // save address to firebase
   @Override
-  public CompletableFuture postFavor(Favor favor) {
-    return getRepository().postFavor(favor);
+  public CompletableFuture requestFavor(Favor favor) {
+    return getUserRepository()
+        .addFavorToUser(true) // if user can request favor then post it in the favor collection
+        .thenCompose(o-> getFavorRepository().requestFavor(favor));
+  }
+
+  public CompletableFuture acceptFavor(Favor favor) {
+    return getUserRepository()
+        .addFavorToUser(false)
+        .thenCompose(o-> getFavorRepository().acceptFavor(favor));
+  }
+  public CompletableFuture completeFavor(Favor favor,boolean isRequested){
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public CompletableFuture cancelFavor(Favor favor,boolean isRequested) {
+    return getFavorRepository().cancelFavor(favor,isRequested);
   }
 
   public CompletableFuture updateFavor(Favor favor) {
-    return getRepository().updateFavor(favor);
+    return getFavorRepository().updateFavor(favor);
   }
 
   @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius) {
-    getRepository()
+    getFavorRepository()
         .getNearbyFavors(loc, radius)
         .addSnapshotListener(
             (queryDocumentSnapshots, e) ->
@@ -90,7 +114,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    getRepository()
+    getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
             (documentSnapshot, e) -> {

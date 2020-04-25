@@ -19,7 +19,7 @@ import ch.epfl.favo.util.DependencyFactory;
 /*
 This models the favor request.
 */
-//TODO: rename to FavorRepository?
+// TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
@@ -49,8 +49,24 @@ public class FavorUtil {
    * @param favor A favor object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public CompletableFuture postFavor(Favor favor) throws RuntimeException {
+  public CompletableFuture requestFavor(Favor favor) throws RuntimeException {
     return collection.addDocument(favor);
+  }
+
+
+  public CompletableFuture acceptFavor(Favor favor) {
+    favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    favor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    return updateFavor(favor);
+  }
+
+  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
+    favor.setStatusIdToInt(isRequested ? FavorStatus.CANCELLED_REQUESTER : FavorStatus.CANCELLED_ACCEPTER);
+    return updateFavor(favor);
+  }
+
+  public CompletableFuture completeFavor(Favor favor, boolean isRequested) {
+    throw new NotImplementedException(); // TODO: Implement
   }
 
   public CompletableFuture updateFavor(Favor favor) {
