@@ -2,8 +2,8 @@ package ch.epfl.favo;
 
 import android.net.Uri;
 
-import ch.epfl.favo.common.DatabaseWrapper;
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.database.DatabaseWrapper;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.FavorStatus;
 
 public class TestConstants {

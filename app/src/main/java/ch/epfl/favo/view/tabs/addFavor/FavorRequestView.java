@@ -32,11 +32,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.gps.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;

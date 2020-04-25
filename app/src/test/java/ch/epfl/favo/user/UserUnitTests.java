@@ -11,9 +11,9 @@ import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.database.CollectionWrapper;
+import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TestUtil;
 import ch.epfl.favo.view.MockDatabaseWrapper;

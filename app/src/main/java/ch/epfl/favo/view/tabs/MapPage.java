@@ -48,7 +48,7 @@ import ch.epfl.favo.viewmodel.FavorDataController;
  * subclass.
  */
 @SuppressLint("NewApi")
-public class MapsPage extends Fragment
+public class MapPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
@@ -64,7 +64,7 @@ public class MapsPage extends Fragment
   private boolean mLocationPermissionGranted = false;
   private View view;
 
-  public MapsPage() {
+  public MapPage() {
     // Required empty public constructor
   }
 

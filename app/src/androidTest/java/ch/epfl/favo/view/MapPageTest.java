@@ -76,7 +76,7 @@ public class MapPageTest {
   /*
     @Test
     public void InfoWindowClickSelfTest() throws UiObjectNotFoundException, InterruptedException {
-      MapsPage mapsPage = new MapsPage();
+      MapPage mapsPage = new MapPage();
       //mapsPage.updateFavorlist();
       //mapsPage.queryFavor(TestConstants.LATITUDE, TestConstants.LONGITUDE);
       //CheckContent("FavorRequest", R.string.favor_request_success_msg);

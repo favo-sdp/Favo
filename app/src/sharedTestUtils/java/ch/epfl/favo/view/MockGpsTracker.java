@@ -2,9 +2,9 @@ package ch.epfl.favo.view;
 
 import android.location.Location;
 
-import ch.epfl.favo.common.NoPermissionGrantedException;
-import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.exception.NoPermissionGrantedException;
+import ch.epfl.favo.exception.NoPositionFoundException;
+import ch.epfl.favo.gps.Locator;
 
 import static ch.epfl.favo.TestConstants.LOCATION;
 

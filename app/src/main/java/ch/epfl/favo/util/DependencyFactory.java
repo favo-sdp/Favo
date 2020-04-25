@@ -18,11 +18,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.database.CollectionWrapper;
+import ch.epfl.favo.database.DatabaseUpdater;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.map.GpsTracker;
-import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.gps.GpsTracker;
+import ch.epfl.favo.gps.Locator;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {

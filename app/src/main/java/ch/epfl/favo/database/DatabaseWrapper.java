@@ -1,4 +1,4 @@
-package ch.epfl.favo.common;
+package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;

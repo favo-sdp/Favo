@@ -6,7 +6,7 @@
     android:id="@+id/fragment_nearby_favor_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.MapsPage">
+    tools:context=".view.tabs.MapPage">
 
     <!-- TODO: Update blank fragment layout -->
 

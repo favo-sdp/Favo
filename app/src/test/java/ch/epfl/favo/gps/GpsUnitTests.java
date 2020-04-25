@@ -1,4 +1,4 @@
-package ch.epfl.favo.map;
+package ch.epfl.favo.gps;
 
 import android.Manifest;
 import android.content.Context;
@@ -15,8 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
-import ch.epfl.favo.common.NoPermissionGrantedException;
-import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.exception.NoPermissionGrantedException;
+import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MapUnitTests extends FragmentActivity {
+public class GpsUnitTests extends FragmentActivity {
 
   private Context contextMock = mock(Context.class);
   private LocationManager locationManagerMock = mock(LocationManager.class);

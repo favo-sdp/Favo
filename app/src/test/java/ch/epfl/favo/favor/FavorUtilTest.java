@@ -10,8 +10,8 @@ import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.database.CollectionWrapper;
+import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;

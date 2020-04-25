@@ -148,7 +148,7 @@ public class NearbyFavorListTest {
 
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
-    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() * 9 / 20);
 
     // if keyboard is not displayed, one time of pressBack will return to Favor List view
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
@@ -157,7 +157,7 @@ public class NearbyFavorListTest {
   }
 
   @Test
-  public void FavorDetailViewJumptoMapTest() throws InterruptedException {
+  public void FavorDetailViewJumptoMapTest() {
     // check test favor is found click on found item
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();

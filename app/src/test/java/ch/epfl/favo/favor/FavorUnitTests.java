@@ -6,7 +6,7 @@ import java.util.Map;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.gps.FavoLocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

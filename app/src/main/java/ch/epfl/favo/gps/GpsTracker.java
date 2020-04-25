@@ -1,4 +1,4 @@
-package ch.epfl.favo.map;
+package ch.epfl.favo.gps;
 
 import android.Manifest;
 import android.content.Context;
@@ -13,8 +13,8 @@ import android.os.IBinder;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import ch.epfl.favo.common.NoPermissionGrantedException;
-import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.exception.NoPermissionGrantedException;
+import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class GpsTracker extends FragmentActivity implements LocationListener, Locator {

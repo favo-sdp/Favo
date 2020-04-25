@@ -77,7 +77,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".map.GpsTracker" />
+        <service android:name=".gps.GpsTracker" />
         <service
             android:name=".notifications.FirebaseMessagingService"
             android:exported="false">

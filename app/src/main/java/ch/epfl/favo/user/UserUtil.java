@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.DatabaseUpdater;
-import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.database.CollectionWrapper;
+import ch.epfl.favo.database.DatabaseUpdater;
+import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class UserUtil {

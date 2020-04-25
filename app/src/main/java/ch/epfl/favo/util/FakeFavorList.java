@@ -4,7 +4,7 @@ import android.location.Location;
 
 import java.util.ArrayList;
 
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 

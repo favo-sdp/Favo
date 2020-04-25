@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;

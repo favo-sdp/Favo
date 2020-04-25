@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import ch.epfl.favo.common.DatabaseWrapper;
-import ch.epfl.favo.common.Document;
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.database.DatabaseWrapper;
+import ch.epfl.favo.database.Document;
+import ch.epfl.favo.gps.FavoLocation;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
