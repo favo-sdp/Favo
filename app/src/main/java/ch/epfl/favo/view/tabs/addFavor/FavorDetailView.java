@@ -159,7 +159,7 @@ public class FavorDetailView extends Fragment {
   private Function handleException() {
     return e -> {
       if (((CompletionException) e).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
+        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
       else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
       return null;
     };

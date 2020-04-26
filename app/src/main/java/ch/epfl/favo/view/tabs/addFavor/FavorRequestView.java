@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -90,22 +91,28 @@ public class FavorRequestView extends Fragment {
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
-    favorViewModel =
-        (FavorDataController)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
+        favorViewModel =
+            (FavorDataController)
+                new ViewModelProvider(this).get(DependencyFactory.getCurrentViewModelClass());
+
+    return rootView;
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
     if (getArguments() != null) {
       String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
-      setupFavorListener(rootView, favorId);
+      setupFavorListener(view,favorId);
     }
-    return rootView;
   }
 
   public FavorDataController getViewModel() {
     return favorViewModel;
   }
 
-  public void setupFavorListener(View rootView, String favorId) {
+
+  public void setupFavorListener(View rootView,String favorId) {
 
     getViewModel()
         .setObservedFavor(favorId)
@@ -215,7 +222,7 @@ public class FavorRequestView extends Fragment {
     CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
     postFavorFuture.thenAccept(
         o -> {
-          setupFavorListener(getView(), currentFavor.getId());
+          setupFavorListener(requireView(),currentFavor.getId());
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));

@@ -36,6 +36,9 @@ public class UserUtil {
   public static UserUtil getSingleInstance() {
     return SINGLE_INSTANCE;
   }
+  public void updateCollectionWrapper(DatabaseUpdater newCollectionWrapper){
+    this.collection = newCollectionWrapper;
+  }
 
   /**
    * @param user A user object.
@@ -55,8 +58,7 @@ public class UserUtil {
    * @return
    */
   public CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
-    return collection
-        .getDocument(DependencyFactory.getCurrentFirebaseUser().getUid())
+    return findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenCompose(
             (object) -> {
               User user = ((User) object);

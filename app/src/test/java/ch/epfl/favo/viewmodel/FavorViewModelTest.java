@@ -41,7 +41,7 @@ public class FavorViewModelTest {
     failedResult = new CompletableFuture(){{completeExceptionally(new RuntimeException("mock fail"));}};
     DependencyFactory.setCurrentFavorRepository(favorRepository);
     DependencyFactory.setCurrentUserRepository(userRepository);
-    DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getUser());
+    DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     viewModel = new FavorViewModel();
   }
   @After

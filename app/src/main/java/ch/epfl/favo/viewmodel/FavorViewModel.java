@@ -5,11 +5,11 @@ import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
@@ -30,8 +30,8 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
 
   MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
-  // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
+  MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
+  //MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
   public FavorUtil getFavorRepository() {
     return DependencyFactory.getCurrentFavorRepository();
@@ -73,7 +73,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius) {
     getFavorRepository()
         .getNearbyFavors(loc, radius)
-        .addSnapshotListener(
+        .addSnapshotListener(MetadataChanges.EXCLUDE,
             (queryDocumentSnapshots, e) ->
                 activeFavorsAroundMe.setValue(
                     getNearbyFavorsFromQuery(loc, radius, queryDocumentSnapshots, e)));
@@ -117,10 +117,10 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public LiveData<Favor> setObservedFavor(String favorId) {
     getFavorRepository()
         .getFavorReference(favorId)
-        .addSnapshotListener(
+        .addSnapshotListener(MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
-              observedFavor.setValue(documentSnapshot.toObject(Favor.class));
+              observedFavor.postValue(documentSnapshot.toObject(Favor.class));
             });
     return observedFavor;
   }

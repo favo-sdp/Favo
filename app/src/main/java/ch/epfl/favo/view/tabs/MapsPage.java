@@ -108,8 +108,12 @@ public class MapsPage extends Fragment
     String setting =
             requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
-
+    try{
     mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+    }catch (Exception e){
+      CommonTools.showSnackbar(requireView(),e.getMessage());
+      return;
+    }
     try {
       setupNearbyFavorsListener();
 

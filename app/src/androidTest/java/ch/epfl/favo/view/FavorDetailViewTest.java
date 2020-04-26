@@ -21,6 +21,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
@@ -224,6 +225,16 @@ public class FavorDetailViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     String expectedDisplay = FavorStatus.SUCCESSFULLY_COMPLETED.toString();
     onView(withId(R.id.status_text_accept_view)).check(matches(withText(expectedDisplay)));
+  }
+
+  @Test
+  public void testFavorIsNotAcceptedIfSurpassedLimit() throws Throwable {
+    runOnUiThread(
+        () -> fakeViewModel.setThrowError(new IllegalRequestException("illegal operation!")));
+    onView(withId(R.id.accept_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.illegal_accept_error)));
   }
 
   // removing this test because favors in the second tab will concern the user directly and it's not
