@@ -69,6 +69,7 @@ public class Favor implements Parcelable, Document {
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
+    this.pictureUrl = null;
     this.isArchived = false;
   }
 

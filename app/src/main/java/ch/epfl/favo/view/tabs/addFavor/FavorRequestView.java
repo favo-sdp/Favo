@@ -129,6 +129,16 @@ public class FavorRequestView extends Fragment {
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(favorStatus.toString());
 
+    String url = currentFavor.getPictureUrl();
+    if (url != null) {
+      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
+      bitmapFuture.thenAccept(picture -> {
+        mImageView.setImageBitmap(picture);
+        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+      });
+    }
+
     updateViewFromStatus(v);
   }
 
@@ -218,6 +228,8 @@ public class FavorRequestView extends Fragment {
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
+
+    uploadOrUpdatePicture();
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
@@ -352,19 +364,6 @@ public class FavorRequestView extends Fragment {
 
     Favor favor = new Favor(title, desc, userId, loc, status);
 
-    // Upload picture to database if it exists
-    if (mImageView.getDrawable() != null) {
-      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-
-      // Good idea to display the result of uploading the picture (not sure how to do this)
-      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
-      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(e -> {
-        // insert something about being unable to upload picture
-        return null;
-      });
-    }
-
     // Updates the current favor
     if (currentFavor == null) {
       currentFavor = favor;
@@ -469,5 +468,20 @@ public class FavorRequestView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
+  }
+
+  private void uploadOrUpdatePicture() {
+    // Upload picture to database if it exists
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+
+      // TODO: display result of uploading picture somewhere
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(currentFavor, url));
+      pictureUrl.exceptionally(e -> {
+        // TODO: create UI element that informs the user that the picture wasn't uploaded
+        return null;
+      });
+    }
   }
 }
