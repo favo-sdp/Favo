@@ -229,19 +229,6 @@ public class FavorRequestView extends Fragment {
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
 
-    // Upload picture to database if it exists
-    if (mImageView.getDrawable() != null) {
-      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-
-      // TODO: display result of uploading picture somewhere
-      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
-      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(currentFavor, url));
-      pictureUrl.exceptionally(e -> {
-        // TODO: create UI element that informs the user that the picture wasn't uploaded
-        return null;
-      });
-    }
-
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
       showSnackbar(getString(R.string.save_draft_message));
@@ -373,6 +360,19 @@ public class FavorRequestView extends Fragment {
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     status = FavorStatus.convertTemporaryStatus(status);
 
+    // Upload picture to database if it exists
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+
+      // TODO: display result of uploading picture somewhere
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(currentFavor, url));
+      pictureUrl.exceptionally(e -> {
+        // TODO: create UI element that informs the user that the picture wasn't uploaded
+        return null;
+      });
+    }
+
     Favor favor = new Favor(title, desc, userId, loc, status);
 
     // Updates the current favor
@@ -480,5 +480,4 @@ public class FavorRequestView extends Fragment {
               return false;
             });
   }
-
 }
