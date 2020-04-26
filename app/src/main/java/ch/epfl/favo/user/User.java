@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.common.IllegalRequestException;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -107,30 +108,32 @@ public class User implements Document {
     return activeAcceptingFavors;
   }
 
-  public int getActiveRequestingFavors() {
-    return activeRequestingFavors;
+  public int getActiveRequestingFavors() { return activeRequestingFavors; }
+
+  public void setActiveAcceptingFavors(int totalAcceptingFavors) {
+    if (totalAcceptingFavors < 0 || totalAcceptingFavors>MAX_ACCEPTING_FAVORS) throw new IllegalRequestException("Cannot accept");
+    this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
-  public void setActiveAcceptingFavors(int activeAcceptingFavors) {
-    this.activeAcceptingFavors = activeAcceptingFavors;
+  public void setActiveRequestingFavors(int totalRequestingFavors) {
+    if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS) throw new IllegalRequestException("Cannot request");
+    this.activeRequestingFavors = totalRequestingFavors;
   }
 
-  public void setActiveRequestingFavors(int activeRequestingFavors) {
-    this.activeRequestingFavors = activeRequestingFavors;
-  }
-
-  public void changeActiveAcceptedFavorCount(int change){
-    if (activeAcceptingFavors+change<0) throw new RuntimeException("Cannot remove more favors.");
-    if (canAccept() || change<0) setActiveAcceptingFavors(activeAcceptingFavors+=change);
+  public void changeActiveAcceptedFavorCount(int change) {
+    if (activeAcceptingFavors + change < 0)
+      throw new RuntimeException("Cannot remove more favors.");
+    if (canAccept() || change < 0) setActiveAcceptingFavors(activeAcceptingFavors += change);
     else throw new RuntimeException("Cannot accept more favors.");
   }
 
-  public void changeActiveRequestedFavorCount(int change){
-    if (activeRequestingFavors+change<0) throw new RuntimeException("Cannot remove more favors.");
-    if (canRequest() || change<0) setActiveRequestingFavors(activeRequestingFavors+change);
+  public void changeActiveRequestedFavorCount(int change) {
+    if (activeRequestingFavors + change < 0)
+      throw new RuntimeException("Cannot remove more favors.");
+
+    if (canRequest() || change < 0) setActiveRequestingFavors(activeRequestingFavors + change);
     else throw new RuntimeException("Cannot accept more favors.");
   }
-
 
   public void setNotificationId(String notificationId) {
     this.notificationId = notificationId;

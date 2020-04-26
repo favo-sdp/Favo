@@ -120,7 +120,7 @@ public class FavorDetailViewTest {
 
   @Test
   public void testAcceptButtonShowsFailSnackBar() throws Throwable {
-    runOnUiThread(() -> fakeViewModel.setThrowError(true));
+    runOnUiThread(() -> fakeViewModel.setThrowError(new RuntimeException()));
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
@@ -188,7 +188,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
 
     // now inject throwable to see reaction in the UI
-    runOnUiThread(() -> fakeViewModel.setThrowError(true));
+    runOnUiThread(() -> fakeViewModel.setThrowError(new RuntimeException()));
     onView(withId(R.id.accept_button))
         .check(matches(withText(R.string.cancel_accept_button_display)))
         .perform(click());

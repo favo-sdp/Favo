@@ -105,6 +105,11 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
+    String setting =
+            requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+
+    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     try {
       setupNearbyFavorsListener();
 
@@ -194,11 +199,6 @@ public class MapsPage extends Fragment
   }
 
   private void setupNearbyFavorsListener() {
-    String setting =
-        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
-
-    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
 
     getViewModel()
         .getFavorsAroundMe(mLocation, radiusThreshold)

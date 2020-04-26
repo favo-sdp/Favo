@@ -29,10 +29,12 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
@@ -206,9 +208,9 @@ public class FavorRequestView extends Fragment {
   private void requestFavor() {
     // update currentFavor
     View currentView = getView();
-    favorStatus = FavorStatus.REQUESTED;
-    getFavorFromView(favorStatus);
-
+    // enableUploadImageButtons(false);
+    // confirmFavorBtn.setEnabled(false);
+    getFavorFromView(FavorStatus.REQUESTED);
     // post to DB
     CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
     postFavorFuture.thenAccept(
@@ -217,17 +219,19 @@ public class FavorRequestView extends Fragment {
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
-
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
       showSnackbar(getString(R.string.save_draft_message));
     }
+    CommonTools.hideSoftKeyboard(requireActivity());
   }
 
   private Function onFailedResult(View currentView) {
-    return o -> {
-      CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, ((Exception) o).getMessage());
+    return (exception) -> {
+      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
+      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      System.err.println("exception: " + exception);
       return null;
     };
   }
@@ -255,18 +259,19 @@ public class FavorRequestView extends Fragment {
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-    getFavorFromView(favorStatus);
+    int countUpdate = 0;
+    if (currentFavor.getIsArchived()) countUpdate = 1;
+    getFavorFromView(FavorStatus.REQUESTED);
     // DB call to update Favor details
-    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
+    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor, true, countUpdate);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
   }
 
   /** Updates favor on DB. */
   private void cancelFavor() {
-
-    CompletableFuture cancelFuture = getViewModel().cancelFavor(currentFavor, true);
+    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
+    CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor, true, -1);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }
@@ -348,7 +353,8 @@ public class FavorRequestView extends Fragment {
 
     Favor favor = new Favor(title, desc, userId, loc, status);
 
-    // Upload picture to database if it exists
+    // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
+    // callbacks in requestFavor and confirm
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
 

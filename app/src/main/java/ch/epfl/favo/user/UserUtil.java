@@ -54,14 +54,15 @@ public class UserUtil {
    * @param isRequested : if true favor is requested. If false favor is accepted
    * @return
    */
-  public CompletableFuture addFavorToUser(boolean isRequested) {
+  public CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
     return collection
         .getDocument(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenCompose(
             (object) -> {
               User user = ((User) object);
-              if (isRequested) user.changeActiveRequestedFavorCount(1);
-              else user.changeActiveAcceptedFavorCount(1);
+              if (isRequested)
+                user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
+              else user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
               return updateUser(user);
             });
   }

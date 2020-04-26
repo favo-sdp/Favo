@@ -9,13 +9,14 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
 
+/**
+ * This class is the sole dependency of all the fragments and activities.
+ * It contains Util classes as members.
+ */
 public interface FavorDataController {
-  // save address to firebase
   CompletableFuture requestFavor(Favor favor);
-  CompletableFuture acceptFavor(Favor favor);
-  CompletableFuture cancelFavor(Favor favor,boolean isRequested);
-  CompletableFuture updateFavor(Favor favor);
-  CompletableFuture completeFavor(Favor favor, boolean isRequested);
+  CompletableFuture updateFavor(
+          Favor favor, boolean isRequested, int activeFavorsCountChange);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); //used in map view
   LiveData<Map<String, Favor>> getFavorsAroundMe();//used in nearbylistview

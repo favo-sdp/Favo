@@ -53,22 +53,6 @@ public class FavorUtil {
     return collection.addDocument(favor);
   }
 
-
-  public CompletableFuture acceptFavor(Favor favor) {
-    favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
-    favor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    return updateFavor(favor);
-  }
-
-  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
-    favor.setStatusIdToInt(isRequested ? FavorStatus.CANCELLED_REQUESTER : FavorStatus.CANCELLED_ACCEPTER);
-    return updateFavor(favor);
-  }
-
-  public CompletableFuture completeFavor(Favor favor, boolean isRequested) {
-    throw new NotImplementedException(); // TODO: Implement
-  }
-
   public CompletableFuture updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
   }
@@ -78,7 +62,6 @@ public class FavorUtil {
    * @return CompletableFuture<Favor>
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
-    CompletableFuture document = collection.getDocument(favorId);
     return collection.getDocument(favorId);
   }
 
@@ -151,7 +134,7 @@ public class FavorUtil {
    * @param loc a given Location (Android location type)
    * @param radius a given radius to search within
    */
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenLongitudeRange(
       Location loc, double radius) {
     /**
      * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*

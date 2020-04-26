@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
@@ -42,30 +41,32 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return DependencyFactory.getCurrentUserRepository();
   }
 
+
   // save address to firebase
   @Override
   public CompletableFuture requestFavor(Favor favor) {
-    return getUserRepository()
-        .addFavorToUser(true) // if user can request favor then post it in the favor collection
-        .thenCompose(o-> getFavorRepository().requestFavor(favor));
+    return changeActiveFavorCount(true,1) // if user can request favor then post it in the favor collection
+        .thenCompose((f) -> getFavorRepository().requestFavor(favor));
   }
 
-  public CompletableFuture acceptFavor(Favor favor) {
-    return getUserRepository()
-        .addFavorToUser(false)
-        .thenCompose(o-> getFavorRepository().acceptFavor(favor));
-  }
-  public CompletableFuture completeFavor(Favor favor,boolean isRequested){
-    throw new NotImplementedException();
+
+  public CompletableFuture updateFavor(
+      Favor favor, boolean isRequested, int activeFavorsCountChange) {
+    return changeActiveFavorCount(isRequested,activeFavorsCountChange)
+        .thenCompose(o -> getFavorRepository().updateFavor(favor));
   }
 
-  @Override
-  public CompletableFuture cancelFavor(Favor favor,boolean isRequested) {
-    return getFavorRepository().cancelFavor(favor,isRequested);
-  }
-
-  public CompletableFuture updateFavor(Favor favor) {
-    return getFavorRepository().updateFavor(favor);
+  /**
+   * Tries to update the number of active favors for a given user. Detailed implementation
+   * in UserUtil
+   * @param isRequested is/are the favors requested?
+   * @param change number of favors being updated
+   * @return Can be completed exceptionally
+   */
+  private CompletableFuture changeActiveFavorCount(boolean isRequested,int change){
+    return  getUserRepository()
+            .changeActiveFavorCount(
+                    isRequested, change);
   }
 
   @Override
