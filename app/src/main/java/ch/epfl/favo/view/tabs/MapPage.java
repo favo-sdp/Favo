@@ -115,10 +115,13 @@ public class MapPage extends Fragment
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
+    // only when the app is firstly opened, the map view is centered on my location,
+    // otherwise just return to where you left before
     if (focusedFavor == null && first) {
       centerViewOnMyLocation();
       first = false;
     }
+    focusedFavor = null;
   }
 
   private void setupFocusedFavorListen() {
@@ -140,7 +143,7 @@ public class MapPage extends Fragment
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation());
                   favorViewModel.clearObservedFavor();
-                } else focusedFavor = null;
+                }
               } catch (Exception e) {
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }

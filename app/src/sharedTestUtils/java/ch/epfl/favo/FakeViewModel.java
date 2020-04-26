@@ -96,4 +96,8 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
   }
+
+  @Override
+  public void clearObservedFavor() {
+  }
 }

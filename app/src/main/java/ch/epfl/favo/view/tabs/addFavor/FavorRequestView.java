@@ -32,10 +32,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -100,11 +100,17 @@ public class FavorRequestView extends Fragment {
     return rootView;
   }
 
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    favorViewModel.clearObservedFavor();
+  }
+
   public FavorDataController getViewModel() {
     return favorViewModel;
   }
 
-  public void setupFavorListener(View rootView, String favorId) {
+  private void setupFavorListener(View rootView, String favorId) {
 
     getViewModel()
         .setObservedFavor(favorId)
@@ -123,7 +129,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** When fragment is launched with favor. */
-  public void displayFavorInfo(View v) {
+  private void displayFavorInfo(View v) {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());

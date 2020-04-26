@@ -40,6 +40,7 @@ public class FavorDetailView extends Fragment {
   private Button chatBtn;
   private TextView statusText;
   private FavorDataController favorViewModel;
+    private boolean toMapView = false;
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -67,6 +68,14 @@ public class FavorDetailView extends Fragment {
 
     return rootView;
   }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (!toMapView)
+            favorViewModel.clearObservedFavor();
+    }
+
   public FavorDataController getViewModel(){
     return favorViewModel;
   }
@@ -92,11 +101,13 @@ public class FavorDetailView extends Fragment {
     acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
-
     locationAccessBtn.setOnClickListener(
-        v ->
-            findNavController(requireActivity(), R.id.nav_host_fragment)
-                .popBackStack(R.id.nav_map, false));
+            v -> {
+                findNavController(requireActivity(), R.id.nav_host_fragment)
+                        .popBackStack(R.id.nav_map, false);
+                toMapView = true;
+            }
+    );
 
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(

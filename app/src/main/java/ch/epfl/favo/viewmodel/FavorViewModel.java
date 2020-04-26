@@ -16,21 +16,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class FavorViewModel extends ViewModel implements FavorDataController {
-  String TAG = "FIRESTORE_VIEW_MODEL";
+  private String TAG = "FIRESTORE_VIEW_MODEL";
 
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   private MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
-  public FavorUtil getRepository() {
+  private FavorUtil getRepository() {
     return DependencyFactory.getCurrentRepository();
   }
 
@@ -40,6 +40,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return getRepository().postFavor(favor);
   }
 
+  @Override
   public CompletableFuture updateFavor(Favor favor) {
     return getRepository().updateFavor(favor);
   }
@@ -55,6 +56,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return getFavorsAroundMe();
   }
 
+  @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe() {
     return activeFavorsAroundMe;
   }

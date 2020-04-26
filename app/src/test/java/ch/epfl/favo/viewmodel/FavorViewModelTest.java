@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -81,8 +81,8 @@ public class FavorViewModelTest {
     Mockito.doReturn(0.0).when(mockUserLocation).getLatitude();
     FavoLocation outOfBoundsLocation = Mockito.mock(FavoLocation.class);
     FavoLocation inBoundsLocation = Mockito.mock(FavoLocation.class);
-    Mockito.doReturn(11.0/FavoLocation.EARTH_RADIUS).when(outOfBoundsLocation).getLatitude();
-    Mockito.doReturn(5.0/FavoLocation.EARTH_RADIUS).when(inBoundsLocation).getLatitude();
+    Mockito.doReturn(Math.toDegrees(11.0 / FavoLocation.EARTH_RADIUS)).when(outOfBoundsLocation).getLatitude();
+    Mockito.doReturn(Math.toDegrees(5.0 / FavoLocation.EARTH_RADIUS)).when(inBoundsLocation).getLatitude();
     double radius = 10.0;
     for (Favor favor: fakeList){
       if (favor==fakeList.get(0)) favor.setLocation(inBoundsLocation);
