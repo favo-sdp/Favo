@@ -20,4 +20,6 @@ public interface FavorDataController {
   LiveData<Favor> setObservedFavor(String favorId);
 
   LiveData<Favor> getObservedFavor();
+
+  void clearObservedFavor();
 }

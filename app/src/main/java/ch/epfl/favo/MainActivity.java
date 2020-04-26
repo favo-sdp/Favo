@@ -206,15 +206,16 @@ public class MainActivity extends AppCompatActivity {
     Bundle extras = intent.getExtras();
     if (extras != null) {
       String favor_id = extras.getString("FavorId");
-      CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
-
-      favorFuture.thenAccept(
-          favor -> {
-            // otherActiveFavorsAround.put(favor.getId(), favor);
-            Bundle favorBundle = new Bundle();
-            favorBundle.putString("FAVOR_ARGS", favor.getId());
-            navController.navigate(R.id.action_global_favorDetailView, favorBundle);
-          });
+      //CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
+      Bundle favorBundle = new Bundle();
+      favorBundle.putString("FAVOR_ARGS", favor_id);
+      navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+      //favorFuture.thenAccept(
+      //    favor -> {
+      //      Bundle favorBundle = new Bundle();
+      //      favorBundle.putString("FAVOR_ARGS", favor.getId());
+      //      navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+      //    });
     }
   }
 

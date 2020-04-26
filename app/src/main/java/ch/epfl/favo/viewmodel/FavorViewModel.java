@@ -25,10 +25,10 @@ import ch.epfl.favo.util.DependencyFactory;
 public class FavorViewModel extends ViewModel implements FavorDataController {
   String TAG = "FIRESTORE_VIEW_MODEL";
 
-  MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
+  private MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
   public FavorUtil getRepository() {
     return DependencyFactory.getCurrentRepository();
@@ -104,4 +104,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
   }
+
+  @Override
+  public void clearObservedFavor(){ observedFavor = new MediatorLiveData<>();}
 }

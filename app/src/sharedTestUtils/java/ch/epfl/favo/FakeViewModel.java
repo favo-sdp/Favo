@@ -86,7 +86,7 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   public void setObservedFavorResult(Favor favor) {
     observedFavorResult.setValue(favor);
   }
-
+  /**TODO: this looks like needing change **/
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
     return observedFavorResult;

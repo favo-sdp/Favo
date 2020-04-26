@@ -62,7 +62,6 @@ public class FavorUtil {
    * @return CompletableFuture<Favor>
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
-    CompletableFuture document = collection.getDocument(favorId);
     return collection.getDocument(favorId);
   }
 

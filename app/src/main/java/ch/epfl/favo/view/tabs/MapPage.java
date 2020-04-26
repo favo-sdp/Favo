@@ -105,14 +105,20 @@ public class MapPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
+    mMap.getUiSettings().setZoomControlsEnabled(true);
+    mMap.setPadding(0, 0, 0, 120);
     try { // TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
+           // we should not move, because only after the map is ready, can we draw markers then
       setupNearbyFavorsListener();
 
       setupFocusedFavorListen();
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
-    if (focusedFavor == null) centerViewOnMyLocation();
+    if (focusedFavor == null && first) {
+      centerViewOnMyLocation();
+      first = false;
+    }
   }
 
   private void setupFocusedFavorListen() {
@@ -133,7 +139,8 @@ public class MapPage extends Fragment
                   Marker marker = drawFavorMarker(focusedFavor, isRequested);
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation());
-                }
+                  favorViewModel.clearObservedFavor();
+                } else focusedFavor = null;
               } catch (Exception e) {
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
@@ -204,7 +211,6 @@ public class MapPage extends Fragment
               try {
                 favorsAroundMe = stringFavorMap;
                 drawFavorMarkers(new ArrayList<>(favorsAroundMe.values()));
-                first = false;
               } catch (Exception e) {
                 CommonTools.showSnackbar(
                     requireView(), getString(R.string.nearby_favors_exception));
@@ -212,9 +218,19 @@ public class MapPage extends Fragment
             });
   }
 
+  private void drawFavorMarkers(List<Favor> favors) {
+    for (Favor favor : favors) {
+      drawFavorMarker(favor, false);
+    }
+  }
+
+  private void centerViewOnMyLocation() {
+    // Add a marker at my location and move the camera
+    focusViewOnLocation(mLocation);
+  }
+
   /** Request location permission, so that we can get the location of the device. */
   private void getLocationPermission() {
-    /** Request location permission, so that we can get the location of the device. */
     if (ContextCompat.checkSelfPermission(
             requireActivity().getApplicationContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -236,12 +252,14 @@ public class MapPage extends Fragment
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
+        // if get permission, then refresh the map view
         Navigation.findNavController(view).navigate(R.id.action_global_nav_map);
       }
     }
   }
 
-  /*
+  /* // this is the android recommended way to get location, but cannot pass cirrus testing
+
       private void checkPlayServices() {
         GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
         int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
@@ -271,21 +289,6 @@ public class MapPage extends Fragment
         }
       }
   */
-
-  private void centerViewOnMyLocation() {
-    // Add a marker at my location and move the camera
-    focusViewOnLocation(mLocation);
-  }
-
-  private void drawFavorMarkers(List<Favor> favors) {
-    if (favors.isEmpty()) {
-      first = true;
-      return;
-    }
-    for (Favor favor : favors) {
-      drawFavorMarker(favor, false);
-    }
-  }
 
   @Override
   public View getInfoWindow(Marker marker) {

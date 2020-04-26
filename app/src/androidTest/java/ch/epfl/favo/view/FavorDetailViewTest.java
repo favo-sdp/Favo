@@ -53,7 +53,6 @@ public class FavorDetailViewTest {
       new ActivityTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          Log.d("pasS", "FavorDetailView test");
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
@@ -106,12 +105,9 @@ public class FavorDetailViewTest {
   @Test
   public void testAcceptButtonShowsSnackBarAndUpdatesDisplay() throws Throwable {
     onView(withId(R.id.accept_button)).perform(click());
-    Log.d("pasS", "during Detail Test 4");
     getInstrumentation().waitForIdleSync();
-    Log.d("pasS", "during Detail Test 5");
     onView(withId(R.id.status_text_accept_view))
         .check(matches(withText(FavorStatus.ACCEPTED.toString())));
-    Log.d("pasS", "during Detail Test 6");
     Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -182,8 +178,6 @@ public class FavorDetailViewTest {
 
   @Test
   public void testFavorShowsFailureSnackbarIfCancelFails() throws Throwable {
-    Log.d("pasS", "failure test");
-    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
 
@@ -195,6 +189,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     // check display is updated
+    /*TODO: why show accepted status**/
     onView(withId(R.id.status_text_accept_view))
         .check(matches(withText(FavorStatus.ACCEPTED.toString())));
 

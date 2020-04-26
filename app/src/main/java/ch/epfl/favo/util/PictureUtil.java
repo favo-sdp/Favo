@@ -11,7 +11,7 @@ import com.google.firebase.storage.StorageReference;
 import java.io.InputStream;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.DatabaseWrapper;
+import ch.epfl.favo.database.DatabaseWrapper;
 
 @SuppressLint("NewApi")
 public class PictureUtil {
