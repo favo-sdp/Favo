@@ -229,7 +229,18 @@ public class FavorRequestView extends Fragment {
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
 
-    uploadOrUpdatePicture();
+    // Upload picture to database if it exists
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+
+      // TODO: display result of uploading picture somewhere
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(currentFavor, url));
+      pictureUrl.exceptionally(e -> {
+        // TODO: create UI element that informs the user that the picture wasn't uploaded
+        return null;
+      });
+    }
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
@@ -470,18 +481,4 @@ public class FavorRequestView extends Fragment {
             });
   }
 
-  private void uploadOrUpdatePicture() {
-    // Upload picture to database if it exists
-    if (mImageView.getDrawable() != null) {
-      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-
-      // TODO: display result of uploading picture somewhere
-      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
-      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(currentFavor, url));
-      pictureUrl.exceptionally(e -> {
-        // TODO: create UI element that informs the user that the picture wasn't uploaded
-        return null;
-      });
-    }
-  }
 }
