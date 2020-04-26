@@ -360,20 +360,20 @@ public class FavorRequestView extends Fragment {
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     status = FavorStatus.convertTemporaryStatus(status);
 
+    Favor favor = new Favor(title, desc, userId, loc, status);
+
     // Upload picture to database if it exists
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
 
       // TODO: display result of uploading picture somewhere
       CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
-      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(currentFavor, url));
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
       pictureUrl.exceptionally(e -> {
         // TODO: create UI element that informs the user that the picture wasn't uploaded
         return null;
       });
     }
-
-    Favor favor = new Favor(title, desc, userId, loc, status);
 
     // Updates the current favor
     if (currentFavor == null) {
