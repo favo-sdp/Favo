@@ -68,7 +68,7 @@
         <LinearLayout
             android:id="@+id/time_location_layout_accept_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:padding="5dp"
             android:layout_marginBottom="@dimen/margin_accept_view"
             android:background="@color/colorPrimaryDark"
@@ -78,7 +78,7 @@
 
             <TextView
                 android:id="@+id/datetime_accept_view"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.4"
@@ -90,7 +90,7 @@
                 android:textSize="15sp"
                 android:textColor="#FFFFFF"
                 android:layout_marginLeft="10dp" />
-
+            <!--
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/location_accept_view_btn"
                 android:layout_width="wrap_content"
@@ -98,7 +98,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.1"
                 android:background="#FFFFFF"
-                android:src="@drawable/ic_location_on_24dp" />
+                android:drawableEnd="@drawable/ic_location_on_24dp" />
+            -->
+            <Button
+                android:id="@+id/location_accept_view_btn"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:background="@color/fui_transparent"
+                android:drawableEnd="@drawable/ic_location_on_24dp" />
+
         </LinearLayout>
 
         <TextView

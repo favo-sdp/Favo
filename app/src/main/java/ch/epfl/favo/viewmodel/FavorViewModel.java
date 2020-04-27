@@ -28,7 +28,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  private MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
+  private MutableLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
   private FavorUtil getRepository() {
     return DependencyFactory.getCurrentRepository();
@@ -103,10 +103,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
-  public LiveData<Favor> getObservedFavor() {
+  public MutableLiveData<Favor> getObservedFavor() {
     return observedFavor;
   }
-
-  @Override
-  public void clearObservedFavor(){ observedFavor = new MediatorLiveData<>();}
 }

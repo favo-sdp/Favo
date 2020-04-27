@@ -44,27 +44,35 @@ import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
   private String TAG = "FavorRequestView";
+
   public static final int PICK_IMAGE_REQUEST = 1;
   public static final int USE_CAMERA_REQUEST = 2;
+
   private FavorDataController favorViewModel;
+  private Locator mGpsTracker;
+
   private FavorStatus favorStatus;
   private ImageView mImageView;
   private EditText mTitleView;
   private EditText mDescriptionView;
   private TextView mStatusView;
-  private Locator mGpsTracker;
+
   private Button confirmFavorBtn;
   private Button addPictureFromFilesBtn;
   private Button addPictureFromCameraBtn;
   private Button cancelFavorBtn;
   private Button editFavorBtn;
   private Button chatBtn;
+  private Button locationAccessBtn;
 
+  private boolean toMapView = false;
+  private boolean fromMapView = false;
   private Favor currentFavor;
 
   public FavorRequestView() {
@@ -77,6 +85,7 @@ public class FavorRequestView extends Fragment {
 
     View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
     setupButtons(rootView);
+    favorStatus = FavorStatus.EDIT;
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
     mTitleView.requestFocus();
@@ -103,7 +112,10 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onDestroyView() {
     super.onDestroyView();
-    favorViewModel.clearObservedFavor();
+    // prevent the observed favor to be erased if the destination is map view
+    if (!toMapView) favorViewModel.getObservedFavor().setValue(null);
+    toMapView = false;
+    fromMapView = false;
   }
 
   public FavorDataController getViewModel() {
@@ -118,9 +130,17 @@ public class FavorRequestView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                currentFavor = favor;
-                displayFavorInfo(rootView);
-                setFavorActivatedView(rootView);
+                if (favor != null) {
+                  currentFavor = favor;
+                  if (currentFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
+                    displayFavorInfo(rootView);
+                    setFavorActivatedView(rootView);
+                  } else {
+                    fromMapView = true;
+                    mTitleView.setText(currentFavor.getTitle());
+                    mDescriptionView.setText(currentFavor.getDescription());
+                  }
+                }
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
@@ -135,7 +155,7 @@ public class FavorRequestView extends Fragment {
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(favorStatus.toString());
 
-    updateViewFromStatus(v);
+    updateViewFromStatus();
   }
 
   /**
@@ -163,6 +183,19 @@ public class FavorRequestView extends Fragment {
     if (!isCameraAvailable()) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
+
+    // Button: Access location
+    locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    locationAccessBtn.setOnClickListener(
+        v -> {
+          getFavorFromView();
+          CommonTools.hideSoftKeyboard(requireActivity());
+          favorViewModel.getObservedFavor().setValue(currentFavor);
+          // signal the destination is map view
+          toMapView = true;
+          findNavController(requireActivity(), R.id.nav_host_fragment)
+              .popBackStack(R.id.nav_map, false);
+        });
 
     // Button: Cancel Favor
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
@@ -214,7 +247,7 @@ public class FavorRequestView extends Fragment {
     // update currentFavor
     View currentView = getView();
     favorStatus = FavorStatus.REQUESTED;
-    getFavorFromView(favorStatus);
+    getFavorFromView();
 
     // post to DB
     CompletableFuture postFavorFuture = getViewModel().postFavor(currentFavor);
@@ -250,20 +283,20 @@ public class FavorRequestView extends Fragment {
     cancelFavorBtn.setVisibility(View.VISIBLE);
     chatBtn.setVisibility(View.VISIBLE);
     toggleTextViewsEditable(false);
-    updateViewFromStatus(v);
+    updateViewFromStatus();
   }
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    View rootView = getView();
     favorStatus = FavorStatus.EDIT;
-    updateViewFromStatus(rootView);
+    updateViewFromStatus();
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-    getFavorFromView(favorStatus);
+    favorStatus = FavorStatus.REQUESTED;
+    getFavorFromView();
     // DB call to update Favor details
     CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
@@ -282,32 +315,32 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Updates status text and button visibility on favor status changes. */
-  private void updateViewFromStatus(View view) {
+  private void updateViewFromStatus() {
     mStatusView.setText(favorStatus.toString());
     switch (favorStatus) {
       case REQUESTED:
         {
           editFavorBtn.setText(R.string.edit_favor);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          updateViewFromParameters(view, false, true, false, true, true);
+          updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case EDIT:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.edit_status_bg));
           editFavorBtn.setText(R.string.confirm_favor_edit);
-          updateViewFromParameters(view, true, false, true, true, true);
+          updateViewFromParameters(true, false, true, true, true);
           break;
         }
       case ACCEPTED:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
-          updateViewFromParameters(view, false, true, false, false, true);
+          updateViewFromParameters(false, true, false, false, true);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          updateViewFromParameters(view, false, true, false, false, false);
+          updateViewFromParameters(false, true, false, false, false);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           break;
         }
@@ -315,13 +348,12 @@ public class FavorRequestView extends Fragment {
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
           editFavorBtn.setText(R.string.restart_request);
-          updateViewFromParameters(view, false, true, false, true, false);
+          updateViewFromParameters(false, true, false, true, false);
         }
     }
   }
 
   private void updateViewFromParameters(
-      View view,
       boolean enableImageButtons,
       boolean hideKeyboard,
       boolean textEditable,
@@ -344,7 +376,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
-  private void getFavorFromView(FavorStatus status) {
+  private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
     EditText titleElem = requireView().findViewById(R.id.title_request_view);
@@ -354,9 +386,16 @@ public class FavorRequestView extends Fragment {
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-    status = FavorStatus.convertTemporaryStatus(status);
+    // FavorStatus status = FavorStatus.convertTemporaryStatus(favorStatus);
 
-    Favor favor = new Favor(title, desc, userId, loc, status);
+    // if this is not a new favor draft, no matter inspecting a requested favor or after picking
+    // position
+    // from map view, then do not override the favor position with current user location.
+    if (currentFavor != null) {
+      loc.setLongitude(currentFavor.getLocation().getLongitude());
+      loc.setLatitude(currentFavor.getLocation().getLatitude());
+    }
+    Favor favor = new Favor(title, desc, userId, loc, favorStatus);
 
     // Upload picture to database if it exists
     if (mImageView.getDrawable() != null) {
@@ -365,10 +404,11 @@ public class FavorRequestView extends Fragment {
       // Good idea to display the result of uploading the picture (not sure how to do this)
       CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
       pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(e -> {
-        // insert something about being unable to upload picture
-        return null;
-      });
+      pictureUrl.exceptionally(
+          e -> {
+            // insert something about being unable to upload picture
+            return null;
+          });
     }
 
     // Updates the current favor

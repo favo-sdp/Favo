@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.RequiresApi;
@@ -256,4 +257,11 @@ public class MainActivity extends AppCompatActivity {
   public void onFabClick(View view) {
     navController.navigate(R.id.action_global_favorRequestView);
   }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+  }
+
 }

@@ -3,6 +3,7 @@ package ch.epfl.favo.viewmodel;
 import android.location.Location;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +20,5 @@ public interface FavorDataController {
 
   LiveData<Favor> setObservedFavor(String favorId);
 
-  LiveData<Favor> getObservedFavor();
-
-  void clearObservedFavor();
+  MutableLiveData<Favor> getObservedFavor();
 }

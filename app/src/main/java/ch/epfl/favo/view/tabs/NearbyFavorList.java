@@ -80,7 +80,7 @@ public class NearbyFavorList extends Fragment {
     return rootView;
   }
 
-  public void setupNearbyFavorsListener() {
+  private void setupNearbyFavorsListener() {
     getViewModel()
         .getFavorsAroundMe()
         .observe(
@@ -88,7 +88,7 @@ public class NearbyFavorList extends Fragment {
             stringFavorMap -> {
               try {
                 nearbyFavors = stringFavorMap;
-                displayFavorList(nearbyFavors, R.string.empty);
+                displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
               } catch (Exception e) {
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
