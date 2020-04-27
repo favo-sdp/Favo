@@ -25,6 +25,8 @@ import ch.epfl.favo.util.DependencyFactory;
 public class FavorViewModel extends ViewModel implements FavorDataController {
   private String TAG = "FIRESTORE_VIEW_MODEL";
 
+  private boolean showFavor = false;
+
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
@@ -106,4 +108,15 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public MutableLiveData<Favor> getObservedFavor() {
     return observedFavor;
   }
+
+  @Override
+  public void setShowObservedFavor(Boolean show){
+    showFavor = show;
+  }
+
+  @Override
+  public boolean isShowObservedFavor(){
+    return showFavor;
+  }
+
 }

@@ -19,6 +19,8 @@ public interface FavorDataController {
   LiveData<Map<String, Favor>> getFavorsAroundMe();//used in nearbylistview
 
   LiveData<Favor> setObservedFavor(String favorId);
-
   MutableLiveData<Favor> getObservedFavor();
+
+  public void setShowObservedFavor(Boolean show);
+  public boolean isShowObservedFavor();
 }

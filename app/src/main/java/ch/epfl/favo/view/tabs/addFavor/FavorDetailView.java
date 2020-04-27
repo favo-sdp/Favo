@@ -99,6 +99,7 @@ public class FavorDetailView extends Fragment {
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
     locationAccessBtn.setOnClickListener(
         v -> {
+          favorViewModel.setShowObservedFavor(true);
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);
         });

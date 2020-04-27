@@ -159,7 +159,8 @@ public class MapPage extends Fragment
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null) {
+                if (favor != null && favorViewModel.isShowObservedFavor()) {
+                  favorViewModel.setShowObservedFavor(false);
                   focusedFavor = favor;
                   boolean isRequested = // check if favor is requested
                       favor

@@ -15,6 +15,7 @@ import ch.epfl.favo.viewmodel.FavorDataController;
 public class FakeViewModel extends ViewModel implements FavorDataController {
   private boolean throwError = false;
   private CompletableFuture result = getSuccessfulCompletableFuture();
+  private boolean showFavor = false;
 
   public void setThrowError(boolean t) {
     throwError = t;
@@ -95,6 +96,16 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   @Override
   public MutableLiveData<Favor> getObservedFavor() {
     return observedFavorResult;
+  }
+
+  @Override
+  public void setShowObservedFavor(Boolean show) {
+    showFavor = show;
+  }
+
+  @Override
+  public boolean isShowObservedFavor() {
+    return showFavor;
   }
 
 }
