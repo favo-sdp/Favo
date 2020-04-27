@@ -39,7 +39,6 @@ public class FavorDetailView extends Fragment {
   private Button chatBtn;
   private TextView statusText;
   private FavorDataController favorViewModel;
-  private boolean toMapView = false;
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -68,14 +67,6 @@ public class FavorDetailView extends Fragment {
     return rootView;
   }
 
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    // prevent the observed favor to be erased if the destination is map view
-    if (!toMapView) favorViewModel.getObservedFavor().setValue(null);
-    toMapView = false;
-  }
-
   public FavorDataController getViewModel() {
     return favorViewModel;
   }
@@ -91,7 +82,10 @@ public class FavorDetailView extends Fragment {
                 if (favor != null) {
                   currentFavor = favor;
                   displayFromFavor(rootView, currentFavor);
-                }  else Log.d("Testd", "favor is null");
+                }  else {
+                  Log.d("OMG", "null");
+                  throw new RuntimeException("favor retrieved from db is null");
+                }
               } catch (Exception e) {
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
@@ -107,7 +101,6 @@ public class FavorDetailView extends Fragment {
         v -> {
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);
-          toMapView = true;
         });
 
     // If clicking for the first time, then accept the favor

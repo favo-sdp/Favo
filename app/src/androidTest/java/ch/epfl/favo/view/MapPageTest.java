@@ -40,7 +40,6 @@ public class MapPageTest {
       new ActivityTestRule<MainActivity>(MainActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          Log.d("pasS", "MapTest");
           mockDatabaseWrapper.setThrowError(true);
           DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
@@ -59,7 +58,6 @@ public class MapPageTest {
 
   @Test
   public void RetrieveNearbyFavorsExceptionShowSnackBarTest() throws InterruptedException {
-    Log.d("pasS", "during test !!!!!! ");
     mockDatabaseWrapper.setThrowError(true);
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     onView(withId(R.id.list_switch)).check(matches(isDisplayed())).perform(click());
@@ -68,7 +66,6 @@ public class MapPageTest {
     onView(withId(R.id.map_switch)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
-    Log.d("pasS", "MapTest finish");
     // check snackbar shows
     // onView(withId(com.google.android.material.R.id.snackbar_text))
     //       .check(matches(withText(R.string.nearby_favors_exception)));

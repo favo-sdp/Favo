@@ -70,9 +70,6 @@ public class FavorRequestView extends Fragment {
   private Button editFavorBtn;
   private Button chatBtn;
   private Button locationAccessBtn;
-
-  private boolean toMapView = false;
-  private boolean fromMapView = false;
   private Favor currentFavor;
 
   public FavorRequestView() {
@@ -109,14 +106,6 @@ public class FavorRequestView extends Fragment {
     return rootView;
   }
 
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    // prevent the observed favor to be erased if the destination is map view
-    if (!toMapView) favorViewModel.getObservedFavor().setValue(null);
-    toMapView = false;
-    fromMapView = false;
-  }
 
   public FavorDataController getViewModel() {
     return favorViewModel;
@@ -136,10 +125,11 @@ public class FavorRequestView extends Fragment {
                     displayFavorInfo(rootView);
                     setFavorActivatedView(rootView);
                   } else {
-                    fromMapView = true;
                     mTitleView.setText(currentFavor.getTitle());
                     mDescriptionView.setText(currentFavor.getDescription());
                   }
+                } else {
+                  throw new RuntimeException("favor retrieved from db is null");
                 }
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
@@ -192,7 +182,6 @@ public class FavorRequestView extends Fragment {
           CommonTools.hideSoftKeyboard(requireActivity());
           favorViewModel.getObservedFavor().setValue(currentFavor);
           // signal the destination is map view
-          toMapView = true;
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);
         });

@@ -250,7 +250,7 @@ public class AddFavorTest {
     // Try to click on edit
     FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    runOnUiThread(() -> viewModel.setObservedFavorResult((Favor)null));
+    runOnUiThread(() -> viewModel.setObservedFavorResult(null));
     getInstrumentation().waitForIdleSync();
     // check error message is printed
     onView(withId(com.google.android.material.R.id.snackbar_text))

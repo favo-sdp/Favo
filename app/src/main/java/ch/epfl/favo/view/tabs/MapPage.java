@@ -67,8 +67,7 @@ public class MapPage extends Fragment
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
   private boolean mLocationPermissionGranted = false;
-  private boolean first = true;
-  private boolean toRequestView = false;
+  private boolean firstOpenApp = true;
   private ArrayList<Marker> newMarkers = new ArrayList<>();
 
   public MapPage() {
@@ -103,14 +102,6 @@ public class MapPage extends Fragment
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
     return view;
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    // prevent the observed favor to be erased if the destination is the FavorRequest view
-    if (!toRequestView) favorViewModel.getObservedFavor().setValue(null);
-    toRequestView = false;
   }
 
   @Override
@@ -154,9 +145,9 @@ public class MapPage extends Fragment
     }
     // only when the app is firstly opened, the map view is centered on my location,
     // otherwise just return to where you left before
-    if (focusedFavor == null && first) {
+    if (focusedFavor == null && firstOpenApp) {
       centerViewOnMyLocation();
-      first = false;
+      firstOpenApp = false;
     }
   }
 
@@ -369,7 +360,6 @@ public class MapPage extends Fragment
         focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
         focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
         favorViewModel.getObservedFavor().setValue(focusedFavor);
-        toRequestView = true;
       }
     }
     if (isRequested) {
