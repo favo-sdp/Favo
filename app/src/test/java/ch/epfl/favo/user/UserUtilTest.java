@@ -19,6 +19,7 @@ import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class UserUtilTest {
@@ -78,6 +79,8 @@ public class UserUtilTest {
 
   @Test
   public void testUpdateUser() {
+    Mockito.doReturn(successfulFuture).when(mockCollectionWrapper).updateDocument(anyString(),anyMap());
+    UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
     Assert.assertTrue(UserUtil.getSingleInstance().updateUser(Mockito.mock(User.class)).isDone());
   }
 

@@ -11,7 +11,7 @@ import org.junit.runner.RunWith;
 import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
-import ch.epfl.favo.MockUserUtil;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
@@ -25,7 +25,7 @@ import static ch.epfl.favo.util.DependencyFactory.setCurrentFirebaseUser;
 
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityInstrumentedTest {
-  private MockUserUtil mockUserUtil = new MockUserUtil();
+  private FakeUserUtil fakeUserUtil = new FakeUserUtil();
   @Rule
   public final ActivityTestRule<SignInActivity> activityTestRule =
           new ActivityTestRule<SignInActivity>(SignInActivity.class) {
@@ -34,7 +34,7 @@ public class SignInActivityInstrumentedTest {
 //              DependencyFactory.setCurrentFirebaseUser(
 //                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
               DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-              DependencyFactory.setCurrentUserRepository(mockUserUtil);
+              DependencyFactory.setCurrentUserRepository(fakeUserUtil);
             }
           };
   @After
@@ -53,16 +53,16 @@ public class SignInActivityInstrumentedTest {
   public void testSignInFlowWhenUserNotFound() throws Throwable{
     setCurrentFirebaseUser(
             new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-    mockUserUtil.setFindUserFail(true);
-    DependencyFactory.setCurrentUserRepository(mockUserUtil);
+    fakeUserUtil.setFindUserFail(true);
+    DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
   }
   @Test
   public void testSnackBarShowsWhenNewUserFailsToBePosted() throws Throwable{
     setCurrentFirebaseUser(
             new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-    mockUserUtil.setThrowResult(new RuntimeException());
-    DependencyFactory.setCurrentUserRepository(mockUserUtil);
+    fakeUserUtil.setThrowResult(new RuntimeException());
+    DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
     //check fail snackbar shows TODO: Figure out how to show snackbar
 //    onView(withId(com.google.android.material.R.id.snackbar_text))
