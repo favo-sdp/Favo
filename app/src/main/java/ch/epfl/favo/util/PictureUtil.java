@@ -1,7 +1,10 @@
 package ch.epfl.favo.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
@@ -10,11 +13,19 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.database.DatabaseWrapper;
+
+import static android.content.Context.MODE_PRIVATE;
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 @SuppressLint("NewApi")
 public class PictureUtil {
@@ -92,5 +103,46 @@ public class PictureUtil {
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
     return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);
+  }
+
+
+  public static String saveToInternalStorage(Bitmap bitmapImage, String favorId, String picNum) {
+    @SuppressLint("RestrictedApi") ContextWrapper cw = new ContextWrapper(getApplicationContext());
+    File directory = new File(cw.getFilesDir(), favorId);
+    File imagePath = new File(directory, String.format("%s.jpg", picNum));
+
+    try {
+      directory.createNewFile();
+//      imagePath.createNewFile();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+
+    FileOutputStream fos = null;
+    try {
+      fos = new FileOutputStream(imagePath, false);
+      bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        try {
+          fos.close();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+    }
+    return directory.getAbsolutePath();
+  }
+
+
+  public static Bitmap loadFromInternalStorage(String pathToFolder, String picNum) {
+    try {
+      File image = new File(pathToFolder, String.format("%s.jpg", picNum));
+      return BitmapFactory.decodeStream(new FileInputStream(image));
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }
