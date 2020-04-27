@@ -123,7 +123,7 @@ public class PictureUtil {
 
     FileOutputStream fos = null;
     try {
-      fos = new FileOutputStream(imagePath, false);
+      fos = new FileOutputStream(directory, false);
       bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
     } catch (Exception e) {
         e.printStackTrace();
