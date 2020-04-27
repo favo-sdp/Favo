@@ -21,7 +21,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
 @SuppressLint("NewApi")
-public class UserUtil {
+public class UserUtil implements IUserUtil {
   /*
   TODO: Design singleton constructor and logic
    */
@@ -44,6 +44,7 @@ public class UserUtil {
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
+  @Override
   public CompletableFuture postUser(User user)
       { // TODO: catch exception in view not here
       return collection.addDocument(user);
@@ -53,6 +54,7 @@ public class UserUtil {
    * @param isRequested : if true favor is requested. If false favor is accepted
    * @return
    */
+  @Override
   public CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
     return findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenCompose(
@@ -65,12 +67,14 @@ public class UserUtil {
             });
   }
 
+  @Override
   public CompletableFuture updateUser(User user) {
     return collection.updateDocument(
         DependencyFactory.getCurrentFirebaseUser().getUid(), user.toMap());
   }
 
   /** @param id A FireBase Uid to search for in Users table. */
+  @Override
   public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
     return collection.getDocument(id);
   }

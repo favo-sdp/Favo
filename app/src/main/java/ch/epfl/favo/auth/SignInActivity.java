@@ -2,8 +2,8 @@ package ch.epfl.favo.auth;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,20 +18,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
 @SuppressLint("NewApi")
 public class SignInActivity extends AppCompatActivity {
 
-  private static final int RC_SIGN_IN = 123;
+  public static final int RC_SIGN_IN = 123;
+  private static final String TAG = "SignInActivity";
   private Locator mGpsTracker;
 
   @Override
@@ -54,6 +60,10 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     startActivityForResult(createSignInIntent(), RC_SIGN_IN);
+  }
+
+  private IUserUtil getCurrentUserUtil() {
+    return DependencyFactory.getCurrentUserRepository();
   }
 
   private void checkPlayServices() {
@@ -112,7 +122,11 @@ public class SignInActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, intent);
 
     if (requestCode == RC_SIGN_IN) {
-      handleSignInResponse(resultCode);
+      try {
+        handleSignInResponse(resultCode);
+      } catch (Exception e) {
+        CommonTools.showSnackbar(getCurrentFocus(), getString(R.string.fui_error_unknown));
+      }
     }
   }
 
@@ -132,7 +146,8 @@ public class SignInActivity extends AppCompatActivity {
     finish();
   }
 
-  void handleSignInResponse(int resultCode) {
+  void handleSignInResponse(int resultCode)
+      throws InterruptedException, ExecutionException, TimeoutException {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
@@ -140,29 +155,45 @@ public class SignInActivity extends AppCompatActivity {
       // Lookup user with Firebase Id in Db to extract details
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
-      CompletableFuture<User> userFuture = UserUtil.getSingleInstance().findUser(userId);
+      CompletableFuture<User> userFuture = getCurrentUserUtil().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Add/update user info depending on db status
-      CompletableFuture postToFirebaseDb =
-          userFuture.thenCompose(
-              (user) -> {
-                if (user == null) {
-                  String name = currentUser.getDisplayName();
-                  String email = currentUser.getEmail();
-                  Uri photo = currentUser.getPhotoUrl();
-                  FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-                  user = new User(userId, name, email, deviceId, null, loc);
-                } else if (!deviceId.equals(user.getDeviceId())) {
-                  user.setDeviceId(deviceId);
-                }
-                // post user to db
-                final User finalUser = user;
-                return UserUtil.getSingleInstance()
-                    .postUser(finalUser)
-                    .thenCompose(
-                        o -> UserUtil.getSingleInstance().retrieveUserRegistrationToken(finalUser));
-              });
-      postToFirebaseDb.thenAccept(o -> startMainActivity());
+      CompletableFuture<User> editUserFuture = userFuture.thenCompose(editDeviceId(deviceId));
+      CompletableFuture<User> newUserFuture =
+          userFuture
+              .exceptionally(
+                  throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()))
+              .whenComplete(postNewUser());
+      CompletableFuture postUserResult =
+          editUserFuture.acceptEither(newUserFuture, user -> startMainActivity());
+      postUserResult.exceptionally(
+          ex -> {
+            Log.d(TAG, "failed to post user");
+            throw new RuntimeException();
+          });
     }
+  }
+
+  private BiConsumer<User, Throwable> postNewUser() {
+    return (user, throwable) -> {
+      final User finalUser = user;
+      CompletableFuture postNewUser =
+          getCurrentUserUtil()
+              .postUser(finalUser)
+              .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(finalUser));
+      postNewUser.exceptionally(
+          e -> {
+            throw new RuntimeException("Post new user failed");
+          });
+    };
+  }
+
+  private Function<User, CompletionStage<User>> editDeviceId(String deviceId) {
+    return (user) -> { // user is not null
+      if (!deviceId.equals(user.getDeviceId())) {
+        user.setDeviceId(deviceId);
+        return getCurrentUserUtil().updateUser(user);
+      } else return CompletableFuture.supplyAsync(() -> null);
+    };
   }
 }

@@ -21,7 +21,7 @@ import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 @SuppressLint("NewApi")
@@ -39,7 +39,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return DependencyFactory.getCurrentFavorRepository();
   }
 
-  public UserUtil getUserRepository() {
+  public IUserUtil getUserRepository() {
     return DependencyFactory.getCurrentUserRepository();
   }
 

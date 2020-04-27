@@ -24,12 +24,15 @@ import ch.epfl.favo.common.DatabaseUpdater;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.user.IUserUtil;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
   private static Locator currentGpsTracker;
-  private static FirebaseUser currentUser;
+  private static FirebaseUser currentFirebaseUser;
+  private static User currentUser;
   private static DatabaseUpdater currentCollectionWrapper;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
@@ -41,7 +44,7 @@ public class DependencyFactory {
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
   private static FavorUtil currentFavorRepository;
-  private static UserUtil currentUserRepository;
+  private static IUserUtil currentUserRepository;
   private static FirebaseInstanceId currentFirebaseInstanceId;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
@@ -60,7 +63,7 @@ public class DependencyFactory {
 
   public static FirebaseUser getCurrentFirebaseUser() {
     if (testMode) {
-      return currentUser;
+      return currentFirebaseUser;
     }
     return FirebaseAuth.getInstance().getCurrentUser();
   }
@@ -68,7 +71,7 @@ public class DependencyFactory {
   @VisibleForTesting
   public static void setCurrentFirebaseUser(FirebaseUser dependency) {
     testMode = true;
-    currentUser = dependency;
+    currentFirebaseUser = dependency;
   }
 
   public static Locator getCurrentGpsTracker(@Nullable Context context) {
@@ -186,12 +189,12 @@ public class DependencyFactory {
   }
 
   @VisibleForTesting
-  public static void setCurrentUserRepository(UserUtil dependency) {
+  public static void setCurrentUserRepository(IUserUtil dependency) {
     testMode = true;
     currentUserRepository = dependency;
   }
 
-  public static UserUtil getCurrentUserRepository() {
+  public static IUserUtil getCurrentUserRepository() {
     if (testMode && currentUserRepository != null) return currentUserRepository;
     return UserUtil.getSingleInstance();
   }

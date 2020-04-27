@@ -2,6 +2,8 @@ package ch.epfl.favo.user;
 
 import android.location.Location;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +59,16 @@ public class User implements Document {
     this.activeRequestingFavors = 0;
   }
 
+  public User(FirebaseUser firebaseUser, String deviceId, Location location) {
+    this(
+        firebaseUser.getUid(),
+        firebaseUser.getDisplayName(),
+        firebaseUser.getEmail(),
+        deviceId,
+        null,
+        new FavoLocation(location));
+  }
+
   // Getters
   @Override
   public String getId() {
@@ -108,15 +120,19 @@ public class User implements Document {
     return activeAcceptingFavors;
   }
 
-  public int getActiveRequestingFavors() { return activeRequestingFavors; }
+  public int getActiveRequestingFavors() {
+    return activeRequestingFavors;
+  }
 
   public void setActiveAcceptingFavors(int totalAcceptingFavors) {
-    if (totalAcceptingFavors < 0 || totalAcceptingFavors>MAX_ACCEPTING_FAVORS) throw new IllegalRequestException("Cannot accept");
+    if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
+      throw new IllegalRequestException("Cannot accept");
     this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
   public void setActiveRequestingFavors(int totalRequestingFavors) {
-    if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS) throw new IllegalRequestException("Cannot request");
+    if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
+      throw new IllegalRequestException("Cannot request");
     this.activeRequestingFavors = totalRequestingFavors;
   }
 
@@ -133,7 +149,9 @@ public class User implements Document {
   }
 
   // Can only accept or request favors
-  boolean canAccept() { return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;  }
+  boolean canAccept() {
+    return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;
+  }
 
   boolean canRequest() {
     return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
