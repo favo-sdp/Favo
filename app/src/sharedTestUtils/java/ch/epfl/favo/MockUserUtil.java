@@ -9,7 +9,7 @@ import ch.epfl.favo.user.User;
 
 public class MockUserUtil implements IUserUtil {
   private CompletableFuture successfulCompletableFuture = new CompletableFuture(){{complete(null);}};
-  private CompletableFuture failedCompletableFuture = new CompletableFuture();
+  private CompletableFuture failedCompletableFuture = new CompletableFuture(){{completeExceptionally(new RuntimeException());}};
   private CompletableFuture<User> successfulUserFuture = new CompletableFuture(){{complete(FakeItemFactory.getUser());}};
   private boolean isThrowingError=false;
   public void setThrowResult(Throwable throwable){

@@ -54,7 +54,19 @@ public class SignInActivityInstrumentedTest {
     setCurrentFirebaseUser(
             new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     mockUserUtil.setFindUserFail(true);
+    DependencyFactory.setCurrentUserRepository(mockUserUtil);
     handleSignInResponse(RESULT_OK);
+  }
+  @Test
+  public void testSnackBarShowsWhenNewUserFailsToBePosted() throws Throwable{
+    setCurrentFirebaseUser(
+            new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    mockUserUtil.setThrowResult(new RuntimeException());
+    DependencyFactory.setCurrentUserRepository(mockUserUtil);
+    handleSignInResponse(RESULT_OK);
+    //check fail snackbar shows TODO: Figure out how to show snackbar
+//    onView(withId(com.google.android.material.R.id.snackbar_text))
+//            .check(matches(withText(R.string.fui_error_unknown)));
   }
 
   private void handleSignInResponse(int result) throws Throwable {

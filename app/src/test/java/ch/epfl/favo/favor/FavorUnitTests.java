@@ -9,6 +9,7 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.FavoLocation;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -24,6 +25,8 @@ public class FavorUnitTests {
 
     Favor favor = FakeItemFactory.getFavor();
 
+    assertFalse(favor.getIsArchived());
+    assertNotNull(favor.getUserIds());
     assertEquals(TestConstants.TITLE, favor.getTitle());
     assertEquals(TestConstants.DESCRIPTION, favor.getDescription());
     assertEquals(TestConstants.REQUESTER_ID, favor.getRequesterId());

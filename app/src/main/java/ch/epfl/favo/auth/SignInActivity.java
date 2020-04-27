@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -122,11 +120,7 @@ public class SignInActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, intent);
 
     if (requestCode == RC_SIGN_IN) {
-      try {
         handleSignInResponse(resultCode);
-      } catch (Exception e) {
-        CommonTools.showSnackbar(getCurrentFocus(), getString(R.string.fui_error_unknown));
-      }
     }
   }
 
@@ -146,8 +140,7 @@ public class SignInActivity extends AppCompatActivity {
     finish();
   }
 
-  void handleSignInResponse(int resultCode)
-      throws InterruptedException, ExecutionException, TimeoutException {
+  void handleSignInResponse(int resultCode) throws RuntimeException {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
@@ -169,7 +162,8 @@ public class SignInActivity extends AppCompatActivity {
       postUserResult.exceptionally(
           ex -> {
             Log.d(TAG, "failed to post user");
-            throw new RuntimeException();
+            CommonTools.showSnackbar(getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
+            return null;
           });
     }
   }
@@ -181,10 +175,6 @@ public class SignInActivity extends AppCompatActivity {
           getCurrentUserUtil()
               .postUser(finalUser)
               .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(finalUser));
-      postNewUser.exceptionally(
-          e -> {
-            throw new RuntimeException("Post new user failed");
-          });
     };
   }
 
