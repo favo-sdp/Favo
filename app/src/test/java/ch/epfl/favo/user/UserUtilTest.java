@@ -76,7 +76,6 @@ public class UserUtilTest {
             .isCompletedExceptionally());
   }
 
-
   @Test
   public void testUpdateUser() {
     Assert.assertTrue(UserUtil.getSingleInstance().updateUser(Mockito.mock(User.class)).isDone());
@@ -139,7 +138,7 @@ public class UserUtilTest {
     Mockito.doReturn(mockTokenId).when(mockIdResult).getToken();
     // stub result in TaskToFutureAdapter
     CompletableFuture<InstanceIdResult> idFuture =
-        new CompletableFuture() {
+        new CompletableFuture<InstanceIdResult>() {
           {
             complete(mockIdResult);
           }

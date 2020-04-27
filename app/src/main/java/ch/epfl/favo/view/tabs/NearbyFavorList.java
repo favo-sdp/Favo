@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +36,7 @@ import static androidx.navigation.Navigation.findNavController;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
+
 public class NearbyFavorList extends Fragment {
 
   private TextView tipTextView;
@@ -75,7 +75,7 @@ public class NearbyFavorList extends Fragment {
 
     viewModel =
         (FavorDataController)
-            new ViewModelProvider(this).get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(requireActivity()).get(DependencyFactory.getCurrentViewModelClass());
 
     return rootView;
   }
@@ -89,12 +89,11 @@ public class NearbyFavorList extends Fragment {
   public void
       setupNearbyFavorsListener() { // TODO: figure out a way to share view model without using main
                                     // activity life cycle
-    String setting =
-        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
-    double radius = Double.parseDouble(setting.split(" ")[0]);
+//    String setting =
+//        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+//    double radius = Double.parseDouble(setting.split(" ")[0]);
     getViewModel()
-        .getFavorsAroundMe(
-            DependencyFactory.getCurrentGpsTracker(getContext()).getLocation(), radius)
+        .getFavorsAroundMe()
         .observe(
             getViewLifecycleOwner(),
             stringFavorMap -> {
@@ -106,6 +105,8 @@ public class NearbyFavorList extends Fragment {
               }
             });
   }
+
+
 
   public FavorDataController getViewModel() {
     return viewModel;
@@ -204,4 +205,6 @@ public class NearbyFavorList extends Fragment {
               return false;
             });
   }
+
 }
+

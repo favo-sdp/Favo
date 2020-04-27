@@ -354,23 +354,28 @@ public class AddFavorTest {
   public void testSnackBarShowsWhenFailCancelToDb() throws Throwable {
     FavorRequestView favorRequestView = launchFragment(fakeFavor);
     FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
-    //Test any kind of error
+    // Test any kind of error
     runOnUiThread(() -> fakeViewModel.setThrowError(new RuntimeException()));
     onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.update_favor_error)));
   }
+
   @Test
-  public void testErrorMessageIsDisplayedWhenMaximumNumberOfFavorsHasBeenReached() throws Throwable {
+  public void testErrorMessageIsDisplayedWhenMaximumNumberOfFavorsHasBeenReached()
+      throws Throwable {
     FavorRequestView favorRequestView = launchFragment(null);
     getInstrumentation().waitForIdleSync();
     FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
-    runOnUiThread(()->fakeViewModel.setThrowError(new IllegalRequestException("Max Number of Requested Favors is reached!")));
+    runOnUiThread(
+        () ->
+            fakeViewModel.setThrowError(
+                new IllegalRequestException("Max Number of Requested Favors is reached!")));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.illegal_request_error)));
+        .check(matches(withText(R.string.illegal_request_error)));
   }
 
   public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap) {

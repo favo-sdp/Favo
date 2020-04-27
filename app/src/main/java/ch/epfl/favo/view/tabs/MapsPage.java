@@ -43,8 +43,6 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
-import static ch.epfl.favo.util.CommonTools.FAVOR_ARGS;
-
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -88,7 +86,7 @@ public class MapsPage extends Fragment
     else button.setVisibility(View.INVISIBLE);
     favorViewModel =
         (FavorDataController)
-            new ViewModelProvider(this).get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(requireActivity()).get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
@@ -117,21 +115,17 @@ public class MapsPage extends Fragment
     }
     try {
       setupNearbyFavorsListener();
-
-      if (getArguments() != null) {
-        String favorId = getArguments().getString(FAVOR_ARGS);
-        setupFocusedFavorListen(favorId);
-      }
+      setupFocusedFavorListen();
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
     if (focusedFavor == null) centerViewOnMyLocation();
   }
 
-  private void setupFocusedFavorListen(String favorId) {
+  private void setupFocusedFavorListen() {
 
     getViewModel()
-        .setObservedFavor(favorId)
+        .getObservedFavor()
         .observe(
             getViewLifecycleOwner(),
             favor -> {

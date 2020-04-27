@@ -142,25 +142,27 @@ public class SignInActivity extends AppCompatActivity {
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
       CompletableFuture<User> userFuture = UserUtil.getSingleInstance().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
-
       // Add/update user info depending on db status
-      userFuture.whenComplete(
-          (user, e) -> {
-            if (user == null) {
-              String name = currentUser.getDisplayName();
-              String email = currentUser.getEmail();
-              Uri photo = currentUser.getPhotoUrl();
-              FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-              user = new User(userId, name, email, deviceId, null, loc);
-            } else if (!deviceId.equals(user.getDeviceId())) {
-              user.setDeviceId(deviceId);
-            }
-
-            UserUtil.getSingleInstance().postUser(user);
-            UserUtil.getSingleInstance().retrieveUserRegistrationToken(user);
-          });
-
-      startMainActivity();
+      CompletableFuture postToFirebaseDb =
+          userFuture.thenCompose(
+              (user) -> {
+                if (user == null) {
+                  String name = currentUser.getDisplayName();
+                  String email = currentUser.getEmail();
+                  Uri photo = currentUser.getPhotoUrl();
+                  FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
+                  user = new User(userId, name, email, deviceId, null, loc);
+                } else if (!deviceId.equals(user.getDeviceId())) {
+                  user.setDeviceId(deviceId);
+                }
+                // post user to db
+                final User finalUser = user;
+                return UserUtil.getSingleInstance()
+                    .postUser(finalUser)
+                    .thenCompose(
+                        o -> UserUtil.getSingleInstance().retrieveUserRegistrationToken(finalUser));
+              });
+      postToFirebaseDb.thenAccept(o -> startMainActivity());
     }
   }
 }
