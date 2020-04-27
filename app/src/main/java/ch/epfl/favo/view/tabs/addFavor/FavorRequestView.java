@@ -93,7 +93,7 @@ public class FavorRequestView extends Fragment {
     // Inject argument
         favorViewModel =
             (FavorDataController)
-                new ViewModelProvider(this).get(DependencyFactory.getCurrentViewModelClass());
+                new ViewModelProvider(requireActivity()).get(DependencyFactory.getCurrentViewModelClass());
 
     return rootView;
   }

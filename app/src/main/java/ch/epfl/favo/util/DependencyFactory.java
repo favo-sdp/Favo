@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,6 +42,7 @@ public class DependencyFactory {
   private static Class currentViewModelClass;
   private static FavorUtil currentFavorRepository;
   private static UserUtil currentUserRepository;
+  private static FirebaseInstanceId currentFirebaseInstanceId;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -158,31 +160,50 @@ public class DependencyFactory {
   public static void setCurrentFavorCollection(String collection) {
     currentFavorCollection = collection;
   }
+
   @VisibleForTesting
-  public static void setCurrentViewModelClass(Class dependency){
+  public static void setCurrentViewModelClass(Class dependency) {
     testMode = true;
     currentViewModelClass = dependency;
   }
-  public static Class getCurrentViewModelClass(){
-    if (testMode && currentViewModelClass!=null) {return currentViewModelClass;}
+
+  public static Class getCurrentViewModelClass() {
+    if (testMode && currentViewModelClass != null) {
+      return currentViewModelClass;
+    }
     return FavorViewModel.class;
   }
+
   @VisibleForTesting
-  public static void setCurrentFavorRepository(FavorUtil dependency){
+  public static void setCurrentFavorRepository(FavorUtil dependency) {
     testMode = true;
     currentFavorRepository = dependency;
   }
-  public static FavorUtil getCurrentFavorRepository(){
-    if (testMode && currentFavorRepository !=null) return currentFavorRepository;
+
+  public static FavorUtil getCurrentFavorRepository() {
+    if (testMode && currentFavorRepository != null) return currentFavorRepository;
     return FavorUtil.getSingleInstance();
   }
+
   @VisibleForTesting
-  public static void setCurrentUserRepository(UserUtil dependency){
+  public static void setCurrentUserRepository(UserUtil dependency) {
     testMode = true;
     currentUserRepository = dependency;
   }
-  public static UserUtil getCurrentUserRepository(){
-    if (testMode && currentUserRepository !=null) return currentUserRepository;
+
+  public static UserUtil getCurrentUserRepository() {
+    if (testMode && currentUserRepository != null) return currentUserRepository;
     return UserUtil.getSingleInstance();
+  }
+
+  @VisibleForTesting
+  public static void setCurrentFirebaseNotificationInstanceId(FirebaseInstanceId dependency) {
+    testMode = true;
+    currentFirebaseInstanceId = dependency;
+  }
+
+  public static FirebaseInstanceId getCurrentFirebaseNotificationInstanceId() {
+    if (testMode && currentFirebaseInstanceId != null) return currentFirebaseInstanceId;
+    return FirebaseInstanceId.getInstance();
   }
 }

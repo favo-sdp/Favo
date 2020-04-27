@@ -27,11 +27,13 @@ import ch.epfl.favo.util.DependencyFactory;
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements FavorDataController {
   String TAG = "FIRESTORE_VIEW_MODEL";
+  private Location mCurrentLocation;
+  private double mRadius = -1.0;
 
   MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  //MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
+  // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
   public FavorUtil getFavorRepository() {
     return DependencyFactory.getCurrentFavorRepository();
@@ -41,42 +43,47 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return DependencyFactory.getCurrentUserRepository();
   }
 
-
   // save address to firebase
   @Override
   public CompletableFuture requestFavor(Favor favor) {
-    return changeActiveFavorCount(true,1) // if user can request favor then post it in the favor collection
+    return changeActiveFavorCount(
+            true, 1) // if user can request favor then post it in the favor collection
         .thenCompose((f) -> getFavorRepository().requestFavor(favor));
   }
 
-
   public CompletableFuture updateFavor(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
-    return changeActiveFavorCount(isRequested,activeFavorsCountChange)
+    return changeActiveFavorCount(isRequested, activeFavorsCountChange)
         .thenCompose(o -> getFavorRepository().updateFavor(favor));
   }
 
   /**
-   * Tries to update the number of active favors for a given user. Detailed implementation
-   * in UserUtil
+   * Tries to update the number of active favors for a given user. Detailed implementation in
+   * UserUtil
+   *
    * @param isRequested is/are the favors requested?
    * @param change number of favors being updated
    * @return Can be completed exceptionally
    */
-  private CompletableFuture changeActiveFavorCount(boolean isRequested,int change){
-    return  getUserRepository()
-            .changeActiveFavorCount(
-                    isRequested, change);
+  private CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
+    return getUserRepository().changeActiveFavorCount(isRequested, change);
   }
 
   @Override
-  public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius) {
-    getFavorRepository()
-        .getNearbyFavors(loc, radius)
-        .addSnapshotListener(MetadataChanges.EXCLUDE,
-            (queryDocumentSnapshots, e) ->
-                activeFavorsAroundMe.setValue(
-                    getNearbyFavorsFromQuery(loc, radius, queryDocumentSnapshots, e)));
+  public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radiusInKm) {
+    if (mCurrentLocation == null) mCurrentLocation = loc;
+    if (mRadius == -1) mRadius = radiusInKm;
+    if (activeFavorsAroundMe.getValue() == null
+        || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
+      getFavorRepository()
+          .getNearbyFavors(loc, radiusInKm)
+          .addSnapshotListener(
+              MetadataChanges.EXCLUDE,
+              (queryDocumentSnapshots, e) -> {
+                activeFavorsAroundMe.postValue(
+                    getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e));
+              });
+    }
     return getFavorsAroundMe();
   }
 
@@ -91,12 +98,12 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
       FirebaseFirestoreException e) {
     handleException(e);
     List<Favor> favorsList = queryDocumentSnapshots.toObjects(Favor.class);
+
     Map<String, Favor> favorsMap = new HashMap<>();
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
-      if (favor.getRequesterId() != null
-          && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+      if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
           && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
@@ -117,7 +124,8 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public LiveData<Favor> setObservedFavor(String favorId) {
     getFavorRepository()
         .getFavorReference(favorId)
-        .addSnapshotListener(MetadataChanges.EXCLUDE,
+        .addSnapshotListener(
+            MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
               observedFavor.postValue(documentSnapshot.toObject(Favor.class));

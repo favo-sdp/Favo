@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +14,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -73,16 +75,26 @@ public class NearbyFavorList extends Fragment {
 
     viewModel =
         (FavorDataController)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(this).get(DependencyFactory.getCurrentViewModelClass());
 
-    setupNearbyFavorsListener();
     return rootView;
   }
 
-  public void setupNearbyFavorsListener() {
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    setupNearbyFavorsListener();
+  }
+
+  public void
+      setupNearbyFavorsListener() { // TODO: figure out a way to share view model without using main
+                                    // activity life cycle
+    String setting =
+        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    double radius = Double.parseDouble(setting.split(" ")[0]);
     getViewModel()
-        .getFavorsAroundMe()
+        .getFavorsAroundMe(
+            DependencyFactory.getCurrentGpsTracker(getContext()).getLocation(), radius)
         .observe(
             getViewLifecycleOwner(),
             stringFavorMap -> {
@@ -90,7 +102,7 @@ public class NearbyFavorList extends Fragment {
                 nearbyFavors = stringFavorMap;
                 displayFavorList(nearbyFavors, R.string.empty);
               } catch (Exception e) {
-                CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
   }

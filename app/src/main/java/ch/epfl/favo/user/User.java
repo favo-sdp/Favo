@@ -120,21 +120,6 @@ public class User implements Document {
     this.activeRequestingFavors = totalRequestingFavors;
   }
 
-  public void changeActiveAcceptedFavorCount(int change) {
-    if (activeAcceptingFavors + change < 0)
-      throw new RuntimeException("Cannot remove more favors.");
-    if (canAccept() || change < 0) setActiveAcceptingFavors(activeAcceptingFavors += change);
-    else throw new RuntimeException("Cannot accept more favors.");
-  }
-
-  public void changeActiveRequestedFavorCount(int change) {
-    if (activeRequestingFavors + change < 0)
-      throw new RuntimeException("Cannot remove more favors.");
-
-    if (canRequest() || change < 0) setActiveRequestingFavors(activeRequestingFavors + change);
-    else throw new RuntimeException("Cannot accept more favors.");
-  }
-
   public void setNotificationId(String notificationId) {
     this.notificationId = notificationId;
   }
@@ -148,11 +133,9 @@ public class User implements Document {
   }
 
   // Can only accept or request favors
-  boolean canAccept() {
-    return activeAcceptingFavors < MAX_ACCEPTING_FAVORS;
-  }
+  boolean canAccept() { return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;  }
 
   boolean canRequest() {
-    return activeRequestingFavors < MAX_REQUESTING_FAVORS;
+    return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 }

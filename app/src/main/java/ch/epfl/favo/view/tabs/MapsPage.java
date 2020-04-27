@@ -43,6 +43,8 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
+import static ch.epfl.favo.util.CommonTools.FAVOR_ARGS;
+
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -86,8 +88,7 @@ public class MapsPage extends Fragment
     else button.setVisibility(View.INVISIBLE);
     favorViewModel =
         (FavorDataController)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(this).get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
@@ -106,28 +107,31 @@ public class MapsPage extends Fragment
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
     String setting =
-            requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
-    try{
-    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-    }catch (Exception e){
-      CommonTools.showSnackbar(requireView(),e.getMessage());
+    try {
+      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+    } catch (Exception e) {
+      CommonTools.showSnackbar(requireView(), e.getMessage());
       return;
     }
     try {
       setupNearbyFavorsListener();
 
-      setupFocusedFavorListen();
+      if (getArguments() != null) {
+        String favorId = getArguments().getString(FAVOR_ARGS);
+        setupFocusedFavorListen(favorId);
+      }
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
     if (focusedFavor == null) centerViewOnMyLocation();
   }
 
-  private void setupFocusedFavorListen() {
+  private void setupFocusedFavorListen(String favorId) {
 
     getViewModel()
-        .getObservedFavor()
+        .setObservedFavor(favorId)
         .observe(
             getViewLifecycleOwner(),
             favor -> {
@@ -176,7 +180,10 @@ public class MapsPage extends Fragment
   }
 
   private void focusViewOnLocation(Location location) {
-    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    LatLng latLng =
+        new LatLng(
+            location.getLatitude(),
+            location.getLongitude()); // TODO: Constrain map to preference radius
     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
   }
 

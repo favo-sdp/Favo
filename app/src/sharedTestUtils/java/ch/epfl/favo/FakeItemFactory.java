@@ -37,7 +37,7 @@ public class FakeItemFactory {
         TestConstants.NAME,
         TestConstants.EMAIL,
         TestConstants.DEVICE_ID,
-        null,
+        TestConstants.BIRTHDAY,
         TestConstants.LOCATION);
   }
 
