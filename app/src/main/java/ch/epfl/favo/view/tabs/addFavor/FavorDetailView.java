@@ -57,8 +57,13 @@ public class FavorDetailView extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     if (currentFavor == null && getArguments() != null) {
-      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView, favorId);
+      if (favorViewModel.isShowObservedFavor()) {
+        favorViewModel.setShowObservedFavor(false);
+        setupGetObservedFavor();
+      } else {
+        String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+        setupFavorListener(rootView, favorId);
+      }
     } else {
       displayFromFavor(
           rootView,
@@ -71,6 +76,16 @@ public class FavorDetailView extends Fragment {
     return favorViewModel;
   }
 
+  private void setupGetObservedFavor() {
+    favorViewModel
+            .getObservedFavor()
+            .observe(
+                    getViewLifecycleOwner(),
+                    favor -> {
+                      currentFavor = favor;
+                      displayFromFavor(requireView(), currentFavor);
+                    });
+  }
   private void setupFavorListener(View rootView, String favorId) {
 
     getViewModel()
@@ -82,10 +97,7 @@ public class FavorDetailView extends Fragment {
                 if (favor != null) {
                   currentFavor = favor;
                   displayFromFavor(rootView, currentFavor);
-                }  else {
-                  Log.d("OMG", "null");
-                  throw new RuntimeException("favor retrieved from db is null");
-                }
+                } else throw new RuntimeException("favor retrieved from db is null");
               } catch (Exception e) {
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);

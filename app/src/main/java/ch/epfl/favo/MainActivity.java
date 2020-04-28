@@ -3,6 +3,7 @@ package ch.epfl.favo;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
+  private int cnt = 0;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -118,6 +120,8 @@ public class MainActivity extends AppCompatActivity {
                 showBottomNavigation();
               }
           }
+          currentMenuItem = destination.getId();
+          Log.d("MaD",currentMenuItem + "  " + cnt++ + " item  " + destination.getId() + "  "+ destination );
         });
   }
 
@@ -154,12 +158,13 @@ public class MainActivity extends AppCompatActivity {
               navController.navigate(itemId);
           }
 
-          currentMenuItem = itemId;
+          //currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
     bottomNavigationView.setOnNavigationItemSelectedListener(
         item -> {
+          Log.d("MaD",currentMenuItem + "  " + cnt++ +  " bottom " + item + " id " + item.getItemId());
           int itemId = item.getItemId();
           if (itemId == currentMenuItem) {
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -169,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
           if (itemId == R.id.nav_map) navController.popBackStack(R.id.nav_map, false);
           else navController.navigate(R.id.nav_favorList);
 
-          currentMenuItem = itemId;
+          //currentMenuItem = itemId;
           return false;
         });
   }
@@ -225,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
     if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
       mDrawerLayout.closeDrawer(GravityCompat.START);
-    else {
+    else {/*
       NavHostFragment host =
           (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
       Fragment f =
@@ -233,14 +238,15 @@ public class MainActivity extends AppCompatActivity {
               .getChildFragmentManager()
               .findFragmentById(R.id.nav_host_fragment);
 
-      if (f instanceof UserAccountPage
+     if (f instanceof UserAccountPage
           || f instanceof FragmentAbout
           || f instanceof FragmentSettings) {
         navController.popBackStack(R.id.nav_map, false);
         currentMenuItem = R.id.nav_map;
       } else {
         super.onBackPressed();
-      }
+      }*/
+      super.onBackPressed();
     }
   }
 
