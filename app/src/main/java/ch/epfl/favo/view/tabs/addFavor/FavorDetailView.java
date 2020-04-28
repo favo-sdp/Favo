@@ -35,6 +35,8 @@ import static androidx.navigation.Navigation.findNavController;
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
 
+  private String TAG = "FavorDetailView";
+
   private FavorStatus favorStatus;
   private Favor currentFavor;
   private Button locationAccessBtn;

@@ -2,10 +2,9 @@ package ch.epfl.favo.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -14,7 +13,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,13 +22,14 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.database.DatabaseWrapper;
 
-import static android.content.Context.MODE_PRIVATE;
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+import static android.graphics.BitmapFactory.decodeFile;
 
 @SuppressLint("NewApi")
 public class PictureUtil {
 
   private static PictureUtil INSTANCE = null;
+  private static final String TAG = "PictureUtil";
+
   private static final String PICTURE_FILE_EXTENSION = ".jpeg";
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
   private final FirebaseStorage storage;
@@ -106,35 +105,50 @@ public class PictureUtil {
   }
 
 
-  public static String saveToInternalStorage(Bitmap bitmapImage, String favorId, String picNum) {
-    @SuppressLint("RestrictedApi") ContextWrapper cw = new ContextWrapper(getApplicationContext());
-    File directory = new File(cw.getFilesDir(), favorId);
-    File image = new File(directory.getAbsolutePath(), "0.jpeg");
-    try {
-      directory.mkdir();
-      FileOutputStream outputStream = null;
-      outputStream = new FileOutputStream(image);
-      bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-      int x = 1;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+  public static boolean saveToInternalStorage(
+          Context context, Bitmap bitmapImage, String favorId, int picNum) {
+
+    /* Remark:
+     * The application always has permission to read and write in its internal storage directory.
+     * Thus we won't need to check/request permission here. */
+
+    // Favor-specific image directory: "/data/user/0/ch.epfl.favo/files/<Favor_id>"
+    File directory = new File(context.getFilesDir(), favorId);
+
+    // If directory does not exist, create the directory.
+    if (!directory.isDirectory()) {
+      if (!directory.mkdir())
+        Log.e(TAG, "Error: Creating new directory to store images failed.");
     }
-    return directory.getAbsolutePath();
+
+    // Create the image file and write the bitmap to file.
+    File image = new File(directory.getAbsolutePath(), String.format("%s.jpeg", picNum));
+    FileOutputStream fos = null;
+    try {
+      fos = new FileOutputStream(image);
+      bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "Error: Cannot save image to internal storage.");
+      e.printStackTrace();
+      return false;
+    } finally {
+      if (fos != null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          Log.e(TAG, "Error: Failed to close FileOutputStream");
+        }
+      }
+    }
+    return true;
   }
 
 
-  public static Bitmap loadFromInternalStorage(String pathToFolder, String picNum) {
-    try {
-//      File image = new File(pathToFolder, String.format("%s.jpeg", picNum));
-      Bitmap temp = BitmapFactory.decodeFile(pathToFolder+String.format("/%s.jpeg", picNum));
-//      Bitmap temp = BitmapFactory.decodeStream(new FileInputStream(image));
-      return temp;
-//    } catch (FileNotFoundException e) {
-//      e.printStackTrace();
-    } catch (Exception e) {
-
+  public static Bitmap loadFromInternalStorage(String pathToFolder, int picNum) {
+    Bitmap result = decodeFile(pathToFolder + String.format("/%s.jpeg", picNum));
+    if (result == null) {
+      Log.e(TAG, "Failed to load bitmap from internal storage");
     }
-    return null;
+    return result;
   }
 }
