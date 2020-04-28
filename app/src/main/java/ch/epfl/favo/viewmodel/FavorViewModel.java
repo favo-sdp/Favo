@@ -2,7 +2,6 @@ package ch.epfl.favo.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.util.Log;
 
@@ -63,8 +62,15 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
     String url = favor.getPictureUrl();
-    if (url == null) throw new RuntimeException("Invalid picture url in Favor");
-    return getPictureUtility().downloadPicture(url);
+    if (url == null) {
+      return new CompletableFuture<Bitmap>() {
+        {
+          completeExceptionally(new RuntimeException("Invalid picture url in Favor"));
+        }
+      };
+    } else {
+      return getPictureUtility().downloadPicture(url);
+    }
   }
 
   @Override

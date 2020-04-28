@@ -123,4 +123,7 @@
     <string name="start_chatting">No messages</string>
     <string name="hint_message">Write message</string>
 
+    <!-- Uploading and Downloading Pictures -->
+    <string name="download_picture_error">Unable to download picture from server</string>
+
 </resources>

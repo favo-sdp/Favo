@@ -35,12 +35,10 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
-import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
@@ -132,12 +130,15 @@ public class FavorRequestView extends Fragment {
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-      getViewModel()
-        .downloadPicture(currentFavor)
-        .thenAccept(picture -> {
-          mImageView.setImageBitmap(picture);
-          v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-        });
+      CompletableFuture<Bitmap> bitmapFuture = getViewModel().downloadPicture(currentFavor);
+      bitmapFuture.thenAccept(picture -> {
+        mImageView.setImageBitmap(picture);
+        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+      });
+      bitmapFuture.exceptionally(e -> {
+        CommonTools.showSnackbar(requireView(), getString(R.string.download_picture_error));
+        return null;
+      });
     }
 
     updateViewFromStatus(v);

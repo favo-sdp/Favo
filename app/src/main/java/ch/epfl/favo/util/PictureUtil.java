@@ -38,7 +38,7 @@ public class PictureUtil {
    * @param picture to be uploaded to Firebase Cloud Storage
    * @return CompletableFuture of the resulting url
    */
-  public static CompletableFuture<String> uploadPicture(Bitmap picture) {
+  public CompletableFuture<String> uploadPicture(Bitmap picture) {
     InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
     StorageReference storageRef =
         getStorage()
@@ -66,7 +66,7 @@ public class PictureUtil {
    * @param pictureUrl url of the picture
    * @return CompletableFuture of the picture represented as a Bitmap
    */
-  public static CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
+  public CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
       getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
 

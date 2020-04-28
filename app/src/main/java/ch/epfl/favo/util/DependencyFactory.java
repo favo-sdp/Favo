@@ -179,4 +179,8 @@ public class DependencyFactory {
     if (testMode && currentPictureUtility!=null) return currentPictureUtility;
     return PictureUtil.getInstance();
   }
+  public static void setCurrentPictureUtility(PictureUtil pictureUtil){
+    testMode = true;
+    currentPictureUtility = pictureUtil;
+  }
 }
