@@ -77,19 +77,17 @@ public class User implements Document {
 
   @Override
   public Map<String, Object> toMap() {
-    return new HashMap<String, Object>() {
-      {
-        put(ID, id);
-        put(NAME, name);
-        put(EMAIL, email);
-        put(DEVICE_ID, deviceId);
-        put(NOTIFICATION_ID, notificationId);
-        put(BIRTH_DATE, birthDate);
-        put(LOCATION, location);
-        put(ACTIVE_ACCEPTING_FAVORS, activeAcceptingFavors);
-        put(ACTIVE_REQUESTING_FAVORS, activeRequestingFavors);
-      }
-    };
+    Map<String, Object> result = new HashMap<>();
+    result.put(ID, id);
+    result.put(NAME, name);
+    result.put(EMAIL, email);
+    result.put(DEVICE_ID, deviceId);
+    result.put(NOTIFICATION_ID, notificationId);
+    result.put(BIRTH_DATE, birthDate);
+    result.put(LOCATION, location);
+    result.put(ACTIVE_ACCEPTING_FAVORS, activeAcceptingFavors);
+    result.put(ACTIVE_REQUESTING_FAVORS, activeRequestingFavors);
+    return result;
   }
 
   public String getName() {

@@ -26,6 +26,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -38,8 +39,8 @@ public class FavorDetailView extends Fragment {
   private FloatingActionButton locationAccessBtn;
   private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
-  private TextView statusText;
   private FavorDataController favorViewModel;
+  private NonClickableToolbar toolbar;
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -51,8 +52,8 @@ public class FavorDetailView extends Fragment {
     // inflate view
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     setupButtons(rootView);
-    statusText = rootView.findViewById(R.id.status_text_accept_view);
 
+    toolbar = requireActivity().findViewById(R.id.toolbar);
     favorViewModel =
         (FavorDataController)
             new ViewModelProvider(requireActivity())
@@ -180,7 +181,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void updateDisplayFromViewStatus() {
-    statusText.setText(favorStatus.toString());
+    toolbar.setTitle(favorStatus.toString());
     updateButtonDisplay();
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
@@ -189,18 +190,18 @@ public class FavorDetailView extends Fragment {
         }
       case ACCEPTED:
         {
-          statusText.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
         }
 
       case REQUESTED:
         {
-          statusText.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           break;
         }
       default: // includes accepted by other
         enableButtons(false);
-        statusText.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+        toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
 
@@ -231,5 +232,11 @@ public class FavorDetailView extends Fragment {
     TextView textView = rootView.findViewById(id);
     textView.setText(text);
     textView.setKeyListener(null);
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    CommonTools.hideToolBar(toolbar);
   }
 }

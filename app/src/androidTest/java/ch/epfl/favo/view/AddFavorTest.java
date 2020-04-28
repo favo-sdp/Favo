@@ -48,6 +48,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -217,9 +218,9 @@ public class AddFavorTest {
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
 
     // Check status display is correct
-    onView(withId(R.id.favor_status_text))
+    onView(withId(R.id.toolbar))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorStatus.REQUESTED.toString())));
+        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 
   @Test
@@ -261,8 +262,8 @@ public class AddFavorTest {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.favor_status_text))
-        .check(matches(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString())));
+    onView(withId(R.id.toolbar))
+        .check(matches(hasDescendant(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString()))));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -270,9 +271,9 @@ public class AddFavorTest {
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
-    onView(withId(R.id.favor_status_text))
+    onView(withId(R.id.toolbar))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorStatus.ACCEPTED.toString())));
+        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
   }
 
   @Test
@@ -323,8 +324,8 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
 
     // Check updated status string
-    onView(withId(R.id.favor_status_text))
-        .check(matches(withText(FavorStatus.CANCELLED_REQUESTER.toString())));
+    onView(withId(R.id.toolbar))
+        .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
   }
 
   @Test

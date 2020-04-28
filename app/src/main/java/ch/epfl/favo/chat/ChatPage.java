@@ -31,8 +31,10 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.NonClickableToolbar;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
+import static ch.epfl.favo.util.CommonTools.hideToolBar;
 
 public class ChatPage extends Fragment {
 
@@ -100,12 +102,8 @@ public class ChatPage extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
-    toolbar.setBackgroundColor(Color.TRANSPARENT);
-    toolbar.setTitleTextColor(Color.BLACK);
-    Objects.requireNonNull(toolbar.getNavigationIcon())
-        .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
-    toolbar.setTitle("");
+    NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+    hideToolBar(toolbar);
   }
 
   private void attachRecyclerViewAdapter() {
