@@ -100,15 +100,31 @@ public class FavorRequestView extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     if (getArguments() != null) {
-      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView, favorId);
+      if (favorViewModel.isShowObservedFavor()) {
+        favorViewModel.setShowObservedFavor(false);
+        setupGetObservedFavor();
+      } else {
+        String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+        setupFavorListener(rootView, favorId);
+      }
     }
     return rootView;
   }
 
-
   public FavorDataController getViewModel() {
     return favorViewModel;
+  }
+
+  private void setupGetObservedFavor() {
+    favorViewModel
+        .getObservedFavor()
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              currentFavor = favor;
+              mTitleView.setText(currentFavor.getTitle());
+              mDescriptionView.setText(currentFavor.getDescription());
+            });
   }
 
   private void setupFavorListener(View rootView, String favorId) {
@@ -124,13 +140,8 @@ public class FavorRequestView extends Fragment {
                   if (currentFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
                     displayFavorInfo(rootView);
                     setFavorActivatedView(rootView);
-                  } else {
-                    mTitleView.setText(currentFavor.getTitle());
-                    mDescriptionView.setText(currentFavor.getDescription());
                   }
-                } else {
-                  throw new RuntimeException("favor retrieved from db is null");
-                }
+                } else throw new RuntimeException("favor retrieved from db is null");
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
