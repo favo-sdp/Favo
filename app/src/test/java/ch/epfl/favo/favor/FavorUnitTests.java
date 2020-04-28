@@ -23,7 +23,7 @@ public class FavorUnitTests {
   @Test
   public void favorGettersReturnCorrectValues() {
 
-    Favor favor = FakeItemFactory.getFavor();
+    Favor favor = FakeItemFactory.getFavorWithUrl();
 
     assertFalse(favor.getIsArchived());
     assertNotNull(favor.getUserIds());
@@ -96,8 +96,8 @@ public class FavorUnitTests {
 
   @Test
   public void favorComparisonIsSuccessful() {
-    Favor favor = FakeItemFactory.getFavor();
-    Favor favor2 = FakeItemFactory.getFavor();
+    Favor favor = FakeItemFactory.getFavorWithUrl();
+    Favor favor2 = FakeItemFactory.getFavorWithUrl();
     assertTrue(favor.contentEquals(favor2));
   }
 
