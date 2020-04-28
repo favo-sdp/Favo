@@ -16,9 +16,21 @@ import ch.epfl.favo.common.DatabaseWrapper;
 @SuppressLint("NewApi")
 public class PictureUtil {
 
+  private static PictureUtil INSTANCE = null;
   private static final String PICTURE_FILE_EXTENSION = ".jpeg";
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
-  private static final FirebaseStorage storage = FirebaseStorage.getInstance();
+  private final FirebaseStorage storage;
+
+  private PictureUtil() { storage = FirebaseStorage.getInstance(); }
+
+  public static PictureUtil getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new PictureUtil();
+    }
+    return INSTANCE;
+  }
+
+  private static FirebaseStorage getStorage() { return getInstance().storage; }
 
   /**
    * Uploads given picture to Firebase Cloud Storage and returns URI of where it was placed
@@ -29,7 +41,9 @@ public class PictureUtil {
   public static CompletableFuture<String> uploadPicture(Bitmap picture) {
     InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
     StorageReference storageRef =
-        storage.getReference().child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
+        getStorage()
+            .getReference()
+            .child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
 
     Task<Uri> urlTask =
         storageRef
@@ -54,7 +68,7 @@ public class PictureUtil {
    */
   public static CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
-        storage.getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
+      getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();

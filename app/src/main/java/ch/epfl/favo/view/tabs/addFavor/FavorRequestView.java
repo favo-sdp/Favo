@@ -132,11 +132,12 @@ public class FavorRequestView extends Fragment {
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-      CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
-      bitmapFuture.thenAccept(picture -> {
-        mImageView.setImageBitmap(picture);
-        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-      });
+      getViewModel()
+        .downloadPicture(currentFavor)
+        .thenAccept(picture -> {
+          mImageView.setImageBitmap(picture);
+          v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+        });
     }
 
     updateViewFromStatus(v);
@@ -272,6 +273,11 @@ public class FavorRequestView extends Fragment {
     CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
+
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+      getViewModel().uploadOrUpdatePicture(currentFavor, picture);
+    }
   }
 
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
@@ -365,14 +371,9 @@ public class FavorRequestView extends Fragment {
     // Upload picture to database if it exists
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-
-      // TODO: display result of uploading picture somewhere
-      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
-      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(e -> {
-        // TODO: create UI element that informs the user that the picture wasn't uploaded
-        return null;
-      });
+      getViewModel().uploadOrUpdatePicture(favor, picture);
+    } else {
+      favor.setPictureUrl(null);
     }
 
     // Updates the current favor

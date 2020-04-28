@@ -1,5 +1,8 @@
 package ch.epfl.favo.viewmodel;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.util.Log;
 
@@ -21,17 +24,23 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.PictureUtil;
 
+@SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements FavorDataController {
   String TAG = "FIRESTORE_VIEW_MODEL";
 
-  MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   // MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
+  private MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
-  public FavorUtil getRepository() {
+  private FavorUtil getRepository() {
     return DependencyFactory.getCurrentRepository();
+  }
+
+  private PictureUtil getPictureUtility() {
+    return DependencyFactory.getCurrentPictureUtility();
   }
 
   // save address to firebase
@@ -42,6 +51,20 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
 
   public CompletableFuture updateFavor(Favor favor) {
     return getRepository().updateFavor(favor);
+  }
+
+  // Upload/download pictures
+  @Override
+  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
+    CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
+    pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
+    String url = favor.getPictureUrl();
+    if (url == null) throw new RuntimeException("Invalid picture url in Favor");
+    return getPictureUtility().downloadPicture(url);
   }
 
   @Override
