@@ -130,15 +130,12 @@ public class FavorRequestView extends Fragment {
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-      CompletableFuture<Bitmap> bitmapFuture = getViewModel().downloadPicture(currentFavor);
-      bitmapFuture.thenAccept(picture -> {
-        mImageView.setImageBitmap(picture);
-        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-      });
-      bitmapFuture.exceptionally(e -> {
-        CommonTools.showSnackbar(requireView(), getString(R.string.download_picture_error));
-        return null;
-      });
+      getViewModel()
+        .downloadPicture(currentFavor)
+        .thenAccept(picture -> {
+          mImageView.setImageBitmap(picture);
+          v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+        });
     }
 
     updateViewFromStatus(v);
