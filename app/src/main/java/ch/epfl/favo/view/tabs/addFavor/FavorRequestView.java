@@ -240,7 +240,7 @@ public class FavorRequestView extends Fragment {
   private Function onFailedResult(View currentView) {
     return o -> {
       CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, ((Exception) o).getMessage());
+      Log.e(TAG, Objects.requireNonNull(((Exception) o).getMessage()));
       return null;
     };
   }

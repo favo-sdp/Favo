@@ -12,14 +12,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
-import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
@@ -36,7 +34,6 @@ public class FavorViewModelTest {
   private CompletableFuture failedResult;
   private PictureUtil pictureUtilility;
   private Bitmap bitmap;
-  private CompletableFuture<Bitmap> bitmapFuture;
   @Before
   public void setup(){
     repository = Mockito.mock(FavorUtil.class);
@@ -46,10 +43,8 @@ public class FavorViewModelTest {
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getUser());
     viewModel = new FavorViewModel();
     bitmap = Mockito.mock(Bitmap.class);
-    bitmapFuture = new CompletableFuture<Bitmap>() {{ complete(bitmap); }};
     pictureUtilility = Mockito.mock(PictureUtil.class);
     DependencyFactory.setCurrentPictureUtility(pictureUtilility);
-//    Mockito.when(pictureUtilility.downloadPicture(anyString())).thenReturn(bitmapFuture);
   }
   @After
   public void tearDown(){

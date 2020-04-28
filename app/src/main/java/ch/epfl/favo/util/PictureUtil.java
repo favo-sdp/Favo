@@ -9,6 +9,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseWrapper;
@@ -51,13 +52,13 @@ public class PictureUtil {
             .continueWithTask(
                 task -> {
                   if (!task.isSuccessful()) {
-                    throw task.getException();
+                    throw Objects.requireNonNull(task.getException());
                   }
                   return storageRef.getDownloadUrl();
                 });
 
     CompletableFuture<Uri> urlFuture = new TaskToFutureAdapter<>(urlTask);
-    return urlFuture.thenApply(url -> url.toString());
+    return urlFuture.thenApply(Uri::toString);
   }
 
   /**
@@ -72,7 +73,7 @@ public class PictureUtil {
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
-    return downloadFuture.thenApply(bytes -> BitmapConversionUtil.byteArrayToBitmap(bytes));
+    return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);
   }
 
 }
