@@ -8,7 +8,9 @@ public enum FavorStatus {
   CANCELLED_ACCEPTER("Cancelled by accepter", 4),
   SUCCESSFULLY_COMPLETED("Succesfully Completed", 5),
   ACCEPTED_BY_OTHER("Accepted by other", 6), // additional state
-  EDIT("Edit mode", 7);
+  EDIT("Edit mode", 7),
+  COMPLETED_REQUESTER("Completed by requester", 8),
+  COMPLETED_ACCEPTER("Completed by accepter", 9);
 
   public static int[] archivedStates = {
     EXPIRED.toInt(),

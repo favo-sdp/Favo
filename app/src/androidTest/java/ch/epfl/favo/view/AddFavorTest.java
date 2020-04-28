@@ -268,7 +268,7 @@ public class AddFavorTest {
   public void checkAcceptedView(Favor fakeFavor) {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
+    onView(withId(R.id.edit_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.favor_status_text))
         .check(matches(isDisplayed()))

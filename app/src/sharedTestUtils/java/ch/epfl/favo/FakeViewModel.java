@@ -16,6 +16,7 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   private boolean throwError = false;
   private CompletableFuture result = getSuccessfulCompletableFuture();
   private boolean showFavor = false;
+  private Favor observedFavor;
 
   public void setThrowError(boolean t) {
     throwError = t;
@@ -41,14 +42,10 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     };
   }
 
-
-
   @Override
   public CompletableFuture postFavor(Favor favor) {
     return result;
   }
-
-
 
   @Override
   public CompletableFuture updateFavor(Favor favor) {
@@ -90,6 +87,9 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   /**TODO: this looks like needing change **/
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
+    observedFavor = new Favor(favorId, " ", " ", null, null, 0);
+    observedFavor.updateToOther(FakeItemFactory.getFavor());
+    setObservedFavorResult(observedFavor);
     return observedFavorResult;
   }
 

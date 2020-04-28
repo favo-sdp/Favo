@@ -51,8 +51,8 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 public class FavorRequestView extends Fragment {
   private String TAG = "FavorRequestView";
 
-  public static final int PICK_IMAGE_REQUEST = 1;
-  public static final int USE_CAMERA_REQUEST = 2;
+  private static final int PICK_IMAGE_REQUEST = 1;
+  private static final int USE_CAMERA_REQUEST = 2;
 
   private FavorDataController favorViewModel;
   private Locator mGpsTracker;
@@ -135,13 +135,15 @@ public class FavorRequestView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null) {
+                if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
                   if (currentFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
-                    displayFavorInfo(rootView);
+                    displayFavorInfo();
                     setFavorActivatedView(rootView);
                   }
-                } else throw new RuntimeException("favor retrieved from db is null");
+                } else if (favor == null) {
+                  throw new RuntimeException("favor retrieved from db is null");
+                }
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
@@ -150,7 +152,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** When fragment is launched with favor. */
-  private void displayFavorInfo(View v) {
+  private void displayFavorInfo() {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
@@ -209,7 +211,10 @@ public class FavorRequestView extends Fragment {
           // if text is currently "Update Request"
           if (favorStatus.equals(FavorStatus.EDIT)) {
             confirmUpdatedFavor();
-          } else { // text is currently "Edit Request"
+          } else if (favorStatus.equals(FavorStatus.ACCEPTED)
+              || favorStatus.equals(FavorStatus.COMPLETED_ACCEPTER)) {
+            completeFavor();
+          } else { // text is currently "Edit Request")
             startUpdatingFavor();
           }
         });
@@ -293,6 +298,19 @@ public class FavorRequestView extends Fragment {
     updateViewFromStatus();
   }
 
+  private void completeFavor() {
+    if (currentFavor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
+      currentFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
+      favorStatus = FavorStatus.COMPLETED_REQUESTER;
+    } else {
+      currentFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
+      favorStatus = FavorStatus.SUCCESSFULLY_COMPLETED;
+    }
+    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
+    updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_complete_success_msg)));
+    updateFuture.exceptionally(onFailedResult(getView()));
+  }
+
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
@@ -307,7 +325,7 @@ public class FavorRequestView extends Fragment {
   /** Updates favor on DB. Updates maps on main activity hides keyboard shows snackbar */
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    //    favorStatus = FavorStatus.CANCELLED_REQUESTER;
+    favorStatus = FavorStatus.CANCELLED_REQUESTER;
 
     // DB call to update status
     CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor);
@@ -322,6 +340,7 @@ public class FavorRequestView extends Fragment {
       case REQUESTED:
         {
           editFavorBtn.setText(R.string.edit_favor);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           updateViewFromParameters(false, true, false, true, true);
           break;
@@ -330,25 +349,47 @@ public class FavorRequestView extends Fragment {
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.edit_status_bg));
           editFavorBtn.setText(R.string.confirm_favor_edit);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           updateViewFromParameters(true, false, true, true, true);
           break;
         }
       case ACCEPTED:
         {
+          editFavorBtn.setText(R.string.complete_favor);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_box_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
-          updateViewFromParameters(false, true, false, false, true);
+          updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          updateViewFromParameters(false, true, false, false, false);
+          editFavorBtn.setVisibility(View.INVISIBLE);
+          //editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateViewFromParameters(false, true, false, false, false);
+          break;
+        }
+      case COMPLETED_REQUESTER:
+        {
+          editFavorBtn.setText(R.string.wait_complete);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_watch_later_black_24dp, 0);
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateViewFromParameters(false, true, false, false, true);
+          break;
+        }
+      case COMPLETED_ACCEPTER:
+        {
+          editFavorBtn.setText(R.string.complete_favor);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_box_black_24dp, 0);
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateViewFromParameters(false, true, false, true, true);
           break;
         }
       default: // cancelled
         {
-          mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
           editFavorBtn.setText(R.string.restart_request);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
+          mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
           updateViewFromParameters(false, true, false, true, false);
         }
     }

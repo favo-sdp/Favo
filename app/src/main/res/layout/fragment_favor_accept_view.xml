@@ -144,11 +144,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_accept_view">
 
+            <Button
+                android:id="@+id/complete_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/ic_check_box_black_24dp"
+                android:text="@string/complete_favor" />
 
             <Button
                 android:id="@+id/chat_button_accept_view"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
                 android:layout_weight="1"
                 android:drawableBottom="@drawable/ic_chat_24dp"
                 android:text="@string/chat_message_detail_view" />

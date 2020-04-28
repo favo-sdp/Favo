@@ -21,6 +21,6 @@ public interface FavorDataController {
   LiveData<Favor> setObservedFavor(String favorId);
   MutableLiveData<Favor> getObservedFavor();
 
-  public void setShowObservedFavor(Boolean show);
-  public boolean isShowObservedFavor();
+  void setShowObservedFavor(Boolean show);
+  boolean isShowObservedFavor();
 }
