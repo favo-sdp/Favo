@@ -262,12 +262,13 @@ public class FavorPageTest {
     Favor favor = FakeItemFactory.getFavor();
 
     onView(isAssignableFrom(EditText.class)).perform(typeText(favor.getTitle()));
+    Thread.sleep(3000);
 
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-
+    getInstrumentation().waitForIdleSync();
     Thread.sleep(3000);
 
     // check query is successful and click on found item

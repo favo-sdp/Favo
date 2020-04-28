@@ -111,7 +111,7 @@ public class FavorDetailViewTest {
     Log.d("pasS", "during Detail Test 4");
     getInstrumentation().waitForIdleSync();
     Log.d("pasS", "during Detail Test 5");
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
     Log.d("pasS", "during Detail Test 6");
     Thread.sleep(500);
@@ -143,7 +143,7 @@ public class FavorDetailViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED_BY_OTHER.toString()))));
   }
 
@@ -158,7 +158,7 @@ public class FavorDetailViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
   }
 
@@ -172,7 +172,7 @@ public class FavorDetailViewTest {
         .perform(click());
     getInstrumentation().waitForIdleSync();
     // check display is updated
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_ACCEPTER.toString()))));
 
     Thread.sleep(500);
@@ -197,7 +197,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     // check display is updated
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
 
     // check snackbar shows
@@ -225,7 +225,7 @@ public class FavorDetailViewTest {
     fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     String expectedDisplay = FavorStatus.SUCCESSFULLY_COMPLETED.toString();
-    onView(withId(R.id.toolbar)).check(matches(hasDescendant(withText(expectedDisplay))));
+    onView(withId(R.id.toolbar_main_activity)).check(matches(hasDescendant(withText(expectedDisplay))));
   }
 
   @Test

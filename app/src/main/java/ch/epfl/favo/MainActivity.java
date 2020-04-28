@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    setSupportActionBar(findViewById(R.id.toolbar));
+    setSupportActionBar(findViewById(R.id.toolbar_main_activity));
 
     // remove title
     Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);

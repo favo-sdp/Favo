@@ -14,13 +14,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -70,7 +68,6 @@ public class FavorRequestView extends Fragment {
   private Button editFavorBtn;
   private Button chatBtn;
   private NonClickableToolbar toolbar;
-  private TextView toolbarText;
 
   private Favor currentFavor;
 
@@ -81,8 +78,8 @@ public class FavorRequestView extends Fragment {
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
     View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
+    // getActivity().setContentView(R.layout.fragment_favor_request_view);
     setupButtons(rootView);
 
     // Edit text:
@@ -92,8 +89,8 @@ public class FavorRequestView extends Fragment {
     setupView(rootView);
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
-    toolbar = requireActivity().findViewById(R.id.toolbar);
-    toolbarText = toolbar.findViewById(R.id.toolbar_title);
+    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
@@ -106,12 +103,12 @@ public class FavorRequestView extends Fragment {
   }
 
   @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
+  public void onResume() {
+    super.onResume();
     if (getArguments() != null) {
       String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
-      setFavorActivatedView(view);
-      setupFavorListener(view, favorId);
+      setFavorActivatedView(requireView());
+      setupFavorListener(requireView(), favorId);
     }
   }
 
@@ -141,8 +138,13 @@ public class FavorRequestView extends Fragment {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    toolbarText.setText(favorStatus.toString());
-
+    // toolbar.setTitle(favorStatus.toString());
+    try {
+      ((TextView) toolbar.findViewById(R.id.toolbar_title_main_activity))
+          .setText(favorStatus.toString());
+    } catch (
+        Exception e) { // TODO: figure out a clean way to do this when travelling from list view
+    }
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
@@ -478,8 +480,9 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
+    TextView toolbarText = toolbar.findViewById(R.id.toolbar_title_main_activity);
     if (findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      toolbarText.setText("");
+      ((TextView) toolbar.findViewById(R.id.toolbar_title_main_activity)).setText("");
     else hideToolBar(toolbar, toolbarText);
   }
 

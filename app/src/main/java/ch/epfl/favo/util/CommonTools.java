@@ -28,16 +28,21 @@ import ch.epfl.favo.view.NonClickableToolbar;
 
 public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
+
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
-  public static void hideToolBar(NonClickableToolbar toolbar,TextView toolbarTextView){
+
+  public static void hideToolBar(NonClickableToolbar toolbar, TextView toolbarTextView) {
     toolbar.setBackgroundColor(Color.TRANSPARENT);
     toolbar.setTitleTextColor(Color.BLACK);
     Objects.requireNonNull(toolbar.getNavigationIcon())
-            .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
+        .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
     toolbar.setTitle("");
-    toolbarTextView.setText("");
+    try {
+      toolbarTextView.setText("");
+    } catch (Exception e) {
+    }
   }
 
   public static String convertTime(long time) {

@@ -54,8 +54,8 @@ public class FavorDetailView extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     setupButtons(rootView);
 
-    toolbar = requireActivity().findViewById(R.id.toolbar);
-    toolbarTextView = toolbar.findViewById(R.id.toolbar_title);
+    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    toolbarTextView = toolbar.findViewById(R.id.toolbar_title_main_activity);
     favorViewModel =
         (FavorDataController)
             new ViewModelProvider(requireActivity())
@@ -183,7 +183,9 @@ public class FavorDetailView extends Fragment {
   }
 
   private void updateDisplayFromViewStatus() {
-    toolbarTextView.setText(favorStatus.toString());
+    try {
+      toolbarTextView.setText(favorStatus.toString());
+    } catch (Exception e) {}
     updateButtonDisplay();
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:

@@ -218,7 +218,7 @@ public class AddFavorTest {
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
 
     // Check status display is correct
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(isDisplayed()))
         .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
@@ -262,7 +262,7 @@ public class AddFavorTest {
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString()))));
   }
 
@@ -271,7 +271,7 @@ public class AddFavorTest {
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(isDisplayed()))
         .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
   }
@@ -324,7 +324,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
 
     // Check updated status string
-    onView(withId(R.id.toolbar))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
   }
 

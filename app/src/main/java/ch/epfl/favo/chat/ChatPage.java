@@ -89,7 +89,7 @@ public class ChatPage extends Fragment {
     setupToolBar();
   }
   public void setupToolBar(){
-    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
     toolbar.setTitleTextColor(Color.WHITE);
     Objects.requireNonNull(toolbar.getNavigationIcon())
@@ -107,7 +107,7 @@ public class ChatPage extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+    NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setTitle("");
     //TextView toolbarText = (TextView) requireActivity().findViewById(R.id.toolbar).findViewById(R.id.toolbar_title);
     //toolbarText.setText();
