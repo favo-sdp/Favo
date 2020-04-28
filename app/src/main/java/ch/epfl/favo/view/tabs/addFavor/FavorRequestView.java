@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -47,6 +48,7 @@ import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 import static ch.epfl.favo.util.CommonTools.hideToolBar;
 
@@ -82,6 +84,7 @@ public class FavorRequestView extends Fragment {
 
     View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
     setupButtons(rootView);
+
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
     mTitleView.requestFocus();
@@ -475,7 +478,9 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    hideToolBar(toolbar,toolbarText);
+    if (findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
+      toolbarText.setText("");
+    else hideToolBar(toolbar, toolbarText);
   }
 
   /**

@@ -22,7 +22,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
-        android:windowSoftInputMode="adjustNothing">
+        android:windowSoftInputMode="adjustNothing|adjustPan">
         <!-- Set custom default icon. This is used when no icon is set for incoming notification messages. -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

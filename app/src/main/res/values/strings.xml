@@ -24,9 +24,9 @@
     <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <!-- TAB 2 (David) -->
-    <string name="favor_title_hint">What\'s up?</string>
+    <string name="favor_title_hint">What\'s up? (ex: Need a bike pump)</string>
     <string name="favor_img_content_desc">Descriptive image</string>
-    <string name="favor_details_hint">Add more details?</string>
+    <string name="favor_details_hint">Add more details? (ex: Had a flat tire!)</string>
     <string name="favor_confirm_button">Request Favor</string>
     <string name="favor_no_active_favor">You have no active favors</string>
     <string name="favor_no_archived_favor">You have no archived favors</string>

@@ -239,6 +239,8 @@ public class FavorDetailView extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    CommonTools.hideToolBar(toolbar,toolbarTextView);
+    if (findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
+      toolbarTextView.setText("");
+    else CommonTools.hideToolBar(toolbar, toolbarTextView);
   }
 }
