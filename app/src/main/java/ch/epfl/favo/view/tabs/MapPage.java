@@ -47,6 +47,7 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 /**
@@ -116,7 +117,7 @@ public class MapPage extends Fragment
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
     mMap.getUiSettings().setZoomControlsEnabled(true);
-    mMap.setPadding(0, 0, 0, 120);
+    mMap.setPadding(0, 0, 0, 140);
     mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
@@ -255,10 +256,9 @@ public class MapPage extends Fragment
   }
 
   private void setupNearbyFavorsListener() {
-    String setting =
-        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    String setting = UserSettings.getNotificationRadius(requireContext());
+    if(setting.equals("disabled")) setting = "10 Km";
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
-
     favorViewModel
         .getFavorsAroundMe(mLocation, radiusThreshold)
         .observe(

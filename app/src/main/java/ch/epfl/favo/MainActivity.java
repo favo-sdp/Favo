@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
               }
           }
           currentMenuItem = destination.getId();
-          Log.d("MaD",currentMenuItem + "  " + cnt++ + " item  " + destination.getId() + "  "+ destination );
         });
   }
 
@@ -164,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
         });
     bottomNavigationView.setOnNavigationItemSelectedListener(
         item -> {
-          Log.d("MaD",currentMenuItem + "  " + cnt++ +  " bottom " + item + " id " + item.getItemId());
           int itemId = item.getItemId();
           if (itemId == currentMenuItem) {
             drawerLayout.closeDrawer(GravityCompat.START);
