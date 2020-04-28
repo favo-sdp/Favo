@@ -86,7 +86,6 @@ public class FavorRequestView extends Fragment {
     mTitleView = rootView.findViewById(R.id.title_request_view);
     mTitleView.requestFocus();
     mDescriptionView = rootView.findViewById(R.id.details);
-    mStatusView = rootView.findViewById(R.id.favor_status_text);
     setupView(rootView);
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
