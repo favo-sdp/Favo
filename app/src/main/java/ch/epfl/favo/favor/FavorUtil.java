@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.ICollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -25,14 +25,14 @@ public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static DatabaseUpdater collection =
+  private static ICollectionWrapper collection =
       DependencyFactory.getCurrentCollectionWrapper(
           DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
 
-  public void updateCollectionWrapper(DatabaseUpdater collectionWrapper) {
+  public void updateCollectionWrapper(ICollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
   }
 

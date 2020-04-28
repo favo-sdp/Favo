@@ -20,20 +20,20 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.GpsTracker;
-import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.map.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
-  private static Locator currentGpsTracker;
+  private static IGpsTracker currentGpsTracker;
   private static FirebaseUser currentFirebaseUser;
   private static User currentUser;
-  private static DatabaseUpdater currentCollectionWrapper;
+  private static ICollectionWrapper currentCollectionWrapper;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
   private static FirebaseFirestore currentFirestore;
@@ -74,7 +74,7 @@ public class DependencyFactory {
     currentFirebaseUser = dependency;
   }
 
-  public static Locator getCurrentGpsTracker(@Nullable Context context) {
+  public static IGpsTracker getCurrentGpsTracker(@Nullable Context context) {
     if (testMode && currentGpsTracker != null) {
       return currentGpsTracker;
     }
@@ -82,18 +82,18 @@ public class DependencyFactory {
   }
 
   @VisibleForTesting
-  public static void setCurrentGpsTracker(Locator gpsTrackerDependency) {
+  public static void setCurrentGpsTracker(IGpsTracker gpsTrackerDependency) {
     testMode = true;
     currentGpsTracker = gpsTrackerDependency;
   }
 
   @VisibleForTesting
-  public static void setCurrentCollectionWrapper(DatabaseUpdater dependency) {
+  public static void setCurrentCollectionWrapper(ICollectionWrapper dependency) {
     testMode = true;
     currentCollectionWrapper = dependency;
   }
 
-  public static DatabaseUpdater getCurrentCollectionWrapper(String collectionReference, Class cls) {
+  public static ICollectionWrapper getCurrentCollectionWrapper(String collectionReference, Class cls) {
     if (testMode && currentCollectionWrapper != null) {
       return currentCollectionWrapper;
     }

@@ -15,7 +15,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.ICollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
@@ -28,7 +28,7 @@ public class UserUtil implements IUserUtil {
   // Single private instance
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
-  private static DatabaseUpdater collection =
+  private static ICollectionWrapper collection =
       DependencyFactory.getCurrentCollectionWrapper("users", User.class);
 
   // Private constructor

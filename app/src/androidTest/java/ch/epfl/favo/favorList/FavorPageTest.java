@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
@@ -61,6 +62,7 @@ public class FavorPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+
         }
       };
 
@@ -71,6 +73,7 @@ public class FavorPageTest {
   @Before
   public void setUp() throws ExecutionException, InterruptedException {
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+    DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
   }
 
   @After
@@ -78,6 +81,7 @@ public class FavorPageTest {
     TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentUserRepository(null);
     // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
@@ -137,6 +141,7 @@ public class FavorPageTest {
     // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
 
     // Click on new favor tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());

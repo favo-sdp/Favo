@@ -25,7 +25,7 @@ import java.util.function.Function;
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.map.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
@@ -36,7 +36,7 @@ public class SignInActivity extends AppCompatActivity {
 
   public static final int RC_SIGN_IN = 123;
   private static final String TAG = "SignInActivity";
-  private Locator mGpsTracker;
+  private IGpsTracker mGpsTracker;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
