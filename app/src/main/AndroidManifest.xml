@@ -48,7 +48,8 @@
 
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustNothing|adjustPan"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

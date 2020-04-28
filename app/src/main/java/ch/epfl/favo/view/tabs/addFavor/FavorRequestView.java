@@ -60,7 +60,6 @@ public class FavorRequestView extends Fragment {
   private ImageView mImageView;
   private EditText mTitleView;
   private EditText mDescriptionView;
-  private TextView mStatusView;
   private IGpsTracker mGpsTracker;
   private Button confirmFavorBtn;
   private Button addPictureFromFilesBtn;
@@ -69,6 +68,7 @@ public class FavorRequestView extends Fragment {
   private Button editFavorBtn;
   private Button chatBtn;
   private NonClickableToolbar toolbar;
+  private TextView toolbarText;
 
   private Favor currentFavor;
 
@@ -90,6 +90,7 @@ public class FavorRequestView extends Fragment {
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
     toolbar = requireActivity().findViewById(R.id.toolbar);
+    toolbarText = toolbar.findViewById(R.id.toolbar_title);
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
@@ -137,16 +138,17 @@ public class FavorRequestView extends Fragment {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    mStatusView.setText(favorStatus.toString());
+    toolbarText.setText(favorStatus.toString());
 
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
       CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
-      bitmapFuture.thenAccept(picture -> {
-        mImageView.setImageBitmap(picture);
-        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-      });
+      bitmapFuture.thenAccept(
+          picture -> {
+            mImageView.setImageBitmap(picture);
+            v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+          });
     }
 
     updateViewFromStatus(v);
@@ -297,7 +299,6 @@ public class FavorRequestView extends Fragment {
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {
-    toolbar.setTitle(favorStatus.toString());
     switch (favorStatus) {
       case REQUESTED:
         {
@@ -381,10 +382,11 @@ public class FavorRequestView extends Fragment {
       // TODO: display result of uploading picture somewhere
       CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
       pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(e -> {
-        // TODO: create UI element that informs the user that the picture wasn't uploaded
-        return null;
-      });
+      pictureUrl.exceptionally(
+          e -> {
+            // TODO: create UI element that informs the user that the picture wasn't uploaded
+            return null;
+          });
     }
 
     // Updates the current favor
@@ -473,7 +475,7 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    hideToolBar(toolbar);
+    hideToolBar(toolbar,toolbarText);
   }
 
   /**

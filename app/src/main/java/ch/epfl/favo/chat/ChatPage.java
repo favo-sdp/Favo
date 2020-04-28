@@ -103,7 +103,7 @@ public class ChatPage extends Fragment {
   public void onStop() {
     super.onStop();
     NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar);
-    hideToolBar(toolbar);
+    hideToolBar(toolbar, toolbar.findViewById(R.id.toolbar_title));
   }
 
   private void attachRecyclerViewAdapter() {
