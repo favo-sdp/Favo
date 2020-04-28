@@ -111,28 +111,16 @@ public class PictureUtil {
   public static String saveToInternalStorage(Bitmap bitmapImage, String favorId, String picNum) {
     @SuppressLint("RestrictedApi") ContextWrapper cw = new ContextWrapper(getApplicationContext());
     File directory = new File(cw.getFilesDir(), favorId);
-    File imagePath = new File(directory, String.format("%s.jpg", picNum));
-
+    File image = new File(directory.getAbsolutePath(), "0.jpeg");
     try {
-      directory.createNewFile();
-//      imagePath.createNewFile();
+      directory.mkdir();
+      FileOutputStream outputStream = null;
+      outputStream = new FileOutputStream(image);
+      bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+      int x = 1;
     } catch (Exception e) {
       e.printStackTrace();
       return null;
-    }
-
-    FileOutputStream fos = null;
-    try {
-      fos = new FileOutputStream(directory, false);
-      bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-    } catch (Exception e) {
-        e.printStackTrace();
-    } finally {
-        try {
-          fos.close();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
     }
     return directory.getAbsolutePath();
   }
@@ -140,10 +128,14 @@ public class PictureUtil {
 
   public static Bitmap loadFromInternalStorage(String pathToFolder, String picNum) {
     try {
-      File image = new File(pathToFolder, String.format("%s.jpg", picNum));
-      return BitmapFactory.decodeStream(new FileInputStream(image));
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
+//      File image = new File(pathToFolder, String.format("%s.jpeg", picNum));
+      Bitmap temp = BitmapFactory.decodeFile(pathToFolder+String.format("/%s.jpeg", picNum));
+//      Bitmap temp = BitmapFactory.decodeStream(new FileInputStream(image));
+      return temp;
+//    } catch (FileNotFoundException e) {
+//      e.printStackTrace();
+    } catch (Exception e) {
+
     }
     return null;
   }
