@@ -31,7 +31,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -112,7 +111,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     Log.d("pasS", "during Detail Test 5");
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
+        .check(matches((withText(FavorStatus.ACCEPTED.toString()))));
     Log.d("pasS", "during Detail Test 6");
     Thread.sleep(500);
     // check snackbar shows
@@ -144,7 +143,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED_BY_OTHER.toString()))));
+        .check(matches((withText(FavorStatus.ACCEPTED_BY_OTHER.toString()))));
   }
 
   @Test
@@ -159,7 +158,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
+        .check(matches((withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
   }
 
   @Test
@@ -173,7 +172,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check display is updated
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_ACCEPTER.toString()))));
+        .check(matches((withText(FavorStatus.CANCELLED_ACCEPTER.toString()))));
 
     Thread.sleep(500);
     // check snackbar shows
@@ -198,7 +197,7 @@ public class FavorDetailViewTest {
     Thread.sleep(500);
     // check display is updated
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
+        .check(matches((withText(FavorStatus.ACCEPTED.toString()))));
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -225,7 +224,7 @@ public class FavorDetailViewTest {
     fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     String expectedDisplay = FavorStatus.SUCCESSFULLY_COMPLETED.toString();
-    onView(withId(R.id.toolbar_main_activity)).check(matches(hasDescendant(withText(expectedDisplay))));
+    onView(withId(R.id.toolbar_main_activity)).check(matches((withText(expectedDisplay))));
   }
 
   @Test

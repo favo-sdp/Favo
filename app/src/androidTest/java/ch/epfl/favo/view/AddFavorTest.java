@@ -48,7 +48,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -220,7 +219,7 @@ public class AddFavorTest {
     // Check status display is correct
     onView(withId(R.id.toolbar_main_activity))
         .check(matches(isDisplayed()))
-        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
+        .check(matches((withText(FavorStatus.REQUESTED.toString()))));
   }
 
   @Test
@@ -263,7 +262,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString()))));
+        .check(matches((withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString()))));
   }
 
   public void checkAcceptedView(Favor fakeFavor) {
@@ -273,7 +272,7 @@ public class AddFavorTest {
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
     onView(withId(R.id.toolbar_main_activity))
         .check(matches(isDisplayed()))
-        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
+        .check(matches((withText(FavorStatus.ACCEPTED.toString()))));
   }
 
   @Test
@@ -325,7 +324,7 @@ public class AddFavorTest {
 
     // Check updated status string
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
+        .check(matches((withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
   }
 
   @Test
