@@ -139,8 +139,6 @@ public class FavorRequestView extends Fragment {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    // toolbar.setTitle(favorStatus.toString());
-    toolbar.setTitle(favorStatus.toString());
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
@@ -300,6 +298,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {
+    toolbar.setTitle(favorStatus.toString());
     switch (favorStatus) {
       case REQUESTED:
         {

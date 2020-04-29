@@ -31,6 +31,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
@@ -110,8 +111,7 @@ public class FavorDetailViewTest {
     Log.d("pasS", "during Detail Test 4");
     getInstrumentation().waitForIdleSync();
     Log.d("pasS", "during Detail Test 5");
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches((withText(FavorStatus.ACCEPTED.toString()))));
+    checkToolbar(FavorStatus.ACCEPTED.toString());
     Log.d("pasS", "during Detail Test 6");
     Thread.sleep(500);
     // check snackbar shows
@@ -142,8 +142,7 @@ public class FavorDetailViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches((withText(FavorStatus.ACCEPTED_BY_OTHER.toString()))));
+    checkToolbar(FavorStatus.ACCEPTED_BY_OTHER.toString());
   }
 
   @Test
@@ -157,8 +156,7 @@ public class FavorDetailViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(anotherFavorWithSameId));
     getInstrumentation().waitForIdleSync();
     // check update text matches Accepted by other
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches((withText(FavorStatus.CANCELLED_REQUESTER.toString()))));
+    checkToolbar(FavorStatus.CANCELLED_REQUESTER.toString());
   }
 
   @Test
@@ -171,8 +169,7 @@ public class FavorDetailViewTest {
         .perform(click());
     getInstrumentation().waitForIdleSync();
     // check display is updated
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches((withText(FavorStatus.CANCELLED_ACCEPTER.toString()))));
+    checkToolbar(FavorStatus.CANCELLED_ACCEPTER.toString());
 
     Thread.sleep(500);
     // check snackbar shows
@@ -196,8 +193,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     // check display is updated
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches((withText(FavorStatus.ACCEPTED.toString()))));
+    checkToolbar(FavorStatus.ACCEPTED.toString());
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -224,7 +220,11 @@ public class FavorDetailViewTest {
     fakeFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     String expectedDisplay = FavorStatus.SUCCESSFULLY_COMPLETED.toString();
-    onView(withId(R.id.toolbar_main_activity)).check(matches((withText(expectedDisplay))));
+    checkToolbar(expectedDisplay);
+  }
+
+  public void checkToolbar(String expectedDisplay) {
+    onView(withId(R.id.toolbar_main_activity)).check(matches(hasDescendant(withText(expectedDisplay))));
   }
 
   @Test
@@ -237,34 +237,4 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.illegal_accept_error)));
   }
 
-  // removing this test because favors in the second tab will concern the user directly and it's not
-  // possible to accept a favor from there anymore
-
-  //  @Test
-  //  public void testAcceptingFavorUpdatesListView() throws InterruptedException {
-  //    mockDatabaseWrapper.setMockDocument(fakeFavor);
-  //    mockDatabaseWrapper.setThrowError(false);
-  //    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-  //    // navigate to list view from main activity
-  //    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
-  //    // press back
-  //    pressBack();
-  //    getInstrumentation().waitForIdleSync();
-  //
-  //    // wait for snackbar
-  //    Thread.sleep(5000);
-  //
-  //    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
-  //
-  //    getInstrumentation().waitForIdleSync();
-  //
-  //    onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed())).perform(click());
-  //
-  //    getInstrumentation().waitForIdleSync();
-  //    onView(
-  //            allOf(
-  //                withId(R.id.fragment_favor_accept_view),
-  //                withParent(withId(R.id.nav_host_fragment))))
-  //        .check(matches(isDisplayed()));
-  //  }
 }
