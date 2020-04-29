@@ -313,6 +313,7 @@ public class FavorRequestView extends Fragment {
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
+    currentFavor.setAccepterId(null);
     currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
     favorStatus = FavorStatus.REQUESTED;
     getFavorFromView();
@@ -356,23 +357,25 @@ public class FavorRequestView extends Fragment {
       case ACCEPTED:
         {
           editFavorBtn.setText(R.string.complete_favor);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_box_black_24dp, 0);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(
+              0, 0, R.drawable.ic_check_box_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          editFavorBtn.setVisibility(View.INVISIBLE);
-          //editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
+          editFavorBtn.setText(getString(R.string.restart_request));
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
-          updateViewFromParameters(false, true, false, false, false);
+          updateViewFromParameters(false, true, false, true, false);
           break;
         }
       case COMPLETED_REQUESTER:
         {
           editFavorBtn.setText(R.string.wait_complete);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_watch_later_black_24dp, 0);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(
+              0, 0, R.drawable.ic_watch_later_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           updateViewFromParameters(false, true, false, false, true);
           break;
@@ -380,7 +383,8 @@ public class FavorRequestView extends Fragment {
       case COMPLETED_ACCEPTER:
         {
           editFavorBtn.setText(R.string.complete_favor);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_check_box_black_24dp, 0);
+          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(
+              0, 0, R.drawable.ic_check_box_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           updateViewFromParameters(false, true, false, true, true);
           break;
@@ -473,7 +477,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Called when camera button is clicked Method calls camera intent. */
-  public void takePicture() {
+  private void takePicture() {
     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         != PackageManager.PERMISSION_GRANTED) {
       requireActivity()
@@ -532,7 +536,7 @@ public class FavorRequestView extends Fragment {
    *
    * @param errorMessageRes error message.
    */
-  public void showSnackbar(String errorMessageRes) {
+  private void showSnackbar(String errorMessageRes) {
     Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 

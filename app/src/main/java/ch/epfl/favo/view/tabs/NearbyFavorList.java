@@ -27,7 +27,6 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 import ch.epfl.favo.viewmodel.FavorDataController;
-import ch.epfl.favo.viewmodel.FavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
 
@@ -178,8 +177,6 @@ public class NearbyFavorList extends Fragment {
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
           favorBundle.putString("FAVOR_ARGS", favor.getId());
-          viewModel.getObservedFavor().setValue(favor);
-          viewModel.setShowObservedFavor(true);
           findNavController(requireView())
               .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
         });

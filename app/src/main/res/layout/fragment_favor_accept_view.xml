@@ -147,7 +147,7 @@
             <Button
                 android:id="@+id/complete_btn"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
                 android:layout_weight="1"
                 android:drawableBottom="@drawable/ic_check_box_black_24dp"
                 android:text="@string/complete_favor" />
@@ -163,7 +163,7 @@
             <Button
                 android:id="@+id/accept_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
                 android:layout_weight="1"
                 android:drawableBottom="@drawable/ic_thumb_up_24dp"
                 android:text="@string/accept_favor" />

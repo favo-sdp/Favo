@@ -110,13 +110,12 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
-  public void setShowObservedFavor(Boolean show){
+  public void setShowObservedFavor(Boolean show) {
     showFavor = show;
   }
 
   @Override
-  public boolean isShowObservedFavor(){
+  public boolean isShowObservedFavor() {
     return showFavor;
   }
-
 }

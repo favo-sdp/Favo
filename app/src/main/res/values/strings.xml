@@ -109,16 +109,14 @@
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="favor_complete_success_msg">Favor successfully completed</string>
-    <string name="favor_revert_success_msg">Favor successfully reverted</string>
     <string name="chat_message_detail_view">Start a chat</string>
     <string name="update_favor_error">Failed to update</string>
     <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
     <string name="cancel_accept_button_display">Cancel</string>
-    <string name="restart_request">re-enable</string>
+    <string name="restart_request">Re-enable</string>
     <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
-    <string name="complete_favor">complete</string>
-    <string name="revert_favor">revert</string>
-    <string name="wait_complete">wait others</string>
+    <string name="complete_favor">Complete</string>
+    <string name="wait_complete">Wait others</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

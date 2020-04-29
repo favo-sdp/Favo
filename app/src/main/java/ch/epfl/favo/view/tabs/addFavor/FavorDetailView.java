@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -37,6 +38,7 @@ public class FavorDetailView extends Fragment {
   private Button locationAccessBtn;
   private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
+  private Button completeBtn;
   private TextView statusText;
   private FavorDataController favorViewModel;
 
@@ -56,14 +58,9 @@ public class FavorDetailView extends Fragment {
         (FavorDataController)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    if (currentFavor == null && getArguments() != null) {
-      if (favorViewModel.isShowObservedFavor()) {
-        favorViewModel.setShowObservedFavor(false);
-        setupGetObservedFavor();
-      } else {
-        String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
-        setupFavorListener(rootView, favorId);
-      }
+    if (getArguments() != null) {
+      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
+      setupFavorListener(rootView, favorId);
     } else {
       displayFromFavor(
           rootView,
@@ -74,17 +71,6 @@ public class FavorDetailView extends Fragment {
 
   public FavorDataController getViewModel() {
     return favorViewModel;
-  }
-
-  private void setupGetObservedFavor() {
-    favorViewModel
-        .getObservedFavor()
-        .observe(
-            getViewLifecycleOwner(),
-            favor -> {
-              currentFavor = favor;
-              displayFromFavor(requireView(), currentFavor);
-            });
   }
 
   private void setupFavorListener(View rootView, String favorId) {
@@ -110,6 +96,8 @@ public class FavorDetailView extends Fragment {
   private void setupButtons(View rootView) {
     acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
     locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
+    completeBtn = rootView.findViewById(R.id.complete_btn);
+    completeBtn.setOnClickListener(v -> completeFavor());
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
     locationAccessBtn.setOnClickListener(
         v -> {
@@ -137,6 +125,22 @@ public class FavorDetailView extends Fragment {
         });
   }
 
+  private void completeFavor() {
+    if (currentFavor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
+      currentFavor.setStatusIdToInt(FavorStatus.COMPLETED_ACCEPTER);
+      favorStatus = FavorStatus.COMPLETED_ACCEPTER;
+    } else if (currentFavor.getStatusId() == FavorStatus.COMPLETED_REQUESTER.toInt()) {
+      currentFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
+      favorStatus = FavorStatus.SUCCESSFULLY_COMPLETED;
+    }
+    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor);
+    updateFuture.thenAccept(
+        o ->
+            CommonTools.showSnackbar(
+                requireView(), getString(R.string.favor_complete_success_msg)));
+    updateFuture.exceptionally(favorFailedToBeAcceptedConsumer());
+  }
+
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
     CompletableFuture completableFuture = getViewModel().updateFavor(currentFavor);
@@ -149,8 +153,8 @@ public class FavorDetailView extends Fragment {
       CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
 
       // update UI
-      currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
-      favorStatus = verifyFavorHasBeenAccepted(currentFavor);
+      // currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
+      // favorStatus = verifyFavorHasBeenAccepted(currentFavor);
       // updateDisplayFromViewStatus();
     };
   }
@@ -205,21 +209,43 @@ public class FavorDetailView extends Fragment {
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
         {
+          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
+          statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           enableButtons(false);
         }
       case ACCEPTED:
         {
+          completeBtn.setText(R.string.complete_favor);
+          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
           statusText.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
         }
-
       case REQUESTED:
         {
+          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
           statusText.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          break;
+        }
+      case COMPLETED_ACCEPTER:
+        {
+          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
+          completeBtn.setText(R.string.wait_complete);
+          completeBtn.setClickable(false);
+          completeBtn.setCompoundDrawablesWithIntrinsicBounds(
+              0, 0, R.drawable.ic_watch_later_black_24dp, 0);
+          statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          break;
+        }
+      case COMPLETED_REQUESTER:
+        {
+          completeBtn.setText(R.string.complete_favor);
+          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
+          statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           break;
         }
       default: // includes accepted by other
         enableButtons(false);
+        ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
         statusText.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
@@ -228,7 +254,7 @@ public class FavorDetailView extends Fragment {
     String displayMessage;
     int backgroundColor;
     Drawable img;
-    if (favorStatus == FavorStatus.ACCEPTED) {
+    if (favorStatus != FavorStatus.REQUESTED) {
       displayMessage = getString(R.string.cancel_accept_button_display);
       backgroundColor = R.color.fui_transparent;
       img = getResources().getDrawable(R.drawable.ic_cancel_24dp);
