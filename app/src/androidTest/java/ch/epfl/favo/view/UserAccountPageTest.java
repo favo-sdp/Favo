@@ -27,7 +27,7 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.core.StringEndsWith.endsWith;
-/*
+
 @RunWith(AndroidJUnit4.class)
 public class UserAccountPageTest {
 
@@ -152,4 +152,3 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button1)).perform(click());
   }
 }
-*/
