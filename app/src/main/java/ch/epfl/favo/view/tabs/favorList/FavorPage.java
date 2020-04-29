@@ -188,6 +188,7 @@ public class FavorPage extends Fragment {
                     Navigation.findNavController(requireView())
                         .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
                   }
+
                 }
               }
             });

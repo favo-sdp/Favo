@@ -32,8 +32,10 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.NonClickableToolbar;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
+import static ch.epfl.favo.util.CommonTools.hideToolBar;
 
 public class ChatPage extends Fragment {
 
@@ -104,12 +106,12 @@ public class ChatPage extends Fragment {
     attachRecyclerViewAdapter();
   }
 
-//  @Override
-//  public void onStop() {
-//    super.onStop();
-//    NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-//    hideToolBar(toolbar);
-//  }
+  @Override
+  public void onStop() {
+    super.onStop();
+    NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    hideToolBar(toolbar);
+  }
 
   private void attachRecyclerViewAdapter() {
     FirestoreRecyclerOptions<ChatModel> options = getFirestoreRecyclerOptions();
