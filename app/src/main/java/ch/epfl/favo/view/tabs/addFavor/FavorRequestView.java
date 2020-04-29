@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -68,7 +67,6 @@ public class FavorRequestView extends Fragment {
   private Button editFavorBtn;
   private Button chatBtn;
   private NonClickableToolbar toolbar;
-  private TextView toolbarText;
 
   private Favor currentFavor;
 
@@ -80,7 +78,6 @@ public class FavorRequestView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
-    // getActivity().setContentView(R.layout.fragment_favor_request_view);
     setupButtons(rootView);
 
     // Edit text:
@@ -228,8 +225,7 @@ public class FavorRequestView extends Fragment {
   private void requestFavor() {
     // update currentFavor
     View currentView = getView();
-    // enableUploadImageButtons(false);
-    // confirmFavorBtn.setEnabled(false);
+
     getFavorFromView(FavorStatus.REQUESTED);
     // post to DB
     CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
