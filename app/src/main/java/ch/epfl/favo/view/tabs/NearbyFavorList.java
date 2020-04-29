@@ -192,6 +192,7 @@ public class NearbyFavorList extends Fragment {
           favorBundle.putString("FAVOR_ARGS", favor.getId());
           findNavController(requireView())
               .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
+          searchView.onActionViewCollapsed();
         });
   }
 

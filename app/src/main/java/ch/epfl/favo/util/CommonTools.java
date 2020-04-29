@@ -10,7 +10,6 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
@@ -33,16 +32,12 @@ public class CommonTools {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
 
-  public static void hideToolBar(NonClickableToolbar toolbar, TextView toolbarTextView) {
+  public static void hideToolBar(NonClickableToolbar toolbar) {
     toolbar.setBackgroundColor(Color.TRANSPARENT);
     toolbar.setTitleTextColor(Color.BLACK);
     Objects.requireNonNull(toolbar.getNavigationIcon())
         .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
     toolbar.setTitle("");
-    try {
-      toolbarTextView.setText("");
-    } catch (Exception e) {
-    }
   }
 
   public static String convertTime(long time) {

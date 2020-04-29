@@ -68,6 +68,7 @@ public class FavorRequestView extends Fragment {
   private Button editFavorBtn;
   private Button chatBtn;
   private NonClickableToolbar toolbar;
+  private TextView toolbarText;
 
   private Favor currentFavor;
 
@@ -89,7 +90,6 @@ public class FavorRequestView extends Fragment {
     setupView(rootView);
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
-    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
 
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
@@ -105,6 +105,7 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
+    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     if (getArguments() != null) {
       String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
       setFavorActivatedView(requireView());
@@ -139,12 +140,7 @@ public class FavorRequestView extends Fragment {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     // toolbar.setTitle(favorStatus.toString());
-    try {
-      ((TextView) toolbar.findViewById(R.id.toolbar_title_main_activity))
-          .setText(favorStatus.toString());
-    } catch (
-        Exception e) { // TODO: figure out a clean way to do this when travelling from list view
-    }
+    toolbar.setTitle(favorStatus.toString());
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
@@ -480,10 +476,8 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    TextView toolbarText = toolbar.findViewById(R.id.toolbar_title_main_activity);
-    if (findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      ((TextView) toolbar.findViewById(R.id.toolbar_title_main_activity)).setText("");
-    else hideToolBar(toolbar, toolbarText);
+    if (!findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
+      hideToolBar(toolbar);
   }
 
   /**

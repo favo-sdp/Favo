@@ -41,7 +41,6 @@ public class FavorDetailView extends Fragment {
   private Button chatBtn;
   private FavorDataController favorViewModel;
   private NonClickableToolbar toolbar;
-  private TextView toolbarTextView;
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -55,7 +54,6 @@ public class FavorDetailView extends Fragment {
     setupButtons(rootView);
 
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-    toolbarTextView = toolbar.findViewById(R.id.toolbar_title_main_activity);
     favorViewModel =
         (FavorDataController)
             new ViewModelProvider(requireActivity())
@@ -184,8 +182,9 @@ public class FavorDetailView extends Fragment {
 
   private void updateDisplayFromViewStatus() {
     try {
-      toolbarTextView.setText(favorStatus.toString());
-    } catch (Exception e) {}
+      toolbar.setTitle(favorStatus.toString());
+    } catch (Exception e) {
+    }
     updateButtonDisplay();
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
@@ -241,8 +240,7 @@ public class FavorDetailView extends Fragment {
   @Override
   public void onStop() {
     super.onStop();
-    if (findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      toolbarTextView.setText("");
-    else CommonTools.hideToolBar(toolbar, toolbarTextView);
+    if (!findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
+      CommonTools.hideToolBar(toolbar);
   }
 }

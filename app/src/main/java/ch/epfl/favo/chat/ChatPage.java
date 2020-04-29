@@ -35,6 +35,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
+import static ch.epfl.favo.util.CommonTools.hideToolBar;
 
 public class ChatPage extends Fragment {
 
@@ -45,8 +46,9 @@ public class ChatPage extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     view = inflater.inflate(R.layout.fragment_chat, container, false);
-    requireActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
+    requireActivity()
+        .getWindow()
+        .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_ARGS);
@@ -88,12 +90,13 @@ public class ChatPage extends Fragment {
     ImeHelper.setImeOnDoneListener(view.findViewById(R.id.messageEdit), this::onSendClick);
     setupToolBar();
   }
-  public void setupToolBar(){
+
+  public void setupToolBar() {
     Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
     toolbar.setTitleTextColor(Color.WHITE);
     Objects.requireNonNull(toolbar.getNavigationIcon())
-            .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
+        .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
     toolbar.setTitle(currentFavor.getTitle());
   }
 
@@ -101,17 +104,13 @@ public class ChatPage extends Fragment {
   public void onStart() {
     super.onStart();
     attachRecyclerViewAdapter();
-
   }
 
   @Override
   public void onStop() {
     super.onStop();
     NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-    toolbar.setTitle("");
-    //TextView toolbarText = (TextView) requireActivity().findViewById(R.id.toolbar).findViewById(R.id.toolbar_title);
-    //toolbarText.setText();
-    //hideToolBar(toolbar, toolbar.findViewById(R.id.toolbar_title));
+    hideToolBar(toolbar);
   }
 
   private void attachRecyclerViewAdapter() {
