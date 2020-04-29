@@ -233,11 +233,4 @@ public class FavorDetailView extends Fragment {
     textView.setText(text);
     textView.setKeyListener(null);
   }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    if (!findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      CommonTools.hideToolBar(toolbar);
-  }
 }

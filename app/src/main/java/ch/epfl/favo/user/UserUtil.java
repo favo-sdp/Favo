@@ -39,15 +39,13 @@ public class UserUtil implements IUserUtil {
     return SINGLE_INSTANCE;
   }
 
-
   /**
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
   @Override
-  public CompletableFuture postUser(User user)
-      { // TODO: catch exception in view not here
-      return collection.addDocument(user);
+  public CompletableFuture postUser(User user) { // TODO: catch exception in view not here
+    return collection.addDocument(user);
   }
 
   /**
@@ -130,18 +128,6 @@ public class UserUtil implements IUserUtil {
           return collection.updateDocument(user.getId(), notifMap);
         });
   }
-  //        addOnCompleteListener(
-  //            task -> {
-  //              if (!task.isSuccessful()) {
-  //                return;
-  //              }
-  //              String token = Objects.requireNonNull(task.getResult()).getToken();
-  //              user.setNotificationId(token);
-  //
-  //              Map<String, String> notifMap = new HashMap<String, String>();
-  //              notifMap.put("notificationId", token);
-  //              collection.updateDocument(user.getId(), notifMap);
-  //            });
 
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;

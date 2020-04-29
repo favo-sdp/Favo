@@ -46,9 +46,7 @@ import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
-import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
-import static ch.epfl.favo.util.CommonTools.hideToolBar;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
@@ -67,7 +65,6 @@ public class FavorRequestView extends Fragment {
   private Button cancelFavorBtn;
   private Button editFavorBtn;
   private Button chatBtn;
-  private NonClickableToolbar toolbar;
   private TextView toolbarText;
 
   private Favor currentFavor;
@@ -98,19 +95,13 @@ public class FavorRequestView extends Fragment {
         (FavorDataController)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-
-    return rootView;
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     if (getArguments() != null) {
       String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
-      setFavorActivatedView(requireView());
-      setupFavorListener(requireView(), favorId);
+      setFavorActivatedView(rootView);
+      setupFavorListener(rootView, favorId);
     }
+
+    return rootView;
   }
 
   public FavorDataController getViewModel() {
@@ -125,8 +116,10 @@ public class FavorRequestView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                currentFavor = favor;
-                displayFavorInfo(rootView);
+                if (favor != null) {
+                  currentFavor = favor;
+                  displayFavorInfo(rootView);
+                }
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
@@ -140,7 +133,8 @@ public class FavorRequestView extends Fragment {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     // toolbar.setTitle(favorStatus.toString());
-    toolbar.setTitle(favorStatus.toString());
+    ((NonClickableToolbar) requireActivity().findViewById(R.id.toolbar_main_activity))
+        .setTitle(favorStatus.toString());
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
@@ -300,6 +294,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus(View view) {
+    NonClickableToolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     switch (favorStatus) {
       case REQUESTED:
         {
@@ -471,13 +466,6 @@ public class FavorRequestView extends Fragment {
    */
   public void showSnackbar(String errorMessageRes) {
     Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    if (!findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      hideToolBar(toolbar);
   }
 
   /**

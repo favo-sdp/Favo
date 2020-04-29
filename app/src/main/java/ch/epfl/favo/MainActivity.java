@@ -98,17 +98,18 @@ public class MainActivity extends AppCompatActivity {
 
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> {
+          // reset toolbar for all
+          CommonTools.hideToolBar(findViewById(R.id.toolbar_main_activity));
           switch (destination.getId()) {
+            case R.id.favorDetailView:
+            case R.id.favorRequestView:
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
-            case R.id.favorDetailView:
-            case R.id.favorRequestView:
               if (bottomNavigationView.getVisibility() != View.GONE) {
                 hideBottomNavigation();
               }
               break;
-
             default:
               if (bottomNavigationView.getVisibility() != View.VISIBLE) {
                 showBottomNavigation();
