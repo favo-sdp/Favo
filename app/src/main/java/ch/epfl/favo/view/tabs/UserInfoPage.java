@@ -26,11 +26,11 @@ import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
-public class UserAccountPage extends Fragment {
+public class UserInfoPage extends Fragment {
 
   private View view;
 
-  public UserAccountPage() {
+  public UserInfoPage() {
     // Required empty public constructor
   }
 
@@ -38,19 +38,20 @@ public class UserAccountPage extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    view = inflater.inflate(R.layout.fragment_user_account, container, false);
+    view = inflater.inflate(R.layout.user_info, container, false);
 
     setupButtons();
-    displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
+    displayUserData();
+
     return view;
   }
 
   private void setupButtons() {
-    Button signOutButton = view.findViewById(R.id.sign_out);
-    signOutButton.setOnClickListener(this::signOut);
+    Button likeButton = view.findViewById(R.id.like_button);
+    likeButton.setOnClickListener(this::update);
 
-    Button deleteAccountButton = view.findViewById(R.id.delete_account);
-    deleteAccountButton.setOnClickListener(this::deleteAccountClicked);
+    Button dislikeButton = view.findViewById(R.id.dislike_button);
+    dislikeButton.setOnClickListener(this::update);
   }
 
   private void displayUserData(FirebaseUser user) {
@@ -70,33 +71,5 @@ public class UserAccountPage extends Fragment {
 
     ((TextView) view.findViewById(R.id.user_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "No email" : user.getEmail());
-  }
-
-  private void signOut(View view) {
-    AuthUI.getInstance()
-        .signOut(requireActivity())
-        .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
-  }
-
-  private void deleteAccountClicked(View view) {
-    new AlertDialog.Builder(requireActivity())
-        .setMessage("Are you sure you want to delete this account?")
-        .setPositiveButton("Yes", (dialogInterface, i) -> deleteAccount())
-        .setNegativeButton("No", null)
-        .show();
-  }
-
-  private void deleteAccount() {
-    AuthUI.getInstance()
-        .delete(requireActivity())
-        .addOnCompleteListener(task -> onComplete(task, R.string.delete_account_failed));
-  }
-
-  private void onComplete(@NonNull Task<Void> task, int errorMessage) {
-    if (task.isSuccessful()) {
-      startActivity(new Intent(getActivity(), SignInActivity.class));
-    } else {
-      CommonTools.showSnackbar(getView(), getString(errorMessage));
-    }
   }
 }
