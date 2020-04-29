@@ -181,10 +181,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void updateDisplayFromViewStatus() {
-    try {
-      toolbar.setTitle(favorStatus.toString());
-    } catch (Exception e) {
-    }
+    toolbar.setTitle(favorStatus.toString());
     updateButtonDisplay();
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:

@@ -36,7 +36,6 @@ import static androidx.navigation.Navigation.findNavController;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
-
 public class NearbyFavorList extends Fragment {
 
   private TextView tipTextView;
@@ -75,7 +74,8 @@ public class NearbyFavorList extends Fragment {
 
     viewModel =
         (FavorDataController)
-            new ViewModelProvider(requireActivity()).get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
 
     return rootView;
   }
@@ -88,10 +88,10 @@ public class NearbyFavorList extends Fragment {
 
   public void
       setupNearbyFavorsListener() { // TODO: figure out a way to share view model without using main
-                                    // activity life cycle
-//    String setting =
-//        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
-//    double radius = Double.parseDouble(setting.split(" ")[0]);
+    // activity life cycle
+    //    String setting =
+    //        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    //    double radius = Double.parseDouble(setting.split(" ")[0]);
     getViewModel()
         .getFavorsAroundMe()
         .observe(
@@ -105,8 +105,6 @@ public class NearbyFavorList extends Fragment {
               }
             });
   }
-
-
 
   public FavorDataController getViewModel() {
     return viewModel;
@@ -192,7 +190,6 @@ public class NearbyFavorList extends Fragment {
           favorBundle.putString("FAVOR_ARGS", favor.getId());
           findNavController(requireView())
               .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
-          searchView.onActionViewCollapsed();
         });
   }
 
@@ -206,6 +203,4 @@ public class NearbyFavorList extends Fragment {
               return false;
             });
   }
-
 }
-
