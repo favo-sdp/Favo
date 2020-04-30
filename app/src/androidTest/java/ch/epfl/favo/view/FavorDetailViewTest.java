@@ -21,8 +21,10 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
@@ -47,6 +49,7 @@ public class FavorDetailViewTest {
   private Favor fakeFavor;
   private FavorDetailView detailViewFragment;
   private FakeViewModel fakeViewModel;
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -70,6 +73,7 @@ public class FavorDetailViewTest {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentViewModelClass(null);
+    DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   public FavorDetailView launchFragment(Favor favor) throws Throwable {
@@ -224,6 +228,28 @@ public class FavorDetailViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     String expectedDisplay = FavorStatus.SUCCESSFULLY_COMPLETED.toString();
     onView(withId(R.id.status_text_accept_view)).check(matches(withText(expectedDisplay)));
+  }
+
+  @Test
+  public void testClickOnRequesterTextNavigateToUserInfoPage() {
+    User testUser =
+            new User(
+                    TestConstants.USER_ID,
+                    TestConstants.NAME,
+                    TestConstants.EMAIL,
+                    TestConstants.DEVICE_ID,
+                    null,
+                    null);
+
+    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    mockDatabaseWrapper.setMockDocument(testUser);
+
+    onView(withId(R.id.requester_name)).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+
   }
 
   // removing this test because favors in the second tab will concern the user directly and it's not

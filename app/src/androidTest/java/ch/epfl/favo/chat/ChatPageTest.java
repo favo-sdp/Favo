@@ -1,9 +1,17 @@
 package ch.epfl.favo.chat;
 
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,7 +26,9 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.MockDatabaseWrapper;
 import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -27,7 +37,9 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
@@ -35,8 +47,12 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 
 public class ChatPageTest {
+
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -64,7 +80,7 @@ public class ChatPageTest {
     TestUtils.cleanupDatabase();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    // DependencyFactory.setCurrentFavorCollection("favors");
+    DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   private void navigateToChatPage() throws InterruptedException {
@@ -161,5 +177,57 @@ public class ChatPageTest {
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
     device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+  }
+
+  @Test
+  public void testClickOnMessageNavigateToUserInfoPage() throws InterruptedException {
+
+    String message = "Fake message";
+    typeMessage(message);
+
+    onView(withId(R.id.messageEdit)).perform(pressImeActionButton());
+
+    User testUser =
+        new User(
+            TestConstants.USER_ID,
+            TestConstants.NAME,
+            TestConstants.EMAIL,
+            TestConstants.DEVICE_ID,
+            null,
+            null);
+
+    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    mockDatabaseWrapper.setMockDocument(testUser);
+
+    ViewInteraction recyclerView =
+        onView(
+            allOf(
+                withId(R.id.messagesList),
+                childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
+    recyclerView.perform(actionOnItemAtPosition(0, click()));
+
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+  }
+
+  private static Matcher<View> childAtPosition(
+      final Matcher<View> parentMatcher, final int position) {
+
+    return new TypeSafeMatcher<View>() {
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("Child at position " + position + " in parent ");
+        parentMatcher.describeTo(description);
+      }
+
+      @Override
+      public boolean matchesSafely(View view) {
+        ViewParent parent = view.getParent();
+        return parent instanceof ViewGroup
+            && parentMatcher.matches(parent)
+            && view.equals(((ViewGroup) parent).getChildAt(position));
+      }
+    };
   }
 }
