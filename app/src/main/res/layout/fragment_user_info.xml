@@ -21,7 +21,7 @@
             android:background="@color/material_green_500"
             android:orientation="vertical"
             android:paddingStart="20dp"
-            android:paddingTop="80dp"
+            android:paddingTop="50dp"
             android:paddingEnd="20dp"
             android:paddingBottom="20dp">
 

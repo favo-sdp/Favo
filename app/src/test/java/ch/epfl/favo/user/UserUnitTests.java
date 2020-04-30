@@ -15,7 +15,6 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.NotImplementedException;
-import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TestUtil;
 import ch.epfl.favo.view.MockDatabaseWrapper;
@@ -119,7 +118,6 @@ public class UserUnitTests {
             TestConstants.DEVICE_ID,
             null,
             null);
-    ;
     Map<String, Object> userMap = user.toMap();
     User user2 = new User(userMap);
     assertEquals(user.getId(), user2.getId());

@@ -57,7 +57,8 @@ public class UserAccountPageTest {
   @Before
   public void setUp() {
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
-    User testUser = new User(
+    User testUser =
+        new User(
             TestConstants.USER_ID,
             TestConstants.NAME,
             TestConstants.EMAIL,

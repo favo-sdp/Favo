@@ -9,7 +9,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,6 @@ import ch.epfl.favo.util.DependencyFactory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
-import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -68,10 +66,10 @@ public class UserInfoPageTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-//  @Before
-//  public void setUp() throws Throwable {
-//    launchFragment();
-//  }
+  //  @Before
+  //  public void setUp() throws Throwable {
+  //    launchFragment();
+  //  }
 
   @After
   public void tearDown() {
@@ -91,17 +89,10 @@ public class UserInfoPageTest {
   @Test
   public void testLaunchFragment() throws Throwable {
 
-
     launchFragment();
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-
-//    onView(withId(R.id.user_info_fragment)).perform(swipeUp());
-//
-//    Thread.sleep(1000);
-//
-//    onView(withId(R.id.display_email)).check(matches(withText(TestConstants.EMAIL)));
   }
 
   @Test
@@ -118,29 +109,31 @@ public class UserInfoPageTest {
     onView(withText(R.string.report_message)).check(matches(isDisplayed()));
   }
 
-//  @Test
-//  public void testMakePositiveFeedback() throws InterruptedException {
-//    getInstrumentation().waitForIdleSync();
-//    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-//
-//    onView(withId(R.id.like_button)).perform(scrollTo(), click());
-//
-//    Thread.sleep(1000);
-//    onView(withId(R.id.like_button)).perform(click());
-//    Thread.sleep(1000);
-//    onView(withText(R.string.feedback_message)).check(matches(isDisplayed()));
-//  }
-//
-//  @Test
-//  public void testMakeNegativeFeedback() throws InterruptedException {
-//    getInstrumentation().waitForIdleSync();
-//    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-//
-//    onView(withId(R.id.dislike_button)).perform(scrollTo(), click());
-//
-//    Thread.sleep(1000);
-//    onView(withId(R.id.dislike_button)).perform(click());
-//    Thread.sleep(1000);
-//    onView(withText(R.string.feedback_message)).check(matches(isDisplayed()));
-//  }
+  // commenting these tests because not working on cirrus for some reason
+
+  //  @Test
+  //  public void testMakePositiveFeedback() throws InterruptedException {
+  //    getInstrumentation().waitForIdleSync();
+  //    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+  //
+  //    onView(withId(R.id.like_button)).perform(scrollTo(), click());
+  //
+  //    Thread.sleep(1000);
+  //    onView(withId(R.id.like_button)).perform(click());
+  //    Thread.sleep(1000);
+  //    onView(withText(R.string.feedback_message)).check(matches(isDisplayed()));
+  //  }
+  //
+  //  @Test
+  //  public void testMakeNegativeFeedback() throws InterruptedException {
+  //    getInstrumentation().waitForIdleSync();
+  //    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+  //
+  //    onView(withId(R.id.dislike_button)).perform(scrollTo(), click());
+  //
+  //    Thread.sleep(1000);
+  //    onView(withId(R.id.dislike_button)).perform(click());
+  //    Thread.sleep(1000);
+  //    onView(withText(R.string.feedback_message)).check(matches(isDisplayed()));
+  //  }
 }

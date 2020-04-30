@@ -206,7 +206,6 @@ public class ChatPageTest {
                 withId(R.id.messagesList),
                 childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
 
-
     Thread.sleep(1000);
 
     recyclerView.perform(actionOnItemAtPosition(0, click()));
