@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.common.Document;
@@ -13,6 +14,18 @@ import ch.epfl.favo.common.FavoLocation;
  * so that it can be injected in views
  */
 public class User implements Document {
+
+  // String constants for Map conversion
+  public static final String ID = "id";
+  public static final String NAME = "name";
+  public static final String EMAIL = "email";
+  public static final String DEVICE_ID = "deviceId";
+  public static final String NOTIFICATION_ID = "notificationId";
+  public static final String REQUESTED_FAVORS = "requestedFavors";
+  public static final String ACCEPTED_FAVORS = "acceptedFavors";
+  public static final String COMPLETED_FAVORS = "completedFavors";
+  public static final String LIKES = "likes";
+  public static final String DISLIKES = "dislikes";
 
   private String id;
   private String name;
@@ -62,7 +75,20 @@ public class User implements Document {
 
   @Override
   public Map<String, Object> toMap() {
-    return null;
+    return new HashMap<String, Object>() {
+      {
+        put(ID, id);
+        put(NAME, name);
+        put(EMAIL, email);
+        put(DEVICE_ID, deviceId);
+        put(NOTIFICATION_ID, notificationId);
+        put(REQUESTED_FAVORS, requestedFavors);
+        put(ACCEPTED_FAVORS, acceptedFavors);
+        put(COMPLETED_FAVORS, completedFavors);
+        put(LIKES, likes);
+        put(DISLIKES, dislikes);
+      }
+    };
   }
 
   public String getName() {

@@ -3,6 +3,7 @@ package ch.epfl.favo.view.tabs.addFavor;
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import java.util.function.Function;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
@@ -60,14 +62,17 @@ public class FavorDetailView extends Fragment {
     if (currentFavor == null && getArguments() != null) {
       String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
       setupFavorListener(rootView, favorId);
-    }
-    else{
-      displayFromFavor(rootView, Objects.requireNonNull(currentFavor)); //TODO: fix in case current favor is null
+
+    } else {
+      displayFromFavor(
+          rootView,
+          Objects.requireNonNull(currentFavor)); // TODO: fix in case current favor is null
     }
 
     return rootView;
   }
-  public FavorDataController getViewModel(){
+
+  public FavorDataController getViewModel() {
     return favorViewModel;
   }
 
@@ -115,12 +120,21 @@ public class FavorDetailView extends Fragment {
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorDetailView_to_chatView, favorBundle);
         });
+
+    rootView
+        .findViewById(R.id.requester_name)
+        .setOnClickListener(
+            v -> {
+              Bundle userBundle = new Bundle();
+              userBundle.putString("USER_ARGS", currentFavor.getRequesterId());
+              Navigation.findNavController(requireView())
+                  .navigate(R.id.action_nav_favorDetailView_to_UserInfoPage, userBundle);
+            });
   }
 
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
-    CompletableFuture completableFuture =
-            getViewModel().updateFavor(currentFavor);
+    CompletableFuture completableFuture = getViewModel().updateFavor(currentFavor);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
@@ -152,10 +166,20 @@ public class FavorDetailView extends Fragment {
     // update DB with accepted status
     currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
-    CompletableFuture updateFavorFuture =
-            getViewModel().updateFavor(currentFavor);
+    CompletableFuture updateFavorFuture = getViewModel().updateFavor(currentFavor);
     updateFavorFuture.thenAccept(
-        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
+        o -> {
+          CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
+
+          // update user info
+          UserUtil.getSingleInstance()
+              .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+              .thenAccept(
+                  user -> {
+                    user.setAcceptedFavors(user.getAcceptedFavors() + 1);
+                    UserUtil.getSingleInstance().updateUser(user);
+                  });
+        });
     updateFavorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
   }
 
@@ -179,6 +203,16 @@ public class FavorDetailView extends Fragment {
     setupTextView(rootView, R.id.datetime_accept_view, timeStr);
     setupTextView(rootView, R.id.title_accept_view, titleStr);
     setupTextView(rootView, R.id.details_accept_view, descriptionStr);
+
+    UserUtil.getSingleInstance()
+        .findUser(favor.getRequesterId())
+        .thenAccept(
+            user ->
+                ((TextView) rootView.findViewById(R.id.requester_name))
+                    .setText(
+                        TextUtils.isEmpty(user.getName())
+                            ? Objects.requireNonNull(user.getEmail()).split("@")[0]
+                            : user.getName()));
   }
 
   private void updateDisplayFromViewStatus() {

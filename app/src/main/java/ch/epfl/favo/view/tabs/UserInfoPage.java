@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -18,6 +19,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.FavorFragmentFactory;
 
 public class UserInfoPage extends Fragment {
@@ -55,21 +57,33 @@ public class UserInfoPage extends Fragment {
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons() {
-    Button likeButton = view.findViewById(R.id.like_button);
+    ImageView likeButton = view.findViewById(R.id.like_button);
     likeButton.setOnClickListener(
         v -> {
           currentUser.setLikes(currentUser.getLikes() + 1);
-          UserUtil.getSingleInstance().updateUser(currentUser);
+          UserUtil.getSingleInstance()
+              .updateUser(currentUser)
+              .thenAccept(user -> displayUserData());
+
+          likeButton.setImageResource(R.drawable.ic_like_colored_48dp);
+          CommonTools.showSnackbar(getView(), "Feedback received! Thanks for sharing your opinion");
         });
 
-    Button dislikeButton = view.findViewById(R.id.dislike_button);
+    ImageView dislikeButton = view.findViewById(R.id.dislike_button);
     dislikeButton.setOnClickListener(
         v -> {
           currentUser.setDislikes(currentUser.getDislikes() + 1);
           UserUtil.getSingleInstance()
               .updateUser(currentUser)
               .thenAccept(user -> displayUserData());
+
+          likeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
+          CommonTools.showSnackbar(getView(), "Feedback received! Thanks for sharing your opinion");
         });
+
+    Button reportUserButton = view.findViewById(R.id.report_user);
+    reportUserButton.setOnClickListener(
+        v -> CommonTools.showSnackbar(getView(), "User has been reported! Thanks for your help"));
   }
 
   private void displayUserData() {

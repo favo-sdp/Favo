@@ -20,7 +20,10 @@
             android:layout_marginBottom="10dp"
             android:background="@color/material_green_500"
             android:orientation="vertical"
-            android:padding="25dp">
+            android:paddingTop="50dp"
+            android:paddingBottom="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
 
             <TextView
                 android:id="@+id/display_name"
@@ -48,7 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:drawableStart="@drawable/ic_people_black_24dp"
+            android:drawableStart="@drawable/ic_create_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
             android:textSize="18sp" />
@@ -57,7 +60,7 @@
             android:id="@+id/user_info_favorsAccepted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_people_black_24dp"
+            android:drawableStart="@drawable/ic_accepted_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
             android:textSize="18sp" />
@@ -66,7 +69,7 @@
             android:id="@+id/user_info_favorsCompleted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_people_black_24dp"
+            android:drawableStart="@drawable/ic_completed_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
             android:textSize="18sp" />
@@ -99,42 +102,52 @@
 
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:text="Rate your experience with this user to help others"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="10dp">
 
-            <Button
+            <ImageView
                 android:id="@+id/like_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="15dp"
                 android:layout_marginStart="20dp"
-                android:background="@android:color/holo_green_light"
-                android:text="Like"
-                android:textColor="@android:color/white"
-                android:textSize="16sp" />
+                android:src="@drawable/ic_like_black_48dp"/>
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
-            <Button
+            <ImageView
                 android:id="@+id/dislike_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="15dp"
-                android:text="Dislike"
-                android:background="@android:color/holo_blue_light"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
+                android:src="@drawable/ic_dislike_black_48dp"
                 android:layout_marginEnd="20dp" />
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:text="Report the user in case of inappropriate behaviour"/>
 
         <Button
             android:id="@+id/report_user"

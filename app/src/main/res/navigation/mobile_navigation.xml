@@ -143,6 +143,15 @@
                 android:defaultValue="@null"
                 app:argType="ch.epfl.favo.favor.Favor" />
         </action>
+
+        <action
+            android:id="@+id/action_nav_favorDetailView_to_UserInfoPage"
+            app:destination="@id/userInfoView">
+            <argument
+                android:name="USER_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
     </fragment>
     <action
         android:id="@+id/action_global_favorDetailView"

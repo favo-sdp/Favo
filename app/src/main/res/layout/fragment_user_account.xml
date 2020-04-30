@@ -67,7 +67,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:drawableStart="@drawable/ic_people_black_24dp"
+            android:drawableStart="@drawable/ic_create_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
             android:text="Favors created: "
@@ -77,7 +77,7 @@
             android:id="@+id/user_account_favorsAccepted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_people_black_24dp"
+            android:drawableStart="@drawable/ic_accepted_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
             android:text="Favors accepted: "
@@ -87,7 +87,7 @@
             android:id="@+id/user_account_favorsCompleted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/ic_people_black_24dp"
+            android:drawableStart="@drawable/ic_completed_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
             android:text="Favors completed: "
@@ -103,9 +103,9 @@
                 android:id="@+id/user_account_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_people_black_24dp"
+                android:drawableStart="@drawable/ic_like_black_24dp"
                 android:drawablePadding="20dp"
-                android:text="Positive\nfeedback: "
+                android:text="Positive\nfeedbacks: "
                 android:textSize="18sp" />
 
             <View
@@ -117,9 +117,9 @@
                 android:id="@+id/user_account_dislikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_people_black_24dp"
+                android:drawableStart="@drawable/ic_dislike_black_24dp"
                 android:drawablePadding="20dp"
-                android:text="Negative\nfeedback: "
+                android:text="Negative\nfeedbacks: "
                 android:textSize="18sp" />
 
         </LinearLayout>

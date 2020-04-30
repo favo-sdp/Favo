@@ -35,6 +35,7 @@ import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
@@ -213,10 +214,17 @@ public class FavorRequestView extends Fragment {
         o -> {
           setupFavorListener(getView(), currentFavor.getId());
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+
+          // update user info
+          UserUtil.getSingleInstance()
+              .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+              .thenAccept(
+                  user -> {
+                    user.setRequestedFavors(user.getRequestedFavors() + 1);
+                    UserUtil.getSingleInstance().updateUser(user);
+                  });
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
-
-
 
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
