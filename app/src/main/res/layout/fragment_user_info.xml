@@ -20,10 +20,10 @@
             android:layout_marginBottom="10dp"
             android:background="@color/material_green_500"
             android:orientation="vertical"
-            android:paddingTop="50dp"
-            android:paddingBottom="20dp"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp">
+            android:paddingTop="50dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp">
 
             <TextView
                 android:id="@+id/display_name"
@@ -32,7 +32,7 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/display_email"
@@ -77,8 +77,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginTop="20dp"
+            android:orientation="horizontal"
             android:padding="10dp">
 
             <TextView
@@ -105,49 +105,54 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textSize="18sp"
             android:layout_gravity="center"
-            android:text="Rate your experience with this user to help others"/>
+            android:layout_marginTop="15dp"
+            android:text="@string/feedback_description"
+            android:textSize="18sp" />
 
         <LinearLayout
+            android:id="@+id/feedback_buttons_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="10dp">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/like_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginStart="40dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Like Button"
                 android:padding="15dp"
-                android:layout_marginStart="20dp"
-                android:src="@drawable/ic_like_black_48dp"/>
+                android:src="@drawable/ic_like_black_48dp" />
 
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/dislike_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginEnd="40dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="Dislike button"
                 android:padding="15dp"
-                android:src="@drawable/ic_dislike_black_48dp"
-                android:layout_marginEnd="20dp" />
+                android:src="@drawable/ic_dislike_black_48dp" />
 
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textSize="18sp"
             android:layout_gravity="center"
-            android:text="Report the user in case of inappropriate behaviour"/>
+            android:layout_marginTop="15dp"
+            android:text="@string/report_description"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/report_user"
@@ -156,7 +161,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="15dp"
             android:padding="15dp"
-            android:text="Report user"
+            android:text="@string/report_text"
             android:textSize="16sp"
             android:theme="@style/WarnButton" />
 

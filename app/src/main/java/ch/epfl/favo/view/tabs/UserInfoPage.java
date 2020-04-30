@@ -66,7 +66,7 @@ public class UserInfoPage extends Fragment {
               .thenAccept(user -> displayUserData());
 
           likeButton.setImageResource(R.drawable.ic_like_colored_48dp);
-          CommonTools.showSnackbar(getView(), "Feedback received! Thanks for sharing your opinion");
+          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
         });
 
     ImageView dislikeButton = view.findViewById(R.id.dislike_button);
@@ -77,13 +77,13 @@ public class UserInfoPage extends Fragment {
               .updateUser(currentUser)
               .thenAccept(user -> displayUserData());
 
-          likeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
-          CommonTools.showSnackbar(getView(), "Feedback received! Thanks for sharing your opinion");
+          dislikeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
+          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
         });
 
     Button reportUserButton = view.findViewById(R.id.report_user);
     reportUserButton.setOnClickListener(
-        v -> CommonTools.showSnackbar(getView(), "User has been reported! Thanks for your help"));
+        v -> CommonTools.showSnackbar(getView(), getString(R.string.report_message)));
   }
 
   private void displayUserData() {
@@ -98,14 +98,14 @@ public class UserInfoPage extends Fragment {
         .setText(TextUtils.isEmpty(currentUser.getEmail()) ? "No email" : currentUser.getEmail());
 
     ((TextView) view.findViewById(R.id.user_info_favorsCreated))
-        .setText("Favors created: " + currentUser.getRequestedFavors());
+        .setText(getString(R.string.favors_created_format, currentUser.getRequestedFavors()));
     ((TextView) view.findViewById(R.id.user_info_favorsAccepted))
-        .setText("Favors accepted: " + currentUser.getAcceptedFavors());
+        .setText(getString(R.string.favors_accepted_format, currentUser.getAcceptedFavors()));
     ((TextView) view.findViewById(R.id.user_info_favorsCompleted))
-        .setText("Favors completed: " + currentUser.getCompletedFavors());
+        .setText(getString(R.string.favors_completed_format, currentUser.getCompletedFavors()));
     ((TextView) view.findViewById(R.id.user_info_likes))
-        .setText("Positive\nfeedbacks: " + currentUser.getLikes());
+        .setText(getString(R.string.likes_format,  currentUser.getLikes()));
     ((TextView) view.findViewById(R.id.user_info_dislikes))
-        .setText("Negative\nfeedbacks: " + currentUser.getDislikes());
+        .setText(getString(R.string.dislikes_format, currentUser.getDislikes()));
   }
 }

@@ -70,7 +70,6 @@
             android:drawableStart="@drawable/ic_create_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
-            android:text="Favors created: "
             android:textSize="18sp" />
 
         <TextView
@@ -80,7 +79,6 @@
             android:drawableStart="@drawable/ic_accepted_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
-            android:text="Favors accepted: "
             android:textSize="18sp" />
 
         <TextView
@@ -90,7 +88,6 @@
             android:drawableStart="@drawable/ic_completed_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
-            android:text="Favors completed: "
             android:textSize="18sp" />
 
         <LinearLayout
@@ -105,7 +102,6 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_like_black_24dp"
                 android:drawablePadding="20dp"
-                android:text="Positive\nfeedbacks: "
                 android:textSize="18sp" />
 
             <View
@@ -119,7 +115,6 @@
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_dislike_black_24dp"
                 android:drawablePadding="20dp"
-                android:text="Negative\nfeedbacks: "
                 android:textSize="18sp" />
 
         </LinearLayout>

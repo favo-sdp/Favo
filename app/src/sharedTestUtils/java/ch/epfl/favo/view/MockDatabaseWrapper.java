@@ -45,6 +45,14 @@ public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<
     this.mockDocument = document;
   }
 
+  public void setMockResult(T document) {
+    this.mockResult = new CompletableFuture() {
+      {
+        complete(document);
+      }
+    };
+  }
+
   @Override
   public CompletableFuture addDocument(T favor) {
     return mockResult;

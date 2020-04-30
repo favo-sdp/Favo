@@ -5,13 +5,16 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.auth.SignInActivity;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -31,6 +34,8 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 @RunWith(AndroidJUnit4.class)
 public class UserAccountPageTest {
 
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+
   @Rule
   public final ActivityTestRule<SignInActivity> mActivityRule =
       new ActivityTestRule<>(SignInActivity.class, true, false);
@@ -49,10 +54,24 @@ public class UserAccountPageTest {
     getInstrumentation().waitForIdleSync();
   }
 
+  @Before
+  public void setUp() {
+    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    mockDatabaseWrapper.setMockDocument(
+        new User(
+            TestConstants.USER_ID,
+            TestConstants.NAME,
+            TestConstants.EMAIL,
+            TestConstants.DEVICE_ID,
+            null,
+            null));
+  }
+
   @After
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   @Test
@@ -69,13 +88,13 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+
     mActivityRule.launchActivity(null);
 
     navigateToAccountTab();
 
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
-    onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
   }
 
   @Test
@@ -83,6 +102,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(
         new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
@@ -92,6 +112,7 @@ public class UserAccountPageTest {
   public void testUserAlreadyLoggedIn_displayUserData_missingEmail() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, "", PHOTO_URI, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
@@ -105,7 +126,6 @@ public class UserAccountPageTest {
     navigateToAccountTab();
     onView(withId(R.id.user_name)).check(matches(withText(NAME)));
     onView(withId(R.id.user_email)).check(matches(withText(EMAIL)));
-    onView(withId(R.id.user_providers)).check(matches(withText(endsWith(PROVIDER))));
   }
 
   @Test

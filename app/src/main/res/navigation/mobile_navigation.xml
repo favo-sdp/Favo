@@ -69,6 +69,15 @@
                 app:argType="string" />
         </action>
 
+        <action
+            android:id="@+id/action_nav_map_to_userInfoView"
+            app:destination="@id/userInfoView">
+            <argument
+                android:name="USER_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
     </fragment>
 
     <fragment
