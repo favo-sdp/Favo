@@ -94,7 +94,7 @@ public class UserInfoPageTest {
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+    onView(withId(R.id.display_name)).perform(scrollTo(), click());
 
     Thread.sleep(1000);
     onView(withId(R.id.display_name)).check(matches(withText(TestConstants.NAME)));
@@ -106,7 +106,7 @@ public class UserInfoPageTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+    onView(withId(R.id.report_user)).perform(scrollTo(), click());
 
     Thread.sleep(4000);
     onView(withId(R.id.report_user)).perform(click());
@@ -119,7 +119,7 @@ public class UserInfoPageTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+    onView(withId(R.id.like_button)).perform(scrollTo(), click());
 
     Thread.sleep(1000);
     onView(withId(R.id.like_button)).perform(click());
@@ -132,7 +132,7 @@ public class UserInfoPageTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+    onView(withId(R.id.dislike_button)).perform(scrollTo(), click());
 
     Thread.sleep(1000);
     onView(withId(R.id.dislike_button)).perform(click());
