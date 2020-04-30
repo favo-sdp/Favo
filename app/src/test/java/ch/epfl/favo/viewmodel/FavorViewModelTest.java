@@ -1,5 +1,6 @@
 package ch.epfl.favo.viewmodel;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 
 import com.google.firebase.firestore.DocumentReference;
@@ -21,14 +22,18 @@ import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.PictureUtil;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 public class FavorViewModelTest {
   private FavorViewModel viewModel;
   private FavorUtil repository;
   private CompletableFuture successfulResult;
   private CompletableFuture failedResult;
+  private PictureUtil pictureUtilility;
+  private Bitmap bitmap;
   @Before
   public void setup(){
     repository = Mockito.mock(FavorUtil.class);
@@ -37,6 +42,9 @@ public class FavorViewModelTest {
     DependencyFactory.setCurrentRepository(repository);
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getUser());
     viewModel = new FavorViewModel();
+    bitmap = Mockito.mock(Bitmap.class);
+    pictureUtilility = Mockito.mock(PictureUtil.class);
+    DependencyFactory.setCurrentPictureUtility(pictureUtilility);
   }
   @After
   public void tearDown(){
@@ -113,5 +121,25 @@ public class FavorViewModelTest {
   @Test
   public void testGetObservedFavor() {
     viewModel.getObservedFavor();
+  }
+
+  @Test
+  public void testUploadPicture() {
+    Mockito.doNothing().when(repository).updateFavorPhoto(any(Favor.class), anyString());
+    Mockito.when(pictureUtilility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
+    viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap);
+  }
+
+  @Test
+  public void testDownloadPictureSuccessful() {
+    Mockito.when(pictureUtilility.downloadPicture(anyString())).thenReturn(successfulResult);
+    Assert.assertEquals(successfulResult, viewModel.downloadPicture(FakeItemFactory.getFavorWithUrl()));
+  }
+
+  @Test
+  public void testDownloadPictureUnsuccessful() {
+    Mockito.when(pictureUtilility.downloadPicture(anyString())).thenReturn(successfulResult);
+    CompletableFuture<Bitmap> bitmapFuture = viewModel.downloadPicture(FakeItemFactory.getFavor());
+    Assert.assertTrue(bitmapFuture.isCompletedExceptionally());
   }
 }
