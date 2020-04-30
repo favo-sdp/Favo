@@ -231,7 +231,7 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testClickOnRequesterTextNavigateToUserInfoPage() {
+  public void testClickOnRequesterTextNavigateToUserInfoPage() throws InterruptedException {
     User testUser =
         new User(
             TestConstants.USER_ID,
@@ -246,7 +246,7 @@ public class FavorDetailViewTest {
 
     onView(withId(R.id.requester_name)).perform(click());
 
-    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }

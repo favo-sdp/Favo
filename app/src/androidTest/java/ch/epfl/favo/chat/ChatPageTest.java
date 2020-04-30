@@ -206,7 +206,7 @@ public class ChatPageTest {
                 childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
     recyclerView.perform(actionOnItemAtPosition(0, click()));
 
-    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
