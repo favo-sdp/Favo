@@ -1,5 +1,6 @@
 package ch.epfl.favo;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 
 import androidx.lifecycle.LiveData;
@@ -49,6 +50,18 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     if (isThrowingError) return failedResult;
     observedFavorResult.setValue(favor);
     return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
+
+  @Override
+  public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
+    return new CompletableFuture<Bitmap>() {
+      {
+        complete(null);
+      }
+    };
   }
 
   private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();

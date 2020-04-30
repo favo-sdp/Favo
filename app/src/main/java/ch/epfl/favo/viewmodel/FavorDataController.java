@@ -1,5 +1,6 @@
 package ch.epfl.favo.viewmodel;
 
+import android.graphics.Bitmap;
 import android.location.Location;
 
 import androidx.lifecycle.LiveData;
@@ -17,6 +18,10 @@ public interface FavorDataController {
   CompletableFuture requestFavor(Favor favor);
   CompletableFuture updateFavor(
           Favor favor, boolean isRequested, int activeFavorsCountChange);
+
+  // Upload/download pictures
+  void uploadOrUpdatePicture(Favor favor, Bitmap picture);
+  CompletableFuture<Bitmap> downloadPicture(Favor favor);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); //used in map view
   LiveData<Map<String, Favor>> getFavorsAroundMe();//used in nearbylistview

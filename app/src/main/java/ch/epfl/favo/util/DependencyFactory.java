@@ -46,6 +46,7 @@ public class DependencyFactory {
   private static FavorUtil currentFavorRepository;
   private static IUserUtil currentUserRepository;
   private static FirebaseInstanceId currentFirebaseInstanceId;
+  private static PictureUtil currentPictureUtility;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -93,7 +94,8 @@ public class DependencyFactory {
     currentCollectionWrapper = dependency;
   }
 
-  public static ICollectionWrapper getCurrentCollectionWrapper(String collectionReference, Class cls) {
+  public static ICollectionWrapper getCurrentCollectionWrapper(
+      String collectionReference, Class cls) {
     if (testMode && currentCollectionWrapper != null) {
       return currentCollectionWrapper;
     }
@@ -208,5 +210,15 @@ public class DependencyFactory {
   public static FirebaseInstanceId getCurrentFirebaseNotificationInstanceId() {
     if (testMode && currentFirebaseInstanceId != null) return currentFirebaseInstanceId;
     return FirebaseInstanceId.getInstance();
+  }
+
+  public static PictureUtil getCurrentPictureUtility() {
+    if (testMode && currentPictureUtility != null) return currentPictureUtility;
+    return PictureUtil.getInstance();
+  }
+
+  public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
+    testMode = true;
+    currentPictureUtility = pictureUtil;
   }
 }

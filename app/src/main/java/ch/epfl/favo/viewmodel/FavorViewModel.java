@@ -1,6 +1,7 @@
 package ch.epfl.favo.viewmodel;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 
@@ -23,6 +24,7 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.PictureUtil;
 
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements FavorDataController {
@@ -30,7 +32,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   private Location mCurrentLocation;
   private double mRadius = -1.0;
 
-  MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
@@ -41,6 +43,10 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
 
   public IUserUtil getUserRepository() {
     return DependencyFactory.getCurrentUserRepository();
+  }
+
+  private PictureUtil getPictureUtility() {
+    return DependencyFactory.getCurrentPictureUtility();
   }
 
   // save address to firebase
@@ -67,6 +73,27 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
    */
   private CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
     return getUserRepository().changeActiveFavorCount(isRequested, change);
+  }
+
+  // Upload/download pictures
+  @Override
+  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
+    CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
+    pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
+    String url = favor.getPictureUrl();
+    if (url == null) {
+      return new CompletableFuture<Bitmap>() {
+        {
+          completeExceptionally(new RuntimeException("Invalid picture url in Favor"));
+        }
+      };
+    } else {
+      return getPictureUtility().downloadPicture(url);
+    }
   }
 
   @Override

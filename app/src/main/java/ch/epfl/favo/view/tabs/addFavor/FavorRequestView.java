@@ -36,11 +36,9 @@ import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.IGpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
@@ -139,12 +137,13 @@ public class FavorRequestView extends Fragment {
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-      CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
-      bitmapFuture.thenAccept(
-          picture -> {
-            mImageView.setImageBitmap(picture);
-            v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-          });
+      getViewModel()
+          .downloadPicture(currentFavor)
+          .thenAccept(
+              picture -> {
+                mImageView.setImageBitmap(picture);
+                v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+              });
     }
 
     updateViewFromStatus(v);
@@ -248,7 +247,7 @@ public class FavorRequestView extends Fragment {
       if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
         CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
       else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      System.err.println("exception: " + exception);
+      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
       return null;
     };
   }
@@ -282,6 +281,11 @@ public class FavorRequestView extends Fragment {
     CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor, true, countUpdate);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
+
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+      getViewModel().uploadOrUpdatePicture(currentFavor, picture);
+    }
   }
 
   /** Updates favor on DB. */
@@ -374,15 +378,9 @@ public class FavorRequestView extends Fragment {
     // callbacks in requestFavor and confirm
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-
-      // TODO: display result of uploading picture somewhere
-      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
-      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(
-          e -> {
-            // TODO: create UI element that informs the user that the picture wasn't uploaded
-            return null;
-          });
+      getViewModel().uploadOrUpdatePicture(favor, picture);
+    } else {
+      favor.setPictureUrl(null);
     }
 
     // Updates the current favor
