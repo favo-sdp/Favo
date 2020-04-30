@@ -156,22 +156,28 @@ public class DependencyFactory {
   public static void setCurrentFavorCollection(String collection) {
     currentFavorCollection = collection;
   }
+
   @VisibleForTesting
-  public static void setCurrentViewModelClass(Class dependency){
+  public static void setCurrentViewModelClass(Class dependency) {
     testMode = true;
     currentViewModelClass = dependency;
   }
-  public static Class getCurrentViewModelClass(){
-    if (testMode && currentViewModelClass!=null) {return currentViewModelClass;}
+
+  public static Class getCurrentViewModelClass() {
+    if (testMode && currentViewModelClass != null) {
+      return currentViewModelClass;
+    }
     return FavorViewModel.class;
   }
+
   @VisibleForTesting
-  public static void setCurrentRepository(FavorUtil dependency){
+  public static void setCurrentRepository(FavorUtil dependency) {
     testMode = true;
     currentRepository = dependency;
   }
-  public static FavorUtil getCurrentRepository(){
-    if (testMode && currentRepository!=null) return currentRepository;
+
+  public static FavorUtil getCurrentRepository() {
+    if (testMode && currentRepository != null) return currentRepository;
     return FavorUtil.getSingleInstance();
   }
 }

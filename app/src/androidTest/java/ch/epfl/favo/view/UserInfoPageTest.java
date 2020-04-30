@@ -79,7 +79,6 @@ public class UserInfoPageTest {
   }
 
   public void launchFragment() throws Throwable {
-
     MainActivity activity = mainActivityTestRule.getActivity();
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
@@ -88,40 +87,43 @@ public class UserInfoPageTest {
   }
 
   @Test
-  public void displayUserData() {
+  public void testDisplayUserData() throws InterruptedException {
 
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-
+    Thread.sleep(1000);
     onView(withId(R.id.display_name)).check(matches(withText(NAME)));
     onView(withId(R.id.display_email)).check(matches(withText(EMAIL)));
   }
 
   @Test
-  public void clickReportUser() throws InterruptedException {
+  public void testReportUser() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
     Thread.sleep(5000);
     onView(withText(R.string.report_text)).perform(click());
+    Thread.sleep(1000);
     onView(withText(R.string.report_message)).check(matches(isDisplayed()));
   }
 
   @Test
-  public void clickPositiveFeedback() {
+  public void testMakePositiveFeedback() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+    Thread.sleep(1000);
     onView(withId(R.id.like_button)).perform(click());
-    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     onView(withText(R.string.feedback_message)).check(matches(isDisplayed()));
   }
 
   @Test
-  public void clickNegativeFeedback() {
+  public void testMakeNegativeFeedback() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+    Thread.sleep(1000);
     onView(withId(R.id.dislike_button)).perform(click());
-    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     onView(withText(R.string.feedback_message)).check(matches(isDisplayed()));
   }
 }

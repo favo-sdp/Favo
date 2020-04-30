@@ -116,7 +116,12 @@ public class UserUnitTests {
   public void userSuccessfullyPostsToDB() {
 
     CollectionWrapper collection = Mockito.mock(CollectionWrapper.class);
-    CompletableFuture successfulFuture = new CompletableFuture(){{complete(null);}};
+    CompletableFuture successfulFuture =
+        new CompletableFuture() {
+          {
+            complete(null);
+          }
+        };
     Mockito.doReturn(successfulFuture).when(collection).addDocument(any(User.class));
     DependencyFactory.setCurrentCollectionWrapper(collection);
 

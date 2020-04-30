@@ -19,7 +19,7 @@ import ch.epfl.favo.util.DependencyFactory;
 /*
 This models the favor request.
 */
-//TODO: rename to FavorRepository?
+// TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";

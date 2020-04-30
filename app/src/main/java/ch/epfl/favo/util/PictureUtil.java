@@ -53,12 +53,10 @@ public class PictureUtil {
    * @return CompletableFuture of the picture represented as a Bitmap
    */
   public static CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
-    Task<byte[]> downloadTask =
-        storage.getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
+    Task<byte[]> downloadTask = storage.getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
     return downloadFuture.thenApply(bytes -> BitmapConversionUtil.byteArrayToBitmap(bytes));
   }
-
 }

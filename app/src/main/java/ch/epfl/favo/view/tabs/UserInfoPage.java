@@ -104,7 +104,7 @@ public class UserInfoPage extends Fragment {
     ((TextView) view.findViewById(R.id.user_info_favorsCompleted))
         .setText(getString(R.string.favors_completed_format, currentUser.getCompletedFavors()));
     ((TextView) view.findViewById(R.id.user_info_likes))
-        .setText(getString(R.string.likes_format,  currentUser.getLikes()));
+        .setText(getString(R.string.likes_format, currentUser.getLikes()));
     ((TextView) view.findViewById(R.id.user_info_dislikes))
         .setText(getString(R.string.dislikes_format, currentUser.getDislikes()));
   }

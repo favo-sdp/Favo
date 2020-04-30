@@ -71,15 +71,15 @@ public class UserAccountPage extends Fragment {
 
   private void displayUserDetails() {
     ((TextView) view.findViewById(R.id.user_account_favorsCreated))
-            .setText(getString(R.string.favors_created_format, currentUser.getRequestedFavors()));
+        .setText(getString(R.string.favors_created_format, currentUser.getRequestedFavors()));
     ((TextView) view.findViewById(R.id.user_account_favorsAccepted))
-            .setText(getString(R.string.favors_accepted_format, currentUser.getAcceptedFavors()));
+        .setText(getString(R.string.favors_accepted_format, currentUser.getAcceptedFavors()));
     ((TextView) view.findViewById(R.id.user_account_favorsCompleted))
-            .setText(getString(R.string.favors_completed_format, currentUser.getCompletedFavors()));
+        .setText(getString(R.string.favors_completed_format, currentUser.getCompletedFavors()));
     ((TextView) view.findViewById(R.id.user_account_likes))
-            .setText(getString(R.string.likes_format,  currentUser.getLikes()));
+        .setText(getString(R.string.likes_format, currentUser.getLikes()));
     ((TextView) view.findViewById(R.id.user_account_dislikes))
-            .setText(getString(R.string.dislikes_format, currentUser.getDislikes()));
+        .setText(getString(R.string.dislikes_format, currentUser.getDislikes()));
   }
 
   private void displayUserData(FirebaseUser user) {

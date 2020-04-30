@@ -48,7 +48,7 @@
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/user_email"

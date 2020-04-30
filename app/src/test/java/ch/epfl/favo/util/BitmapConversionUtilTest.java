@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThrows;
 
 public class BitmapConversionUtilTest {
 
-  private byte[] val  = "test".getBytes();
+  private byte[] val = "test".getBytes();
 
   @Test
   public void byteArrayToBitmapTest() {
@@ -22,7 +22,6 @@ public class BitmapConversionUtilTest {
   public void bitmapToJpegInputStreamTest() {
     Bitmap bitmap = BitmapFactory.decodeByteArray(val, 0, val.length);
     assertThrows(
-      NullPointerException.class,
-      () -> BitmapConversionUtil.bitmapToJpegInputStream(bitmap));
+        NullPointerException.class, () -> BitmapConversionUtil.bitmapToJpegInputStream(bitmap));
   }
 }

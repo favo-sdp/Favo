@@ -7,8 +7,6 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -106,9 +104,9 @@ public class UserUtil {
               String token = Objects.requireNonNull(task.getResult()).getToken();
               user.setNotificationId(token);
 
-//              Map<String, String> notifMap = new HashMap<String, String>();
-//              notifMap.put("notificationId", token);
-//              collection.updateDocument(user.getId(), notifMap);
+              //              Map<String, String> notifMap = new HashMap<String, String>();
+              //              notifMap.put("notificationId", token);
+              //              collection.updateDocument(user.getId(), notifMap);
             });
   }
 

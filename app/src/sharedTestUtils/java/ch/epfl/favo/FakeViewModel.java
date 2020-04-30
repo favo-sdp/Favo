@@ -18,11 +18,10 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
 
   public void setThrowError(boolean t) {
     throwError = t;
-    if (throwError){
+    if (throwError) {
       result = getFailedCompletableFuture();
     }
   }
-
 
   private CompletableFuture getFailedCompletableFuture() {
     return new CompletableFuture<Favor>() {
@@ -40,14 +39,10 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     };
   }
 
-
-
   @Override
   public CompletableFuture postFavor(Favor favor) {
     return result;
   }
-
-
 
   @Override
   public CompletableFuture updateFavor(Favor favor) {

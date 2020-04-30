@@ -134,10 +134,11 @@ public class FavorRequestView extends Fragment {
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
       CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
-      bitmapFuture.thenAccept(picture -> {
-        mImageView.setImageBitmap(picture);
-        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-      });
+      bitmapFuture.thenAccept(
+          picture -> {
+            mImageView.setImageBitmap(picture);
+            v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+          });
     }
 
     updateViewFromStatus(v);
@@ -379,10 +380,11 @@ public class FavorRequestView extends Fragment {
       // TODO: display result of uploading picture somewhere
       CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
       pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(e -> {
-        // TODO: create UI element that informs the user that the picture wasn't uploaded
-        return null;
-      });
+      pictureUrl.exceptionally(
+          e -> {
+            // TODO: create UI element that informs the user that the picture wasn't uploaded
+            return null;
+          });
     }
 
     // Updates the current favor

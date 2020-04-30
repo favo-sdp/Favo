@@ -233,13 +233,13 @@ public class FavorDetailViewTest {
   @Test
   public void testClickOnRequesterTextNavigateToUserInfoPage() {
     User testUser =
-            new User(
-                    TestConstants.USER_ID,
-                    TestConstants.NAME,
-                    TestConstants.EMAIL,
-                    TestConstants.DEVICE_ID,
-                    null,
-                    null);
+        new User(
+            TestConstants.USER_ID,
+            TestConstants.NAME,
+            TestConstants.EMAIL,
+            TestConstants.DEVICE_ID,
+            null,
+            null);
 
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
@@ -249,7 +249,6 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-
   }
 
   // removing this test because favors in the second tab will concern the user directly and it's not
