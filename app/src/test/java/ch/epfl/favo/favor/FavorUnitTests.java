@@ -22,7 +22,7 @@ public class FavorUnitTests {
   @Test
   public void favorGettersReturnCorrectValues() {
 
-    Favor favor = FakeItemFactory.getFavor();
+    Favor favor = FakeItemFactory.getFavorWithUrl();
 
     assertEquals(TestConstants.TITLE, favor.getTitle());
     assertEquals(TestConstants.DESCRIPTION, favor.getDescription());
@@ -93,8 +93,8 @@ public class FavorUnitTests {
 
   @Test
   public void favorComparisonIsSuccessful() {
-    Favor favor = FakeItemFactory.getFavor();
-    Favor favor2 = FakeItemFactory.getFavor();
+    Favor favor = FakeItemFactory.getFavorWithUrl();
+    Favor favor2 = FakeItemFactory.getFavorWithUrl();
     assertTrue(favor.contentEquals(favor2));
   }
 

@@ -138,7 +138,7 @@ public class FavorRequestView extends Fragment {
                 if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
                   if (currentFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
-                    displayFavorInfo();
+                    displayFavorInfo(rootView);
                     setFavorActivatedView(rootView);
                   }
                 } else if (favor == null) {
@@ -152,11 +152,20 @@ public class FavorRequestView extends Fragment {
   }
 
   /** When fragment is launched with favor. */
-  private void displayFavorInfo() {
+  private void displayFavorInfo(View v) {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(favorStatus.toString());
+    String url = currentFavor.getPictureUrl();
+    if (url != null) {
+      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
+      bitmapFuture.thenAccept(picture -> {
+        mImageView.setImageBitmap(picture);
+        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+      });
+    }
 
     updateViewFromStatus();
   }
@@ -441,14 +450,13 @@ public class FavorRequestView extends Fragment {
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
 
-      // Good idea to display the result of uploading the picture (not sure how to do this)
+      // TODO: display result of uploading picture somewhere
       CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
       pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-      pictureUrl.exceptionally(
-          e -> {
-            // insert something about being unable to upload picture
-            return null;
-          });
+      pictureUrl.exceptionally(e -> {
+        // TODO: create UI element that informs the user that the picture wasn't uploaded
+        return null;
+      });
     }
 
     // Updates the current favor

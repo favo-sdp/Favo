@@ -12,16 +12,21 @@ import ch.epfl.favo.favor.Favor;
 public class FakeItemFactory {
 
   public static Favor getFavor() {
-    Favor favor = new Favor(
-        TestConstants.FAVOR_ID,
-        TestConstants.TITLE,
-        TestConstants.DESCRIPTION,
-        TestConstants.REQUESTER_ID,
-        TestConstants.LOCATION,
-        TestConstants.FAVOR_STATUS.toInt());
+    return new Favor(
+      TestConstants.FAVOR_ID,
+      TestConstants.TITLE,
+      TestConstants.DESCRIPTION,
+      TestConstants.REQUESTER_ID,
+      TestConstants.LOCATION,
+      TestConstants.FAVOR_STATUS.toInt());
+  }
+
+  public static Favor getFavorWithUrl() {
+    Favor favor = getFavor();
     favor.setPictureUrl(TestConstants.PICTURE_URL);
     return favor;
   }
+
   public static FirebaseUser getUser(){
     return new FakeFirebaseUser(TestConstants.NAME,TestConstants.EMAIL,TestConstants.PHOTO_URI,TestConstants.PROVIDER);
   }
