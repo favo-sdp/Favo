@@ -23,6 +23,7 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -92,17 +93,23 @@ public class UserInfoPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+
+    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+
     Thread.sleep(1000);
-    onView(withId(R.id.display_name)).check(matches(withText(NAME)));
-    onView(withId(R.id.display_email)).check(matches(withText(EMAIL)));
+    onView(withId(R.id.display_name)).check(matches(withText(TestConstants.NAME)));
+    onView(withId(R.id.display_email)).check(matches(withText(TestConstants.EMAIL)));
   }
 
   @Test
   public void testReportUser() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-    Thread.sleep(5000);
-    onView(withText(R.string.report_text)).perform(click());
+
+    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+
+    Thread.sleep(4000);
+    onView(withId(R.id.report_user)).perform(click());
     Thread.sleep(1000);
     onView(withText(R.string.report_message)).check(matches(isDisplayed()));
   }
@@ -111,6 +118,9 @@ public class UserInfoPageTest {
   public void testMakePositiveFeedback() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+
+    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+
     Thread.sleep(1000);
     onView(withId(R.id.like_button)).perform(click());
     Thread.sleep(1000);
@@ -121,6 +131,9 @@ public class UserInfoPageTest {
   public void testMakeNegativeFeedback() throws InterruptedException {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+
+    onView(withId(R.id.user_info_fragment)).perform(scrollTo(), click());
+
     Thread.sleep(1000);
     onView(withId(R.id.dislike_button)).perform(click());
     Thread.sleep(1000);
