@@ -31,7 +31,8 @@ public class Favor implements Parcelable, Document {
   public static final String LOCATION = "location";
   public static final String POSTED_TIME = "postedTime";
   public static final String STATUS_ID = "statusId";
-  public static final String IS_ARCHIVED = "isArchived";
+  public static final String PICTURE_URL = "pictureUrl";
+  private static final String IS_ARCHIVED = "isArchived";
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
@@ -52,6 +53,7 @@ public class Favor implements Parcelable, Document {
   private FavoLocation location;
   private Date postedTime;
   private int statusId;
+  private String pictureUrl;
   private boolean isArchived;
 
   public Favor() {}
@@ -67,6 +69,7 @@ public class Favor implements Parcelable, Document {
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
+    this.pictureUrl = null;
     this.isArchived = false;
   }
 
@@ -106,6 +109,7 @@ public class Favor implements Parcelable, Document {
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
     this.statusId = (int) map.get(STATUS_ID);
+    this.pictureUrl = (String) map.get(PICTURE_URL);
     this.isArchived = (boolean) map.get(IS_ARCHIVED);
   }
 
@@ -142,6 +146,7 @@ public class Favor implements Parcelable, Document {
         put(LOCATION, location);
         put(POSTED_TIME, postedTime);
         put(STATUS_ID, statusId);
+        put(PICTURE_URL, pictureUrl);
         put(IS_ARCHIVED, isArchived);
       }
     };
@@ -217,6 +222,10 @@ public class Favor implements Parcelable, Document {
     this.location = location;
   }
 
+  public String getPictureUrl() { return this.pictureUrl; }
+
+  public void setPictureUrl(String pictureUrl){ this.pictureUrl = pictureUrl; }
+
   @Override
   public int describeContents() {
     return 0;
@@ -229,6 +238,7 @@ public class Favor implements Parcelable, Document {
     dest.writeList(userIds);
     dest.writeParcelable(location, flags);
     dest.writeInt(statusId);
+    dest.writeString(pictureUrl);
   }
 
   public void updateToOther(Favor other) {
@@ -239,11 +249,13 @@ public class Favor implements Parcelable, Document {
     this.location = other.getLocation();
     this.postedTime = other.getPostedTime();
     this.statusId = other.getStatusId();
+    this.pictureUrl = other.getPictureUrl();
   }
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)
         && this.statusId == other.getStatusId()
-        && this.location.equals(other.location);
+        && this.location.equals(other.location)
+        && this.pictureUrl.equals(other.pictureUrl);
   }
 }

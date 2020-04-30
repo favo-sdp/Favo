@@ -116,4 +116,12 @@ public class FavorUtilTest {
         NotImplementedException.class,
         () -> FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser("id"));
   }
+
+  @Test
+  public void favorCanUpdateFavorPhoto() {
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    String newPictureUrl = TestConstants.OTHER_PICTURE_URL;
+    FavorUtil.getSingleInstance().updateFavorPhoto(fakeFavor, newPictureUrl);
+    assertEquals(newPictureUrl, fakeFavor.getPictureUrl());
+  }
 }

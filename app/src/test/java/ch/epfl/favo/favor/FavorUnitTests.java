@@ -22,13 +22,14 @@ public class FavorUnitTests {
   @Test
   public void favorGettersReturnCorrectValues() {
 
-    Favor favor = FakeItemFactory.getFavor();
+    Favor favor = FakeItemFactory.getFavorWithUrl();
 
     assertEquals(TestConstants.TITLE, favor.getTitle());
     assertEquals(TestConstants.DESCRIPTION, favor.getDescription());
     assertEquals(TestConstants.REQUESTER_ID, favor.getRequesterId());
     assertEquals(TestConstants.LOCATION, favor.getLocation());
     assertEquals(TestConstants.FAVOR_STATUS.toInt(), favor.getStatusId());
+    assertEquals(TestConstants.PICTURE_URL, favor.getPictureUrl());
     assertNotNull(favor.getPostedTime());
   }
 
@@ -40,14 +41,17 @@ public class FavorUnitTests {
     FavorStatus statusId = FavorStatus.CANCELLED_REQUESTER;
     FavoLocation location = TestConstants.LOCATION;
     String accepterId = TestConstants.ACCEPTER_ID;
+    String otherPictureUrl = TestConstants.OTHER_PICTURE_URL;
 
     favor.setStatusIdToInt(statusId);
     favor.setLocation(location);
     favor.setAccepterId(accepterId);
+    favor.setPictureUrl(otherPictureUrl);
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId.toInt(), favor.getStatusId());
     assertEquals(accepterId, favor.getAccepterId());
+    assertEquals(otherPictureUrl, favor.getPictureUrl());
   }
 
   @Test
@@ -84,12 +88,13 @@ public class FavorUnitTests {
     assertEquals(favor.getAccepterId(), favor2.getAccepterId());
     assertEquals(favor.getPostedTime(), favor2.getPostedTime());
     assertEquals(favor.getStatusId(), favor2.getStatusId());
+    assertEquals(favor.getPictureUrl(), favor2.getPictureUrl());
   }
 
   @Test
   public void favorComparisonIsSuccessful() {
-    Favor favor = FakeItemFactory.getFavor();
-    Favor favor2 = FakeItemFactory.getFavor();
+    Favor favor = FakeItemFactory.getFavorWithUrl();
+    Favor favor2 = FakeItemFactory.getFavorWithUrl();
     assertTrue(favor.contentEquals(favor2));
   }
 

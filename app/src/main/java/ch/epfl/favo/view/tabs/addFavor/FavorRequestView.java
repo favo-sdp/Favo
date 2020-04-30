@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,11 +35,13 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
@@ -126,6 +129,16 @@ public class FavorRequestView extends Fragment {
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
     mStatusView.setText(favorStatus.toString());
+
+    String url = currentFavor.getPictureUrl();
+    if (url != null) {
+      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      CompletableFuture<Bitmap> bitmapFuture = PictureUtil.downloadPicture(url);
+      bitmapFuture.thenAccept(picture -> {
+        mImageView.setImageBitmap(picture);
+        v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
+      });
+    }
 
     updateViewFromStatus(v);
   }
@@ -350,12 +363,27 @@ public class FavorRequestView extends Fragment {
     // Extract details and post favor to Firebase
     EditText titleElem = requireView().findViewById(R.id.title_request_view);
     EditText descElem = requireView().findViewById(R.id.details);
+
     String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     status = FavorStatus.convertTemporaryStatus(status);
+
     Favor favor = new Favor(title, desc, userId, loc, status);
+
+    // Upload picture to database if it exists
+    if (mImageView.getDrawable() != null) {
+      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+
+      // TODO: display result of uploading picture somewhere
+      CompletableFuture<String> pictureUrl = PictureUtil.uploadPicture(picture);
+      pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
+      pictureUrl.exceptionally(e -> {
+        // TODO: create UI element that informs the user that the picture wasn't uploaded
+        return null;
+      });
+    }
 
     // Updates the current favor
     if (currentFavor == null) {

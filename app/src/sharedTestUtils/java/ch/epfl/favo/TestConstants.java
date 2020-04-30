@@ -26,6 +26,8 @@ public class TestConstants {
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
   public static final FavorStatus FAVOR_STATUS = FavorStatus.REQUESTED;
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
+  public static final String PICTURE_URL = "https://favo.com/picture";
+  public static final String OTHER_PICTURE_URL = "https://favo.com/otherPicture";
 
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";
