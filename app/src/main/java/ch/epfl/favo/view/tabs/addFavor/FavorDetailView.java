@@ -212,10 +212,10 @@ public class FavorDetailView extends Fragment {
           ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
           statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           enableButtons(false);
+          break;
         }
       case ACCEPTED:
         {
-          completeBtn.setText(R.string.complete_favor);
           ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
           statusText.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
@@ -228,7 +228,6 @@ public class FavorDetailView extends Fragment {
         }
       case COMPLETED_ACCEPTER:
         {
-          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
           completeBtn.setText(R.string.wait_complete);
           completeBtn.setClickable(false);
           completeBtn.setCompoundDrawablesWithIntrinsicBounds(
@@ -239,7 +238,9 @@ public class FavorDetailView extends Fragment {
       case COMPLETED_REQUESTER:
         {
           completeBtn.setText(R.string.complete_favor);
-          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
+          completeBtn.setClickable(true);
+          completeBtn.setCompoundDrawablesWithIntrinsicBounds(
+                  0, 0, R.drawable.ic_check_box_black_24dp, 0);
           statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           break;
         }
@@ -271,6 +272,7 @@ public class FavorDetailView extends Fragment {
   private void enableButtons(boolean enable) {
     acceptAndCancelFavorBtn.setEnabled(enable);
     chatBtn.setEnabled(enable);
+    completeBtn.setEnabled(enable);
   }
 
   private void setupTextView(View rootView, int id, String text) {
