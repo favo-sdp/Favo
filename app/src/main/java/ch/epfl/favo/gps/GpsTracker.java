@@ -21,7 +21,6 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
 
   private final Context context;
   private static Location mLastKnownLocation = null;
-  private static long mLastUpdate = 0;
 
   public GpsTracker(Context context) {
     this.context = context;
@@ -34,14 +33,10 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
    */
   public static void setLastKnownLocation(Location location) {
     // update from mapPage, it has its own position request method based on callback
-    mLastUpdate = System.currentTimeMillis();
     mLastKnownLocation = location;
   }
 
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    // if last update of location is less than 5 minutes, then return last result
-    if (mLastKnownLocation != null && ((System.currentTimeMillis() - mLastUpdate) / 1000) < 300)
-      return mLastKnownLocation;
     LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
     boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -50,27 +45,25 @@ public class GpsTracker extends FragmentActivity implements LocationListener, Lo
             == PackageManager.PERMISSION_GRANTED
         || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
-      String provider = null;
-      if (isGPSEnabled) provider = LocationManager.GPS_PROVIDER;
-      else if (isNetworkEnabled) provider = LocationManager.NETWORK_PROVIDER;
-      if (provider != null) {
-        locationManager.requestLocationUpdates(provider, 10000, 10, this);
-        mLastKnownLocation = locationManager.getLastKnownLocation(provider);
+      if (isGPSEnabled) {
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
+        mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       }
-      if (mLastKnownLocation == null) {
-        throw new NoPositionFoundException("Permission is granted, but no position is found");
+      else if(isNetworkEnabled){
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, this);
+        mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
     } else {
       throw new NoPermissionGrantedException("No location permission granted");
     }
-    mLastUpdate = System.currentTimeMillis();
+    if (mLastKnownLocation == null)
+      throw new NoPositionFoundException("Permission is granted, but no position is found");
     return mLastKnownLocation;
   }
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
     mLastKnownLocation = location;
-    mLastUpdate = System.currentTimeMillis();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {

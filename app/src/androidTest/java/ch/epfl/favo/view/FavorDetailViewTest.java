@@ -1,12 +1,10 @@
 package ch.epfl.favo.view;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -23,6 +21,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.DependencyFactory;
@@ -33,7 +32,6 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -96,15 +94,14 @@ public class FavorDetailViewTest {
     fakeViewModel = (FakeViewModel) detailViewFragment.getViewModel();
   }
 
-
   @Test
   public void testAcceptButtonShowsFailSnackBar() throws Throwable {
     // check that detailed view is indeed opened
     onView(
             allOf(
-                    withId(R.id.fragment_favor_accept_view),
-                    withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+                withId(R.id.fragment_favor_accept_view),
+                withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
     checkRequestedView();
 
     runOnUiThread(() -> fakeViewModel.setThrowError(true));
@@ -146,7 +143,7 @@ public class FavorDetailViewTest {
 
     // check update text matches Accepted by other
     onView(withId(R.id.status_text_accept_view))
-            .check(matches(withText(FavorStatus.ACCEPTED_BY_OTHER.toString())));
+        .check(matches(withText(FavorStatus.ACCEPTED_BY_OTHER.toString())));
   }
 
   @Test
@@ -162,6 +159,28 @@ public class FavorDetailViewTest {
   }
 
   @Test
+  public void testAcceptFavorBlyOneselfShowSnackbar() throws Throwable {
+    Favor favorPostByOneself =
+        new Favor(
+            TestConstants.FAVOR_ID,
+            TestConstants.TITLE,
+            TestConstants.DESCRIPTION,
+            TestConstants.USER_ID,
+            TestConstants.LOCATION,
+            TestConstants.FAVOR_STATUS.toInt());
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favorPostByOneself));
+    getInstrumentation().waitForIdleSync();
+
+    // click accept button
+    onView(withId(R.id.accept_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_accept_by_oneself)));
+  }
+
+  @Test
   public void testAcceptFlow() {
     // click accept button
     onView(withId(R.id.accept_button)).perform(click());
@@ -169,7 +188,7 @@ public class FavorDetailViewTest {
 
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_respond_success_msg)));
+        .check(matches(withText(R.string.favor_respond_success_msg)));
     checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
   }
 
@@ -179,12 +198,12 @@ public class FavorDetailViewTest {
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button))
-            .check(matches(withText(R.string.cancel_accept_button_display)))
-            .perform(click());
+        .check(matches(withText(R.string.cancel_accept_button_display)))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_cancel_success_msg)));
+        .check(matches(withText(R.string.favor_cancel_success_msg)));
     checkCancelledView(FavorStatus.CANCELLED_ACCEPTER);
 
     // If favor is cancelled by requester, show correct view
@@ -205,7 +224,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_complete_success_msg)));
+        .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
     Thread.sleep(2000);
 
@@ -218,7 +237,7 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_complete_success_msg)));
+        .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedSuccessfullyView();
   }
 
@@ -226,41 +245,45 @@ public class FavorDetailViewTest {
     // Check edit button is there
     onView(withId(R.id.complete_btn)).check(matches(not(isDisplayed())));
     // Check cancel button is there
-    onView(withId(R.id.accept_button)).check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
+    onView(withId(R.id.accept_button))
+        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
     // Check status display is correct
     onView(withId(R.id.status_text_accept_view))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(FavorStatus.REQUESTED.toString())));
+        .check(matches(isDisplayed()))
+        .check(matches(withText(FavorStatus.REQUESTED.toString())));
   }
 
   public void checkCompletedSuccessfullyView() {
     onView(withId(R.id.complete_btn)).check(matches(not(isDisplayed())));
-    onView(withId(R.id.accept_button)).check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
+    onView(withId(R.id.accept_button))
+        .check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
     onView(withId(R.id.status_text_accept_view))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString())));
+        .check(matches(isDisplayed()))
+        .check(matches(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString())));
   }
 
   public void checkCompletedOrAcceptedView(FavorStatus status) {
     if (status == FavorStatus.COMPLETED_REQUESTER || status == FavorStatus.ACCEPTED)
       onView(withId(R.id.complete_btn))
-              .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
+          .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
     else // if completed by accepter, complete button is changed to non-clickable waiting button
-      onView(withId(R.id.complete_btn))
-              .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.wait_complete))));
-    onView(withId(R.id.accept_button)).check(matches(allOf(isEnabled(), withText(R.string.cancel_accept_button_display))));
+    onView(withId(R.id.complete_btn))
+          .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.wait_complete))));
+    onView(withId(R.id.accept_button))
+        .check(matches(allOf(isEnabled(), withText(R.string.cancel_accept_button_display))));
     onView(withId(R.id.status_text_accept_view))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(status.toString())));
+        .check(matches(isDisplayed()))
+        .check(matches(withText(status.toString())));
   }
 
   public void checkCancelledView(FavorStatus status) {
     onView(withId(R.id.complete_btn)).check(matches(not(isDisplayed())));
     // Check cancel button is not clickable
-    onView(withId(R.id.accept_button)).check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
+    onView(withId(R.id.accept_button))
+        .check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
     // Check updated status string
     onView(withId(R.id.status_text_accept_view))
-            .check(matches(isDisplayed()))
-            .check(matches(withText(status.toString())));
+        .check(matches(isDisplayed()))
+        .check(matches(withText(status.toString())));
   }
 }

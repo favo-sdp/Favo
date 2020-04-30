@@ -109,11 +109,8 @@ public class FavorDetailView extends Fragment {
     // If clicking for the first time, then accept the favor
     acceptAndCancelFavorBtn.setOnClickListener(
         v -> {
-          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) {
-            acceptFavor();
-          } else {
-            cancelFavor();
-          }
+          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) acceptFavor();
+          else cancelFavor();
         });
 
     chatBtn.setOnClickListener(
@@ -172,6 +169,11 @@ public class FavorDetailView extends Fragment {
   }
 
   private void acceptFavor() {
+    // prevent accepting favor by oneself
+    if(currentFavor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())){
+      CommonTools.showSnackbar(getView(), getString(R.string.favor_accept_by_oneself));
+      return;
+    }
     // update DB with accepted status
     currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
@@ -205,53 +207,60 @@ public class FavorDetailView extends Fragment {
 
   private void updateDisplayFromViewStatus() {
     statusText.setText(favorStatus.toString());
-    updateButtonDisplay();
+    updateAcceptBtnDisplay();
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
         {
-          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
+          updateCompleteBtnDisplay(
+              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp, 0);
           statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           enableButtons(false);
           break;
         }
       case ACCEPTED:
         {
-          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 1;
+          updateCompleteBtnDisplay(
+              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
           statusText.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
         }
       case REQUESTED:
         {
-          ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
+          updateCompleteBtnDisplay(
+              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp, 0);
           statusText.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           break;
         }
       case COMPLETED_ACCEPTER:
         {
-          completeBtn.setText(R.string.wait_complete);
-          completeBtn.setClickable(false);
-          completeBtn.setCompoundDrawablesWithIntrinsicBounds(
-              0, 0, R.drawable.ic_watch_later_black_24dp, 0);
+          updateCompleteBtnDisplay(
+              R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
           statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           break;
         }
       case COMPLETED_REQUESTER:
         {
-          completeBtn.setText(R.string.complete_favor);
-          completeBtn.setClickable(true);
-          completeBtn.setCompoundDrawablesWithIntrinsicBounds(
-                  0, 0, R.drawable.ic_check_box_black_24dp, 0);
+          updateCompleteBtnDisplay(
+              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
           statusText.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
           break;
         }
       default: // includes accepted by other
         enableButtons(false);
-        ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = 0;
+        updateCompleteBtnDisplay(
+            R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp, 0);
         statusText.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
 
-  private void updateButtonDisplay() {
+  private void updateCompleteBtnDisplay(int txt, boolean clickable, int icon, int weight) {
+    completeBtn.setText(txt);
+    completeBtn.setClickable(clickable);
+    completeBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
+    ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = weight;
+  }
+
+  private void updateAcceptBtnDisplay() {
     String displayMessage;
     int backgroundColor;
     Drawable img;

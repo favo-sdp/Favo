@@ -100,38 +100,4 @@ public class GpsUnitTests extends FragmentActivity {
     Intent intent = mock(Intent.class);
     assertNull(gpsTracker.onBind(intent));
   }
-
-  @Test
-  public void StatusIsChanged() {
-    final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-    assertNotEquals(
-        (ThrowingRunnable)
-            () ->
-                new GpsTracker(contextMock)
-                    .onStatusChanged(
-                        LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null),
-        null);
-  }
-
-  @Test
-  public void ProviderIsDisabled() {
-    final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-    assertNotEquals(
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            new GpsTracker(contextMock).onProviderDisabled(LocationManager.GPS_PROVIDER);
-          }
-        },
-        null);
-  }
-
-  @Test
-  public void ProviderIsEnabled() {
-    final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-    assertNotEquals(
-        (ThrowingRunnable)
-            () -> new GpsTracker(contextMock).onProviderEnabled(LocationManager.GPS_PROVIDER),
-        null);
-  }
 }

@@ -71,7 +71,6 @@ public class AddFavorTest {
         protected void beforeActivityLaunched() {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
@@ -86,7 +85,6 @@ public class AddFavorTest {
 
   @After
   public void tearDown() {
-    DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentViewModelClass(null);
   }
@@ -213,7 +211,7 @@ public class AddFavorTest {
   public void checkRequestedView() {
     // Check request button is gone
     onView(withId(R.id.request_button))
-            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
+        .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     // Check upload picture button is not clickable
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
@@ -258,11 +256,11 @@ public class AddFavorTest {
   public void checkCancelledView(FavorStatus status) {
     // Check upload picture button is not clickable
     onView(withId(R.id.add_picture_button))
-            .check(matches(isDisplayed()))
-            .check(matches(not(isEnabled())));
+        .check(matches(isDisplayed()))
+        .check(matches(not(isEnabled())));
     onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button))
-            .check(matches(allOf(isEnabled(), withText(R.string.restart_request))));
+        .check(matches(allOf(isEnabled(), withText(R.string.restart_request))));
     // Check cancel button is not clickable
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     // Check updated status string
@@ -298,7 +296,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button))
         .check(matches(allOf(isDisplayed(), withText(R.string.edit_favor))))
         .perform(click());
-    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     checkEditView();
 
     // click on edit(confirm) again

@@ -117,6 +117,7 @@
     <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
     <string name="complete_favor">Complete</string>
     <string name="wait_complete">Wait others</string>
+    <string name="favor_accept_by_oneself">you cannot accept favor posted by yourself</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

@@ -340,63 +340,58 @@ public class FavorRequestView extends Fragment {
     switch (favorStatus) {
       case REQUESTED:
         {
-          editFavorBtn.setText(R.string.edit_favor);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          updateEditBtnDisplay(R.string.edit_favor, R.drawable.ic_edit_24dp);
           updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case EDIT:
         {
           mStatusView.setBackgroundColor(getResources().getColor(R.color.edit_status_bg));
-          editFavorBtn.setText(R.string.confirm_favor_edit);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
+          updateEditBtnDisplay(R.string.confirm_favor_edit, R.drawable.ic_edit_24dp);
           updateViewFromParameters(true, false, true, true, true);
           break;
         }
       case ACCEPTED:
         {
-          editFavorBtn.setText(R.string.complete_favor);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(
-              0, 0, R.drawable.ic_check_box_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          updateEditBtnDisplay(R.string.complete_favor, R.drawable.ic_check_box_black_24dp);
           updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          editFavorBtn.setText(getString(R.string.restart_request));
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateEditBtnDisplay(R.string.restart_request, R.drawable.ic_edit_24dp);
           updateViewFromParameters(false, true, false, true, false);
           break;
         }
       case COMPLETED_REQUESTER:
         {
-          editFavorBtn.setText(R.string.wait_complete);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(
-              0, 0, R.drawable.ic_watch_later_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateEditBtnDisplay(R.string.wait_complete, R.drawable.ic_watch_later_black_24dp);
           updateViewFromParameters(false, true, false, false, true);
           break;
         }
       case COMPLETED_ACCEPTER:
         {
-          editFavorBtn.setText(R.string.complete_favor);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(
-              0, 0, R.drawable.ic_check_box_black_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateEditBtnDisplay(R.string.complete_favor, R.drawable.ic_check_box_black_24dp);
           updateViewFromParameters(false, true, false, true, true);
           break;
         }
       default: // cancelled
         {
-          editFavorBtn.setText(R.string.restart_request);
-          editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_edit_24dp, 0);
           mStatusView.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+          updateEditBtnDisplay(R.string.restart_request, R.drawable.ic_edit_24dp);
           updateViewFromParameters(false, true, false, true, false);
         }
     }
+  }
+
+  private void updateEditBtnDisplay(int txt, int icon) {
+    editFavorBtn.setText(txt);
+    editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
   }
 
   private void updateViewFromParameters(
