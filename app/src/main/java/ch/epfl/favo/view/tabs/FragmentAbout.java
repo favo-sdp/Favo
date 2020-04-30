@@ -12,14 +12,12 @@ import ch.epfl.favo.R;
 /** A simple {@link Fragment} subclass. */
 public class FragmentAbout extends Fragment {
 
-  public FragmentAbout() {
-    // Required empty public constructor
-  }
+  public FragmentAbout() {}
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
+
     return inflater.inflate(R.layout.fragment_about, container, false);
   }
 }
