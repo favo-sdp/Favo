@@ -93,6 +93,10 @@ public class MainActivityTest {
 
     // check that menu drawer is displayed
     onView(withId(R.id.nav_view)).check(matches(isDisplayed()));
+
+    pressBack();
+    // press back can hide menu
+    onView(withId(R.id.nav_view)).check(matches(not(isDisplayed())));
   }
 
   @Test

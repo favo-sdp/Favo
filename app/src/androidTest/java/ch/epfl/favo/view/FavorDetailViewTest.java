@@ -28,6 +28,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -92,6 +93,20 @@ public class FavorDetailViewTest {
     fakeFavor = FakeItemFactory.getFavor();
     detailViewFragment = launchFragment(fakeFavor);
     fakeViewModel = (FakeViewModel) detailViewFragment.getViewModel();
+  }
+
+  @Test
+  public void testChatAndLocationButtonWorkDetailView(){
+    // Check and click on the chat
+    onView(withId(R.id.chat_button_accept_view)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_chat)).check(matches(isDisplayed()));
+
+    // Go back to favor detail page
+    pressBack();
+
+    // Check and click on the location button
+    onView(withId(R.id.location_accept_view_btn)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
   }
 
   @Test

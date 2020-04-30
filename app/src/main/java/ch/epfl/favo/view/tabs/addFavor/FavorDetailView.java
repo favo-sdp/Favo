@@ -61,11 +61,11 @@ public class FavorDetailView extends Fragment {
     if (getArguments() != null) {
       String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
       setupFavorListener(rootView, favorId);
-    } else {
+    } /*else {
       displayFromFavor(
           rootView,
           Objects.requireNonNull(currentFavor)); // TODO: fix in case current favor is null
-    }
+    }*/
     return rootView;
   }
 

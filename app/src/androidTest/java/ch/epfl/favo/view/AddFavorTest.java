@@ -42,6 +42,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -104,6 +105,22 @@ public class AddFavorTest {
         activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
     getInstrumentation().waitForIdleSync();
     return (FavorRequestView) navHostFragment.getChildFragmentManager().getFragments().get(0);
+  }
+
+  @Test
+  public void testChatAndLocationButtonWorkRequestView() throws Throwable {
+    // Check and click on the chat
+    launchFragment(fakeFavor);
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_chat)).check(matches(isDisplayed()));
+
+    // Go back to favor detail page
+    pressBack();
+    Thread.sleep(3000);
+
+    // Check and click on the location button
+    onView(withId(R.id.location_request_view_btn)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
   }
 
   @Test

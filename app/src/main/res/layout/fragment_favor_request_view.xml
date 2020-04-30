@@ -120,27 +120,25 @@
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="0dp"
-                android:drawableRight="@drawable/ic_image_24dp"
+                android:drawableEnd="@drawable/ic_image_24dp"
                 android:text="Upload" />
 
             <Button
                 android:id="@+id/add_camera_picture_button"
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
-                android:drawableRight="@drawable/ic_photo_camera_24dp"
+                android:drawableEnd="@drawable/ic_photo_camera_24dp"
                 android:text="Take" />
+
+            <Button
+                android:id="@+id/location_request_view_btn"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_location_on_24dp"
+                android:text=""/>
 
         </LinearLayout>
 
-        <Button
-            app:layout_constraintTop_toTopOf="@+id/picture_buttons"
-            app:layout_constraintBottom_toBottomOf="@id/picture_buttons"
-            app:layout_constraintLeft_toRightOf="@id/picture_buttons"
-            android:id="@+id/location_request_view_btn"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/ic_location_on_24dp" />
-        <!--   android:text="Take" -->
 
         <ImageView
             android:id="@+id/image_view_request_view"
