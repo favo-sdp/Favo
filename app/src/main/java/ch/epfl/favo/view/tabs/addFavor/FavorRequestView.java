@@ -216,6 +216,8 @@ public class FavorRequestView extends Fragment {
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
 
+
+
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
       showSnackbar(getString(R.string.save_draft_message));

@@ -21,10 +21,29 @@
     <fragment
         android:id="@+id/nav_share"
         android:label="@string/share" />
+
+    <fragment
+        android:id="@+id/userInfoView"
+        android:name="ch.epfl.favo.view.tabs.UserInfoPage"
+        android:label="User Info Page"
+        tools:layout="@layout/fragment_user_info" />
+
     <fragment
         android:id="@+id/chatView"
         android:name="ch.epfl.favo.chat.ChatPage"
-        android:label="Chat" />
+        android:label="Chat">
+
+        <action
+            android:id="@+id/action_nav_chatView_to_UserInfoPage"
+            app:destination="@id/userInfoView">
+            <argument
+                android:name="USER_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
+    </fragment>
+
     <fragment
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapsPage"

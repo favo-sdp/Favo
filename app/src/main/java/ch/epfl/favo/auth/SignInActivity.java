@@ -156,8 +156,8 @@ public class SignInActivity extends AppCompatActivity {
               user.setDeviceId(deviceId);
             }
 
-            UserUtil.getSingleInstance().postUser(user);
             UserUtil.getSingleInstance().retrieveUserRegistrationToken(user);
+            UserUtil.getSingleInstance().postUser(user);
           });
 
       startMainActivity();

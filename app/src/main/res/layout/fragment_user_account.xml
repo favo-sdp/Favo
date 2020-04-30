@@ -63,6 +63,7 @@
 
 
         <TextView
+            android:id="@+id/user_account_favorsCreated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -73,6 +74,7 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/user_account_favorsAccepted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_people_black_24dp"
@@ -82,6 +84,7 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/user_account_favorsCompleted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_people_black_24dp"
@@ -97,6 +100,7 @@
             android:padding="20dp">
 
             <TextView
+                android:id="@+id/user_account_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_people_black_24dp"
@@ -110,6 +114,7 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/user_account_dislikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableStart="@drawable/ic_people_black_24dp"

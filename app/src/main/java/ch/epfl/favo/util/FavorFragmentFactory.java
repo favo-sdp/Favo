@@ -8,6 +8,7 @@ import ch.epfl.favo.favor.Favor;
 
 public class FavorFragmentFactory {
   public static String FAVOR_ARGS = "FAVOR_ARGS";
+  public static String USER_ARGS = "USER_ARGS";
 
   public static Fragment instantiate(Favor favor, Fragment destination) {
     Bundle args = new Bundle();

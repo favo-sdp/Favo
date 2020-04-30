@@ -39,12 +39,12 @@ public class UserUtil {
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public void postUser(User user) throws RuntimeException { //TODO: catch exception in view not here
-    try {
-      collection.addDocument(user);
-    } catch (RuntimeException e) {
-      Log.d(TAG, "unable to add document to db.");
-    }
+  public CompletableFuture<User> postUser(User user) throws RuntimeException {
+    return collection.addDocument(user);
+  }
+
+  public CompletableFuture<User> updateUser(User user) throws RuntimeException {
+    return collection.updateDocument(user.getId(), user.toMap());
   }
 
   /** @param id A FireBase Uid to search for in Users table. */
@@ -106,9 +106,9 @@ public class UserUtil {
               String token = Objects.requireNonNull(task.getResult()).getToken();
               user.setNotificationId(token);
 
-              Map<String, String> notifMap = new HashMap<String, String>();
-              notifMap.put("notificationId", token);
-              collection.updateDocument(user.getId(), notifMap);
+//              Map<String, String> notifMap = new HashMap<String, String>();
+//              notifMap.put("notificationId", token);
+//              collection.updateDocument(user.getId(), notifMap);
             });
   }
 

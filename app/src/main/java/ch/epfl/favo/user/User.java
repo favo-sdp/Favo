@@ -23,6 +23,11 @@ public class User implements Document {
   private FavoLocation location;
   private int activeAcceptingFavors;
   private int activeRequestingFavors;
+  private int requestedFavors;
+  private int acceptedFavors;
+  private int completedFavors;
+  private int likes;
+  private int dislikes;
 
   public User() {}
 
@@ -42,6 +47,11 @@ public class User implements Document {
     this.location = location;
     this.activeAcceptingFavors = 0;
     this.activeRequestingFavors = 0;
+    this.requestedFavors = 0;
+    this.acceptedFavors = 0;
+    this.likes = 0;
+    this.dislikes = 0;
+    this.completedFavors = 0;
   }
 
   // Getters
@@ -114,5 +124,45 @@ public class User implements Document {
 
   boolean canRequest() {
     return activeAcceptingFavors + activeRequestingFavors < 1;
+  }
+
+  public int getRequestedFavors() {
+    return requestedFavors;
+  }
+
+  public void setRequestedFavors(int requestedFavors) {
+    this.requestedFavors = requestedFavors;
+  }
+
+  public int getAcceptedFavors() {
+    return acceptedFavors;
+  }
+
+  public void setAcceptedFavors(int acceptedFavors) {
+    this.acceptedFavors = acceptedFavors;
+  }
+
+  public int getCompletedFavors() {
+    return completedFavors;
+  }
+
+  public void setCompletedFavors(int completedFavors) {
+    this.completedFavors = completedFavors;
+  }
+
+  public int getLikes() {
+    return likes;
+  }
+
+  public void setLikes(int likes) {
+    this.likes = likes;
+  }
+
+  public int getDislikes() {
+    return dislikes;
+  }
+
+  public void setDislikes(int dislikes) {
+    this.dislikes = dislikes;
   }
 }

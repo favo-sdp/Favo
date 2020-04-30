@@ -44,31 +44,31 @@
 
 
         <TextView
+            android:id="@+id/user_info_favorsCreated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:drawableStart="@drawable/ic_people_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
-            android:text="Favors created: "
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/user_info_favorsAccepted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_people_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
-            android:text="Favors accepted: "
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/user_info_favorsCompleted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_people_black_24dp"
             android:drawablePadding="20dp"
             android:padding="15dp"
-            android:text="Favors completed: "
             android:textSize="18sp" />
 
         <LinearLayout
@@ -79,9 +79,9 @@
             android:padding="10dp">
 
             <TextView
+                android:id="@+id/user_info_likes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Positive\nfeedback: "
                 android:layout_marginStart="20dp"
                 android:textSize="18sp" />
 
@@ -91,9 +91,9 @@
                 android:layout_weight="1" />
 
             <TextView
+                android:id="@+id/user_info_dislikes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Negative\nfeedback: "
                 android:layout_marginEnd="20dp"
                 android:textSize="18sp" />
 
