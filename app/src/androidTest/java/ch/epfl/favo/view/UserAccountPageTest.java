@@ -57,14 +57,15 @@ public class UserAccountPageTest {
   @Before
   public void setUp() {
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
-    mockDatabaseWrapper.setMockDocument(
-        new User(
+    User testUser = new User(
             TestConstants.USER_ID,
             TestConstants.NAME,
             TestConstants.EMAIL,
             TestConstants.DEVICE_ID,
             null,
-            null));
+            null);
+    mockDatabaseWrapper.setMockDocument(testUser);
+    mockDatabaseWrapper.setMockResult(testUser);
   }
 
   @After
@@ -82,7 +83,7 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData() {
+  public void testUserAlreadyLoggedIn_displayUserData() throws InterruptedException {
 
     // set mock user
     DependencyFactory.setCurrentFirebaseUser(

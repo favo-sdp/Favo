@@ -4,6 +4,7 @@ import android.location.Location;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ch.epfl.favo.common.Document;
@@ -21,6 +22,10 @@ public class User implements Document {
   public static final String EMAIL = "email";
   public static final String DEVICE_ID = "deviceId";
   public static final String NOTIFICATION_ID = "notificationId";
+  public static final String BIRTH_DATE = "birthDate";
+  public static final String LOCATION = "location";
+  public static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
+  public static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
   public static final String REQUESTED_FAVORS = "requestedFavors";
   public static final String ACCEPTED_FAVORS = "acceptedFavors";
   public static final String COMPLETED_FAVORS = "completedFavors";
@@ -42,7 +47,32 @@ public class User implements Document {
   private int likes;
   private int dislikes;
 
-  public User() {}
+  public User() {
+    this.activeAcceptingFavors = 0;
+    this.activeRequestingFavors = 0;
+    this.requestedFavors = 0;
+    this.acceptedFavors = 0;
+    this.likes = 0;
+    this.dislikes = 0;
+    this.completedFavors = 0;
+  }
+
+  public User(Map<String, Object> map) {
+    this.id = (String) map.get(ID);
+    this.name = (String) map.get(NAME);
+    this.email = (String) map.get(EMAIL);
+    this.deviceId = (String) map.get(DEVICE_ID);
+    this.notificationId = (String) map.get(NOTIFICATION_ID);
+    this.birthDate = (Date) map.get(BIRTH_DATE);
+    this.location = (FavoLocation) map.get(LOCATION);
+    this.activeAcceptingFavors = (int) map.get(ACTIVE_ACCEPTING_FAVORS);
+    this.activeRequestingFavors = (int) map.get(ACTIVE_REQUESTING_FAVORS);
+    this.requestedFavors = (int) map.get(REQUESTED_FAVORS);
+    this.acceptedFavors = (int) map.get(ACCEPTED_FAVORS);
+    this.completedFavors = (int) map.get(COMPLETED_FAVORS);
+    this.likes = (int) map.get(LIKES);
+    this.dislikes = (int) map.get(DISLIKES);
+  }
 
   public User(
       String id,
@@ -82,6 +112,10 @@ public class User implements Document {
         put(EMAIL, email);
         put(DEVICE_ID, deviceId);
         put(NOTIFICATION_ID, notificationId);
+        put(BIRTH_DATE, birthDate);
+        put(LOCATION, location);
+        put(ACTIVE_REQUESTING_FAVORS, activeRequestingFavors);
+        put(ACTIVE_ACCEPTING_FAVORS, activeAcceptingFavors);
         put(REQUESTED_FAVORS, requestedFavors);
         put(ACCEPTED_FAVORS, acceptedFavors);
         put(COMPLETED_FAVORS, completedFavors);

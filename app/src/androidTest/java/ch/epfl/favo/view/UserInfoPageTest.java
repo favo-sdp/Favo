@@ -68,10 +68,10 @@ public class UserInfoPageTest {
   public GrantPermissionRule permissionRule =
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
-  @Before
-  public void setUp() throws Throwable {
-    launchFragment();
-  }
+//  @Before
+//  public void setUp() throws Throwable {
+//    launchFragment();
+//  }
 
   @After
   public void tearDown() {
@@ -89,8 +89,10 @@ public class UserInfoPageTest {
   }
 
   @Test
-  public void testLaunchFragment() throws InterruptedException {
+  public void testLaunchFragment() throws Throwable {
 
+
+    launchFragment();
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
@@ -103,7 +105,8 @@ public class UserInfoPageTest {
   }
 
   @Test
-  public void testReportUser() throws InterruptedException {
+  public void testReportUser() throws Throwable {
+    launchFragment();
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
 

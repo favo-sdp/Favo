@@ -198,6 +198,7 @@ public class ChatPageTest {
 
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
+    mockDatabaseWrapper.setMockResult(testUser);
 
     ViewInteraction recyclerView =
         onView(

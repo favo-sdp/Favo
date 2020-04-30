@@ -20,6 +20,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.FavorFragmentFactory;
 
 public class UserInfoPage extends Fragment {
@@ -41,6 +42,8 @@ public class UserInfoPage extends Fragment {
     ((MainActivity) requireActivity()).hideBottomNavigation();
     setupButtons();
 
+    displayUserData(new User());
+
     if (currentUser == null && getArguments() != null) {
       String userId = getArguments().getString(FavorFragmentFactory.USER_ARGS);
       UserUtil.getSingleInstance()
@@ -48,7 +51,7 @@ public class UserInfoPage extends Fragment {
           .thenAccept(
               user -> {
                 currentUser = user;
-                displayUserData();
+                displayUserData(user);
               });
     }
 
@@ -63,7 +66,7 @@ public class UserInfoPage extends Fragment {
           currentUser.setLikes(currentUser.getLikes() + 1);
           UserUtil.getSingleInstance()
               .updateUser(currentUser)
-              .thenAccept(user -> displayUserData());
+              .thenAccept(user -> displayUserData(currentUser));
 
           likeButton.setImageResource(R.drawable.ic_like_colored_48dp);
           CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
@@ -75,7 +78,7 @@ public class UserInfoPage extends Fragment {
           currentUser.setDislikes(currentUser.getDislikes() + 1);
           UserUtil.getSingleInstance()
               .updateUser(currentUser)
-              .thenAccept(user -> displayUserData());
+              .thenAccept(user -> displayUserData(currentUser));
 
           dislikeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
           CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
@@ -86,26 +89,26 @@ public class UserInfoPage extends Fragment {
         v -> CommonTools.showSnackbar(getView(), getString(R.string.report_message)));
   }
 
-  private void displayUserData() {
+  private void displayUserData(User user) {
 
     ((TextView) view.findViewById(R.id.display_name))
         .setText(
-            TextUtils.isEmpty(currentUser.getName())
-                ? Objects.requireNonNull(currentUser.getEmail()).split("@")[0]
-                : currentUser.getName());
+            TextUtils.isEmpty(user.getName())
+                ? Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser().getEmail()).split("@")[0]
+                : DependencyFactory.getCurrentFirebaseUser().getDisplayName());
 
     ((TextView) view.findViewById(R.id.display_email))
-        .setText(TextUtils.isEmpty(currentUser.getEmail()) ? "No email" : currentUser.getEmail());
+        .setText(TextUtils.isEmpty(DependencyFactory.getCurrentFirebaseUser().getEmail()) ? "No email" : DependencyFactory.getCurrentFirebaseUser().getEmail());
 
     ((TextView) view.findViewById(R.id.user_info_favorsCreated))
-        .setText(getString(R.string.favors_created_format, currentUser.getRequestedFavors()));
+        .setText(getString(R.string.favors_created_format, user.getRequestedFavors()));
     ((TextView) view.findViewById(R.id.user_info_favorsAccepted))
-        .setText(getString(R.string.favors_accepted_format, currentUser.getAcceptedFavors()));
+        .setText(getString(R.string.favors_accepted_format, user.getAcceptedFavors()));
     ((TextView) view.findViewById(R.id.user_info_favorsCompleted))
-        .setText(getString(R.string.favors_completed_format, currentUser.getCompletedFavors()));
+        .setText(getString(R.string.favors_completed_format, user.getCompletedFavors()));
     ((TextView) view.findViewById(R.id.user_info_likes))
-        .setText(getString(R.string.likes_format, currentUser.getLikes()));
+        .setText(getString(R.string.likes_format, user.getLikes()));
     ((TextView) view.findViewById(R.id.user_info_dislikes))
-        .setText(getString(R.string.dislikes_format, currentUser.getDislikes()));
+        .setText(getString(R.string.dislikes_format, user.getDislikes()));
   }
 }

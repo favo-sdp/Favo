@@ -50,12 +50,14 @@ public class UserAccountPage extends Fragment {
 
     displayUserData(DependencyFactory.getCurrentFirebaseUser());
 
+    displayUserDetails(new User());
+
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
             user -> {
               currentUser = user;
-              displayUserDetails();
+              displayUserDetails(user);
             });
 
     return view;
@@ -69,17 +71,17 @@ public class UserAccountPage extends Fragment {
     deleteAccountButton.setOnClickListener(this::deleteAccountClicked);
   }
 
-  private void displayUserDetails() {
+  private void displayUserDetails(User user) {
     ((TextView) view.findViewById(R.id.user_account_favorsCreated))
-        .setText(getString(R.string.favors_created_format, currentUser.getRequestedFavors()));
+        .setText(getString(R.string.favors_created_format, user.getRequestedFavors()));
     ((TextView) view.findViewById(R.id.user_account_favorsAccepted))
-        .setText(getString(R.string.favors_accepted_format, currentUser.getAcceptedFavors()));
+        .setText(getString(R.string.favors_accepted_format, user.getAcceptedFavors()));
     ((TextView) view.findViewById(R.id.user_account_favorsCompleted))
-        .setText(getString(R.string.favors_completed_format, currentUser.getCompletedFavors()));
+        .setText(getString(R.string.favors_completed_format, user.getCompletedFavors()));
     ((TextView) view.findViewById(R.id.user_account_likes))
-        .setText(getString(R.string.likes_format, currentUser.getLikes()));
+        .setText(getString(R.string.likes_format, user.getLikes()));
     ((TextView) view.findViewById(R.id.user_account_dislikes))
-        .setText(getString(R.string.dislikes_format, currentUser.getDislikes()));
+        .setText(getString(R.string.dislikes_format, user.getDislikes()));
   }
 
   private void displayUserData(FirebaseUser user) {

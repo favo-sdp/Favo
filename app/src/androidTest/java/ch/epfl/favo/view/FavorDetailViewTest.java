@@ -243,6 +243,7 @@ public class FavorDetailViewTest {
 
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
+    mockDatabaseWrapper.setMockResult(testUser);
 
     onView(withId(R.id.requester_name)).perform(click());
 

@@ -3,7 +3,6 @@ package ch.epfl.favo.view.tabs.addFavor;
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -208,11 +207,7 @@ public class FavorDetailView extends Fragment {
         .findUser(favor.getRequesterId())
         .thenAccept(
             user ->
-                ((TextView) rootView.findViewById(R.id.requester_name))
-                    .setText(
-                        TextUtils.isEmpty(user.getName())
-                            ? Objects.requireNonNull(user.getEmail()).split("@")[0]
-                            : user.getName()));
+                ((TextView) rootView.findViewById(R.id.requester_name)).setText(user.getName()));
   }
 
   private void updateDisplayFromViewStatus() {
