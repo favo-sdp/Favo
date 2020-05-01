@@ -3,6 +3,8 @@ package ch.epfl.favo.viewmodel;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -165,6 +167,12 @@ public class FavorViewModelTest {
         .when(favorRepository)
         .getFavorReference(Mockito.anyString());
     viewModel.setObservedFavor("sampleId");
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorViewModel viewModelSpy = Mockito.spy(viewModel);
+    LiveData<Favor> favorLiveData = Mockito.mock(LiveData.class);
+    Mockito.doReturn(fakeFavor).when(favorLiveData).getValue();
+    Mockito.doReturn(favorLiveData).when(viewModelSpy).getObservedFavor();
+    Assert.assertEquals(fakeFavor,viewModelSpy.setObservedFavor(fakeFavor.getId()).getValue());
   }
 
   @Test

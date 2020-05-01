@@ -151,18 +151,18 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public LiveData<Favor> setObservedFavor(String favorId) {
     if (getObservedFavor().getValue() != null
         && getObservedFavor().getValue().getId().equals(favorId)) {
-      return observedFavor; // if request hasn't changed then return original
+      return getObservedFavor(); // if request hasn't changed then return original
     }
-    observedFavor.setValue(null);
+    observedFavor.postValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
-              observedFavor.setValue(documentSnapshot.toObject(Favor.class));
+              observedFavor.postValue(documentSnapshot.toObject(Favor.class));
             });
-    return observedFavor;
+    return getObservedFavor();
   }
 
   @Override
