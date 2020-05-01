@@ -9,6 +9,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.common.DatabaseWrapper;
@@ -16,9 +17,21 @@ import ch.epfl.favo.common.DatabaseWrapper;
 @SuppressLint("NewApi")
 public class PictureUtil {
 
+  private static PictureUtil INSTANCE = null;
   private static final String PICTURE_FILE_EXTENSION = ".jpeg";
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
-  private static final FirebaseStorage storage = FirebaseStorage.getInstance();
+  private final FirebaseStorage storage;
+
+  private PictureUtil() { storage = FirebaseStorage.getInstance(); }
+
+  public static PictureUtil getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new PictureUtil();
+    }
+    return INSTANCE;
+  }
+
+  private static FirebaseStorage getStorage() { return getInstance().storage; }
 
   /**
    * Uploads given picture to Firebase Cloud Storage and returns URI of where it was placed
@@ -26,10 +39,12 @@ public class PictureUtil {
    * @param picture to be uploaded to Firebase Cloud Storage
    * @return CompletableFuture of the resulting url
    */
-  public static CompletableFuture<String> uploadPicture(Bitmap picture) {
+  public CompletableFuture<String> uploadPicture(Bitmap picture) {
     InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
     StorageReference storageRef =
-        storage.getReference().child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
+        getStorage()
+            .getReference()
+            .child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
 
     Task<Uri> urlTask =
         storageRef
@@ -37,13 +52,13 @@ public class PictureUtil {
             .continueWithTask(
                 task -> {
                   if (!task.isSuccessful()) {
-                    throw task.getException();
+                    throw Objects.requireNonNull(task.getException());
                   }
                   return storageRef.getDownloadUrl();
                 });
 
     CompletableFuture<Uri> urlFuture = new TaskToFutureAdapter<>(urlTask);
-    return urlFuture.thenApply(url -> url.toString());
+    return urlFuture.thenApply(Uri::toString);
   }
 
   /**
@@ -52,11 +67,13 @@ public class PictureUtil {
    * @param pictureUrl url of the picture
    * @return CompletableFuture of the picture represented as a Bitmap
    */
-  public static CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
-    Task<byte[]> downloadTask = storage.getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
+  public CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
+    Task<byte[]> downloadTask =
+      getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
-    return downloadFuture.thenApply(bytes -> BitmapConversionUtil.byteArrayToBitmap(bytes));
+    return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);
   }
+
 }

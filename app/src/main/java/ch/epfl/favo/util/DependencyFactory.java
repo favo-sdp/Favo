@@ -39,6 +39,7 @@ public class DependencyFactory {
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
   private static FavorUtil currentRepository;
+  private static PictureUtil currentPictureUtility;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -179,5 +180,13 @@ public class DependencyFactory {
   public static FavorUtil getCurrentRepository() {
     if (testMode && currentRepository != null) return currentRepository;
     return FavorUtil.getSingleInstance();
+  }
+  public static PictureUtil getCurrentPictureUtility(){
+    if (testMode && currentPictureUtility!=null) return currentPictureUtility;
+    return PictureUtil.getInstance();
+  }
+  public static void setCurrentPictureUtility(PictureUtil pictureUtil){
+    testMode = true;
+    currentPictureUtility = pictureUtil;
   }
 }
