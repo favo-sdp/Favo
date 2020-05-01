@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
@@ -205,7 +206,9 @@ public class FavorDetailViewTest {
   public void testFavorShowsFailureSnackbarIfDbCallbackFails() throws Throwable {
 
     // now inject throwable to see reaction in the UI
-    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(null)); // invoke error
+    Favor failedFavor = Mockito.mock(Favor.class);
+    Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(failedFavor)); // invoke error
     Thread.sleep(500);
     // check display is updated
 

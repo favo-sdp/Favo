@@ -123,7 +123,6 @@ public class FavorRequestView extends Fragment {
                   displayFavorInfo(rootView);
                 }
               } catch (Exception e) {
-                Log.e(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });

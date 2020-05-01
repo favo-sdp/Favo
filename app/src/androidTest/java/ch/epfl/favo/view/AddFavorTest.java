@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -251,8 +252,11 @@ public class AddFavorTest {
     // Try to click on edit
     FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
-    runOnUiThread(() -> viewModel.setObservedFavorResult(null));
+    Favor failedFavor = Mockito.mock(Favor.class);
+    Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
+    runOnUiThread(() -> viewModel.setObservedFavorResult(failedFavor));
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     // check error message is printed
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.error_database_sync)));
