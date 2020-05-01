@@ -37,7 +37,6 @@ import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.map.IGpsTracker;
-import ch.epfl.favo.map.Locator;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;

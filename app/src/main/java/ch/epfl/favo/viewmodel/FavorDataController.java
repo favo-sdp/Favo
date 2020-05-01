@@ -15,10 +15,6 @@ import ch.epfl.favo.favor.Favor;
  * It contains Util classes as members.
  */
 public interface FavorDataController {
-  // save address to firebase
-  CompletableFuture postFavor(Favor favor);
-
-  CompletableFuture updateFavor(Favor favor);
   CompletableFuture requestFavor(Favor favor);
   CompletableFuture updateFavor(
           Favor favor, boolean isRequested, int activeFavorsCountChange);

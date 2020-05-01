@@ -54,13 +54,13 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   public CompletableFuture requestFavor(Favor favor) {
     return changeActiveFavorCount(
             true, 1) // if user can request favor then post it in the favor collection
-        .thenCompose((f) -> getFavorRepository().requestFavor(favor));
+            .thenCompose((f) -> getFavorRepository().requestFavor(favor));
   }
 
   public CompletableFuture updateFavor(
-      Favor favor, boolean isRequested, int activeFavorsCountChange) {
+          Favor favor, boolean isRequested, int activeFavorsCountChange) {
     return changeActiveFavorCount(isRequested, activeFavorsCountChange)
-        .thenCompose(o -> getFavorRepository().updateFavor(favor));
+            .thenCompose(o -> getFavorRepository().updateFavor(favor));
   }
 
   /**
@@ -101,15 +101,15 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     if (mCurrentLocation == null) mCurrentLocation = loc;
     if (mRadius == -1) mRadius = radiusInKm;
     if (activeFavorsAroundMe.getValue() == null
-        || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
+            || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
       getFavorRepository()
-          .getNearbyFavors(loc, radiusInKm)
-          .addSnapshotListener(
-              MetadataChanges.EXCLUDE,
-              (queryDocumentSnapshots, e) -> {
-                activeFavorsAroundMe.postValue(
-                    getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e));
-              });
+              .getNearbyFavors(loc, radiusInKm)
+              .addSnapshotListener(
+                      MetadataChanges.EXCLUDE,
+                      (queryDocumentSnapshots, e) -> {
+                        activeFavorsAroundMe.postValue(
+                                getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e));
+                      });
     }
     return getFavorsAroundMe();
   }
@@ -119,10 +119,10 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   }
 
   public Map<String, Favor> getNearbyFavorsFromQuery(
-      Location loc,
-      double radius,
-      QuerySnapshot queryDocumentSnapshots,
-      FirebaseFirestoreException e) {
+          Location loc,
+          double radius,
+          QuerySnapshot queryDocumentSnapshots,
+          FirebaseFirestoreException e) {
     handleException(e);
     List<Favor> favorsList = queryDocumentSnapshots.toObjects(Favor.class);
 
@@ -131,9 +131,9 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
       if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
-          && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
-          && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
-          && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
+              && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
+              && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
+              && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
         favorsMap.put(favor.getId(), favor);
       }
     }
@@ -150,18 +150,18 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
     if (getObservedFavor().getValue() != null
-        && getObservedFavor().getValue().getId().equals(favorId)) {
+            && getObservedFavor().getValue().getId().equals(favorId)) {
       return getObservedFavor(); // if request hasn't changed then return original
     }
     observedFavor.postValue(null);
     getFavorRepository()
-        .getFavorReference(favorId)
-        .addSnapshotListener(
-            MetadataChanges.EXCLUDE,
-            (documentSnapshot, e) -> {
-              handleException(e);
-              observedFavor.postValue(documentSnapshot.toObject(Favor.class));
-            });
+            .getFavorReference(favorId)
+            .addSnapshotListener(
+                    MetadataChanges.EXCLUDE,
+                    (documentSnapshot, e) -> {
+                      handleException(e);
+                      observedFavor.postValue(documentSnapshot.toObject(Favor.class));
+                    });
     return getObservedFavor();
   }
 

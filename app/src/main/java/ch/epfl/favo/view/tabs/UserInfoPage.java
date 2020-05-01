@@ -21,7 +21,6 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 
 public class UserInfoPage extends Fragment {
 
@@ -45,7 +44,7 @@ public class UserInfoPage extends Fragment {
     displayUserData(new User());
 
     if (currentUser == null && getArguments() != null) {
-      String userId = getArguments().getString(FavorFragmentFactory.USER_ARGS);
+      String userId = getArguments().getString("USER_ARGS");
       UserUtil.getSingleInstance()
           .findUser(userId)
           .thenAccept(
