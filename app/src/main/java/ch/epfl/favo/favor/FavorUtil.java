@@ -62,7 +62,6 @@ public class FavorUtil {
    * @return CompletableFuture<Favor>
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
-    CompletableFuture document = collection.getDocument(favorId);
     return collection.getDocument(favorId);
   }
 
@@ -127,20 +126,6 @@ public class FavorUtil {
     // Filter out all favors except accepted
 
     throw new NotImplementedException();
-  }
-
-  /**
-   * Returns all the favors that are active in a given radius.
-   *
-   * @param loc a given Location (Android location type)
-   * @param radius a given radius to search within
-   */
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenRadius(
-      Location loc, double radius) {
-    /**
-     * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*
-     */
-    return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 
   /**
