@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 
+import ch.epfl.favo.FakeFavorList;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.favor.Favor;
 

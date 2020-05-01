@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
-import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.ICollectionWrapper;
 import ch.epfl.favo.common.Document;
 
-public class MockDatabaseWrapper<T extends Document> implements DatabaseUpdater<T> {
+public class MockDatabaseWrapper<T extends Document> implements ICollectionWrapper<T> {
 
   private T mockDocument;
   private CompletableFuture mockResult;

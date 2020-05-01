@@ -6,6 +6,7 @@
     <string name="app_site_issues">https://github.com/favo-sdp/Favo/issues</string>
 
     <!-- Auth UI - Signed in -->
+    <string name="sign_in_failed">Sign in failed</string>
     <string name="sign_out">Sign out</string>
     <string name="delete_account_label">Delete account</string>
 
@@ -23,9 +24,9 @@
     <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <!-- TAB 2 (David) -->
-    <string name="favor_title_hint">What\'s up?</string>
+    <string name="favor_title_hint">What\'s up? (ex: Need a bike pump)</string>
     <string name="favor_img_content_desc">Descriptive image</string>
-    <string name="favor_details_hint">Add more details?</string>
+    <string name="favor_details_hint">Add more details? (ex: Had a flat tire!)</string>
     <string name="favor_confirm_button">Request Favor</string>
     <string name="favor_no_active_favor">You have no active favors</string>
     <string name="favor_no_archived_favor">You have no archived favors</string>
@@ -110,6 +111,8 @@
     <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="chat_message_detail_view">Start a chat</string>
     <string name="update_favor_error">Failed to update</string>
+    <string name="illegal_request_error">Max requested favors reached. Complete or cancel active favors</string>
+    <string name="illegal_accept_error">Max accepted favors reached. Complete or cancel current favor.</string>
     <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
     <string name="cancel_accept_button_display">Cancel</string>
     <string name="restart_request">re-enable</string>

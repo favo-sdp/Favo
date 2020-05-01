@@ -150,7 +150,7 @@
             <argument
                 android:name="FAVOR_ARGS"
                 android:defaultValue="@null"
-                app:argType="ch.epfl.favo.favor.Favor" />
+                app:argType="string" />
         </action>
 
         <action

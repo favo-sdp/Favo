@@ -3,6 +3,8 @@ package ch.epfl.favo.viewmodel;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import androidx.lifecycle.LiveData;
+
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -21,101 +23,156 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
 public class FavorViewModelTest {
   private FavorViewModel viewModel;
-  private FavorUtil repository;
+  private FavorUtil favorRepository;
+  private UserUtil userRepository;
   private CompletableFuture successfulResult;
   private CompletableFuture failedResult;
   private PictureUtil pictureUtilility;
   private Bitmap bitmap;
+
   @Before
-  public void setup(){
-    repository = Mockito.mock(FavorUtil.class);
-    successfulResult = new CompletableFuture(){{complete(null);}};
-    failedResult = new CompletableFuture(){{completeExceptionally(new RuntimeException("mock fail"));}};
-    DependencyFactory.setCurrentRepository(repository);
-    DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getUser());
+  public void setup() {
+    favorRepository = Mockito.mock(FavorUtil.class);
+    userRepository = Mockito.mock(UserUtil.class);
+    successfulResult =
+        new CompletableFuture() {
+          {
+            complete(null);
+          }
+        };
+    failedResult =
+        new CompletableFuture() {
+          {
+            completeExceptionally(new RuntimeException("mock fail"));
+          }
+        };
+    DependencyFactory.setCurrentFavorRepository(favorRepository);
+    DependencyFactory.setCurrentUserRepository(userRepository);
+    DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     viewModel = new FavorViewModel();
     bitmap = Mockito.mock(Bitmap.class);
     pictureUtilility = Mockito.mock(PictureUtil.class);
     DependencyFactory.setCurrentPictureUtility(pictureUtilility);
   }
+
   @After
-  public void tearDown(){
-    DependencyFactory.setCurrentRepository(null);
+  public void tearDown() {
+    DependencyFactory.setCurrentFavorRepository(null);
   }
+
   @Test
   public void testRepositoryBehaviourIsUnchangedOnPostFavor() {
-    Mockito.doReturn(successfulResult).when(repository).postFavor(any(Favor.class));
-    Assert.assertEquals(successfulResult,viewModel.postFavor(FakeItemFactory.getFavor()));
+    Mockito.doReturn(successfulResult)
+        .when(userRepository)
+        .changeActiveFavorCount(anyBoolean(), anyInt());
+    Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
+    Assert.assertTrue(viewModel.requestFavor(FakeItemFactory.getFavor()).isDone());
+    // Assert.assertEquals(successfulResult,viewModel.requestFavor(FakeItemFactory.getFavor()));
+  }
+
+  @Test
+  public void testRepositoryDoesNotThrowErrorOnUserRepositoryFailedResult() {
+    Mockito.doReturn(failedResult)
+        .when(userRepository)
+        .changeActiveFavorCount(anyBoolean(), anyInt());
+    Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
+    Assert.assertTrue(
+        viewModel.requestFavor(FakeItemFactory.getFavor()).isCompletedExceptionally());
   }
 
   @Test
   public void testRepositoryDoesNotThrowErrorOnRepositoryPostFavorFailedResult() {
-    Mockito.doReturn(failedResult).when(repository).postFavor(any(Favor.class));
-    Assert.assertEquals(failedResult,viewModel.postFavor(FakeItemFactory.getFavor()));
+    Mockito.doReturn(successfulResult)
+        .when(userRepository)
+        .changeActiveFavorCount(anyBoolean(), anyInt());
+    Mockito.doReturn(failedResult).when(favorRepository).requestFavor(any(Favor.class));
+    Assert.assertTrue(
+        viewModel.requestFavor(FakeItemFactory.getFavor()).isCompletedExceptionally());
   }
+
   @Test
-  public void testUpdateBehaviourIsUnchanged(){
-    Mockito.doReturn(successfulResult).when(repository).updateFavor(any(Favor.class));
-    Assert.assertEquals(successfulResult,viewModel.updateFavor(FakeItemFactory.getFavor()));
+  public void testUpdateBehaviourIsUnchanged() {
+    Mockito.doReturn(successfulResult)
+        .when(userRepository)
+        .changeActiveFavorCount(anyBoolean(), anyInt());
+    Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
+    Assert.assertTrue(viewModel.updateFavor(FakeItemFactory.getFavor(), true, 1).isDone());
   }
 
   @Test
   public void testNearbyFavorsListIsTransformedIntoMap() {
-    //mocks
+    // mocks
     Query mockQuery = Mockito.mock(Query.class);
-    //fakes
+    // fakes
     List<Favor> fakeList = FakeItemFactory.getFavorList();
 
-    Mockito.doReturn(mockQuery).when(repository).getNearbyFavors(any(Location.class),Mockito.anyDouble());
-    DependencyFactory.setCurrentRepository(repository);
-
+    Mockito.doReturn(mockQuery)
+        .when(favorRepository)
+        .getNearbyFavors(any(Location.class), Mockito.anyDouble());
+    DependencyFactory.setCurrentFavorRepository(favorRepository);
 
     Location centralLocation = fakeList.get(0).getLocation();
-    viewModel.getFavorsAroundMe(centralLocation,100.0);//TODO: Find a way to test a snapshot listener
+    viewModel.getFavorsAroundMe(
+        centralLocation, 100.0); // TODO: Find a way to test a snapshot listener
   }
+
   @Test
-  public void testFavorMapIsFilteredAccordingToLatitudeAndLocation(){
+  public void testFavorMapIsFilteredAccordingToLatitudeAndLocation() {
     QuerySnapshot mockQuerySnapshot = Mockito.mock(QuerySnapshot.class);
     List<Favor> fakeList = FakeItemFactory.getFavorList();
     FavoLocation mockUserLocation = Mockito.mock(FavoLocation.class);
     Mockito.doReturn(0.0).when(mockUserLocation).getLatitude();
     FavoLocation outOfBoundsLocation = Mockito.mock(FavoLocation.class);
     FavoLocation inBoundsLocation = Mockito.mock(FavoLocation.class);
-    Mockito.doReturn(11.0/FavoLocation.EARTH_RADIUS).when(outOfBoundsLocation).getLatitude();
-    Mockito.doReturn(5.0/FavoLocation.EARTH_RADIUS).when(inBoundsLocation).getLatitude();
+    Mockito.doReturn(11.0 / FavoLocation.EARTH_RADIUS).when(outOfBoundsLocation).getLatitude();
+    Mockito.doReturn(5.0 / FavoLocation.EARTH_RADIUS).when(inBoundsLocation).getLatitude();
     double radius = 10.0;
-    for (Favor favor: fakeList){
-      if (favor==fakeList.get(0)) favor.setLocation(inBoundsLocation);
-      else  favor.setLocation(outOfBoundsLocation);
+    for (Favor favor : fakeList) {
+      if (favor == fakeList.get(0)) favor.setLocation(inBoundsLocation);
+      else favor.setLocation(outOfBoundsLocation);
     }
     Mockito.doReturn(fakeList).when(mockQuerySnapshot).toObjects(any());
     FirebaseFirestoreException ex = null;
-    Assert.assertTrue(viewModel.getNearbyFavorsFromQuery(mockUserLocation,radius,mockQuerySnapshot,ex).containsKey(fakeList.get(0).getId()));
-  }
-  @Test
-  public void testExceptionIsThrownIfEncountered(){
-    FirebaseFirestoreException mockException = Mockito.mock(FirebaseFirestoreException.class);
-    Mockito.doReturn("mockMessage").when(mockException).getMessage();
-    Assert.assertThrows(RuntimeException.class,()->viewModel.handleException(mockException));
-    viewModel.handleException(null); //ensure nothing is thrown
+    Assert.assertTrue(
+        viewModel
+            .getNearbyFavorsFromQuery(mockUserLocation, radius, mockQuerySnapshot, ex)
+            .containsKey(fakeList.get(0).getId()));
   }
 
+  @Test
+  public void testExceptionIsThrownIfEncountered() {
+    FirebaseFirestoreException mockException = Mockito.mock(FirebaseFirestoreException.class);
+    Mockito.doReturn("mockMessage").when(mockException).getMessage();
+    Assert.assertThrows(RuntimeException.class, () -> viewModel.handleException(mockException));
+    viewModel.handleException(null); // ensure nothing is thrown
+  }
 
   @Test
   public void testSetObservedFavor() {
-    //TODO: Find a way to test snapshot listener
-    //mocks
+    // TODO: Find a way to test snapshot listener
+    // mocks
     DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
-    Mockito.doReturn(mockDocumentReference).when(repository).getFavorReference(Mockito.anyString());
+    Mockito.doReturn(mockDocumentReference)
+        .when(favorRepository)
+        .getFavorReference(Mockito.anyString());
     viewModel.setObservedFavor("sampleId");
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorViewModel viewModelSpy = Mockito.spy(viewModel);
+    LiveData<Favor> favorLiveData = Mockito.mock(LiveData.class);
+    Mockito.doReturn(fakeFavor).when(favorLiveData).getValue();
+    Mockito.doReturn(favorLiveData).when(viewModelSpy).getObservedFavor();
+    Assert.assertEquals(fakeFavor,viewModelSpy.setObservedFavor(fakeFavor.getId()).getValue());
   }
 
   @Test
@@ -125,7 +182,7 @@ public class FavorViewModelTest {
 
   @Test
   public void testUploadPicture() {
-    Mockito.doNothing().when(repository).updateFavorPhoto(any(Favor.class), anyString());
+    Mockito.doNothing().when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
     Mockito.when(pictureUtilility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
     viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap);
   }
@@ -133,7 +190,8 @@ public class FavorViewModelTest {
   @Test
   public void testDownloadPictureSuccessful() {
     Mockito.when(pictureUtilility.downloadPicture(anyString())).thenReturn(successfulResult);
-    Assert.assertEquals(successfulResult, viewModel.downloadPicture(FakeItemFactory.getFavorWithUrl()));
+    Assert.assertEquals(
+        successfulResult, viewModel.downloadPicture(FakeItemFactory.getFavorWithUrl()));
   }
 
   @Test

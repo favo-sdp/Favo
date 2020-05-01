@@ -107,6 +107,7 @@ dependencies {
     androidTestImplementation 'org.mockito:mockito-android:2.11.0'
 
     //fragment navigation
+    implementation "androidx.fragment:fragment:1.2.4"
     implementation 'androidx.navigation:navigation-fragment:2.2.2'
     implementation 'androidx.navigation:navigation-ui:2.2.2'
 

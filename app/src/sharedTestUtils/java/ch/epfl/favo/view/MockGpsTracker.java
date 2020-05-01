@@ -4,11 +4,11 @@ import android.location.Location;
 
 import ch.epfl.favo.common.NoPermissionGrantedException;
 import ch.epfl.favo.common.NoPositionFoundException;
-import ch.epfl.favo.map.Locator;
+import ch.epfl.favo.map.IGpsTracker;
 
 import static ch.epfl.favo.TestConstants.LOCATION;
 
-public class MockGpsTracker implements Locator {
+public class MockGpsTracker implements IGpsTracker {
   private Location mLocation = LOCATION;
 
   @Override

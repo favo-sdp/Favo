@@ -2,18 +2,24 @@ package ch.epfl.favo.user;
 
 import android.location.Location;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.common.IllegalRequestException;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
  * so that it can be injected in views
  */
 public class User implements Document {
+
+    public static final int MAX_ACCEPTING_FAVORS = 1;
+    public static final int MAX_REQUESTING_FAVORS = 5;
 
   // String constants for Map conversion
   public static final String ID = "id";
@@ -96,6 +102,16 @@ public class User implements Document {
     this.completedFavors = 0;
   }
 
+  public User(FirebaseUser firebaseUser, String deviceId, Location location) {
+    this(
+        firebaseUser.getUid(),
+        firebaseUser.getDisplayName(),
+        firebaseUser.getEmail(),
+        deviceId,
+        null,
+        new FavoLocation(location));
+  }
+
   // Getters
   @Override
   public String getId() {
@@ -156,12 +172,16 @@ public class User implements Document {
     return activeRequestingFavors;
   }
 
-  public void setActiveAcceptingFavors(int activeAcceptingFavors) {
-    this.activeAcceptingFavors = activeAcceptingFavors;
+  public void setActiveAcceptingFavors(int totalAcceptingFavors) {
+    if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
+      throw new IllegalRequestException("Cannot accept");
+    this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
-  public void setActiveRequestingFavors(int activeRequestingFavors) {
-    this.activeRequestingFavors = activeRequestingFavors;
+  public void setActiveRequestingFavors(int totalRequestingFavors) {
+    if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
+      throw new IllegalRequestException("Cannot request");
+    this.activeRequestingFavors = totalRequestingFavors;
   }
 
   public void setNotificationId(String notificationId) {
@@ -178,11 +198,11 @@ public class User implements Document {
 
   // Can only accept or request favors
   boolean canAccept() {
-    return activeAcceptingFavors + activeRequestingFavors < 1;
+    return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;
   }
 
   boolean canRequest() {
-    return activeAcceptingFavors + activeRequestingFavors < 1;
+    return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 
   public int getRequestedFavors() {

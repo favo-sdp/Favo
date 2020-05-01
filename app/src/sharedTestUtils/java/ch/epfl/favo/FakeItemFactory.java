@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.User;
 
 public class FakeItemFactory {
 
@@ -27,9 +28,20 @@ public class FakeItemFactory {
     return favor;
   }
 
-  public static FirebaseUser getUser() {
+  public static FirebaseUser getFirebaseUser() {
     return new FakeFirebaseUser(
         TestConstants.NAME, TestConstants.EMAIL, TestConstants.PHOTO_URI, TestConstants.PROVIDER);
+  }
+
+  public static User getUser() {
+
+    return new User(
+        TestConstants.USER_ID,
+        TestConstants.NAME,
+        TestConstants.EMAIL,
+        TestConstants.DEVICE_ID,
+        TestConstants.BIRTHDAY,
+        TestConstants.LOCATION);
   }
 
   public static List<Favor> getFavorList() {

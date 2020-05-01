@@ -2,6 +2,9 @@ package ch.epfl.favo.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.Build;
@@ -17,12 +20,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.view.NonClickableToolbar;
 
 public class CommonTools {
+  public static final String FAVOR_ARGS = "FAVOR_ARGS";
+
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
+  }
+
+  public static void hideToolBar(NonClickableToolbar toolbar) {
+    toolbar.setBackgroundColor(Color.TRANSPARENT);
+    toolbar.setTitleTextColor(Color.BLACK);
+    Objects.requireNonNull(toolbar.getNavigationIcon())
+        .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
+    toolbar.setTitle("");
   }
 
   public static String convertTime(long time) {

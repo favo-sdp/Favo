@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
@@ -73,6 +74,7 @@ public class ChatPageTest {
   @Before
   public void setUp() {
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+    DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
   }
 
   @After
