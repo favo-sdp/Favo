@@ -43,9 +43,7 @@ import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
-import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
-import static ch.epfl.favo.util.CommonTools.hideToolBar;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
@@ -93,6 +91,12 @@ public class FavorRequestView extends Fragment {
         (FavorDataController)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
+    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    if (getArguments() != null) {
+      String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
+      setFavorActivatedView(rootView);
+      setupFavorListener(rootView, favorId);
+    }
 
     return rootView;
   }
@@ -100,12 +104,6 @@ public class FavorRequestView extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-    if (getArguments() != null) {
-      String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
-      setFavorActivatedView(requireView());
-      setupFavorListener(requireView(), favorId);
-    }
   }
 
   public FavorDataController getViewModel() {
@@ -120,8 +118,10 @@ public class FavorRequestView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                currentFavor = favor;
-                displayFavorInfo(rootView);
+                if (favor != null) {
+                  currentFavor = favor;
+                  displayFavorInfo(rootView);
+                }
               } catch (Exception e) {
                 Log.e(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
@@ -465,14 +465,6 @@ public class FavorRequestView extends Fragment {
   public void showSnackbar(String errorMessageRes) {
     Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    if (!findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      hideToolBar(toolbar);
-  }
-
   /**
    * Saves the key listener for the edit text items. ensures keyboard hides when user clicks outside
    * of edit texts.

@@ -78,8 +78,10 @@ public class FavorDetailView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                currentFavor = favor;
-                displayFromFavor(rootView, currentFavor);
+                if (favor != null) {
+                  currentFavor = favor;
+                  displayFromFavor(rootView, currentFavor);
+                }
               } catch (Exception e) {
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
@@ -232,12 +234,5 @@ public class FavorDetailView extends Fragment {
     TextView textView = rootView.findViewById(id);
     textView.setText(text);
     textView.setKeyListener(null);
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    if (!findNavController(requireView()).getCurrentDestination().getLabel().equals("Chat"))
-      CommonTools.hideToolBar(toolbar);
   }
 }

@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> {
+          CommonTools.hideToolBar(findViewById(R.id.toolbar_main_activity));
           switch (destination.getId()) {
             case R.id.nav_account:
             case R.id.nav_about:
