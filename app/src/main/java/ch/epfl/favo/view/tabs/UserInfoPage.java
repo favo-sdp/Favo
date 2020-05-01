@@ -93,15 +93,14 @@ public class UserInfoPage extends Fragment {
     ((TextView) view.findViewById(R.id.display_name))
         .setText(
             TextUtils.isEmpty(user.getName())
-                ? Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser().getEmail())
-                    .split("@")[0]
-                : DependencyFactory.getCurrentFirebaseUser().getDisplayName());
+                ? "Name"
+                : user.getName());
 
     ((TextView) view.findViewById(R.id.display_email))
         .setText(
-            TextUtils.isEmpty(DependencyFactory.getCurrentFirebaseUser().getEmail())
-                ? "No email"
-                : DependencyFactory.getCurrentFirebaseUser().getEmail());
+            TextUtils.isEmpty(user.getEmail())
+                ? "Email"
+                : user.getEmail());
 
     ((TextView) view.findViewById(R.id.user_info_favorsCreated))
         .setText(getString(R.string.favors_created_format, user.getRequestedFavors()));

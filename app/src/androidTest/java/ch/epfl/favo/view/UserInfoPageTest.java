@@ -33,7 +33,6 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static ch.epfl.favo.util.FavorFragmentFactory.USER_ARGS;
 
 @RunWith(AndroidJUnit4.class)
 public class UserInfoPageTest {
@@ -82,7 +81,7 @@ public class UserInfoPageTest {
     MainActivity activity = mainActivityTestRule.getActivity();
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
-    bundle.putString(USER_ARGS, testUser.getId());
+    bundle.putString("USER_ARGS", testUser.getId());
     runOnUiThread(() -> navController.navigate(R.id.action_nav_map_to_userInfoView, bundle));
   }
 
