@@ -13,12 +13,14 @@ import org.mockito.Mockito;
 
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.common.CollectionWrapper;
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static ch.epfl.favo.FakeItemFactory.getUser;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -47,12 +49,12 @@ public class UserUtilTest {
 
   @Test
   public void testPostUser() {
-    Assert.assertTrue(UserUtil.getSingleInstance().postUser(FakeItemFactory.getUser()).isDone());
+    Assert.assertTrue(UserUtil.getSingleInstance().postUser(getUser()).isDone());
   }
 
   @Test
   public void changeActiveRequestingFavorCount() {
-    User fakeUser = FakeItemFactory.getUser();
+    User fakeUser = getUser();
     fakeUser.setActiveRequestingFavors(0);
     CompletableFuture<User> userFuture =
         new CompletableFuture() {
@@ -83,13 +85,13 @@ public class UserUtilTest {
         .when(mockCollectionWrapper)
         .updateDocument(anyString(), anyMap());
     UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
-    Assert.assertTrue(UserUtil.getSingleInstance().updateUser(Mockito.mock(User.class)).isDone());
+    Assert.assertTrue(UserUtil.getSingleInstance().updateUser(getUser()).isDone());
   }
 
   @Test
   public void testFindUser() {
     // check successful result
-    User fakeUser = FakeItemFactory.getUser();
+    User fakeUser = getUser();
     CompletableFuture<User> userFuture =
         new CompletableFuture() {
           {
@@ -151,7 +153,7 @@ public class UserUtilTest {
     DependencyFactory.setCurrentCompletableFuture(idFuture);
     Assert.assertTrue(
         UserUtil.getSingleInstance()
-            .retrieveUserRegistrationToken(FakeItemFactory.getUser())
+            .retrieveUserRegistrationToken(getUser())
             .isDone());
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirebaseNotificationInstanceId(null);
