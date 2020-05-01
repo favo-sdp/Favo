@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -104,51 +105,102 @@ public class PictureUtil {
     return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);
   }
 
-
-  public static boolean saveToInternalStorage(
-          Context context, Bitmap bitmapImage, String favorId, int picNum) {
+  /**
+   * Save given picture to Internal Storage and returns Boolean to indicate if it is a success.
+   * @param context: getActivity()
+   * @param bitmapImage: picture ot be stored
+   * @param favorId: id of the favor associated with the image
+   *              - Favor-specific image directory: "/data/user/0/ch.epfl.favo/files/<Favor_id>"
+   * @param imageNum: the index of the image, set to 0 for now (TODO: support multiple pitures.)
+   * @return Boolean to indicate whether the write was a success
+   */
+  public void saveToInternalStorage(
+          Context context, Bitmap bitmapImage, String favorId, int imageNum) {
 
     /* Remark:
      * The application always has permission to read and write in its internal storage directory.
      * Thus we won't need to check/request permission here. */
 
-    // Favor-specific image directory: "/data/user/0/ch.epfl.favo/files/<Favor_id>"
-    File directory = new File(context.getFilesDir(), favorId);
-
-    // If directory does not exist, create the directory.
-    if (!directory.isDirectory()) {
-      if (!directory.mkdir())
-        Log.e(TAG, "Error: Creating new directory to store images failed.");
-    }
-
-    // Create the image file and write the bitmap to file.
-    File image = new File(directory.getAbsolutePath(), String.format("%s.jpeg", picNum));
-    FileOutputStream fos = null;
-    try {
-      fos = new FileOutputStream(image);
-      bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-    } catch (FileNotFoundException e) {
-      Log.e(TAG, "Error: Cannot save image to internal storage.");
-      e.printStackTrace();
-      return false;
-    } finally {
-      if (fos != null) {
-        try {
-          fos.close();
-        } catch (IOException e) {
-          Log.e(TAG, "Error: Failed to close FileOutputStream");
-        }
-      }
-    }
-    return true;
+    String baseDir = context.getFilesDir().getAbsolutePath();
+    SaveToStorageParams saveToStorageParams = new SaveToStorageParams(
+            baseDir, favorId, Integer.toString(imageNum), bitmapImage);
+    SaveToStorageTask saveToStorageTask = new SaveToStorageTask();
+    saveToStorageTask.execute(saveToStorageParams);
   }
 
 
   public static Bitmap loadFromInternalStorage(String pathToFolder, int picNum) {
     Bitmap result = decodeFile(pathToFolder + String.format("/%s.jpeg", picNum));
-    if (result == null) {
+    if (result == null)
       Log.e(TAG, "Failed to load bitmap from internal storage");
-    }
     return result;
+  }
+
+  /**
+   * Parameter class for SaveToStorageParamsTask
+   */
+  private static class SaveToStorageParams {
+    String baseDir;
+    String favorId;
+    String imageNum;
+    Bitmap bitmap;
+
+    SaveToStorageParams(String baseDir, String favorId, String imageNum, Bitmap bitmap) {
+      this.baseDir = baseDir;
+      this.favorId = favorId;
+      this.imageNum = imageNum;
+      this.bitmap = bitmap;
+    }
+  }
+
+  /**
+   * Store image to internal storage asynchronously
+   */
+  private static class SaveToStorageTask extends AsyncTask<SaveToStorageParams, Void, Boolean> {
+
+    @Override
+    protected Boolean doInBackground(SaveToStorageParams... params) {
+      String baseDir = params[0].baseDir;
+      String favorId = params[0].favorId;
+      String imageNum = params[0].imageNum;
+      Bitmap bitmap = params[0].bitmap;
+
+      // If image folder for the current favor does not exist, create the directory.
+      File favorDir = new File(baseDir, favorId);
+      if (!favorDir.isDirectory()) {
+        if (!favorDir.mkdir()) {
+          Log.e(TAG, "Error: Creating new directory to store images failed.");
+          return false;
+        }
+      }
+
+      // Create the image file and write the bitmap to file.
+      File image = new File(favorDir.getAbsolutePath(), String.format("%s.jpeg", imageNum));
+      FileOutputStream fos = null;
+      try {
+        fos = new FileOutputStream(image);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+      } catch (FileNotFoundException e) {
+        Log.e(TAG, "Error: Cannot save image to internal storage.");
+        e.printStackTrace();
+        return false;
+      } finally {
+        if (fos != null) {
+          try {
+            fos.close();
+          } catch (IOException e) {
+            Log.e(TAG, "Error: Failed to close FileOutputStream");
+          }
+        }
+      }
+      return true;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+      if (!result) {
+        Log.e(TAG, "Error: Failed to save to internal storage. Please investigate");
+      }
+    }
   }
 }
