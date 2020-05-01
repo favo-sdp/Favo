@@ -22,9 +22,11 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorDetailView;
@@ -50,6 +52,7 @@ public class FavorDetailViewTest {
   private Favor fakeFavor;
   private FavorDetailView detailViewFragment;
   private FakeViewModel fakeViewModel;
+  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -73,6 +76,7 @@ public class FavorDetailViewTest {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentViewModelClass(null);
+    DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
   public FavorDetailView launchFragment(Favor favor) throws Throwable {
@@ -226,8 +230,33 @@ public class FavorDetailViewTest {
     checkToolbar(expectedDisplay);
   }
 
+  @Test
+  public void testClickOnRequesterTextNavigateToUserInfoPage() throws InterruptedException {
+    User testUser =
+        new User(
+            TestConstants.USER_ID,
+            TestConstants.NAME,
+            TestConstants.EMAIL,
+            TestConstants.DEVICE_ID,
+            null,
+            null);
+
+    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    mockDatabaseWrapper.setMockDocument(testUser);
+    mockDatabaseWrapper.setMockResult(testUser);
+
+    onView(withId(R.id.requester_name)).perform(click());
+
+    Thread.sleep(1000);
+
+    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+  }
+
+  // removing this test because favors in the second tab will concern the user directly and it's not
+  // possible to accept a favor from there anymore
   public void checkToolbar(String expectedDisplay) {
-    onView(withId(R.id.toolbar_main_activity)).check(matches(hasDescendant(withText(expectedDisplay))));
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(expectedDisplay))));
   }
 
   @Test
@@ -239,5 +268,4 @@ public class FavorDetailViewTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
   }
-
 }

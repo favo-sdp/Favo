@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
@@ -23,25 +25,41 @@ import java.util.Objects;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
+import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class UserAccountPage extends Fragment {
 
   private View view;
+  private User currentUser;
 
   public UserAccountPage() {
     // Required empty public constructor
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    view = inflater.inflate(R.layout.account_info, container, false);
+    view = inflater.inflate(R.layout.fragment_user_account, container, false);
 
     setupButtons();
-    displayUserData(Objects.requireNonNull(DependencyFactory.getCurrentFirebaseUser()));
+
+    displayUserData(DependencyFactory.getCurrentFirebaseUser());
+
+    displayUserDetails(new User());
+
+    UserUtil.getSingleInstance()
+        .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+        .thenAccept(
+            user -> {
+              currentUser = user;
+              displayUserDetails(user);
+            });
+
     return view;
   }
 
@@ -51,6 +69,19 @@ public class UserAccountPage extends Fragment {
 
     Button deleteAccountButton = view.findViewById(R.id.delete_account);
     deleteAccountButton.setOnClickListener(this::deleteAccountClicked);
+  }
+
+  private void displayUserDetails(User user) {
+    ((TextView) view.findViewById(R.id.user_account_favorsCreated))
+        .setText(getString(R.string.favors_created_format, user.getRequestedFavors()));
+    ((TextView) view.findViewById(R.id.user_account_favorsAccepted))
+        .setText(getString(R.string.favors_accepted_format, user.getAcceptedFavors()));
+    ((TextView) view.findViewById(R.id.user_account_favorsCompleted))
+        .setText(getString(R.string.favors_completed_format, user.getCompletedFavors()));
+    ((TextView) view.findViewById(R.id.user_account_likes))
+        .setText(getString(R.string.likes_format, user.getLikes()));
+    ((TextView) view.findViewById(R.id.user_account_dislikes))
+        .setText(getString(R.string.dislikes_format, user.getDislikes()));
   }
 
   private void displayUserData(FirebaseUser user) {
@@ -70,9 +101,6 @@ public class UserAccountPage extends Fragment {
 
     ((TextView) view.findViewById(R.id.user_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "No email" : user.getEmail());
-
-    ((TextView) view.findViewById(R.id.user_providers))
-        .setText(getString(R.string.used_providers, user.getProviderId()));
   }
 
   private void signOut(View view) {

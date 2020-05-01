@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,6 +39,7 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 public class ChatPage extends Fragment {
 
   private View view;
+  private RecyclerView recyclerView;
   private Favor currentFavor;
 
   @Override
@@ -68,7 +70,7 @@ public class ChatPage extends Fragment {
     manager.setReverseLayout(true);
     manager.setStackFromEnd(true);
 
-    RecyclerView recyclerView = view.findViewById(R.id.messagesList);
+    recyclerView = view.findViewById(R.id.messagesList);
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(manager);
 
@@ -152,8 +154,22 @@ public class ChatPage extends Fragment {
       @NonNull
       @Override
       public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChatViewHolder(
-            LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false));
+
+        View messageView =
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false);
+
+        messageView.setOnClickListener(
+            v -> {
+              int itemPosition = recyclerView.getChildLayoutPosition(v);
+              ChatModel model = getItem(itemPosition);
+
+              Bundle userBundle = new Bundle();
+              userBundle.putString("USER_ARGS", model.getUid());
+              Navigation.findNavController(requireView())
+                  .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
+            });
+
+        return new ChatViewHolder(messageView);
       }
 
       @Override

@@ -8,7 +8,7 @@
         android:id="@+id/nav_account"
         android:name="ch.epfl.favo.view.tabs.UserAccountPage"
         android:label="@string/account"
-        tools:layout="@layout/account_info" />
+        tools:layout="@layout/fragment_user_account" />
     <fragment
         android:id="@id/nav_settings"
         android:name="ch.epfl.favo.view.tabs.FragmentSettings"
@@ -21,10 +21,29 @@
     <fragment
         android:id="@+id/nav_share"
         android:label="@string/share" />
+
+    <fragment
+        android:id="@+id/userInfoView"
+        android:name="ch.epfl.favo.view.tabs.UserInfoPage"
+        android:label="User Info Page"
+        tools:layout="@layout/fragment_user_info" />
+
     <fragment
         android:id="@+id/chatView"
         android:name="ch.epfl.favo.chat.ChatPage"
-        android:label="Chat" />
+        android:label="Chat">
+
+        <action
+            android:id="@+id/action_nav_chatView_to_UserInfoPage"
+            app:destination="@id/userInfoView">
+            <argument
+                android:name="USER_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
+    </fragment>
+
     <fragment
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapsPage"
@@ -46,6 +65,15 @@
             app:destination="@id/favorDetailView">
             <argument
                 android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
+        <action
+            android:id="@+id/action_nav_map_to_userInfoView"
+            app:destination="@id/userInfoView">
+            <argument
+                android:name="USER_ARGS"
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
@@ -121,6 +149,15 @@
             app:destination="@id/chatView">
             <argument
                 android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
+        <action
+            android:id="@+id/action_nav_favorDetailView_to_UserInfoPage"
+            app:destination="@id/userInfoView">
+            <argument
+                android:name="USER_ARGS"
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>

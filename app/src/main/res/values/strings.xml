@@ -126,4 +126,17 @@
     <string name="start_chatting">No messages</string>
     <string name="hint_message">Write message</string>
 
+    <!-- User Info Page -->
+    <string name="favors_created_format">Favors created: %d</string>
+    <string name="favors_accepted_format">Favors accepted: %d</string>
+    <string name="favors_completed_format">Favors completed: %d</string>
+    <string name="likes_format">Positive\nfeedbacks: %d</string>
+    <string name="dislikes_format">Negative\nfeedbacks: %d</string>
+    <string name="feedback_message">Feedback received! Thanks for sharing your opinion</string>
+    <string name="report_message">User has been reported! Thanks for your help</string>
+    <string name="report_text">Report user</string>
+    <string name="report_description">Report the user in case of inappropriate behaviour</string>
+    <string name="feedback_description">Rate your experience with this user to help others</string>
+
+
 </resources>

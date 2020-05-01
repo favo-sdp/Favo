@@ -86,7 +86,8 @@ public class MapsPage extends Fragment
     else button.setVisibility(View.INVISIBLE);
     favorViewModel =
         (FavorDataController)
-            new ViewModelProvider(requireActivity()).get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);

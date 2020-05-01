@@ -24,6 +24,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
@@ -116,6 +117,16 @@ public class FavorDetailView extends Fragment {
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorDetailView_to_chatView, favorBundle);
         });
+
+    rootView
+        .findViewById(R.id.requester_name)
+        .setOnClickListener(
+            v -> {
+              Bundle userBundle = new Bundle();
+              userBundle.putString("USER_ARGS", currentFavor.getRequesterId());
+              Navigation.findNavController(requireView())
+                  .navigate(R.id.action_nav_favorDetailView_to_UserInfoPage, userBundle);
+            });
   }
 
   private void cancelFavor() {
@@ -155,7 +166,18 @@ public class FavorDetailView extends Fragment {
     currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     CompletableFuture updateFavorFuture = getViewModel().updateFavor(currentFavor, false, 1);
     updateFavorFuture.thenAccept(
-        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
+        o -> {
+          CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
+
+          // update user info
+          UserUtil.getSingleInstance()
+              .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+              .thenAccept(
+                  user -> {
+                    user.setAcceptedFavors(user.getAcceptedFavors() + 1);
+                    UserUtil.getSingleInstance().updateUser(user);
+                  });
+        });
     updateFavorFuture.exceptionally(handleException());
   }
 
@@ -180,6 +202,12 @@ public class FavorDetailView extends Fragment {
     setupTextView(rootView, R.id.datetime_accept_view, timeStr);
     setupTextView(rootView, R.id.title_accept_view, titleStr);
     setupTextView(rootView, R.id.details_accept_view, descriptionStr);
+
+    UserUtil.getSingleInstance()
+        .findUser(favor.getRequesterId())
+        .thenAccept(
+            user ->
+                ((TextView) rootView.findViewById(R.id.requester_name)).setText(user.getName()));
   }
 
   private void updateDisplayFromViewStatus() {

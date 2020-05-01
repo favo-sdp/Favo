@@ -222,9 +222,13 @@ public class Favor implements Parcelable, Document {
     this.location = location;
   }
 
-  public String getPictureUrl() { return this.pictureUrl; }
+  public String getPictureUrl() {
+    return this.pictureUrl;
+  }
 
-  public void setPictureUrl(String pictureUrl){ this.pictureUrl = pictureUrl; }
+  public void setPictureUrl(String pictureUrl) {
+    this.pictureUrl = pictureUrl;
+  }
 
   @Override
   public int describeContents() {
@@ -251,6 +255,7 @@ public class Favor implements Parcelable, Document {
     this.statusId = other.getStatusId();
     this.pictureUrl = other.getPictureUrl();
   }
+
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)

@@ -48,12 +48,9 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
     return DatabaseWrapper.getAllDocuments(cls, collection);
   }
 
-
-
   public DocumentReference getDocumentQuery(String key) {
     return DatabaseWrapper.getDocumentQuery(key, collection);
   }
-
 
   public Query locationBoundQuery(Location loc, double radius) {
     return DatabaseWrapper.locationBoundQuery(loc, radius, collection);

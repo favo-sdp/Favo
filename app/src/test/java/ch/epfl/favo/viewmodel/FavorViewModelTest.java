@@ -172,7 +172,7 @@ public class FavorViewModelTest {
     LiveData<Favor> favorLiveData = Mockito.mock(LiveData.class);
     Mockito.doReturn(fakeFavor).when(favorLiveData).getValue();
     Mockito.doReturn(favorLiveData).when(viewModelSpy).getObservedFavor();
-    Assert.assertEquals(fakeFavor,viewModelSpy.setObservedFavor(fakeFavor.getId()).getValue());
+    Assert.assertEquals(fakeFavor, viewModelSpy.setObservedFavor(fakeFavor.getId()).getValue());
   }
 
   @Test
