@@ -95,8 +95,13 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
-  public MutableLiveData<Favor> getObservedFavor() {
+  public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
+  }
+
+  @Override
+  public void setObservedFavorLocally(Favor favor) {
+    observedFavorResult.setValue(favor);
   }
 
   @Override

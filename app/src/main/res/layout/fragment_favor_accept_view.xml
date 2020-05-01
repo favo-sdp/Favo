@@ -68,7 +68,7 @@
         <LinearLayout
             android:id="@+id/time_location_layout_accept_view"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="50dp"
             android:padding="5dp"
             android:layout_marginBottom="@dimen/margin_accept_view"
             android:background="@color/colorPrimaryDark"

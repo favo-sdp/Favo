@@ -203,7 +203,7 @@ public class FavorRequestView extends Fragment {
           getFavorFromView();
           CommonTools.hideSoftKeyboard(requireActivity());
           favorViewModel.setShowObservedFavor(true);
-          favorViewModel.getObservedFavor().setValue(currentFavor);
+          favorViewModel.setObservedFavorLocally(currentFavor);
           // signal the destination is map view
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);

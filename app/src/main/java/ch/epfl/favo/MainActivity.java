@@ -3,7 +3,6 @@ package ch.epfl.favo;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -26,10 +25,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
@@ -228,23 +224,22 @@ public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
     if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
       mDrawerLayout.closeDrawer(GravityCompat.START);
-    else {/*
+    else {
       NavHostFragment host =
-          (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+              (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
       Fragment f =
-          Objects.requireNonNull(host)
-              .getChildFragmentManager()
-              .findFragmentById(R.id.nav_host_fragment);
+              Objects.requireNonNull(host)
+                      .getChildFragmentManager()
+                      .findFragmentById(R.id.nav_host_fragment);
 
-     if (f instanceof UserAccountPage
-          || f instanceof FragmentAbout
-          || f instanceof FragmentSettings) {
+      if (f instanceof UserAccountPage
+              || f instanceof FragmentAbout
+              || f instanceof FragmentSettings) {
         navController.popBackStack(R.id.nav_map, false);
         currentMenuItem = R.id.nav_map;
       } else {
         super.onBackPressed();
-      }*/
-      super.onBackPressed();
+      }
     }
   }
 

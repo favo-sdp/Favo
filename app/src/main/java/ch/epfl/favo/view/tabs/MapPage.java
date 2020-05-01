@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +22,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,8 +31,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,8 +200,8 @@ public class MapPage extends Fragment
     float markerColor =
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
     String markerTitle =
-        (isEdited && favor.getTitle().equals(""))
-            ? "Drag marker to choose position"
+            (isEdited) //&& favor.getTitle().equals("")
+                    ? "Drag marker to desired location"
             : favor.getTitle();
     String markerDescription = isEdited ? "Click window to request favor" : favor.getDescription();
     Marker marker =
@@ -383,7 +378,7 @@ public class MapPage extends Fragment
       focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
       // transfer local favor to FavorRequestView via ViewModel
-      favorViewModel.getObservedFavor().setValue(focusedFavor);
+      favorViewModel.setObservedFavorLocally(focusedFavor);
       favorViewModel.setShowObservedFavor(true);
     }
     Bundle favorBundle = new Bundle();

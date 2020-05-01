@@ -279,7 +279,6 @@ public class MainActivityTest {
 
     // Click on new favor to open favor request tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
-
     getInstrumentation().waitForIdleSync();
 
     // Click on back button

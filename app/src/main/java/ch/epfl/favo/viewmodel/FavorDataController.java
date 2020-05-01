@@ -3,7 +3,6 @@ package ch.epfl.favo.viewmodel;
 import android.location.Location;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +18,10 @@ public interface FavorDataController {
   LiveData<Map<String, Favor>> getFavorsAroundMe();//used in nearbylistview
 
   LiveData<Favor> setObservedFavor(String favorId);
-  MutableLiveData<Favor> getObservedFavor();
+
+  LiveData<Favor> getObservedFavor();
+
+  void setObservedFavorLocally(Favor favor);
 
   void setShowObservedFavor(Boolean show);
   boolean isShowObservedFavor();
