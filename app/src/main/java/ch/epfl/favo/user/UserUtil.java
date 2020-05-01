@@ -39,15 +39,13 @@ public class UserUtil implements IUserUtil {
     return SINGLE_INSTANCE;
   }
 
-
   /**
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
   @Override
-  public CompletableFuture postUser(User user)
-      { // TODO: catch exception in view not here
-      return collection.addDocument(user);
+  public CompletableFuture postUser(User user) { // TODO: catch exception in view not here
+    return collection.addDocument(user);
   }
 
   /**
@@ -69,8 +67,7 @@ public class UserUtil implements IUserUtil {
 
   @Override
   public CompletableFuture updateUser(User user) {
-    return collection.updateDocument(
-        user.getId(), user.toMap());
+    return collection.updateDocument(user.getId(), user.toMap());
   }
 
   /** @param id A FireBase Uid to search for in Users table. */

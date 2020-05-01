@@ -120,7 +120,7 @@ public class SignInActivity extends AppCompatActivity {
     super.onActivityResult(requestCode, resultCode, intent);
 
     if (requestCode == RC_SIGN_IN) {
-        handleSignInResponse(resultCode);
+      handleSignInResponse(resultCode);
     }
   }
 
@@ -162,7 +162,8 @@ public class SignInActivity extends AppCompatActivity {
       postUserResult.exceptionally(
           ex -> {
             Log.d(TAG, "failed to post user");
-            CommonTools.showSnackbar(getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
+            CommonTools.showSnackbar(
+                getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
             return null;
           });
     }

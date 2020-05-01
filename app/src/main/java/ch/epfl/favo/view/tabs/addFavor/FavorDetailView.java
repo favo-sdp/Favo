@@ -178,7 +178,7 @@ public class FavorDetailView extends Fragment {
                     UserUtil.getSingleInstance().updateUser(user);
                   });
         });
-      updateFavorFuture.exceptionally(handleException());
+    updateFavorFuture.exceptionally(handleException());
   }
 
   private Function handleException() {

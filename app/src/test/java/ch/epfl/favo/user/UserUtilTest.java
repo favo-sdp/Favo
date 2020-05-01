@@ -79,7 +79,9 @@ public class UserUtilTest {
 
   @Test
   public void testUpdateUser() {
-    Mockito.doReturn(successfulFuture).when(mockCollectionWrapper).updateDocument(anyString(),anyMap());
+    Mockito.doReturn(successfulFuture)
+        .when(mockCollectionWrapper)
+        .updateDocument(anyString(), anyMap());
     UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
     Assert.assertTrue(UserUtil.getSingleInstance().updateUser(Mockito.mock(User.class)).isDone());
   }

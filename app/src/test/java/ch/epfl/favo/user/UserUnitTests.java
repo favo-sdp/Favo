@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
@@ -133,28 +131,30 @@ public class UserUnitTests {
   public void testUserHasMaximumAcceptableAndRequestedFavors() {
 
     User user = new User();
-    assertThrows(IllegalRequestException.class,()->user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS+1));
-    assertThrows(IllegalRequestException.class,()->user.setActiveAcceptingFavors(User.MAX_REQUESTING_FAVORS+1));
-    assertThrows(IllegalRequestException.class,()->user.setActiveAcceptingFavors(-1));
-    assertThrows(IllegalRequestException.class,()->user.setActiveRequestingFavors(-1));
+    assertThrows(
+        IllegalRequestException.class,
+        () -> user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS + 1));
+    assertThrows(
+        IllegalRequestException.class,
+        () -> user.setActiveAcceptingFavors(User.MAX_REQUESTING_FAVORS + 1));
+    assertThrows(IllegalRequestException.class, () -> user.setActiveAcceptingFavors(-1));
+    assertThrows(IllegalRequestException.class, () -> user.setActiveRequestingFavors(-1));
     user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS);
     user.setActiveRequestingFavors(User.MAX_REQUESTING_FAVORS);
     assertTrue(user.canAccept());
     assertTrue(user.canRequest());
   }
+
   @Test
-  public void testUserIsSuccessFullyConvertedToMap(){
+  public void testUserIsSuccessFullyConvertedToMap() {
     User user = FakeItemFactory.getUser();
-    Map<String,Object> userMap = user.toMap();
-    assertEquals(user.getId(),userMap.get(user.ID));
-    assertEquals(user.getName(),userMap.get(user.NAME));
-    assertEquals(user.getActiveAcceptingFavors(),userMap.get(user.ACTIVE_ACCEPTING_FAVORS));
-    assertEquals(user.getActiveRequestingFavors(),userMap.get(user.ACTIVE_REQUESTING_FAVORS));
-    assertEquals(user.getLocation(),userMap.get(user.LOCATION));
-    assertEquals(user.getBirthDate(),userMap.get(user.BIRTH_DATE));
-    assertEquals(user.getEmail(),userMap.get(user.EMAIL));
-
+    Map<String, Object> userMap = user.toMap();
+    assertEquals(user.getId(), userMap.get(User.ID));
+    assertEquals(user.getName(), userMap.get(User.NAME));
+    assertEquals(user.getActiveAcceptingFavors(), userMap.get(User.ACTIVE_ACCEPTING_FAVORS));
+    assertEquals(user.getActiveRequestingFavors(), userMap.get(User.ACTIVE_REQUESTING_FAVORS));
+    assertEquals(user.getLocation(), userMap.get(User.LOCATION));
+    assertEquals(user.getBirthDate(), userMap.get(User.BIRTH_DATE));
+    assertEquals(user.getEmail(), userMap.get(User.EMAIL));
   }
-
-
 }

@@ -18,8 +18,8 @@ import ch.epfl.favo.common.IllegalRequestException;
  */
 public class User implements Document {
 
-    public static final int MAX_ACCEPTING_FAVORS = 1;
-    public static final int MAX_REQUESTING_FAVORS = 5;
+  public static final int MAX_ACCEPTING_FAVORS = 1;
+  public static final int MAX_REQUESTING_FAVORS = 5;
 
   // String constants for Map conversion
   public static final String ID = "id";

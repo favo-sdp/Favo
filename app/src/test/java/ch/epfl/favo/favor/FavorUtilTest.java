@@ -148,7 +148,10 @@ public class FavorUtilTest {
     Mockito.doReturn(result)
         .when(mockDatabaseWrapper)
         .getAllDocumentsLongitudeBounded(Mockito.any(Location.class), Mockito.anyDouble());
-    assertEquals(result,FavorUtil.getSingleInstance().retrieveAllFavorsInGivenLongitudeRange(Mockito.mock(Location.class),0.3));
+    assertEquals(
+        result,
+        FavorUtil.getSingleInstance()
+            .retrieveAllFavorsInGivenLongitudeRange(Mockito.mock(Location.class), 0.3));
   }
 
   @Test

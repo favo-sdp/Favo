@@ -22,7 +22,9 @@ public class PictureUtil {
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
   private final FirebaseStorage storage;
 
-  private PictureUtil() { storage = FirebaseStorage.getInstance(); }
+  private PictureUtil() {
+    storage = FirebaseStorage.getInstance();
+  }
 
   public static PictureUtil getInstance() {
     if (INSTANCE == null) {
@@ -31,7 +33,9 @@ public class PictureUtil {
     return INSTANCE;
   }
 
-  private static FirebaseStorage getStorage() { return getInstance().storage; }
+  private static FirebaseStorage getStorage() {
+    return getInstance().storage;
+  }
 
   /**
    * Uploads given picture to Firebase Cloud Storage and returns URI of where it was placed
@@ -69,11 +73,10 @@ public class PictureUtil {
    */
   public CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
-      getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
+        getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
 
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
     return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);
   }
-
 }

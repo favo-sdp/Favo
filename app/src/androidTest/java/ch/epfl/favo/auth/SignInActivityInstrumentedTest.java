@@ -26,51 +26,56 @@ import static ch.epfl.favo.util.DependencyFactory.setCurrentFirebaseUser;
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityInstrumentedTest {
   private FakeUserUtil fakeUserUtil = new FakeUserUtil();
+
   @Rule
   public final ActivityTestRule<SignInActivity> activityTestRule =
-          new ActivityTestRule<SignInActivity>(SignInActivity.class) {
-            @Override
-            protected void beforeActivityLaunched() {
-//              DependencyFactory.setCurrentFirebaseUser(
-//                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-              DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-              DependencyFactory.setCurrentUserRepository(fakeUserUtil);
-            }
-          };
+      new ActivityTestRule<SignInActivity>(SignInActivity.class) {
+        @Override
+        protected void beforeActivityLaunched() {
+          //              DependencyFactory.setCurrentFirebaseUser(
+          //                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          DependencyFactory.setCurrentUserRepository(fakeUserUtil);
+        }
+      };
+
   @After
   public void tearDown() throws ExecutionException, InterruptedException {
     DependencyFactory.setCurrentGpsTracker(null);
     setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentUserRepository(null);
   }
+
   @Test
   public void testSignInFlow() throws Throwable {
-    setCurrentFirebaseUser(
-                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     handleSignInResponse(RESULT_OK);
   }
+
   @Test
-  public void testSignInFlowWhenUserNotFound() throws Throwable{
-    setCurrentFirebaseUser(
-            new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+  public void testSignInFlowWhenUserNotFound() throws Throwable {
+    setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     fakeUserUtil.setFindUserFail(true);
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
   }
+
   @Test
-  public void testSnackBarShowsWhenNewUserFailsToBePosted() throws Throwable{
-    setCurrentFirebaseUser(
-            new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+  public void testSnackBarShowsWhenNewUserFailsToBePosted() throws Throwable {
+    setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     fakeUserUtil.setThrowResult(new RuntimeException());
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
-    //check fail snackbar shows TODO: Figure out how to show snackbar
-//    onView(withId(com.google.android.material.R.id.snackbar_text))
-//            .check(matches(withText(R.string.fui_error_unknown)));
+    // check fail snackbar shows TODO: Figure out how to show snackbar
+    //    onView(withId(com.google.android.material.R.id.snackbar_text))
+    //            .check(matches(withText(R.string.fui_error_unknown)));
   }
 
   private void handleSignInResponse(int result) throws Throwable {
-      runOnUiThread(() -> activityTestRule.getActivity().onActivityResult(SignInActivity.RC_SIGN_IN,result,null));
-
+    runOnUiThread(
+        () ->
+            activityTestRule
+                .getActivity()
+                .onActivityResult(SignInActivity.RC_SIGN_IN, result, null));
   }
 }
