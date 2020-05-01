@@ -12,27 +12,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.DatabaseUpdater;
+import ch.epfl.favo.common.ICollectionWrapper;
 import ch.epfl.favo.common.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
 This models the favor request.
 */
-//TODO: rename to FavorRepository?
+// TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static DatabaseUpdater collection =
+  private static ICollectionWrapper collection =
       DependencyFactory.getCurrentCollectionWrapper(
           DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
   private FavorUtil() {}
 
-  public void updateCollectionWrapper(DatabaseUpdater collectionWrapper) {
+  public void updateCollectionWrapper(ICollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
   }
 
@@ -49,7 +49,7 @@ public class FavorUtil {
    * @param favor A favor object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public CompletableFuture postFavor(Favor favor) throws RuntimeException {
+  public CompletableFuture requestFavor(Favor favor) throws RuntimeException {
     return collection.addDocument(favor);
   }
 
@@ -126,6 +126,20 @@ public class FavorUtil {
     // Filter out all favors except accepted
 
     throw new NotImplementedException();
+  }
+
+  /**
+   * Returns all the favors that are active in a given radius.
+   *
+   * @param loc a given Location (Android location type)
+   * @param radius a given radius to search within
+   */
+  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenLongitudeRange(
+      Location loc, double radius) {
+    /**
+     * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*
+     */
+    return collection.getAllDocumentsLongitudeBounded(loc, radius);
   }
 
   /**

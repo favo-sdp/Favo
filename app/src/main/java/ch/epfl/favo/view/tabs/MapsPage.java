@@ -86,8 +86,7 @@ public class MapsPage extends Fragment
     else button.setVisibility(View.INVISIBLE);
     favorViewModel =
         (FavorDataController)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
+            new ViewModelProvider(requireActivity()).get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
     RadioButton toggle = view.findViewById(R.id.list_switch);
     toggle.setOnClickListener(this::onToggleClick);
@@ -105,9 +104,17 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    try { // TODO: might want to move this to onCreateView (not sure if listeners are duplicated)
+    String setting =
+        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+    try {
+      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+    } catch (Exception e) {
+      CommonTools.showSnackbar(requireView(), e.getMessage());
+      return;
+    }
+    try {
       setupNearbyFavorsListener();
-
       setupFocusedFavorListen();
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
@@ -117,7 +124,7 @@ public class MapsPage extends Fragment
 
   private void setupFocusedFavorListen() {
 
-    favorViewModel
+    getViewModel()
         .getObservedFavor()
         .observe(
             getViewLifecycleOwner(),
@@ -138,6 +145,10 @@ public class MapsPage extends Fragment
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
+  }
+
+  public FavorDataController getViewModel() {
+    return favorViewModel;
   }
 
   private Marker drawFavorMarker(Favor favor, boolean isRequested) {
@@ -163,7 +174,10 @@ public class MapsPage extends Fragment
   }
 
   private void focusViewOnLocation(Location location) {
-    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    LatLng latLng =
+        new LatLng(
+            location.getLatitude(),
+            location.getLongitude()); // TODO: Constrain map to preference radius
     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
   }
 
@@ -190,13 +204,8 @@ public class MapsPage extends Fragment
   }
 
   private void setupNearbyFavorsListener() {
-    String setting =
-        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
 
-    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-
-    favorViewModel
+    getViewModel()
         .getFavorsAroundMe(mLocation, radiusThreshold)
         .observe(
             getViewLifecycleOwner(),

@@ -177,6 +177,7 @@ public class FavorPage extends Fragment {
                 if (favor != null) {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putString("FAVOR_ARGS", favor.getId());
+
                   // if favor was requested, open request view
                   if (favor
                       .getRequesterId()
@@ -187,6 +188,7 @@ public class FavorPage extends Fragment {
                     Navigation.findNavController(requireView())
                         .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
                   }
+
                 }
               }
             });

@@ -9,28 +9,23 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 public class FakeViewModel extends ViewModel implements FavorDataController {
-  private boolean throwError = false;
-  private CompletableFuture result = getSuccessfulCompletableFuture();
+  private CompletableFuture failedResult;
+  private boolean isThrowingError = false;
 
-  public void setThrowError(boolean t) {
-    throwError = t;
-    if (throwError){
-      result = getFailedCompletableFuture();
-    }
-  }
-
-
-  private CompletableFuture getFailedCompletableFuture() {
-    return new CompletableFuture<Favor>() {
-      {
-        completeExceptionally(new RuntimeException());
-      }
-    };
+  public void setThrowError(Exception throwableObject) {
+    isThrowingError = true;
+    failedResult =
+        new CompletableFuture<Favor>() {
+          {
+            completeExceptionally(new CompletionException(throwableObject));
+          }
+        };
   }
 
   private CompletableFuture getSuccessfulCompletableFuture() {
@@ -41,19 +36,20 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     };
   }
 
-
-
   @Override
-  public CompletableFuture postFavor(Favor favor) {
-    return result;
+  public CompletableFuture requestFavor(Favor favor) {
+
+    if (isThrowingError) return failedResult;
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
   }
 
-
-
   @Override
-  public CompletableFuture updateFavor(Favor favor) {
-    if (!throwError) setObservedFavorResult(favor);
-    return result;
+  public CompletableFuture updateFavor(
+      Favor favor, boolean isRequested, int activeFavorsCountChange) {
+    if (isThrowingError) return failedResult;
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
   }
 
   @Override

@@ -2,11 +2,15 @@ package ch.epfl.favo.user;
 
 import android.location.Location;
 
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.common.Document;
 import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.common.IllegalRequestException;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -14,15 +18,26 @@ import ch.epfl.favo.common.FavoLocation;
  */
 public class User implements Document {
 
+  public static final int MAX_ACCEPTING_FAVORS = 1;
+  public static final int MAX_REQUESTING_FAVORS = 5;
   private String id;
+  public static final String ID = "id";
   private String name;
+  public static final String NAME = "name";
   private String email;
+  public static final String EMAIL = "email";
   private String deviceId;
+  public static final String DEVICE_ID = "deviceId";
   private String notificationId;
+  public static final String NOTIFICATION_ID = "notificationId";
   private Date birthDate;
+  public static final String BIRTH_DATE = "birthDate";
   private FavoLocation location;
+  public static final String LOCATION = "location";
   private int activeAcceptingFavors;
+  public static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
   private int activeRequestingFavors;
+  public static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
 
   public User() {}
 
@@ -44,6 +59,16 @@ public class User implements Document {
     this.activeRequestingFavors = 0;
   }
 
+  public User(FirebaseUser firebaseUser, String deviceId, Location location) {
+    this(
+        firebaseUser.getUid(),
+        firebaseUser.getDisplayName(),
+        firebaseUser.getEmail(),
+        deviceId,
+        null,
+        new FavoLocation(location));
+  }
+
   // Getters
   @Override
   public String getId() {
@@ -52,7 +77,17 @@ public class User implements Document {
 
   @Override
   public Map<String, Object> toMap() {
-    return null;
+    Map<String, Object> result = new HashMap<>();
+    result.put(ID, id);
+    result.put(NAME, name);
+    result.put(EMAIL, email);
+    result.put(DEVICE_ID, deviceId);
+    result.put(NOTIFICATION_ID, notificationId);
+    result.put(BIRTH_DATE, birthDate);
+    result.put(LOCATION, location);
+    result.put(ACTIVE_ACCEPTING_FAVORS, activeAcceptingFavors);
+    result.put(ACTIVE_REQUESTING_FAVORS, activeRequestingFavors);
+    return result;
   }
 
   public String getName() {
@@ -87,12 +122,16 @@ public class User implements Document {
     return activeRequestingFavors;
   }
 
-  public void setActiveAcceptingFavors(int activeAcceptingFavors) {
-    this.activeAcceptingFavors = activeAcceptingFavors;
+  public void setActiveAcceptingFavors(int totalAcceptingFavors) {
+    if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
+      throw new IllegalRequestException("Cannot accept");
+    this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
-  public void setActiveRequestingFavors(int activeRequestingFavors) {
-    this.activeRequestingFavors = activeRequestingFavors;
+  public void setActiveRequestingFavors(int totalRequestingFavors) {
+    if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
+      throw new IllegalRequestException("Cannot request");
+    this.activeRequestingFavors = totalRequestingFavors;
   }
 
   public void setNotificationId(String notificationId) {
@@ -109,10 +148,10 @@ public class User implements Document {
 
   // Can only accept or request favors
   boolean canAccept() {
-    return activeAcceptingFavors + activeRequestingFavors < 1;
+    return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;
   }
 
   boolean canRequest() {
-    return activeAcceptingFavors + activeRequestingFavors < 1;
+    return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 }

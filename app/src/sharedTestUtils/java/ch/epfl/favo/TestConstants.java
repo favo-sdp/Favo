@@ -2,6 +2,8 @@ package ch.epfl.favo;
 
 import android.net.Uri;
 
+import java.util.Date;
+
 import ch.epfl.favo.common.DatabaseWrapper;
 import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.FavorStatus;
@@ -22,6 +24,7 @@ public class TestConstants {
   public static final String DESCRIPTION = "fake test description";
   public static final String REQUESTER_ID = DatabaseWrapper.generateRandomId();
   public static final FavoLocation LOCATION = new FavoLocation(PROVIDER);
+  public static final Date BIRTHDAY = new Date(0);
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
   public static final FavorStatus FAVOR_STATUS = FavorStatus.REQUESTED;

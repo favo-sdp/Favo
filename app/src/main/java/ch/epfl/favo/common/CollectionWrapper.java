@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T> {
+public class CollectionWrapper<T extends Document> implements ICollectionWrapper<T> {
 
   private String collection;
   private Class cls;

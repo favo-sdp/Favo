@@ -15,17 +15,18 @@ import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.common.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
+import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -38,8 +39,8 @@ public class FavorDetailView extends Fragment {
   private FloatingActionButton locationAccessBtn;
   private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
-  private TextView statusText;
   private FavorDataController favorViewModel;
+  private NonClickableToolbar toolbar;
 
   public FavorDetailView() {
     // create favor detail from a favor
@@ -51,23 +52,21 @@ public class FavorDetailView extends Fragment {
     // inflate view
     View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
     setupButtons(rootView);
-    statusText = rootView.findViewById(R.id.status_text_accept_view);
 
+    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     favorViewModel =
         (FavorDataController)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    if (currentFavor == null && getArguments() != null) {
-      String favorId = getArguments().getString(FavorFragmentFactory.FAVOR_ARGS);
-      setupFavorListener(rootView, favorId);
-    }
-    else{
-      displayFromFavor(rootView, Objects.requireNonNull(currentFavor)); //TODO: fix in case current favor is null
-    }
+    String favorId = "";
+    if (currentFavor != null) favorId = currentFavor.getId();
+    if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
+    setupFavorListener(rootView, favorId);
 
     return rootView;
   }
-  public FavorDataController getViewModel(){
+
+  public FavorDataController getViewModel() {
     return favorViewModel;
   }
 
@@ -79,8 +78,10 @@ public class FavorDetailView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                currentFavor = favor;
-                displayFromFavor(rootView, currentFavor);
+                if (favor != null) {
+                  currentFavor = favor;
+                  displayFromFavor(rootView, currentFavor);
+                }
               } catch (Exception e) {
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
@@ -119,10 +120,10 @@ public class FavorDetailView extends Fragment {
 
   private void cancelFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_ACCEPTER);
-    CompletableFuture completableFuture =
-            getViewModel().updateFavor(currentFavor);
+    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    CompletableFuture completableFuture = getViewModel().updateFavor(currentFavor, false, -1);
     completableFuture.thenAccept(successfullyCancelledConsumer());
-    completableFuture.exceptionally(favorFailedToBeAcceptedConsumer());
+    completableFuture.exceptionally(handleException());
   }
 
   private Consumer successfullyCancelledConsumer() {
@@ -150,19 +151,19 @@ public class FavorDetailView extends Fragment {
 
   private void acceptFavor() {
     // update DB with accepted status
-    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
-    CompletableFuture updateFavorFuture =
-            getViewModel().updateFavor(currentFavor);
+    currentFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    CompletableFuture updateFavorFuture = getViewModel().updateFavor(currentFavor, false, 1);
     updateFavorFuture.thenAccept(
         o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
-    updateFavorFuture.exceptionally(favorFailedToBeAcceptedConsumer());
+    updateFavorFuture.exceptionally(handleException());
   }
 
-  private Function favorFailedToBeAcceptedConsumer() {
+  private Function handleException() {
     return e -> {
-      // if already accepted then change the status display and disable all the buttons
-      CommonTools.showSnackbar(getView(), getString(R.string.update_favor_error));
+      if (((CompletionException) e).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
+      else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
       return null;
     };
   }
@@ -182,7 +183,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void updateDisplayFromViewStatus() {
-    statusText.setText(favorStatus.toString());
+    toolbar.setTitle(favorStatus.toString());
     updateButtonDisplay();
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
@@ -191,18 +192,18 @@ public class FavorDetailView extends Fragment {
         }
       case ACCEPTED:
         {
-          statusText.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
         }
 
       case REQUESTED:
         {
-          statusText.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+          toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           break;
         }
       default: // includes accepted by other
         enableButtons(false);
-        statusText.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+        toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
 

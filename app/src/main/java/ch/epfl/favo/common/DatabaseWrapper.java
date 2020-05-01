@@ -113,7 +113,6 @@ public class DatabaseWrapper {
    */
   static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
       Location loc, double radius, Class<T> cls, String collection) {
-    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
     Task<QuerySnapshot> getAllTask = locationBoundQuery(loc, radius, collection).get();
     CompletableFuture<QuerySnapshot> getAllFuture =
         new TaskToFutureAdapter<>(getAllTask).getInstance();
