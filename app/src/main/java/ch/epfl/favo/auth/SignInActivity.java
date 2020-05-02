@@ -25,7 +25,7 @@ import java.util.function.Function;
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.map.IGpsTracker;
+import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;

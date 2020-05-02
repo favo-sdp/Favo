@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.net.IpSecManager;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -19,11 +20,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.ICollectionWrapper;
+import ch.epfl.favo.database.CollectionWrapper;
+import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.map.GpsTracker;
-import ch.epfl.favo.map.IGpsTracker;
+import ch.epfl.favo.gps.GpsTracker;
+import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;

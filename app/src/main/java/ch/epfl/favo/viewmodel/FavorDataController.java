@@ -31,4 +31,9 @@ public interface FavorDataController {
   LiveData<Favor> setObservedFavor(String favorId);
 
   LiveData<Favor> getObservedFavor();
+
+  void setObservedFavorLocally(Favor favor);
+
+  void setShowObservedFavor(Boolean show);
+  boolean isShowObservedFavor();
 }

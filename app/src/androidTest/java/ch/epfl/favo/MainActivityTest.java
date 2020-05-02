@@ -93,6 +93,10 @@ public class MainActivityTest {
 
     // check that menu drawer is displayed
     onView(withId(R.id.nav_view)).check(matches(isDisplayed()));
+
+    pressBack();
+    // press back can hide menu
+    onView(withId(R.id.nav_view)).check(matches(not(isDisplayed())));
   }
 
   @Test
@@ -275,7 +279,6 @@ public class MainActivityTest {
 
     // Click on new favor to open favor request tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
-
     getInstrumentation().waitForIdleSync();
 
     // Click on back button

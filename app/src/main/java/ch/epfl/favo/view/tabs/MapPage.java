@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +40,11 @@ import java.util.Map;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 /**
@@ -48,23 +52,27 @@ import ch.epfl.favo.viewmodel.FavorDataController;
  * subclass.
  */
 @SuppressLint("NewApi")
-public class MapsPage extends Fragment
+public class MapPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
   private FavorDataController favorViewModel;
-  private Map<String, Favor> favorsAroundMe;
-  private double radiusThreshold;
+  private View view;
   private GoogleMap mMap;
   private Location mLocation;
+
+  private Map<String, Favor> favorsAroundMe;
   private Favor focusedFavor;
-  private boolean first = true;
+  private double radiusThreshold;
+
   // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-  private boolean mLocationPermissionGranted = false;
-  private View view;
 
-  public MapsPage() {
+  private boolean mLocationPermissionGranted = false;
+  private boolean firstOpenApp = true;
+  private ArrayList<Marker> newMarkers = new ArrayList<>();
+
+  public MapPage() {
     // Required empty public constructor
   }
 
@@ -105,8 +113,12 @@ public class MapsPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    String setting =
-        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
+    mMap.getUiSettings().setZoomControlsEnabled(true);
+    mMap.setPadding(0, 0, 0, 140);
+    mMap.setOnMapLongClickListener(new LongClick());
+    mMap.setOnMarkerDragListener(new MarkerDrag());
+    String setting = UserSettings.getNotificationRadius(requireContext());
+    if (setting.equals("disabled")) setting = "10 Km";
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
@@ -120,7 +132,49 @@ public class MapsPage extends Fragment
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
-    if (focusedFavor == null) centerViewOnMyLocation();
+    // only when the app is firstly opened, center on my location,
+    // otherwise just return where I left before
+    if (focusedFavor == null && firstOpenApp) {
+      centerViewOnMyLocation();
+      firstOpenApp = false;
+    }
+  }
+
+  private class MarkerDrag implements GoogleMap.OnMarkerDragListener {
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {}
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+      mMap.animateCamera(
+          CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getMaxZoomLevel() - 5));
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {}
+  }
+
+  private class LongClick implements GoogleMap.OnMapLongClickListener {
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+      //at most one new marker is allowed
+      if (newMarkers.size() != 0) {
+        for (Marker m : newMarkers) m.remove();
+        newMarkers.clear();
+      }
+      FavoLocation loc = new FavoLocation(mLocation);
+      loc.setLatitude(latLng.latitude);
+      loc.setLongitude(latLng.longitude);
+      Favor newFavor =
+          new Favor(
+              "", " ", DependencyFactory.getCurrentFirebaseUser().getUid(), loc, FavorStatus.EDIT);
+      focusedFavor = newFavor;
+      Marker mk = drawFavorMarker(newFavor, true, true);
+      mk.showInfoWindow();
+      newMarkers.add(mk);
+      mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    }
   }
 
   private void setupFocusedFavorListen() {
@@ -131,16 +185,19 @@ public class MapsPage extends Fragment
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null) {
+                if (favor != null && favorViewModel.isShowObservedFavor()) {
+                  favorViewModel.setShowObservedFavor(false);
                   focusedFavor = favor;
                   boolean isRequested = // check if favor is requested
                       favor
                           .getRequesterId()
                           .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
-
-                  Marker marker = drawFavorMarker(focusedFavor, isRequested);
+                  boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
+                  Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
+                  // count new added marker on map
+                  if (isEdited) newMarkers.add(marker);
                   marker.showInfoWindow();
-                  focusViewOnLocation(focusedFavor.getLocation());
+                  focusViewOnLocation(focusedFavor.getLocation(), true);
                 }
               } catch (Exception e) {
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
@@ -152,18 +209,23 @@ public class MapsPage extends Fragment
     return favorViewModel;
   }
 
-  private Marker drawFavorMarker(Favor favor, boolean isRequested) {
+  private Marker drawFavorMarker(Favor favor, boolean isRequested, boolean isEdited) {
     LatLng latLng =
         new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
     float markerColor =
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
+    String markerTitle =
+            (isEdited) //&& favor.getTitle().equals("")
+                    ? "Drag marker to desired location"
+            : favor.getTitle();
+    String markerDescription = isEdited ? "Click window to request favor" : favor.getDescription();
     Marker marker =
         mMap.addMarker(
             new MarkerOptions()
                 .position(latLng)
-                .title(favor.getTitle())
-                .icon(BitmapDescriptorFactory.defaultMarker(markerColor)));
-    marker.setSnippet(favor.getDescription());
+                .title(markerTitle)
+                .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                .snippet(markerDescription));
     marker.setTag(
         new ArrayList<Object>() {
           {
@@ -171,15 +233,14 @@ public class MapsPage extends Fragment
             add(isRequested);
           }
         });
+    if (isEdited) marker.setDraggable(true);
     return marker;
   }
 
-  private void focusViewOnLocation(Location location) {
-    LatLng latLng =
-        new LatLng(
-            location.getLatitude(),
-            location.getLongitude()); // TODO: Constrain map to preference radius
-    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
+  private void focusViewOnLocation(Location location, boolean animate) {
+    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
   }
 
   private void onOfflineMapClick(View view) {
@@ -205,8 +266,7 @@ public class MapsPage extends Fragment
   }
 
   private void setupNearbyFavorsListener() {
-
-    getViewModel()
+    favorViewModel
         .getFavorsAroundMe(mLocation, radiusThreshold)
         .observe(
             getViewLifecycleOwner(),
@@ -214,7 +274,6 @@ public class MapsPage extends Fragment
               try {
                 favorsAroundMe = stringFavorMap;
                 drawFavorMarkers(new ArrayList<>(favorsAroundMe.values()));
-                first = false;
               } catch (Exception e) {
                 CommonTools.showSnackbar(
                     requireView(), getString(R.string.nearby_favors_exception));
@@ -222,9 +281,19 @@ public class MapsPage extends Fragment
             });
   }
 
+  private void drawFavorMarkers(List<Favor> favors) {
+    for (Favor favor : favors) {
+      drawFavorMarker(favor, false, false);
+    }
+  }
+
+  private void centerViewOnMyLocation() {
+    // Add a marker at my location and move the camera
+    focusViewOnLocation(mLocation, false);
+  }
+
   /** Request location permission, so that we can get the location of the device. */
   private void getLocationPermission() {
-    /** Request location permission, so that we can get the location of the device. */
     if (ContextCompat.checkSelfPermission(
             requireActivity().getApplicationContext(),
             android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -246,12 +315,14 @@ public class MapsPage extends Fragment
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
+        // if get permission, then refresh the map view
         Navigation.findNavController(view).navigate(R.id.action_global_nav_map);
       }
     }
   }
 
-  /*
+  /* // this is the android recommended way to get location, but cannot pass cirrus testing
+
       private void checkPlayServices() {
         GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
         int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
@@ -281,21 +352,6 @@ public class MapsPage extends Fragment
         }
       }
   */
-
-  private void centerViewOnMyLocation() {
-    // Add a marker at my location and move the camera
-    focusViewOnLocation(mLocation);
-  }
-
-  private void drawFavorMarkers(List<Favor> favors) {
-    if (favors.isEmpty()) {
-      first = true;
-      return;
-    }
-    for (Favor favor : favors) {
-      drawFavorMarker(favor, false);
-    }
-  }
 
   @Override
   public View getInfoWindow(Marker marker) {
@@ -328,14 +384,21 @@ public class MapsPage extends Fragment
     List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
     boolean isRequested = (boolean) markerInfo.get(1);
+    if (focusedFavor != null
+        && focusedFavor.getId().equals(favorId)
+        && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
+      focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
+      focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
+
+      // transfer local favor to FavorRequestView via ViewModel
+      favorViewModel.setObservedFavorLocally(focusedFavor);
+    }
     Bundle favorBundle = new Bundle();
     favorBundle.putString("FAVOR_ARGS", favorId);
-
-    if (isRequested) {
+    if (isRequested)
       Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
-    } else {
+    else
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
-    }
   }
 }

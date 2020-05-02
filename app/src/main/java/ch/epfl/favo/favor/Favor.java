@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-import ch.epfl.favo.common.DatabaseWrapper;
-import ch.epfl.favo.common.Document;
-import ch.epfl.favo.common.FavoLocation;
+import ch.epfl.favo.database.DatabaseWrapper;
+import ch.epfl.favo.database.Document;
+import ch.epfl.favo.gps.FavoLocation;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
@@ -24,14 +24,14 @@ import ch.epfl.favo.common.FavoLocation;
 public class Favor implements Parcelable, Document {
 
   // String constants for Map conversion
-  public static final String ID = "id";
-  public static final String TITLE = "title";
-  public static final String DESCRIPTION = "description";
-  public static final String USER_IDS = "userIds";
-  public static final String LOCATION = "location";
-  public static final String POSTED_TIME = "postedTime";
-  public static final String STATUS_ID = "statusId";
-  public static final String PICTURE_URL = "pictureUrl";
+  private static final String ID = "id";
+  private static final String TITLE = "title";
+  private static final String DESCRIPTION = "description";
+  private static final String USER_IDS = "userIds";
+  private static final String LOCATION = "location";
+  private static final String POSTED_TIME = "postedTime";
+  private static final String STATUS_ID = "statusId";
+  static final String PICTURE_URL = "pictureUrl";
   private static final String IS_ARCHIVED = "isArchived";
 
   public static final Creator<Favor> CREATOR =

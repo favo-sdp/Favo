@@ -18,17 +18,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements FavorDataController {
-  String TAG = "FIRESTORE_VIEW_MODEL";
+  private String TAG = "FIRESTORE_VIEW_MODEL";
+
+  private boolean showFavor = false;
   private Location mCurrentLocation;
   private double mRadius = -1.0;
 
@@ -114,6 +116,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return getFavorsAroundMe();
   }
 
+  @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe() {
     return activeFavorsAroundMe;
   }
@@ -153,7 +156,9 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
         && getObservedFavor().getValue().getId().equals(favorId)) {
       return getObservedFavor(); // if request hasn't changed then return original
     }
-    observedFavor.postValue(null);
+    // we can check the Id of returned favor to prevent unmatched result,
+    // and identify the case of returning null as database error.
+    //observedFavor.postValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
@@ -166,7 +171,22 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
+  public void setObservedFavorLocally(Favor favor) {
+    observedFavor.setValue(favor);
+  }
+
+  @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
+  }
+
+  @Override
+  public void setShowObservedFavor(Boolean show) {
+    showFavor = show;
+  }
+
+  @Override
+  public boolean isShowObservedFavor() {
+    return showFavor;
   }
 }

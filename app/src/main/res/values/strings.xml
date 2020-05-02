@@ -109,14 +109,18 @@
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
+    <string name="favor_complete_success_msg">Favor successfully completed</string>
     <string name="chat_message_detail_view">Start a chat</string>
     <string name="update_favor_error">Failed to update</string>
     <string name="illegal_request_error">Max requested favors reached. Complete or cancel active favors</string>
     <string name="illegal_accept_error">Max accepted favors reached. Complete or cancel current favor.</string>
     <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
     <string name="cancel_accept_button_display">Cancel</string>
-    <string name="restart_request">re-enable</string>
+    <string name="restart_request">Re-enable</string>
     <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
+    <string name="complete_favor">Complete</string>
+    <string name="wait_complete">Wait others</string>
+    <string name="favor_accept_by_oneself">you cannot accept favor posted by yourself</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

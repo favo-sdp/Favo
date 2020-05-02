@@ -8,9 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.epfl.favo.common.Document;
-import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.common.IllegalRequestException;
+import ch.epfl.favo.database.Document;
+import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.exception.IllegalRequestException;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable

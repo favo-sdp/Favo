@@ -25,7 +25,7 @@ import java.util.UUID;
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.MainActivity;
-import ch.epfl.favo.common.CollectionWrapper;
+import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;

@@ -6,7 +6,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import ch.epfl.favo.common.DatabaseWrapper;
+import ch.epfl.favo.database.DatabaseWrapper;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotEquals;

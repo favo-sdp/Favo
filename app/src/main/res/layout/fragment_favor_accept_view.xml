@@ -56,17 +56,17 @@
         <LinearLayout
             android:id="@+id/time_location_layout_accept_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:padding="5dp"
             android:layout_marginBottom="@dimen/margin_accept_view"
             android:background="@color/colorPrimaryDark"
             android:orientation="horizontal"
-            android:padding="5dp"
             app:layout_constraintBottom_toTopOf="@id/details_accept_view"
             app:layout_constraintTop_toBottomOf="@id/imageView_accept_view">
 
             <TextView
                 android:id="@+id/datetime_accept_view"
-                android:layout_width="150dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
@@ -76,9 +76,8 @@
                 android:text="05/29/2015 5:50 AM"
                 android:textColor="#FFFFFF"
                 android:textIsSelectable="true"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
+                android:textSize="15sp" />
+            <!--
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/location_accept_view_btn"
                 android:layout_width="wrap_content"
@@ -86,7 +85,15 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.1"
                 android:background="#FFFFFF"
-                android:src="@drawable/ic_location_on_24dp" />
+                android:drawableEnd="@drawable/ic_location_on_24dp" />
+            -->
+            <Button
+                android:id="@+id/location_accept_view_btn"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:background="@color/fui_transparent"
+                android:drawableEnd="@drawable/ic_location_on_24dp" />
+
         </LinearLayout>
 
         <TextView
@@ -136,11 +143,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/details_accept_view">
 
+            <Button
+                android:id="@+id/complete_btn"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_weight="1"
+                android:drawableBottom="@drawable/ic_check_box_black_24dp"
+                android:text="@string/complete_favor" />
 
             <Button
                 android:id="@+id/chat_button_accept_view"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
                 android:layout_weight="1"
                 android:drawableBottom="@drawable/ic_chat_24dp"
                 android:text="@string/chat_message_detail_view" />
@@ -148,7 +162,7 @@
             <Button
                 android:id="@+id/accept_button"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
                 android:layout_weight="1"
                 android:drawableBottom="@drawable/ic_thumb_up_24dp"
                 android:text="@string/accept_favor" />

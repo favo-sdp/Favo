@@ -36,18 +36,6 @@
                 android:drawableEnd="@drawable/ic_edit_24dp"
                 android:text="@string/edit_favor"
                 android:visibility="invisible"
-                app:layout_constraintRight_toLeftOf="@id/cancel_favor_button"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/cancel_favor_button"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableEnd="@drawable/ic_cancel_24dp"
-                android:text="@string/cancel_request"
-                android:visibility="invisible"
-                app:layout_constraintLeft_toRightOf="@id/edit_favor_button"
                 app:layout_constraintRight_toLeftOf="@id/chat_button"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -59,7 +47,19 @@
                 android:layout_weight="1"
                 android:text="@string/open_chat"
                 android:drawableEnd="@drawable/ic_chat_24dp"
-                app:layout_constraintLeft_toRightOf="@id/cancel_favor_button"
+                app:layout_constraintLeft_toRightOf="@id/edit_favor_button"
+                app:layout_constraintRight_toLeftOf="@id/cancel_favor_button"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/cancel_favor_button"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_cancel_24dp"
+                android:text="@string/cancel_request"
+                android:visibility="invisible"
+                app:layout_constraintLeft_toRightOf="@id/chat_button"
                 app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
 
@@ -120,16 +120,25 @@
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="0dp"
-                android:drawableRight="@drawable/ic_image_24dp"
+                android:drawableEnd="@drawable/ic_image_24dp"
                 android:text="Upload" />
 
             <Button
                 android:id="@+id/add_camera_picture_button"
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
-                android:drawableRight="@drawable/ic_photo_camera_24dp"
+                android:drawableEnd="@drawable/ic_photo_camera_24dp"
                 android:text="Take" />
+
+            <Button
+                android:id="@+id/location_request_view_btn"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_location_on_24dp"
+                android:text=""/>
+
         </LinearLayout>
+
 
         <ImageView
             android:id="@+id/image_view_request_view"

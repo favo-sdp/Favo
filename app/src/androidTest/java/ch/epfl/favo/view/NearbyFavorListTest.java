@@ -46,8 +46,6 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
   private Favor favor = FakeItemFactory.getFavor();
-  private NearbyFavorList listView;
-  private FakeViewModel fakeViewModel;
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -73,9 +71,6 @@ public class NearbyFavorListTest {
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     runOnUiThread(() -> navController.navigate(R.id.nav_nearby_favor_list));
     getInstrumentation().waitForIdleSync();
-    Fragment navHostFragment =
-        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-    listView = (NearbyFavorList) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
 
   @After
@@ -148,7 +143,7 @@ public class NearbyFavorListTest {
 
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
-    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+    device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() * 9 / 20);
 
     // if keyboard is not displayed, one time of pressBack will return to Favor List view
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
@@ -157,7 +152,7 @@ public class NearbyFavorListTest {
   }
 
   @Test
-  public void FavorDetailViewJumptoMapTest() throws InterruptedException {
+  public void FavorDetailViewJumptoMapTest() {
     // check test favor is found click on found item
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();

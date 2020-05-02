@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.RequiresApi;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
+  private int cnt = 0;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                 showBottomNavigation();
               }
           }
+          currentMenuItem = destination.getId();
         });
   }
 
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
               navController.navigate(itemId);
           }
 
-          currentMenuItem = itemId;
+          //currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
@@ -166,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
           if (itemId == R.id.nav_map) navController.popBackStack(R.id.nav_map, false);
           else navController.navigate(R.id.nav_favorList);
 
-          currentMenuItem = itemId;
+          //currentMenuItem = itemId;
           return false;
         });
   }
@@ -217,15 +220,15 @@ public class MainActivity extends AppCompatActivity {
       mDrawerLayout.closeDrawer(GravityCompat.START);
     else {
       NavHostFragment host =
-          (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+              (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
       Fragment f =
-          Objects.requireNonNull(host)
-              .getChildFragmentManager()
-              .findFragmentById(R.id.nav_host_fragment);
+              Objects.requireNonNull(host)
+                      .getChildFragmentManager()
+                      .findFragmentById(R.id.nav_host_fragment);
 
       if (f instanceof UserAccountPage
-          || f instanceof FragmentAbout
-          || f instanceof FragmentSettings) {
+              || f instanceof FragmentAbout
+              || f instanceof FragmentSettings) {
         navController.popBackStack(R.id.nav_map, false);
         currentMenuItem = R.id.nav_map;
       } else {
@@ -247,4 +250,11 @@ public class MainActivity extends AppCompatActivity {
   public void onFabClick(View view) {
     navController.navigate(R.id.action_global_favorRequestView);
   }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+  }
+
 }

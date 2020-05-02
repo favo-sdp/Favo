@@ -21,7 +21,6 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static ch.epfl.favo.util.DependencyFactory.setCurrentFirebaseUser;
 
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityInstrumentedTest {
@@ -32,8 +31,10 @@ public class SignInActivityInstrumentedTest {
       new ActivityTestRule<SignInActivity>(SignInActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          //              DependencyFactory.setCurrentFirebaseUser(
-          //                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          if( new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER) == null)
+            throw new RuntimeException("56fsd");
+                        DependencyFactory.setCurrentFirebaseUser(
+                                new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentUserRepository(fakeUserUtil);
         }
@@ -42,19 +43,19 @@ public class SignInActivityInstrumentedTest {
   @After
   public void tearDown() throws ExecutionException, InterruptedException {
     DependencyFactory.setCurrentGpsTracker(null);
-    setCurrentFirebaseUser(null);
+    DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentUserRepository(null);
   }
 
   @Test
   public void testSignInFlow() throws Throwable {
-    setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    //DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     handleSignInResponse(RESULT_OK);
   }
 
   @Test
   public void testSignInFlowWhenUserNotFound() throws Throwable {
-    setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     fakeUserUtil.setFindUserFail(true);
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
@@ -62,7 +63,7 @@ public class SignInActivityInstrumentedTest {
 
   @Test
   public void testSnackBarShowsWhenNewUserFailsToBePosted() throws Throwable {
-    setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     fakeUserUtil.setThrowResult(new RuntimeException());
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
