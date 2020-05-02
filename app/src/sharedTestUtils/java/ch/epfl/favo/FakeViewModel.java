@@ -12,6 +12,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 public class FakeViewModel extends ViewModel implements FavorDataController {
@@ -48,6 +50,23 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   public CompletableFuture updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
     if (isThrowingError) return failedResult;
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public CompletableFuture acceptFavor(Favor favor) {
+    if (isThrowingError) return failedResult;
+    favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    favor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
+    if (isThrowingError) return failedResult;
+    favor.setStatusIdToInt(isRequested?FavorStatus.CANCELLED_REQUESTER:FavorStatus.CANCELLED_ACCEPTER);
     observedFavorResult.setValue(favor);
     return getSuccessfulCompletableFuture();
   }
@@ -104,5 +123,10 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
+  }
+
+  @Override
+  public void setFavorValue(Favor favor) {
+    observedFavorResult.setValue(favor);
   }
 }

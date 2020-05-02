@@ -118,8 +118,8 @@ public class FavorRequestView extends Fragment {
         .observe(
             getViewLifecycleOwner(),
             favor -> {
-              try {
-                if (favor != null) {
+              try {//only update view if favor matches the requested one
+                if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
                   displayFavorInfo(rootView);
                 }
@@ -144,8 +144,6 @@ public class FavorRequestView extends Fragment {
                 mImageView.setImageBitmap(picture);
                 v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
               });
-    } else {
-      mImageView.setImageBitmap(null);
     }
 
     updateViewFromStatus(v);

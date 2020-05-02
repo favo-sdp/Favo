@@ -49,6 +49,36 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return DependencyFactory.getCurrentPictureUtility();
   }
 
+  /**
+   * Tries to update the number of active favors for a given user. Detailed implementation in
+   * UserUtil
+   *
+   * @param isRequested is/are the favors requested?
+   * @param change number of favors being updated
+   * @returnf
+   */
+  private CompletableFuture changeUserActiveFavorCount(
+      String userId, boolean isRequested, int change) {
+    return getUserRepository().changeActiveFavorCount(userId, isRequested, change);
+  }
+  /**
+   * Checks if it's possible for user to update, if so, updates his/her status. Then posts favor to
+   * DB
+   *
+   * @param favor should be a clone of the actual object
+   * @param isRequested is the favor requested?
+   * @param activeFavorsCountChange Relative to actual amount
+   * @return
+   */
+  public CompletableFuture updateFavorForCurrentUser(
+      Favor favor, boolean isRequested, int activeFavorsCountChange) {
+    return changeUserActiveFavorCount(
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            isRequested,
+            activeFavorsCountChange)
+        .thenCompose(o -> getFavorRepository().updateFavor(favor));
+  }
+
   // save address to firebase
   @Override
   public CompletableFuture requestFavor(Favor favor) {
@@ -79,24 +109,6 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   }
 
   /**
-   * Checks if it's possible for user to update, if so, updates his/her status. Then posts favor to
-   * DB
-   *
-   * @param favor should be a clone of the actual object
-   * @param isRequested is the favor requested?
-   * @param activeFavorsCountChange Relative to actual amount
-   * @return
-   */
-  public CompletableFuture updateFavorForCurrentUser(
-      Favor favor, boolean isRequested, int activeFavorsCountChange) {
-    return changeUserActiveFavorCount(
-            DependencyFactory.getCurrentFirebaseUser().getUid(),
-            isRequested,
-            activeFavorsCountChange)
-        .thenCompose(o -> getFavorRepository().updateFavor(favor));
-  }
-
-  /**
    * @param favor should be a clone of the original object in the UI!
    * @return
    */
@@ -106,25 +118,12 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return updateFavorForCurrentUser(favor, false, 1);
   }
 
-  /**
-   * Tries to update the number of active favors for a given user. Detailed implementation in
-   * UserUtil
-   *
-   * @param isRequested is/are the favors requested?
-   * @param change number of favors being updated
-   * @return Can be completed exceptionally
-   */
-  private CompletableFuture changeUserActiveFavorCount(
-      String userId, boolean isRequested, int change) {
-    return getUserRepository().changeActiveFavorCount(userId, isRequested, change);
-  }
-
   // Upload/download pictures
   @Override
   public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
     CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
     pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
-  }//check what happens if updateFavorFoto fails
+  } // check what happens if updateFavorFoto fails
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
@@ -150,10 +149,9 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
           .getNearbyFavors(loc, radiusInKm)
           .addSnapshotListener(
               MetadataChanges.EXCLUDE,
-              (queryDocumentSnapshots, e) -> {
-                activeFavorsAroundMe.postValue(
-                    getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e));
-              });
+              (queryDocumentSnapshots, e) ->
+                  activeFavorsAroundMe.postValue(
+                      getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
     }
     return getFavorsAroundMe();
   }
@@ -191,20 +189,19 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     }
   }
 
+  public void setFavorValue(Favor favor) {
+    observedFavor.setValue(favor);
+  }
+
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    if (getObservedFavor().getValue() != null
-        && getObservedFavor().getValue().getId().equals(favorId)) {
-      return getObservedFavor(); // if request hasn't changed then return original
-    }
-    observedFavor.setValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
-              observedFavor.setValue(documentSnapshot.toObject(Favor.class));
+              setFavorValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();
   }

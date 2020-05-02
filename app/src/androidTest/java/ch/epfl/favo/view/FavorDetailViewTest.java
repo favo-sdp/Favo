@@ -102,7 +102,6 @@ public class FavorDetailViewTest {
   @Test
   public void favorDetailViewIsLaunched() {
     // check that detailed view is indeed opened
-
     onView(
             allOf(
                 withId(R.id.fragment_favor_accept_view),
@@ -267,5 +266,11 @@ public class FavorDetailViewTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
+  //Try clicking again
+    Thread.sleep(1000);
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.illegal_accept_error)));
   }
 }
