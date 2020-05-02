@@ -107,7 +107,7 @@ public class FavorViewModelTest {
         .when(userRepository)
         .changeActiveFavorCount(anyBoolean(), anyInt());
     Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
-    Assert.assertTrue(viewModel.updateFavor(FakeItemFactory.getFavor(), true, 1).isDone());
+    Assert.assertTrue(viewModel.updateFavorForCurrentUser(FakeItemFactory.getFavor(), true, 1).isDone());
   }
 
   @Test

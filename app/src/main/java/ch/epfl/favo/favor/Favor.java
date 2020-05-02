@@ -21,7 +21,7 @@ import ch.epfl.favo.common.FavoLocation;
  * description, requester, accepter, location and status
  */
 @SuppressLint("NewApi")
-public class Favor implements Parcelable, Document {
+public class Favor implements Parcelable, Document, Cloneable {
 
   // String constants for Map conversion
   public static final String ID = "id";
@@ -262,5 +262,14 @@ public class Favor implements Parcelable, Document {
         && this.statusId == other.getStatusId()
         && this.location.equals(other.location)
         && this.pictureUrl.equals(other.pictureUrl);
+  }
+
+  public Object clone() {
+    try {
+      return super.clone();
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+      throw new RuntimeException("Unable to clone Favor");
+    }
   }
 }

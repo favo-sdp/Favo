@@ -52,15 +52,58 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   // save address to firebase
   @Override
   public CompletableFuture requestFavor(Favor favor) {
-    return changeActiveFavorCount(
-            true, 1) // if user can request favor then post it in the favor collection
+    return changeUserActiveFavorCount(
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            true,
+            1) // if user can request favor then post it in the favor collection
         .thenCompose((f) -> getFavorRepository().requestFavor(favor));
   }
 
-  public CompletableFuture updateFavor(
+  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
+
+    FavorStatus cancelledStatus;
+    String otherUserId;
+    if (isRequested) {
+      cancelledStatus = FavorStatus.CANCELLED_REQUESTER;
+      otherUserId = favor.getAccepterId();
+    } else {
+      cancelledStatus = FavorStatus.CANCELLED_ACCEPTER;
+      otherUserId = favor.getRequesterId();
+    }
+    favor.setStatusIdToInt(cancelledStatus);
+    CompletableFuture resultFuture = updateFavorForCurrentUser(favor, isRequested, -1);
+    if (otherUserId != null) // update other user
+    resultFuture.thenCompose(o -> changeUserActiveFavorCount(otherUserId, !isRequested, -1));
+
+    return resultFuture;
+  }
+
+  /**
+   * Checks if it's possible for user to update, if so, updates his/her status. Then posts favor to
+   * DB
+   *
+   * @param favor should be a clone of the actual object
+   * @param isRequested is the favor requested?
+   * @param activeFavorsCountChange Relative to actual amount
+   * @return
+   */
+  public CompletableFuture updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
-    return changeActiveFavorCount(isRequested, activeFavorsCountChange)
+    return changeUserActiveFavorCount(
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            isRequested,
+            activeFavorsCountChange)
         .thenCompose(o -> getFavorRepository().updateFavor(favor));
+  }
+
+  /**
+   * @param favor should be a clone of the original object in the UI!
+   * @return
+   */
+  public CompletableFuture acceptFavor(Favor favor) {
+    favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    favor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    return updateFavorForCurrentUser(favor, false, 1);
   }
 
   /**
@@ -71,16 +114,17 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
    * @param change number of favors being updated
    * @return Can be completed exceptionally
    */
-  private CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
-    return getUserRepository().changeActiveFavorCount(isRequested, change);
+  private CompletableFuture changeUserActiveFavorCount(
+      String userId, boolean isRequested, int change) {
+    return getUserRepository().changeActiveFavorCount(userId, isRequested, change);
   }
 
   // Upload/download pictures
   @Override
   public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
     CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
-    pictureUrl.thenAccept(url -> FavorUtil.getSingleInstance().updateFavorPhoto(favor, url));
-  }
+    pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
+  }//check what happens if updateFavorFoto fails
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
@@ -153,14 +197,14 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
         && getObservedFavor().getValue().getId().equals(favorId)) {
       return getObservedFavor(); // if request hasn't changed then return original
     }
-    observedFavor.postValue(null);
+    observedFavor.setValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
-              observedFavor.postValue(documentSnapshot.toObject(Favor.class));
+              observedFavor.setValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();
   }

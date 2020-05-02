@@ -45,7 +45,7 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
-  public CompletableFuture updateFavor(
+  public CompletableFuture updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
     if (isThrowingError) return failedResult;
     observedFavorResult.setValue(favor);

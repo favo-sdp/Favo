@@ -144,6 +144,8 @@ public class FavorRequestView extends Fragment {
                 mImageView.setImageBitmap(picture);
                 v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
               });
+    } else {
+      mImageView.setImageBitmap(null);
     }
 
     updateViewFromStatus(v);
@@ -287,7 +289,8 @@ public class FavorRequestView extends Fragment {
     if (currentFavor.getIsArchived()) countUpdate = 1;
     getFavorFromView(FavorStatus.REQUESTED);
     // DB call to update Favor details
-    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor, true, countUpdate);
+    CompletableFuture updateFuture =
+        getViewModel().updateFavorForCurrentUser(currentFavor, true, countUpdate);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 
@@ -299,8 +302,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. */
   private void cancelFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor, true, -1);
+    CompletableFuture cancelFuture = getViewModel().cancelFavor((Favor) currentFavor.clone(), true);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }
