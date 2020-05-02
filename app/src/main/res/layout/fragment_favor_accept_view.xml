@@ -11,20 +11,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize"
         android:padding="20dp">
-
-        <TextView
-            android:id="@+id/status_text_accept_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_accept_view"
-            android:background="@color/material_gray_300"
-            android:gravity="center_horizontal"
-            android:text="Status"
-            app:layout_constraintBottom_toTopOf="@id/title_accept_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/title_accept_view"
@@ -47,7 +35,7 @@
             app:layout_constraintBottom_toTopOf="@id/imageView_accept_view"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/status_text_accept_view" />
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <ImageView
@@ -81,15 +69,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="0.4"
                 android:clickable="true"
                 android:focusable="true"
-                android:textStyle="bold"
                 android:text="05/29/2015 5:50 AM"
-                android:textIsSelectable="true"
-                android:textSize="15sp"
                 android:textColor="#FFFFFF"
-                android:layout_marginLeft="10dp" />
+                android:textIsSelectable="true"
+                android:textSize="15sp" />
             <!--
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/location_accept_view_btn"
@@ -110,6 +97,21 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/requester_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_accept_view"
+            android:background="@color/material_gray_300"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:drawableStart="@drawable/ic_info_outline_black_24dp"
+            app:layout_constraintBottom_toTopOf="@+id/details_accept_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/time_location_layout_accept_view" />
+
+        <TextView
             android:id="@+id/details_accept_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -119,9 +121,6 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:gravity="top|start"
-            android:lines="6"
-            android:maxLines="6"
-            android:minLines="3"
             android:padding="10dp"
             android:scrollbars="vertical"
             android:shadowRadius="0.01"
@@ -130,7 +129,7 @@
             app:layout_constraintBottom_toTopOf="@+id/accept_chat_btns"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/time_location_layout_accept_view" />
+            app:layout_constraintTop_toBottomOf="@id/requester_name" />
 
         <LinearLayout
             android:id="@+id/accept_chat_btns"

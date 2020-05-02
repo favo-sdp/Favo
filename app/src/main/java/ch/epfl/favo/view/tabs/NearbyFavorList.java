@@ -13,6 +13,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -76,11 +77,16 @@ public class NearbyFavorList extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
 
-    setupNearbyFavorsListener();
     return rootView;
   }
 
-  private void setupNearbyFavorsListener() {
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    setupNearbyFavorsListener();
+  }
+
+  private void setupNearbyFavorsListener() {// TODO: figure out a way to share view model without using main
     getViewModel()
         .getFavorsAroundMe()
         .observe(
@@ -90,7 +96,7 @@ public class NearbyFavorList extends Fragment {
                 nearbyFavors = stringFavorMap;
                 displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
               } catch (Exception e) {
-                CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
   }

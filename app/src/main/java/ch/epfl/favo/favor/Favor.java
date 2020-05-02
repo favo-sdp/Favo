@@ -24,14 +24,14 @@ import ch.epfl.favo.gps.FavoLocation;
 public class Favor implements Parcelable, Document {
 
   // String constants for Map conversion
-  public static final String ID = "id";
-  public static final String TITLE = "title";
-  public static final String DESCRIPTION = "description";
-  public static final String USER_IDS = "userIds";
-  public static final String LOCATION = "location";
-  public static final String POSTED_TIME = "postedTime";
-  public static final String STATUS_ID = "statusId";
-  public static final String PICTURE_URL = "pictureUrl";
+  private static final String ID = "id";
+  private static final String TITLE = "title";
+  private static final String DESCRIPTION = "description";
+  private static final String USER_IDS = "userIds";
+  private static final String LOCATION = "location";
+  private static final String POSTED_TIME = "postedTime";
+  private static final String STATUS_ID = "statusId";
+  static final String PICTURE_URL = "pictureUrl";
   private static final String IS_ARCHIVED = "isArchived";
 
   public static final Creator<Favor> CREATOR =
@@ -222,9 +222,13 @@ public class Favor implements Parcelable, Document {
     this.location = location;
   }
 
-  public String getPictureUrl() { return this.pictureUrl; }
+  public String getPictureUrl() {
+    return this.pictureUrl;
+  }
 
-  public void setPictureUrl(String pictureUrl){ this.pictureUrl = pictureUrl; }
+  public void setPictureUrl(String pictureUrl) {
+    this.pictureUrl = pictureUrl;
+  }
 
   @Override
   public int describeContents() {
@@ -251,6 +255,7 @@ public class Favor implements Parcelable, Document {
     this.statusId = other.getStatusId();
     this.pictureUrl = other.getPictureUrl();
   }
+
   public boolean contentEquals(Favor other) {
     return this.title.equals(other.title)
         && this.description.equals(other.description)

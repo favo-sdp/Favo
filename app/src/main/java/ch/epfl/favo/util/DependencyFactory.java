@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.net.IpSecManager;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -15,20 +16,25 @@ import androidx.annotation.VisibleForTesting;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.database.CollectionWrapper;
-import ch.epfl.favo.database.DatabaseUpdater;
+import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.GpsTracker;
-import ch.epfl.favo.gps.Locator;
+import ch.epfl.favo.gps.IGpsTracker;
+import ch.epfl.favo.user.IUserUtil;
+import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
-  private static Locator currentGpsTracker;
-  private static FirebaseUser currentUser;
-  private static DatabaseUpdater currentCollectionWrapper;
+  private static IGpsTracker currentGpsTracker;
+  private static FirebaseUser currentFirebaseUser;
+  private static User currentUser;
+  private static ICollectionWrapper currentCollectionWrapper;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
   private static FirebaseFirestore currentFirestore;
@@ -38,7 +44,10 @@ public class DependencyFactory {
   private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
-  private static FavorUtil currentRepository;
+  private static FavorUtil currentFavorRepository;
+  private static IUserUtil currentUserRepository;
+  private static FirebaseInstanceId currentFirebaseInstanceId;
+  private static PictureUtil currentPictureUtility;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -56,7 +65,7 @@ public class DependencyFactory {
 
   public static FirebaseUser getCurrentFirebaseUser() {
     if (testMode) {
-      return currentUser;
+      return currentFirebaseUser;
     }
     return FirebaseAuth.getInstance().getCurrentUser();
   }
@@ -64,10 +73,10 @@ public class DependencyFactory {
   @VisibleForTesting
   public static void setCurrentFirebaseUser(FirebaseUser dependency) {
     testMode = true;
-    currentUser = dependency;
+    currentFirebaseUser = dependency;
   }
 
-  public static Locator getCurrentGpsTracker(@Nullable Context context) {
+  public static IGpsTracker getCurrentGpsTracker(@Nullable Context context) {
     if (testMode && currentGpsTracker != null) {
       return currentGpsTracker;
     }
@@ -75,18 +84,19 @@ public class DependencyFactory {
   }
 
   @VisibleForTesting
-  public static void setCurrentGpsTracker(Locator gpsTrackerDependency) {
+  public static void setCurrentGpsTracker(IGpsTracker gpsTrackerDependency) {
     testMode = true;
     currentGpsTracker = gpsTrackerDependency;
   }
 
   @VisibleForTesting
-  public static void setCurrentCollectionWrapper(DatabaseUpdater dependency) {
+  public static void setCurrentCollectionWrapper(ICollectionWrapper dependency) {
     testMode = true;
     currentCollectionWrapper = dependency;
   }
 
-  public static DatabaseUpdater getCurrentCollectionWrapper(String collectionReference, Class cls) {
+  public static ICollectionWrapper getCurrentCollectionWrapper(
+      String collectionReference, Class cls) {
     if (testMode && currentCollectionWrapper != null) {
       return currentCollectionWrapper;
     }
@@ -156,22 +166,60 @@ public class DependencyFactory {
   public static void setCurrentFavorCollection(String collection) {
     currentFavorCollection = collection;
   }
+
   @VisibleForTesting
-  public static void setCurrentViewModelClass(Class dependency){
+  public static void setCurrentViewModelClass(Class dependency) {
     testMode = true;
     currentViewModelClass = dependency;
   }
-  public static Class getCurrentViewModelClass(){
-    if (testMode && currentViewModelClass!=null) {return currentViewModelClass;}
+
+  public static Class getCurrentViewModelClass() {
+    if (testMode && currentViewModelClass != null) {
+      return currentViewModelClass;
+    }
     return FavorViewModel.class;
   }
+
   @VisibleForTesting
-  public static void setCurrentRepository(FavorUtil dependency){
+  public static void setCurrentFavorRepository(FavorUtil dependency) {
     testMode = true;
-    currentRepository = dependency;
+    currentFavorRepository = dependency;
   }
-  public static FavorUtil getCurrentRepository(){
-    if (testMode && currentRepository!=null) return currentRepository;
+
+  public static FavorUtil getCurrentFavorRepository() {
+    if (testMode && currentFavorRepository != null) return currentFavorRepository;
     return FavorUtil.getSingleInstance();
+  }
+
+  @VisibleForTesting
+  public static void setCurrentUserRepository(IUserUtil dependency) {
+    testMode = true;
+    currentUserRepository = dependency;
+  }
+
+  public static IUserUtil getCurrentUserRepository() {
+    if (testMode && currentUserRepository != null) return currentUserRepository;
+    return UserUtil.getSingleInstance();
+  }
+
+  @VisibleForTesting
+  public static void setCurrentFirebaseNotificationInstanceId(FirebaseInstanceId dependency) {
+    testMode = true;
+    currentFirebaseInstanceId = dependency;
+  }
+
+  public static FirebaseInstanceId getCurrentFirebaseNotificationInstanceId() {
+    if (testMode && currentFirebaseInstanceId != null) return currentFirebaseInstanceId;
+    return FirebaseInstanceId.getInstance();
+  }
+
+  public static PictureUtil getCurrentPictureUtility() {
+    if (testMode && currentPictureUtility != null) return currentPictureUtility;
+    return PictureUtil.getInstance();
+  }
+
+  public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
+    testMode = true;
+    currentPictureUtility = pictureUtil;
   }
 }

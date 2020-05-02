@@ -16,7 +16,7 @@ public class TaskToFutureAdapter<T> extends CompletableFuture<T> {
 
   public CompletableFuture<T> getInstance() {
     CompletableFuture<T> res;
-    if (DependencyFactory.isTestMode()) {
+    if (DependencyFactory.isTestMode() && DependencyFactory.getCurrentCompletableFuture() != null) {
       res = DependencyFactory.getCurrentCompletableFuture();
     } else {
       res = this;

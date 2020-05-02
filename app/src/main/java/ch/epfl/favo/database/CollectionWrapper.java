@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T> {
+public class CollectionWrapper<T extends Document> implements ICollectionWrapper<T> {
 
   private String collection;
   private Class cls;
@@ -48,12 +48,9 @@ public class CollectionWrapper<T extends Document> implements DatabaseUpdater<T>
     return DatabaseWrapper.getAllDocuments(cls, collection);
   }
 
-
-
   public DocumentReference getDocumentQuery(String key) {
     return DatabaseWrapper.getDocumentQuery(key, collection);
   }
-
 
   public Query locationBoundQuery(Location loc, double radius) {
     return DatabaseWrapper.locationBoundQuery(loc, radius, collection);

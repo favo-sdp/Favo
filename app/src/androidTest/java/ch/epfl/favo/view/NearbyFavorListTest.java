@@ -46,8 +46,6 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
   private Favor favor = FakeItemFactory.getFavor();
-  private NearbyFavorList listView;
-  private FakeViewModel fakeViewModel;
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -73,9 +71,6 @@ public class NearbyFavorListTest {
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     runOnUiThread(() -> navController.navigate(R.id.nav_nearby_favor_list));
     getInstrumentation().waitForIdleSync();
-    Fragment navHostFragment =
-        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-    listView = (NearbyFavorList) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
 
   @After

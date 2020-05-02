@@ -1,5 +1,10 @@
 package ch.epfl.favo.favor;
 
+import android.location.Location;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +43,7 @@ public class FavorUtilTest {
   @Test
   public void testPostFavorFlow() {
     Favor favor = FakeItemFactory.getFavor();
-    FavorUtil.getSingleInstance().postFavor(favor);
+    FavorUtil.getSingleInstance().requestFavor(favor);
   }
 
   @Test
@@ -72,7 +77,7 @@ public class FavorUtilTest {
         .when(mockDatabaseWrapper)
         .addDocument(Mockito.any(Favor.class));
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-    assertThrows(Exception.class,()->FavorUtil.getSingleInstance().postFavor(fakeFavor));
+    assertThrows(Exception.class, () -> FavorUtil.getSingleInstance().requestFavor(fakeFavor));
   }
 
   @Test
@@ -115,6 +120,38 @@ public class FavorUtilTest {
     assertThrows(
         NotImplementedException.class,
         () -> FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser("id"));
+  }
+
+  @Test
+  public void testCanGetLocationBoundQuery() {
+    Query mockQuery = Mockito.mock(Query.class);
+    Mockito.doReturn(mockQuery)
+        .when(mockDatabaseWrapper)
+        .locationBoundQuery(Mockito.any(Location.class), Mockito.anyDouble());
+    assertEquals(
+        mockQuery,
+        FavorUtil.getSingleInstance().getNearbyFavors(Mockito.mock(Location.class), 3.0));
+  }
+
+  @Test
+  public void testCanGetDocumentReference() {
+    DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
+    Mockito.doReturn(mockDocumentReference)
+        .when(mockDatabaseWrapper)
+        .getDocumentQuery(Mockito.anyString());
+    assertEquals(mockDocumentReference, FavorUtil.getSingleInstance().getFavorReference("bla"));
+  }
+
+  @Test
+  public void testCanGetNearbyFavorFuture() {
+    CompletableFuture result = Mockito.mock(CompletableFuture.class);
+    Mockito.doReturn(result)
+        .when(mockDatabaseWrapper)
+        .getAllDocumentsLongitudeBounded(Mockito.any(Location.class), Mockito.anyDouble());
+    assertEquals(
+        result,
+        FavorUtil.getSingleInstance()
+            .retrieveAllFavorsInGivenLongitudeRange(Mockito.mock(Location.class), 0.3));
   }
 
   @Test

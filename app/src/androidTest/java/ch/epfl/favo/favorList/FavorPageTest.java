@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
@@ -71,6 +72,7 @@ public class FavorPageTest {
   @Before
   public void setUp() throws ExecutionException, InterruptedException {
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+    DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
   }
 
   @After
@@ -78,6 +80,7 @@ public class FavorPageTest {
     TestUtils.cleanupFavorsCollection();
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
+    DependencyFactory.setCurrentUserRepository(null);
     // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
@@ -137,6 +140,7 @@ public class FavorPageTest {
     // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
 
     // Click on new favor tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
@@ -257,14 +261,14 @@ public class FavorPageTest {
     Favor favor = FakeItemFactory.getFavor();
 
     onView(isAssignableFrom(EditText.class)).perform(typeText(favor.getTitle()));
+    Thread.sleep(3000);
 
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-
-    Thread.sleep(3000);
-
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     // check query is successful and click on found item
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();

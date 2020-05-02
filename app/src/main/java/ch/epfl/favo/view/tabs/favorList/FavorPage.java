@@ -177,6 +177,7 @@ public class FavorPage extends Fragment {
                 if (favor != null) {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putString("FAVOR_ARGS", favor.getId());
+
                   // if favor was requested, open request view
                   if (favor
                       .getRequesterId()

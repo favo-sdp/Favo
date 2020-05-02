@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,18 +115,25 @@ public class MapPage extends Fragment
     mMap.setOnInfoWindowClickListener(this);
     mMap.getUiSettings().setZoomControlsEnabled(true);
     mMap.setPadding(0, 0, 0, 140);
-    mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
-    try { // might want to move this to onCreateView (not sure if listeners are duplicated)
-      // we should not move, because only after the map is ready, can we draw markers then
+    String setting = UserSettings.getNotificationRadius(requireContext());
+    if (setting.equals("disabled")) setting = "10 Km";
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+    try {
+      mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
+    } catch (Exception e) {
+      CommonTools.showSnackbar(requireView(), e.getMessage());
+      return;
+    }
+    try {
       setupNearbyFavorsListener();
       setupFocusedFavorListen();
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
-    // only when the app is firstly opened, the map view is centered on my location,
-    // otherwise just return to where you left before
+    // only when the app is firstly opened, center on my location,
+    // otherwise just return where I left before
     if (focusedFavor == null && firstOpenApp) {
       centerViewOnMyLocation();
       firstOpenApp = false;
@@ -149,6 +158,7 @@ public class MapPage extends Fragment
   private class LongClick implements GoogleMap.OnMapLongClickListener {
     @Override
     public void onMapLongClick(LatLng latLng) {
+      //at most one new marker is allowed
       if (newMarkers.size() != 0) {
         for (Marker m : newMarkers) m.remove();
         newMarkers.clear();
@@ -169,7 +179,7 @@ public class MapPage extends Fragment
 
   private void setupFocusedFavorListen() {
 
-    favorViewModel
+    getViewModel()
         .getObservedFavor()
         .observe(
             getViewLifecycleOwner(),
@@ -184,6 +194,7 @@ public class MapPage extends Fragment
                           .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
                   boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
                   Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
+                  // count new added marker on map
                   if (isEdited) newMarkers.add(marker);
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation(), true);
@@ -192,6 +203,10 @@ public class MapPage extends Fragment
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
+  }
+
+  public FavorDataController getViewModel() {
+    return favorViewModel;
   }
 
   private Marker drawFavorMarker(Favor favor, boolean isRequested, boolean isEdited) {
@@ -251,9 +266,6 @@ public class MapPage extends Fragment
   }
 
   private void setupNearbyFavorsListener() {
-    String setting = UserSettings.getNotificationRadius(requireContext());
-    if (setting.equals("disabled")) setting = "10 Km";
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
     favorViewModel
         .getFavorsAroundMe(mLocation, radiusThreshold)
         .observe(
@@ -377,9 +389,9 @@ public class MapPage extends Fragment
         && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
       focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
+
       // transfer local favor to FavorRequestView via ViewModel
       favorViewModel.setObservedFavorLocally(focusedFavor);
-      favorViewModel.setShowObservedFavor(true);
     }
     Bundle favorBundle = new Bundle();
     favorBundle.putString("FAVOR_ARGS", favorId);

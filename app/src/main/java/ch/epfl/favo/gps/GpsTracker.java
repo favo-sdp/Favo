@@ -17,7 +17,7 @@ import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
-public class GpsTracker extends FragmentActivity implements LocationListener, Locator {
+public class GpsTracker extends FragmentActivity implements LocationListener, IGpsTracker {
 
   private final Context context;
   private static Location mLastKnownLocation = null;

@@ -13,14 +13,12 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;

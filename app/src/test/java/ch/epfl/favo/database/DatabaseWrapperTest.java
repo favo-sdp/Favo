@@ -166,6 +166,7 @@ public class DatabaseWrapperTest {
     List<Favor> obtainedFavors = obtainedFuture.get();
     assertEquals(expectedFavors, obtainedFavors);
   }
+
   @Test
   public void testGetDocumentQuery() {
     String key = "any";
@@ -174,7 +175,6 @@ public class DatabaseWrapperTest {
 
   @Test
   public void testLocationBoundQuery() {
-    collectionWrapper
-            .locationBoundQuery(new Location("null"), 1.0);
+    collectionWrapper.locationBoundQuery(new Location("null"), 1.0);
   }
 }

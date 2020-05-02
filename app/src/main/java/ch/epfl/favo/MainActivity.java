@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
     // prevent swipe to open the navigation menu
     drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-    setSupportActionBar(findViewById(R.id.toolbar));
+    setSupportActionBar(findViewById(R.id.toolbar_main_activity));
 
     // remove title
     Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> {
+          CommonTools.hideToolBar(findViewById(R.id.toolbar_main_activity));
           switch (destination.getId()) {
             case R.id.nav_account:
             case R.id.nav_about:
@@ -205,17 +206,10 @@ public class MainActivity extends AppCompatActivity {
     super.onNewIntent(intent);
     Bundle extras = intent.getExtras();
     if (extras != null) {
-      String favor_id = extras.getString("FavorId");
-      //CompletableFuture<Favor> favorFuture = FavorUtil.getSingleInstance().retrieveFavor(favor_id);
       Bundle favorBundle = new Bundle();
-      favorBundle.putString("FAVOR_ARGS", favor_id);
+      String favorId = extras.getString("FavorId");
+      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
       navController.navigate(R.id.action_global_favorDetailView, favorBundle);
-      //favorFuture.thenAccept(
-      //    favor -> {
-      //      Bundle favorBundle = new Bundle();
-      //      favorBundle.putString("FAVOR_ARGS", favor.getId());
-      //      navController.navigate(R.id.action_global_favorDetailView, favorBundle);
-      //    });
     }
   }
 

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,26 +31,29 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.FavorFragmentFactory;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 public class ChatPage extends Fragment {
 
   private View view;
+  private RecyclerView recyclerView;
   private Favor currentFavor;
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     view = inflater.inflate(R.layout.fragment_chat, container, false);
-
-    setupView();
+    requireActivity()
+        .getWindow()
+        .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
 
     if (getArguments() != null) {
-      currentFavor = getArguments().getParcelable(FavorFragmentFactory.FAVOR_ARGS);
+      currentFavor = getArguments().getParcelable(CommonTools.FAVOR_ARGS);
     }
+    setupView();
 
     return view;
   }
@@ -65,7 +70,7 @@ public class ChatPage extends Fragment {
     manager.setReverseLayout(true);
     manager.setStackFromEnd(true);
 
-    RecyclerView recyclerView = view.findViewById(R.id.messagesList);
+    recyclerView = view.findViewById(R.id.messagesList);
     recyclerView.setHasFixedSize(true);
     recyclerView.setLayoutManager(manager);
 
@@ -83,13 +88,11 @@ public class ChatPage extends Fragment {
         });
 
     ImeHelper.setImeOnDoneListener(view.findViewById(R.id.messageEdit), this::onSendClick);
+    setupToolBar();
   }
 
-  @Override
-  public void onStart() {
-    super.onStart();
-    attachRecyclerViewAdapter();
-    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
+  public void setupToolBar() {
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
     toolbar.setTitleTextColor(Color.WHITE);
     Objects.requireNonNull(toolbar.getNavigationIcon())
@@ -98,14 +101,9 @@ public class ChatPage extends Fragment {
   }
 
   @Override
-  public void onStop() {
-    super.onStop();
-    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar);
-    toolbar.setBackgroundColor(Color.TRANSPARENT);
-    toolbar.setTitleTextColor(Color.BLACK);
-    Objects.requireNonNull(toolbar.getNavigationIcon())
-        .setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP));
-    toolbar.setTitle("");
+  public void onStart() {
+    super.onStart();
+    attachRecyclerViewAdapter();
   }
 
   private void attachRecyclerViewAdapter() {
@@ -156,8 +154,22 @@ public class ChatPage extends Fragment {
       @NonNull
       @Override
       public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChatViewHolder(
-            LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false));
+
+        View messageView =
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false);
+
+        messageView.setOnClickListener(
+            v -> {
+              int itemPosition = recyclerView.getChildLayoutPosition(v);
+              ChatModel model = getItem(itemPosition);
+
+              Bundle userBundle = new Bundle();
+              userBundle.putString("USER_ARGS", model.getUid());
+              Navigation.findNavController(requireView())
+                  .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
+            });
+
+        return new ChatViewHolder(messageView);
       }
 
       @Override

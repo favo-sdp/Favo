@@ -127,7 +127,7 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
-    onView(allOf(withId(R.id.user_info_fragment), withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.user_account_fragment), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
 

@@ -19,5 +19,4 @@ public class BitmapConversionUtil {
     ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
     return bais;
   }
-
 }

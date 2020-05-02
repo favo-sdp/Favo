@@ -35,6 +35,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
@@ -46,6 +47,7 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -57,7 +59,6 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static ch.epfl.favo.util.FavorFragmentFactory.FAVOR_ARGS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 
@@ -95,7 +96,7 @@ public class AddFavorTest {
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     if (favor != null) {
       Bundle bundle = new Bundle();
-      bundle.putString(FAVOR_ARGS, favor.getId());
+      bundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorRequestView, bundle));
     } else {
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorRequestView));
@@ -220,9 +221,10 @@ public class AddFavorTest {
     // Check status display is correct
     // Check cancel button is there
     onView(withId(R.id.cancel_favor_button)).check(matches(allOf(isDisplayed(), isEnabled())));
-    onView(withId(R.id.favor_status_text))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(FavorStatus.EDIT.toString())));
+    onView(withId(R.id.toolbar_main_activity))
+            .check(matches(isDisplayed()))
+            .check(matches(hasDescendant(withText(FavorStatus.EDIT.toString()))));
+
   }
 
   public void checkRequestedView() {
@@ -238,9 +240,9 @@ public class AddFavorTest {
     // Check cancel button is there
     onView(withId(R.id.cancel_favor_button)).check(matches(allOf(isDisplayed(), isEnabled())));
     // Check status display is correct
-    onView(withId(R.id.favor_status_text))
+    onView(withId(R.id.toolbar_main_activity))
         .check(matches(isDisplayed()))
-        .check(matches(withText(FavorStatus.REQUESTED.toString())));
+        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 
   public void checkCompletedSuccessfullyView() {
@@ -248,10 +250,9 @@ public class AddFavorTest {
     onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
     onView(withId(R.id.edit_favor_button))
         .check(matches(allOf(isEnabled(), withText(R.string.restart_request))));
-    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.favor_status_text))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString())));
+    onView(withId(R.id.toolbar_main_activity))
+            .check(matches(isDisplayed()))
+            .check(matches(hasDescendant(withText(FavorStatus.SUCCESSFULLY_COMPLETED.toString()))));
   }
 
   public void checkCompletedOrAcceptedView(FavorStatus status) {
@@ -265,9 +266,9 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button))
           .check(matches(allOf(not(isEnabled()), withText(R.string.wait_complete))));
     onView(withId(R.id.cancel_favor_button)).check(matches((isEnabled())));
-    onView(withId(R.id.favor_status_text))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(status.toString())));
+    onView(withId(R.id.toolbar_main_activity))
+            .check(matches(isDisplayed()))
+            .check(matches(hasDescendant(withText(status.toString()))));
   }
 
   public void checkCancelledView(FavorStatus status) {
@@ -281,9 +282,10 @@ public class AddFavorTest {
     // Check cancel button is not clickable
     onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     // Check updated status string
-    onView(withId(R.id.favor_status_text))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(status.toString())));
+    onView(withId(R.id.toolbar_main_activity))
+            .check(matches(isDisplayed()))
+            .check(matches(hasDescendant(withText(status.toString()))));
+
   }
 
   @Test
@@ -385,7 +387,7 @@ public class AddFavorTest {
   public void testSnackBarShowsWhenFailPostOrUpdateOrCancelToDb() throws Throwable {
     FavorRequestView favorRequestView = launchFragment(null);
     FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
-    runOnUiThread(() -> fakeViewModel.setThrowError(true));
+    runOnUiThread(() -> fakeViewModel.setThrowError(new RuntimeException()));
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
@@ -414,7 +416,7 @@ public class AddFavorTest {
     // when favor is firstly completed by requester
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
-    runOnUiThread(() -> fakeViewModel.setThrowError(true));
+    runOnUiThread(() -> fakeViewModel.setThrowError(new RuntimeException()));
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.edit_favor_button))
         .check(matches(allOf(isDisplayed(), withText(R.string.complete_favor))))

@@ -1,5 +1,7 @@
 package ch.epfl.favo.favor;
 
+import androidx.annotation.NonNull;
+
 public enum FavorStatus {
   REQUESTED("Requested", 0),
   ACCEPTED("Accepted", 1),
@@ -27,6 +29,7 @@ public enum FavorStatus {
     this.code = code;
   }
 
+  @NonNull
   public String toString() {
     return this.status;
   }

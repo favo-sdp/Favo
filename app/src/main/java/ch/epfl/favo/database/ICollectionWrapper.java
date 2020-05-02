@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public interface DatabaseUpdater<T> {
+public interface ICollectionWrapper<T> {
 
   CompletableFuture addDocument(T document) throws RuntimeException;
 
@@ -25,3 +25,4 @@ public interface DatabaseUpdater<T> {
 
   CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
 }
+
