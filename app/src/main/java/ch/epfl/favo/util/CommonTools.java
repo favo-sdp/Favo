@@ -8,10 +8,12 @@ import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.RequiresApi;
+import androidx.navigation.NavController;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.view.NonClickableToolbar;
 
@@ -31,6 +34,17 @@ public class CommonTools {
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
+
+  public static void navigateToFavorView(NavController controller, Favor favor) {
+    Bundle favorBundle = new Bundle();
+    favorBundle.putString(FAVOR_ARGS, favor.getId());
+    int destinationAction = R.id.action_global_favorDetailView;
+    if (favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+      destinationAction = R.id.action_global_favorRequestView;
+    }
+    controller.navigate(destinationAction, favorBundle);
+  }
+
 
   public static void hideToolBar(NonClickableToolbar toolbar) {
     toolbar.setBackgroundColor(Color.TRANSPARENT);

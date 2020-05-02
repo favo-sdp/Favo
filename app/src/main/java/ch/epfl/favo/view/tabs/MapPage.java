@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -158,7 +156,7 @@ public class MapPage extends Fragment
   private class LongClick implements GoogleMap.OnMapLongClickListener {
     @Override
     public void onMapLongClick(LatLng latLng) {
-      //at most one new marker is allowed
+      // at most one new marker is allowed
       if (newMarkers.size() != 0) {
         for (Marker m : newMarkers) m.remove();
         newMarkers.clear();
@@ -215,8 +213,8 @@ public class MapPage extends Fragment
     float markerColor =
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
     String markerTitle =
-            (isEdited) //&& favor.getTitle().equals("")
-                    ? "Drag marker to desired location"
+        (isEdited) // && favor.getTitle().equals("")
+            ? "Drag marker to desired location"
             : favor.getTitle();
     String markerDescription = isEdited ? "Click window to request favor" : favor.getDescription();
     Marker marker =
@@ -391,14 +389,8 @@ public class MapPage extends Fragment
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
 
       // transfer local favor to FavorRequestView via ViewModel
-      favorViewModel.setObservedFavorLocally(focusedFavor);
+      favorViewModel.setFavorValue(focusedFavor);
     }
-    Bundle favorBundle = new Bundle();
-    favorBundle.putString("FAVOR_ARGS", favorId);
-    if (isRequested)
-      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
-    else
-      Navigation.findNavController(view)
-          .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
+    CommonTools.navigateToFavorView(Navigation.findNavController(view), focusedFavor);
   }
 }
