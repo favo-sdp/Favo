@@ -41,7 +41,7 @@ import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static android.app.Activity.RESULT_OK;
 import static androidx.navigation.Navigation.findNavController;
@@ -54,7 +54,7 @@ public class FavorRequestView extends Fragment {
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
 
-  private FavorDataController favorViewModel;
+  private IFavorViewModel favorViewModel;
 
   private FavorStatus favorStatus;
   private ImageView mImageView;
@@ -94,7 +94,7 @@ public class FavorRequestView extends Fragment {
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
     favorViewModel =
-        (FavorDataController)
+        (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
@@ -110,7 +110,7 @@ public class FavorRequestView extends Fragment {
     super.onResume();
   }
 
-  public FavorDataController getViewModel() {
+  public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
 
@@ -197,7 +197,13 @@ public class FavorRequestView extends Fragment {
 
     // Button: Cancel Favor
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
-    cancelFavorBtn.setOnClickListener(v -> cancelFavor());
+    cancelFavorBtn.setOnClickListener(v -> {
+            if (currentFavor.getIsArchived()){
+
+    }
+            else{
+            cancelFavor();
+    }});
 
     // Button: Edit favor
     editFavorBtn = rootView.findViewById(R.id.edit_favor_button);
@@ -315,7 +321,7 @@ public class FavorRequestView extends Fragment {
 
     // DB call to update Favor details
     CompletableFuture updateFuture =
-        getViewModel().reEnableFavor((Favor)currentFavor.clone(), true);
+        getViewModel().reEnableFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 

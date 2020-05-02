@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.User;
@@ -214,5 +215,41 @@ public class FavorViewModelTest {
   @Test
   public void testAcceptFavorIsSuccessful() {
     Assert.assertTrue(viewModel.acceptFavor(FakeItemFactory.getFavor()).isDone());
+  }
+
+  @Test
+  public void testReEneableFavorIsSuccessful() {
+    Assert.assertTrue(viewModel.reEnableFavor(FakeItemFactory.getFavor()).isDone());
+  }
+
+  @Test
+  public void testCompleteFavorIsSuccessful() {
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    Assert.assertTrue(viewModel.completeFavor(fakeFavor, false).isDone());
+    Assert.assertTrue(viewModel.completeFavor(fakeFavor, true).isDone());
+    fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_ACCEPTER);
+    Assert.assertTrue(viewModel.completeFavor(fakeFavor, true).isDone());
+    fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
+    Assert.assertTrue(viewModel.completeFavor(fakeFavor, false).isDone());
+    // Should fail if favor is not currently
+    Assert.assertThrows(
+        IllegalStateException.class,
+        () -> viewModel.completeFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());
+  }
+
+  @Test
+  public void getObservedFavor() {
+    viewModel.getObservedFavor();
+  }
+
+  @Test
+  public void testSetShowObservedFavor() {
+    viewModel.setShowObservedFavor(true);
+  }
+
+  @Test
+  public void testIsShowObservedFavor() {
+    viewModel.isShowObservedFavor();
   }
 }

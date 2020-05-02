@@ -27,7 +27,7 @@ import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
 
@@ -40,7 +40,7 @@ public class FavorDetailView extends Fragment {
   private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
   private Button completeBtn;
-  private FavorDataController favorViewModel;
+  private IFavorViewModel favorViewModel;
   private NonClickableToolbar toolbar;
 
   public FavorDetailView() {
@@ -56,7 +56,7 @@ public class FavorDetailView extends Fragment {
 
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     favorViewModel =
-        (FavorDataController)
+        (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     String favorId = "";
@@ -66,7 +66,7 @@ public class FavorDetailView extends Fragment {
     return rootView;
   }
 
-  public FavorDataController getViewModel() {
+  public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
 
@@ -129,8 +129,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void completeFavor() {
-    CompletableFuture updateFuture =
-        getViewModel().completeFavor((Favor) currentFavor.clone(), false);
+    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, false);
     updateFuture.thenAccept(
         o ->
             CommonTools.showSnackbar(
@@ -139,8 +138,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void cancelFavor() {
-    CompletableFuture completableFuture =
-        getViewModel().cancelFavor((Favor) currentFavor.clone(), false);
+    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, false);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(handleException());
   }
@@ -173,7 +171,7 @@ public class FavorDetailView extends Fragment {
       return;
     }*/
     // update DB with accepted status
-    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor((Favor) currentFavor.clone());
+    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
     acceptFavorFuture.thenAccept(
         o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
     acceptFavorFuture.exceptionally(handleException());

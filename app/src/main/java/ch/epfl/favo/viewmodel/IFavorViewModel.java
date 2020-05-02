@@ -14,7 +14,7 @@ import ch.epfl.favo.favor.Favor;
  * This class is the sole dependency of all the fragments and activities. It contains Util classes
  * as members.
  */
-public interface FavorDataController {
+public interface IFavorViewModel {
   CompletableFuture requestFavor(Favor favor);
 
   // Upload/download pictures
@@ -26,7 +26,7 @@ public interface FavorDataController {
 
   CompletableFuture cancelFavor(Favor favor, boolean isRequested);
 
-  CompletableFuture reEnableFavor(Favor favor, boolean isRequested);
+  CompletableFuture reEnableFavor(Favor favor);
 
   CompletableFuture<Bitmap> downloadPicture(Favor favor);
 

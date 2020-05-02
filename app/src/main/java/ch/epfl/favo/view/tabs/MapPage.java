@@ -43,7 +43,7 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.UserSettings;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
@@ -54,7 +54,7 @@ public class MapPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
-  private FavorDataController favorViewModel;
+  private IFavorViewModel favorViewModel;
   private View view;
   private GoogleMap mMap;
   private Location mLocation;
@@ -91,7 +91,7 @@ public class MapPage extends Fragment
     if (DependencyFactory.isOfflineMode(requireContext())) button.setVisibility(View.VISIBLE);
     else button.setVisibility(View.INVISIBLE);
     favorViewModel =
-        (FavorDataController)
+        (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
@@ -203,7 +203,7 @@ public class MapPage extends Fragment
             });
   }
 
-  public FavorDataController getViewModel() {
+  public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
 
@@ -391,6 +391,12 @@ public class MapPage extends Fragment
       // transfer local favor to FavorRequestView via ViewModel
       favorViewModel.setFavorValue(focusedFavor);
     }
-    CommonTools.navigateToFavorView(Navigation.findNavController(view), focusedFavor);
+    Bundle favorBundle = new Bundle();
+    favorBundle.putString("FAVOR_ARGS", favorId);
+    if (isRequested)
+      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
+    else
+      Navigation.findNavController(view)
+          .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
   }
 }
