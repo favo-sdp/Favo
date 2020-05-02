@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.auth.SignInActivity;
@@ -67,6 +68,7 @@ public class UserAccountPageTest {
             null);
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
+    DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
   }
 
   @After
@@ -74,6 +76,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentViewModelClass(null);
   }
 
   @Test

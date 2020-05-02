@@ -14,9 +14,9 @@ import org.mockito.Mockito;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
-import ch.epfl.favo.common.CollectionWrapper;
-import ch.epfl.favo.common.Document;
-import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.database.CollectionWrapper;
+import ch.epfl.favo.database.Document;
+import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.FakeItemFactory.getUser;

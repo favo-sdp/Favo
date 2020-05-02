@@ -86,12 +86,7 @@ public class NearbyFavorList extends Fragment {
     setupNearbyFavorsListener();
   }
 
-  public void
-      setupNearbyFavorsListener() { // TODO: figure out a way to share view model without using main
-    // activity life cycle
-    //    String setting =
-    //        requireActivity().getPreferences(Context.MODE_PRIVATE).getString("radius", "10 Km");
-    //    double radius = Double.parseDouble(setting.split(" ")[0]);
+  private void setupNearbyFavorsListener() {// TODO: figure out a way to share view model without using main
     getViewModel()
         .getFavorsAroundMe()
         .observe(
@@ -99,7 +94,7 @@ public class NearbyFavorList extends Fragment {
             stringFavorMap -> {
               try {
                 nearbyFavors = stringFavorMap;
-                displayFavorList(nearbyFavors, R.string.empty);
+                displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
               } catch (Exception e) {
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }

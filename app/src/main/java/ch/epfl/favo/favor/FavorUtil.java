@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.ICollectionWrapper;
-import ch.epfl.favo.common.NotImplementedException;
+import ch.epfl.favo.database.ICollectionWrapper;
+import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*

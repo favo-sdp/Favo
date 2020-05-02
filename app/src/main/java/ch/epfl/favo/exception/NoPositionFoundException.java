@@ -1,4 +1,4 @@
-package ch.epfl.favo.common;
+package ch.epfl.favo.exception;
 
 public class NoPositionFoundException extends RuntimeException {
   public NoPositionFoundException(String s) {

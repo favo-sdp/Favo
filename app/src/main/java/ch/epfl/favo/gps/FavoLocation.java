@@ -1,4 +1,4 @@
-package ch.epfl.favo.common;
+package ch.epfl.favo.gps;
 
 import android.location.Location;
 

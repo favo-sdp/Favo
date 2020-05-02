@@ -18,17 +18,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
+import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
+import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
+import static ch.epfl.favo.favor.FavorStatus.CANCELLED_REQUESTER;
+import static ch.epfl.favo.favor.FavorStatus.COMPLETED_ACCEPTER;
+import static ch.epfl.favo.favor.FavorStatus.COMPLETED_REQUESTER;
+import static ch.epfl.favo.favor.FavorStatus.REQUESTED;
+import static ch.epfl.favo.favor.FavorStatus.SUCCESSFULLY_COMPLETED;
+
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements FavorDataController {
-  String TAG = "FIRESTORE_VIEW_MODEL";
+  private String TAG = "FIRESTORE_VIEW_MODEL";
+
+  private boolean showFavor = false;
   private Location mCurrentLocation;
   private double mRadius = -1.0;
 
@@ -70,7 +80,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
    * @param activeFavorsCountChange Relative to actual amount
    * @return
    */
-  public CompletableFuture updateFavorForCurrentUser(
+  private CompletableFuture updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
@@ -91,15 +101,8 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
 
   public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
 
-    FavorStatus cancelledStatus;
-    String otherUserId;
-    if (isRequested) {
-      cancelledStatus = FavorStatus.CANCELLED_REQUESTER;
-      otherUserId = favor.getAccepterId();
-    } else {
-      cancelledStatus = FavorStatus.CANCELLED_ACCEPTER;
-      otherUserId = favor.getRequesterId();
-    }
+    FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
+    String otherUserId = isRequested ? favor.getRequesterId() : favor.getAccepterId();
     favor.setStatusIdToInt(cancelledStatus);
     CompletableFuture resultFuture = updateFavorForCurrentUser(favor, isRequested, -1);
     if (otherUserId != null) // update other user
@@ -108,13 +111,30 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return resultFuture;
   }
 
+  public CompletableFuture reEnableFavor(Favor favor, boolean isRequested) {
+
+    int countUpdate = (favor.getIsArchived()) ? 1 : 0;
+    // DB call to update Favor details
+    return updateFavorForCurrentUser(favor, isRequested, countUpdate);
+  }
+
+  public CompletableFuture completeFavor(Favor favor, boolean isRequested) {
+    if (favor.getStatusId() == COMPLETED_ACCEPTER.toInt()
+        || favor.getStatusId() == COMPLETED_REQUESTER.toInt())
+      favor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
+    else {
+      favor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
+    }
+    return updateFavorForCurrentUser(favor, isRequested, -1);
+  }
+
   /**
    * @param favor should be a clone of the original object in the UI!
    * @return
    */
   public CompletableFuture acceptFavor(Favor favor) {
     favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
-    favor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    favor.setStatusIdToInt(ACCEPTED);
     return updateFavorForCurrentUser(favor, false, 1);
   }
 
@@ -156,6 +176,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     return getFavorsAroundMe();
   }
 
+  @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe() {
     return activeFavorsAroundMe;
   }
@@ -173,7 +194,7 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
       if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
-          && favor.getStatusId() == FavorStatus.REQUESTED.toInt()
+          && favor.getStatusId() == REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
         favorsMap.put(favor.getId(), favor);
@@ -187,10 +208,6 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
       Log.w(TAG, "Listen Failed", e);
       throw new RuntimeException(e.getMessage());
     }
-  }
-
-  public void setFavorValue(Favor favor) {
-    observedFavor.setValue(favor);
   }
 
   @Override
@@ -207,7 +224,22 @@ public class FavorViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
+  public void setFavorValue(Favor favor) {
+    observedFavor.setValue(favor);
+  }
+
+  @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
+  }
+
+  @Override
+  public void setShowObservedFavor(Boolean show) {
+    showFavor = show;
+  }
+
+  @Override
+  public boolean isShowObservedFavor() {
+    return showFavor;
   }
 }

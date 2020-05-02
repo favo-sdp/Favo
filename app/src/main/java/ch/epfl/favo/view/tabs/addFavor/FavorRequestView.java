@@ -32,11 +32,11 @@ import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.common.FavoLocation;
-import ch.epfl.favo.common.IllegalRequestException;
+import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.map.IGpsTracker;
+import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -44,14 +44,18 @@ import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.FavorDataController;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
   private String TAG = "FavorRequestView";
-  public static final int PICK_IMAGE_REQUEST = 1;
-  public static final int USE_CAMERA_REQUEST = 2;
+
+  private static final int PICK_IMAGE_REQUEST = 1;
+  private static final int USE_CAMERA_REQUEST = 2;
+
   private FavorDataController favorViewModel;
+
   private FavorStatus favorStatus;
   private ImageView mImageView;
   private EditText mTitleView;
@@ -63,8 +67,8 @@ public class FavorRequestView extends Fragment {
   private Button cancelFavorBtn;
   private Button editFavorBtn;
   private Button chatBtn;
+  private Button locationAccessBtn;
   private NonClickableToolbar toolbar;
-
   private Favor currentFavor;
 
   public FavorRequestView() {
@@ -76,6 +80,7 @@ public class FavorRequestView extends Fragment {
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
     setupButtons(rootView);
+    favorStatus = FavorStatus.EDIT;
 
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
@@ -95,10 +100,8 @@ public class FavorRequestView extends Fragment {
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     if (getArguments() != null) {
       String favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
-      setFavorActivatedView(rootView);
       setupFavorListener(rootView, favorId);
     }
-
     return rootView;
   }
 
@@ -111,26 +114,32 @@ public class FavorRequestView extends Fragment {
     return favorViewModel;
   }
 
-  public void setupFavorListener(View rootView, String favorId) {
+  private void setupFavorListener(View rootView, String favorId) {
 
     getViewModel()
         .setObservedFavor(favorId)
         .observe(
             getViewLifecycleOwner(),
             favor -> {
-              try {//only update view if favor matches the requested one
+              try { // only update view if favor matches the requested one
                 if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
                   displayFavorInfo(rootView);
+                  // if a favor is in Edit status, then it must be a favor started/modified from map
+                  if (favor.getStatusId() != FavorStatus.EDIT.toInt()) {
+                    updateViewFromStatus();
+                    setFavorActivatedView(rootView);
+                  }
                 }
               } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
   }
 
   /** When fragment is launched with favor. */
-  public void displayFavorInfo(View v) {
+  private void displayFavorInfo(View v) {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
@@ -145,8 +154,6 @@ public class FavorRequestView extends Fragment {
                 v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
               });
     }
-
-    updateViewFromStatus(v);
   }
 
   /**
@@ -175,6 +182,19 @@ public class FavorRequestView extends Fragment {
       addPictureFromCameraBtn.setEnabled(false);
     }
 
+    // Button: Access location
+    locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    locationAccessBtn.setOnClickListener(
+        v -> {
+          getFavorFromView();
+          CommonTools.hideSoftKeyboard(requireActivity());
+          favorViewModel.setShowObservedFavor(true);
+          favorViewModel.setFavorValue(currentFavor);
+          // signal the destination is map view
+          findNavController(requireActivity(), R.id.nav_host_fragment)
+              .popBackStack(R.id.nav_map, false);
+        });
+
     // Button: Cancel Favor
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
     cancelFavorBtn.setOnClickListener(v -> cancelFavor());
@@ -186,7 +206,10 @@ public class FavorRequestView extends Fragment {
           // if text is currently "Update Request"
           if (favorStatus.equals(FavorStatus.EDIT)) {
             confirmUpdatedFavor();
-          } else { // text is currently "Edit Request"
+          } else if (favorStatus.equals(FavorStatus.ACCEPTED)
+              || favorStatus.equals(FavorStatus.COMPLETED_ACCEPTER)) {
+            completeFavor();
+          } else { // text is currently "Edit Request")
             startUpdatingFavor();
           }
         });
@@ -224,8 +247,8 @@ public class FavorRequestView extends Fragment {
   private void requestFavor() {
     // update currentFavor
     View currentView = getView();
-
-    getFavorFromView(FavorStatus.REQUESTED);
+    favorStatus = FavorStatus.REQUESTED;
+    getFavorFromView();
     // post to DB
     CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
     postFavorFuture.thenAccept(
@@ -272,23 +295,27 @@ public class FavorRequestView extends Fragment {
     cancelFavorBtn.setVisibility(View.VISIBLE);
     chatBtn.setVisibility(View.VISIBLE);
     toggleTextViewsEditable(false);
+    updateViewFromStatus();
   }
 
   /** When edit button is clicked */
   private void startUpdatingFavor() {
-    View rootView = getView();
     favorStatus = FavorStatus.EDIT;
-    updateViewFromStatus(rootView);
+    updateViewFromStatus();
+  }
+
+  private void completeFavor() {
+    CompletableFuture completeFuture = getViewModel().completeFavor(currentFavor, true);
+    completeFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_complete_success_msg)));
+    completeFuture.exceptionally(onFailedResult(getView()));
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
-    int countUpdate = 0;
-    if (currentFavor.getIsArchived()) countUpdate = 1;
-    getFavorFromView(FavorStatus.REQUESTED);
+
     // DB call to update Favor details
     CompletableFuture updateFuture =
-        getViewModel().updateFavorForCurrentUser(currentFavor, true, countUpdate);
+        getViewModel().reEnableFavor((Favor)currentFavor.clone(), true);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 
@@ -306,47 +333,66 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Updates status text and button visibility on favor status changes. */
-  private void updateViewFromStatus(View view) {
+  private void updateViewFromStatus() {
     toolbar.setTitle(favorStatus.toString());
     switch (favorStatus) {
       case REQUESTED:
         {
-          editFavorBtn.setText(R.string.edit_favor);
           toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          // mStatusView.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          updateViewFromParameters(view, false, true, false, true, true);
+          updateEditBtnDisplay(R.string.edit_favor, R.drawable.ic_edit_24dp);
+          updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case EDIT:
         {
           toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          editFavorBtn.setText(R.string.confirm_favor_edit);
-          updateViewFromParameters(view, true, false, true, true, true);
+          updateEditBtnDisplay(R.string.confirm_favor_edit, R.drawable.ic_edit_24dp);
+          updateViewFromParameters(true, false, true, true, true);
           break;
         }
       case ACCEPTED:
         {
           toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
-          updateViewFromParameters(view, false, true, false, false, true);
+          updateEditBtnDisplay(R.string.complete_favor, R.drawable.ic_check_box_black_24dp);
+          updateViewFromParameters(false, true, false, true, true);
           break;
         }
       case SUCCESSFULLY_COMPLETED:
         {
-          updateViewFromParameters(view, false, true, false, false, false);
-          toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+          toolbar.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateEditBtnDisplay(R.string.restart_request, R.drawable.ic_edit_24dp);
+          updateViewFromParameters(false, true, false, true, false);
+          break;
+        }
+      case COMPLETED_REQUESTER:
+        {
+          toolbar.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateEditBtnDisplay(R.string.wait_complete, R.drawable.ic_watch_later_black_24dp);
+          updateViewFromParameters(false, true, false, false, true);
+          break;
+        }
+      case COMPLETED_ACCEPTER:
+        {
+          toolbar.setBackgroundColor(getResources().getColor(R.color.completed_status_bg));
+          updateEditBtnDisplay(R.string.complete_favor, R.drawable.ic_check_box_black_24dp);
+          updateViewFromParameters(false, true, false, true, true);
           break;
         }
       default: // cancelled
         {
           toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
-          editFavorBtn.setText(R.string.restart_request);
-          updateViewFromParameters(view, false, true, false, true, false);
+          updateEditBtnDisplay(R.string.restart_request, R.drawable.ic_edit_24dp);
+          updateViewFromParameters(false, true, false, true, false);
         }
     }
   }
 
+  private void updateEditBtnDisplay(int txt, int icon) {
+    editFavorBtn.setText(txt);
+    editFavorBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
+  }
+
   private void updateViewFromParameters(
-      View view,
       boolean enableImageButtons,
       boolean hideKeyboard,
       boolean textEditable,
@@ -369,7 +415,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
-  private void getFavorFromView(FavorStatus status) {
+  private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
     EditText titleElem = requireView().findViewById(R.id.title_request_view);
@@ -379,9 +425,14 @@ public class FavorRequestView extends Fragment {
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-    status = FavorStatus.convertTemporaryStatus(status);
 
-    Favor favor = new Favor(title, desc, userId, loc, status);
+    // if this is not a new favor draft, then do not override the favor position with current user
+    // location.
+    if (currentFavor != null) {
+      loc.setLongitude(currentFavor.getLocation().getLongitude());
+      loc.setLatitude(currentFavor.getLocation().getLatitude());
+    }
+    Favor favor = new Favor(title, desc, userId, loc, favorStatus);
 
     // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
     // callbacks in requestFavor and confirm
@@ -412,7 +463,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** Called when camera button is clicked Method calls camera intent. */
-  public void takePicture() {
+  private void takePicture() {
     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         != PackageManager.PERMISSION_GRANTED) {
       requireActivity()
@@ -471,7 +522,7 @@ public class FavorRequestView extends Fragment {
    *
    * @param errorMessageRes error message.
    */
-  public void showSnackbar(String errorMessageRes) {
+  private void showSnackbar(String errorMessageRes) {
     Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
   /**

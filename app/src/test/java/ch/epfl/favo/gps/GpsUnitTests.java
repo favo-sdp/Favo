@@ -1,4 +1,4 @@
-package ch.epfl.favo.map;
+package ch.epfl.favo.gps;
 
 import android.Manifest;
 import android.content.Context;
@@ -13,20 +13,18 @@ import androidx.fragment.app.FragmentActivity;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 
-import ch.epfl.favo.common.NoPermissionGrantedException;
-import ch.epfl.favo.common.NoPositionFoundException;
+import ch.epfl.favo.exception.NoPermissionGrantedException;
+import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MapUnitTests extends FragmentActivity {
+public class GpsUnitTests extends FragmentActivity {
 
   private Context contextMock = mock(Context.class);
   private LocationManager locationManagerMock = mock(LocationManager.class);
@@ -99,39 +97,5 @@ public class MapUnitTests extends FragmentActivity {
     gpsTracker.onProviderEnabled(LocationManager.GPS_PROVIDER);
     Intent intent = mock(Intent.class);
     assertNull(gpsTracker.onBind(intent));
-  }
-
-  @Test
-  public void StatusIsChanged() {
-    final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-    assertNotEquals(
-        (ThrowingRunnable)
-            () ->
-                new GpsTracker(contextMock)
-                    .onStatusChanged(
-                        LocationManager.GPS_PROVIDER, LocationProvider.AVAILABLE, null),
-        null);
-  }
-
-  @Test
-  public void ProviderIsDisabled() {
-    final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-    assertNotEquals(
-        new ThrowingRunnable() {
-          @Override
-          public void run() throws Throwable {
-            new GpsTracker(contextMock).onProviderDisabled(LocationManager.GPS_PROVIDER);
-          }
-        },
-        null);
-  }
-
-  @Test
-  public void ProviderIsEnabled() {
-    final Location newLocation = new Location(LocationManager.GPS_PROVIDER);
-    assertNotEquals(
-        (ThrowingRunnable)
-            () -> new GpsTracker(contextMock).onProviderEnabled(LocationManager.GPS_PROVIDER),
-        null);
   }
 }

@@ -1,4 +1,4 @@
-package ch.epfl.favo.common;
+package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -97,7 +98,7 @@ public class DatabaseWrapper {
   }
 
   static Query locationBoundQuery(Location loc, double radius, String collection) {
-    double longDif = Math.toDegrees(radius / (6371 * Math.cos(Math.toRadians(loc.getLatitude()))));
+    double longDif = Math.toDegrees(radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)

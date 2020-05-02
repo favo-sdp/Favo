@@ -19,6 +19,7 @@ import ch.epfl.favo.viewmodel.FavorDataController;
 public class FakeViewModel extends ViewModel implements FavorDataController {
   private CompletableFuture failedResult;
   private boolean isThrowingError = false;
+  private boolean showFavor = false;
 
   public void setThrowError(Exception throwableObject) {
     isThrowingError = true;
@@ -117,6 +118,9 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
+    Favor observedFavor = new Favor(favorId, " ", " ", TestConstants.REQUESTER_ID, null, 0);
+    observedFavor.updateToOther(FakeItemFactory.getFavor());
+    setObservedFavorResult(observedFavor);
     return observedFavorResult;
   }
 
@@ -125,8 +129,18 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     return observedFavorResult;
   }
 
-  @Override
   public void setFavorValue(Favor favor) {
     observedFavorResult.setValue(favor);
   }
+
+  @Override
+  public void setShowObservedFavor(Boolean show) {
+    showFavor = show;
+  }
+
+  @Override
+  public boolean isShowObservedFavor() {
+    return showFavor;
+  }
+
 }

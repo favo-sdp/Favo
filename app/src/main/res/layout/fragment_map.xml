@@ -7,7 +7,7 @@
     android:background="@color/material_green_50"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.tabs.MapsPage"
+    tools:context=".view.tabs.MapPage"
     android:id="@+id/fragment_map">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,7 +31,7 @@
         android:layout_height="match_parent"
         map:uiCompass="true"
         map:uiZoomControls="true"
-        tools:context=".view.tabs.MapsPage" />
+        tools:context=".view.tabs.MapPage" />
 
     <RadioGroup
         android:id="@+id/toggle"

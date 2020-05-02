@@ -17,15 +17,16 @@ import ch.epfl.favo.favor.Favor;
 public interface FavorDataController {
   CompletableFuture requestFavor(Favor favor);
 
-  CompletableFuture updateFavorForCurrentUser(
-      Favor favor, boolean isRequested, int activeFavorsCountChange);
-
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);
 
   CompletableFuture acceptFavor(Favor favor);
 
+  CompletableFuture completeFavor(Favor favor, boolean isRequested);
+
   CompletableFuture cancelFavor(Favor favor, boolean isRequested);
+
+  CompletableFuture reEnableFavor(Favor favor, boolean isRequested);
 
   CompletableFuture<Bitmap> downloadPicture(Favor favor);
 
@@ -38,4 +39,8 @@ public interface FavorDataController {
   LiveData<Favor> getObservedFavor();
 
   void setFavorValue(Favor favor);
+
+  void setShowObservedFavor(Boolean show);
+
+  boolean isShowObservedFavor();
 }

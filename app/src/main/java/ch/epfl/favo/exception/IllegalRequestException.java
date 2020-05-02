@@ -1,4 +1,4 @@
-package ch.epfl.favo.common;
+package ch.epfl.favo.exception;
 
 public class IllegalRequestException extends RuntimeException {
   public IllegalRequestException(String s) {

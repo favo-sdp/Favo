@@ -20,7 +20,7 @@ public class FakeUserUtil implements IUserUtil {
           completeExceptionally(new RuntimeException());
         }
       };
-  private CompletableFuture<User> successfulUserFuture =
+  private CompletableFuture successfulUserFuture =
       new CompletableFuture() {
         {
           complete(FakeItemFactory.getUser());
