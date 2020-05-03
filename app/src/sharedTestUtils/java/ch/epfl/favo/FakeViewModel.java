@@ -82,6 +82,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   public CompletableFuture reEnableFavor(Favor favor) {
     if (isThrowingError) return failedResult;
     favor.setStatusIdToInt(FavorStatus.REQUESTED);
+    observedFavorResult.setValue(favor);
     return getSuccessfulCompletableFuture();
   }
 
