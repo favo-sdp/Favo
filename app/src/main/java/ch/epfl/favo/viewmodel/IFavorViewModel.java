@@ -1,5 +1,6 @@
 package ch.epfl.favo.viewmodel;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
@@ -31,6 +32,11 @@ public interface IFavorViewModel {
   CompletableFuture reEnableFavor(final Favor favor);
 
   CompletableFuture<Bitmap> downloadPicture(final Favor favor);
+
+  // Save/load pictures
+  void savePictureToLocal(Context context, Favor favor, Bitmap picture);
+
+  CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); // used in map view
 

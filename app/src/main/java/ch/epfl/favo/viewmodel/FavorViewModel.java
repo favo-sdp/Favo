@@ -1,10 +1,12 @@
 package ch.epfl.favo.viewmodel;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.lifecycle.ComputableLiveData;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,7 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
+import ch.epfl.favo.cache.CacheUtil;
+import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
@@ -25,6 +30,8 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
+
+import static android.graphics.BitmapFactory.decodeFile;
 
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
@@ -58,6 +65,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private PictureUtil getPictureUtility() {
     return DependencyFactory.getCurrentPictureUtility();
   }
+
+  private CacheUtil getCacheUtility() { return DependencyFactory.getCurrentCacheUtility(); }
 
   /**
    * Tries to update the number of active favors for a given user. Detailed implementation in
@@ -173,6 +182,33 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     } else {
       return getPictureUtility().downloadPicture(url);
     }
+  }
+
+  // Save/load pictures from local storage
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
+    CacheUtil.SaveToStorageTask saveToStorageTask = new CacheUtil.SaveToStorageTask();
+    String baseDir = context.getFilesDir().getAbsolutePath();
+    String favorId = favor.getId();
+    String imageNum = "0"; // Todo: Support multiple images
+    CacheUtil.SaveToStorageParams saveToStorageParams = new CacheUtil.SaveToStorageParams(
+            baseDir, favorId, imageNum, picture
+    );
+    saveToStorageTask.execute(saveToStorageParams);
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    return CompletableFuture.supplyAsync(() -> {
+      String baseDir = context.getFilesDir().getAbsolutePath();
+      String favorId = favor.getId();
+      String imageNum = "0";
+      Bitmap result = decodeFile(baseDir + "/" + favorId + "/" + String.format("%s.jpeg", imageNum));
+      if (result == null) {
+        Log.e(TAG, "Failed to load bitmap from internal storage");
+      }
+      return result;
+    });
   }
 
   @Override
