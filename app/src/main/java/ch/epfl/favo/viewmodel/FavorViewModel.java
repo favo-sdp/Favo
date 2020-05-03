@@ -33,6 +33,8 @@ import ch.epfl.favo.util.PictureUtil;
 
 import static android.graphics.BitmapFactory.decodeFile;
 
+import static android.graphics.BitmapFactory.decodeFile;
+
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_REQUESTER;
