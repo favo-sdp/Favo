@@ -124,8 +124,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   public CompletableFuture completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = (Favor) favor.clone();
-    if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt() && isRequested)
-        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt() && !isRequested))
+    if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
+        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
     else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
