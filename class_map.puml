@@ -1,0 +1,77 @@
+@startuml
+!define LIGHTORANGE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+class DatabaseWrapper<T extends Document>{}
+class CollectionWrapper<T extends Document>{}
+class FavorUtil{
+}
+FavorUtil-down->CollectionWrapper
+class UserUtil{}
+UserUtil->CollectionWrapper
+class PictureUtil{}
+class FavorViewModel{}
+class MainActivity{
++NavigationController navController
+}
+class SignInActivity{}
+class MapPage{
+ Map view of
+ favors around
+ }
+class NearbyFavorList{
+List view
+of favors around
+}
+class FavorPage{
+contains users
+active/archived favors
+}
+class FavorRequestView{
+User posts requests
+}
+class FavorDetailView{
+User accepts requests
+}
+class FragmentAbout{}
+class FragmentSettings{}
+class UserInfoPage{
+Other user info
+}
+class UserAccountPage{
+Own user info
+}
+class ChatPage{
+Group chat for favor
+}
+CollectionWrapper-down->DatabaseWrapper:Is wrapped by
+FavorViewModel-down->UserUtil:Gets user info
+FavorViewModel-down->FavorUtil:Gets favor info
+FavorViewModel-down->PictureUtil:Gets pictures
+MainActivity-down->FavorViewModel:Owns
+SignInActivity-down->UserUtil:Creates user and logs in
+SignInActivity-left->MainActivity:On successful login
+
+MapPage-down->FavorViewModel:Observes
+MapPage-up->FavorDetailView
+MapPage-up->FavorRequestView
+MapPage-right->NearbyFavorList:Toggle
+NearbyFavorList-left->MapPage
+NearbyFavorList-down->FavorViewModel:Observes
+FavorRequestView-down->FavorViewModel:Gets data
+FavorDetailView-down->FavorViewModel:Gets data
+MainActivity-up->FavorPage
+MainActivity-up->FragmentAbout:Controls
+MainActivity-up->FragmentSettings
+MainActivity-up->MapPage
+MainActivity-up->UserAccountPage
+FavorPage-up->FavorRequestView:see own favor
+FavorPage-up->FavorDetailView:see others favor
+UserInfoPage-down->UserUtil:Sees user data
+UserAccountPage-down->UserUtil
+FavorRequestView-up->ChatPage
+FavorDetailView-up->ChatPage
+FavorRequestView-up->UserInfoPage
+FavorDetailView-up->UserInfoPage
+
+@enduml

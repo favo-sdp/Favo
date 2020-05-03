@@ -129,7 +129,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
     else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
-    } else {
+    } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException();
     }
     return updateFavorForCurrentUser(tempFavor, isRequested, -1);
