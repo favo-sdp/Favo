@@ -32,16 +32,16 @@ import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static android.app.Activity.RESULT_OK;
 import static androidx.navigation.Navigation.findNavController;
@@ -54,7 +54,7 @@ public class FavorRequestView extends Fragment {
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
 
-  private FavorDataController favorViewModel;
+  private IFavorViewModel favorViewModel;
 
   private FavorStatus favorStatus;
   private ImageView mImageView;
@@ -94,7 +94,7 @@ public class FavorRequestView extends Fragment {
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
     // Inject argument
     favorViewModel =
-        (FavorDataController)
+        (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
@@ -110,7 +110,7 @@ public class FavorRequestView extends Fragment {
     super.onResume();
   }
 
-  public FavorDataController getViewModel() {
+  public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
 
@@ -121,9 +121,8 @@ public class FavorRequestView extends Fragment {
         .observe(
             getViewLifecycleOwner(),
             favor -> {
-              try {
-                if (favor == null) throw new RuntimeException("Database return null value");
-                if (favor.getId().equals(favorId)) {
+              try { // only update view if favor matches the requested one
+                if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
                   displayFavorInfo(rootView);
                   // if a favor is in Edit status, then it must be a favor started/modified from map
@@ -190,7 +189,7 @@ public class FavorRequestView extends Fragment {
           getFavorFromView();
           CommonTools.hideSoftKeyboard(requireActivity());
           favorViewModel.setShowObservedFavor(true);
-          favorViewModel.setObservedFavorLocally(currentFavor);
+          favorViewModel.setFavorValue(currentFavor);
           // signal the destination is map view
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);
@@ -198,7 +197,13 @@ public class FavorRequestView extends Fragment {
 
     // Button: Cancel Favor
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
-    cancelFavorBtn.setOnClickListener(v -> cancelFavor());
+    cancelFavorBtn.setOnClickListener(v -> {
+            if (currentFavor.getIsArchived()){
+
+    }
+            else{
+            cancelFavor();
+    }});
 
     // Button: Edit favor
     editFavorBtn = rootView.findViewById(R.id.edit_favor_button);
@@ -306,29 +311,17 @@ public class FavorRequestView extends Fragment {
   }
 
   private void completeFavor() {
-    if (currentFavor.getStatusId() == FavorStatus.ACCEPTED.toInt()) {
-      currentFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
-      favorStatus = FavorStatus.COMPLETED_REQUESTER;
-    } else {
-      currentFavor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
-      favorStatus = FavorStatus.SUCCESSFULLY_COMPLETED;
-    }
-    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor, true, -1);
-    updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_complete_success_msg)));
-    updateFuture.exceptionally(onFailedResult(getView()));
+    CompletableFuture completeFuture = getViewModel().completeFavor(currentFavor, true);
+    completeFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_complete_success_msg)));
+    completeFuture.exceptionally(onFailedResult(getView()));
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
-    currentFavor.setAccepterId(null);
-    currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-    favorStatus = FavorStatus.REQUESTED;
-
-    int countUpdate = 0;
-    if (currentFavor.getIsArchived()) countUpdate = 1;
 
     // DB call to update Favor details
-    CompletableFuture updateFuture = getViewModel().updateFavor(currentFavor, true, countUpdate);
+    CompletableFuture updateFuture =
+        getViewModel().reEnableFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 
@@ -340,9 +333,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. */
   private void cancelFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-    // DB call to update status
-    CompletableFuture cancelFuture = getViewModel().updateFavor(currentFavor, true, -1);
+    CompletableFuture cancelFuture = getViewModel().cancelFavor((Favor) currentFavor.clone(), true);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }

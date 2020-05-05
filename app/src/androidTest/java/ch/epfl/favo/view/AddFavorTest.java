@@ -22,6 +22,7 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -204,7 +205,9 @@ public class AddFavorTest {
     FavorRequestView fragment = launchFragment(fakeFavor);
     // Try to click on edit
     FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
-    runOnUiThread(() -> viewModel.setObservedFavorResult(null));
+    Favor failedFavor = Mockito.mock(Favor.class);
+    Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
+    runOnUiThread(() -> viewModel.setObservedFavorResult(failedFavor));
     getInstrumentation().waitForIdleSync();
 
     // check error message is printed

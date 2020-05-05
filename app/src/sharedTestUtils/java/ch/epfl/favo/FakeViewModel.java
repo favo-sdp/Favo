@@ -12,9 +12,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
-public class FakeViewModel extends ViewModel implements FavorDataController {
+public class FakeViewModel extends ViewModel implements IFavorViewModel {
   private CompletableFuture failedResult;
   private boolean isThrowingError = false;
   private boolean showFavor = false;
@@ -46,9 +48,40 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   }
 
   @Override
-  public CompletableFuture updateFavor(
-      Favor favor, boolean isRequested, int activeFavorsCountChange) {
+  public CompletableFuture acceptFavor(Favor favor) {
     if (isThrowingError) return failedResult;
+    favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    favor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public CompletableFuture completeFavor(Favor favor, boolean isRequested) {
+    if (isThrowingError) return failedResult;
+    if (favor.getStatusId() == FavorStatus.COMPLETED_REQUESTER.toInt()
+        || favor.getStatusId() == FavorStatus.COMPLETED_ACCEPTER.toInt())
+      favor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
+    else
+      favor.setStatusIdToInt(
+          isRequested ? FavorStatus.COMPLETED_REQUESTER : FavorStatus.COMPLETED_ACCEPTER);
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
+    if (isThrowingError) return failedResult;
+    favor.setStatusIdToInt(
+        isRequested ? FavorStatus.CANCELLED_REQUESTER : FavorStatus.CANCELLED_ACCEPTER);
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public CompletableFuture reEnableFavor(Favor favor) {
+    if (isThrowingError) return failedResult;
+    favor.setStatusIdToInt(FavorStatus.REQUESTED);
     observedFavorResult.setValue(favor);
     return getSuccessfulCompletableFuture();
   }
@@ -110,8 +143,7 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
     return observedFavorResult;
   }
 
-  @Override
-  public void setObservedFavorLocally(Favor favor) {
+  public void setFavorValue(Favor favor) {
     observedFavorResult.setValue(favor);
   }
 
@@ -124,5 +156,4 @@ public class FakeViewModel extends ViewModel implements FavorDataController {
   public boolean isShowObservedFavor() {
     return showFavor;
   }
-
 }

@@ -53,8 +53,8 @@ public class UserUtil implements IUserUtil {
    * @return
    */
   @Override
-  public CompletableFuture changeActiveFavorCount(boolean isRequested, int change) {
-    return findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+  public CompletableFuture changeActiveFavorCount(String userId,boolean isRequested, int change) {
+    return findUser(userId)
         .thenCompose(
             (object) -> {
               User user = object;

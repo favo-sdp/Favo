@@ -42,14 +42,14 @@ public enum FavorStatus {
     return FavorStatus.values()[code];
   }
 
-  //public static FavorStatus toEnum(String status) {
+  // public static FavorStatus toEnum(String status) {
   //   return FavorStatus.valueOf(status);
-  //}
+  // }
 
-  //public static FavorStatus convertTemporaryStatus(FavorStatus status) {
+  // public static FavorStatus convertTemporaryStatus(FavorStatus status) {
   //  if (status.equals(FavorStatus.EDIT)) {
   //    status = FavorStatus.REQUESTED;
   //  }
   //  return status;
-  //}
+  // }
 }

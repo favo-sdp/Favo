@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +43,7 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.UserSettings;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
@@ -56,7 +54,7 @@ public class MapPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
-  private FavorDataController favorViewModel;
+  private IFavorViewModel favorViewModel;
   private View view;
   private GoogleMap mMap;
   private Location mLocation;
@@ -93,7 +91,7 @@ public class MapPage extends Fragment
     if (DependencyFactory.isOfflineMode(requireContext())) button.setVisibility(View.VISIBLE);
     else button.setVisibility(View.INVISIBLE);
     favorViewModel =
-        (FavorDataController)
+        (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
@@ -158,7 +156,7 @@ public class MapPage extends Fragment
   private class LongClick implements GoogleMap.OnMapLongClickListener {
     @Override
     public void onMapLongClick(LatLng latLng) {
-      //at most one new marker is allowed
+      // at most one new marker is allowed
       if (newMarkers.size() != 0) {
         for (Marker m : newMarkers) m.remove();
         newMarkers.clear();
@@ -205,7 +203,7 @@ public class MapPage extends Fragment
             });
   }
 
-  public FavorDataController getViewModel() {
+  public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
 
@@ -215,8 +213,8 @@ public class MapPage extends Fragment
     float markerColor =
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
     String markerTitle =
-            (isEdited) //&& favor.getTitle().equals("")
-                    ? "Drag marker to desired location"
+        (isEdited) // && favor.getTitle().equals("")
+            ? "Drag marker to desired location"
             : favor.getTitle();
     String markerDescription = isEdited ? "Click window to request favor" : favor.getDescription();
     Marker marker =
@@ -391,7 +389,7 @@ public class MapPage extends Fragment
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
 
       // transfer local favor to FavorRequestView via ViewModel
-      favorViewModel.setObservedFavorLocally(focusedFavor);
+      favorViewModel.setFavorValue(focusedFavor);
     }
     Bundle favorBundle = new Bundle();
     favorBundle.putString("FAVOR_ARGS", favorId);

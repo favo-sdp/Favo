@@ -205,9 +205,7 @@ public class User implements Document {
     return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 
-  public int getRequestedFavors() {
-    return requestedFavors;
-  }
+  public int getRequestedFavors() { return requestedFavors; }
 
   public void setRequestedFavors(int requestedFavors) {
     this.requestedFavors = requestedFavors;

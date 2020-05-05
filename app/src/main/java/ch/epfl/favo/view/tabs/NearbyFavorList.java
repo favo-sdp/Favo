@@ -27,7 +27,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
-import ch.epfl.favo.viewmodel.FavorDataController;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
 
@@ -45,7 +45,7 @@ public class NearbyFavorList extends Fragment {
   private View rootView;
   private Map<String, Favor> favorsFound = new HashMap<>();
   private Map<String, Favor> nearbyFavors;
-  private FavorDataController viewModel;
+  private IFavorViewModel viewModel;
 
   public NearbyFavorList() {
     // Required empty public constructor
@@ -73,7 +73,7 @@ public class NearbyFavorList extends Fragment {
     toggle.setOnClickListener(this::onToggleClick);
 
     viewModel =
-        (FavorDataController)
+        (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
 
@@ -101,7 +101,7 @@ public class NearbyFavorList extends Fragment {
             });
   }
 
-  public FavorDataController getViewModel() {
+  public IFavorViewModel getViewModel() {
     return viewModel;
   }
 

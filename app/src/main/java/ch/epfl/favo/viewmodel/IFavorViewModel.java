@@ -14,13 +14,19 @@ import ch.epfl.favo.favor.Favor;
  * This class is the sole dependency of all the fragments and activities. It contains Util classes
  * as members.
  */
-public interface FavorDataController {
+public interface IFavorViewModel {
   CompletableFuture requestFavor(Favor favor);
-
-  CompletableFuture updateFavor(Favor favor, boolean isRequested, int activeFavorsCountChange);
 
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);
+
+  CompletableFuture acceptFavor(Favor favor);
+
+  CompletableFuture completeFavor(Favor favor, boolean isRequested);
+
+  CompletableFuture cancelFavor(Favor favor, boolean isRequested);
+
+  CompletableFuture reEnableFavor(Favor favor);
 
   CompletableFuture<Bitmap> downloadPicture(Favor favor);
 
@@ -32,8 +38,9 @@ public interface FavorDataController {
 
   LiveData<Favor> getObservedFavor();
 
-  void setObservedFavorLocally(Favor favor);
+  void setFavorValue(Favor favor);
 
   void setShowObservedFavor(Boolean show);
+
   boolean isShowObservedFavor();
 }

@@ -101,7 +101,7 @@ public class FavorDetailViewTest {
   }
 
   @Test
-  public void testChatAndLocationButtonWorkDetailView(){
+  public void testChatAndLocationButtonWorkDetailView() {
     // Check and click on the chat
     onView(withId(R.id.chat_button_accept_view)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.fragment_chat)).check(matches(isDisplayed()));
@@ -132,7 +132,6 @@ public class FavorDetailViewTest {
         .check(matches(withText(R.string.update_favor_error)));
   }
 
-
   @Test
   public void testFavorFailsToBeAcceptedIfPreviouslyAccepted() throws Throwable {
     // Another user accepts favor
@@ -145,31 +144,31 @@ public class FavorDetailViewTest {
     // check update text matches Accepted by other
     checkToolbar(FavorStatus.ACCEPTED_BY_OTHER.toString());
   }
-/*
-  @Test
-  public void testAcceptFavorBlyOneselfShowSnackbar() throws Throwable {
-    Favor favorPostByOneself =
-        new Favor(
-            TestConstants.FAVOR_ID,
-            TestConstants.TITLE,
-            TestConstants.DESCRIPTION,
-            TestConstants.USER_ID,
-            TestConstants.LOCATION,
-            TestConstants.FAVOR_STATUS.toInt());
-    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favorPostByOneself));
-    getInstrumentation().waitForIdleSync();
+  /*
+    @Test
+    public void testAcceptFavorBlyOneselfShowSnackbar() throws Throwable {
+      Favor favorPostByOneself =
+          new Favor(
+              TestConstants.FAVOR_ID,
+              TestConstants.TITLE,
+              TestConstants.DESCRIPTION,
+              TestConstants.USER_ID,
+              TestConstants.LOCATION,
+              TestConstants.FAVOR_STATUS.toInt());
+      runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favorPostByOneself));
+      getInstrumentation().waitForIdleSync();
 
-    // click accept button
-    onView(withId(R.id.accept_button)).perform(click());
-    getInstrumentation().waitForIdleSync();
-    // check display is updated
-    checkToolbar(FavorStatus.CANCELLED_ACCEPTER.toString());
+      // click accept button
+      onView(withId(R.id.accept_button)).perform(click());
+      getInstrumentation().waitForIdleSync();
+      // check display is updated
+      checkToolbar(FavorStatus.CANCELLED_ACCEPTER.toString());
 
-    // check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.favor_accept_by_oneself)));
-  }
-*/
+      // check snackbar shows
+      onView(withId(com.google.android.material.R.id.snackbar_text))
+          .check(matches(withText(R.string.favor_accept_by_oneself)));
+    }
+  */
   @Test
   public void testAcceptFlow() {
     // click accept button
@@ -268,7 +267,7 @@ public class FavorDetailViewTest {
         .check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
     // Check updated status string
     checkToolbar(status.toString());
-    }
+  }
 
   @Test
   public void testClickOnRequesterTextNavigateToUserInfoPage() throws InterruptedException {
@@ -304,6 +303,12 @@ public class FavorDetailViewTest {
     runOnUiThread(
         () -> fakeViewModel.setThrowError(new IllegalRequestException("illegal operation!")));
     onView(withId(R.id.accept_button)).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.illegal_accept_error)));
+    // Try clicking again
+    Thread.sleep(1000);
+    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
