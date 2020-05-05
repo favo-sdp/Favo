@@ -23,6 +23,12 @@
     <!-- TAB 1 Map and Nearby List -->
     <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
+    <string name="download_offline_map">https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&amp;hl=en</string>
+    <string name="hint_drag_marker">Drag marker to desired location</string>
+    <string name="hint_click_window">Click window to request favor</string>
+    <string name="default_radius">10 Km</string>
+    <string name="setting_disabled">disabled</string>
+
     <!-- TAB 2 (David) -->
     <string name="favor_title_hint">What\'s up? (ex: Need a bike pump)</string>
     <string name="favor_img_content_desc">Descriptive image</string>

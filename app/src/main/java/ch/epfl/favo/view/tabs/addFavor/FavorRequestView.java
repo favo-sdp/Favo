@@ -49,7 +49,7 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
-  private String TAG = "FavorRequestView";
+  private static String TAG = "FavorRequestView";
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;

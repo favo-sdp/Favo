@@ -65,6 +65,8 @@ public class MapPage extends Fragment
 
   // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+  private static final int MAP_BOTTOM_PADDING = 140;
+  private int defaultZoomLevel = 16;
 
   private boolean mLocationPermissionGranted = false;
   private boolean firstOpenApp = true;
@@ -112,11 +114,13 @@ public class MapPage extends Fragment
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
     mMap.getUiSettings().setZoomControlsEnabled(true);
-    mMap.setPadding(0, 0, 0, 140);
+    mMap.setPadding(0, 0, 0, MAP_BOTTOM_PADDING);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
     String setting = UserSettings.getNotificationRadius(requireContext());
-    if (setting.equals("disabled")) setting = "10 Km";
+    if (setting.equals(getString(R.string.setting_disabled)))
+      setting = getString(R.string.default_radius);
+    // split the radius setting string pattern, like "10 Km"
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
@@ -145,8 +149,7 @@ public class MapPage extends Fragment
 
     @Override
     public void onMarkerDrag(Marker marker) {
-      mMap.animateCamera(
-          CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getMaxZoomLevel() - 5));
+      mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), defaultZoomLevel));
     }
 
     @Override
@@ -166,7 +169,7 @@ public class MapPage extends Fragment
       loc.setLongitude(latLng.longitude);
       Favor newFavor =
           new Favor(
-              "", " ", DependencyFactory.getCurrentFirebaseUser().getUid(), loc, FavorStatus.EDIT);
+              "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), loc, FavorStatus.EDIT);
       focusedFavor = newFavor;
       Marker mk = drawFavorMarker(newFavor, true, true);
       mk.showInfoWindow();
@@ -214,9 +217,10 @@ public class MapPage extends Fragment
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
     String markerTitle =
         (isEdited) // && favor.getTitle().equals("")
-            ? "Drag marker to desired location"
+            ? getString(R.string.hint_drag_marker)
             : favor.getTitle();
-    String markerDescription = isEdited ? "Click window to request favor" : favor.getDescription();
+    String markerDescription =
+        isEdited ? getString(R.string.hint_click_window) : favor.getDescription();
     Marker marker =
         mMap.addMarker(
             new MarkerOptions()
@@ -238,7 +242,7 @@ public class MapPage extends Fragment
   private void focusViewOnLocation(Location location, boolean animate) {
     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
     if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
+    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
   }
 
   private void onOfflineMapClick(View view) {
@@ -251,9 +255,7 @@ public class MapPage extends Fragment
             (dialogInterface, i) -> {
               Intent browserIntent =
                   new Intent(
-                      Intent.ACTION_VIEW,
-                      Uri.parse(
-                          "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
+                      Intent.ACTION_VIEW, Uri.parse(getString(R.string.download_offline_map)));
               startActivity(browserIntent);
             })
         .show();
@@ -392,7 +394,7 @@ public class MapPage extends Fragment
       favorViewModel.setFavorValue(focusedFavor);
     }
     Bundle favorBundle = new Bundle();
-    favorBundle.putString("FAVOR_ARGS", favorId);
+    favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
     if (isRequested)
       Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
     else

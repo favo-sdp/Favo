@@ -36,7 +36,6 @@ public class FavorDetailView extends Fragment {
 
   private FavorStatus favorStatus;
   private Favor currentFavor;
-  private Button locationAccessBtn;
   private Button acceptAndCancelFavorBtn;
   private Button chatBtn;
   private Button completeBtn;
@@ -91,7 +90,7 @@ public class FavorDetailView extends Fragment {
 
   private void setupButtons(View rootView) {
     acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
-    locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
+    Button locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
     completeBtn = rootView.findViewById(R.id.complete_btn);
     completeBtn.setOnClickListener(v -> completeFavor());
     chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
