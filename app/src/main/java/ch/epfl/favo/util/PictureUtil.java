@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -65,6 +67,17 @@ public class PictureUtil {
     return urlFuture.thenApply(Uri::toString);
   }
 
+  public CompletableFuture deletePicture(@NonNull String imagePath) {
+    String pictureId = getPictureIdFromPath(imagePath);
+    Task<Void> deleteTask = getStorage().getReference().child(pictureId).delete();
+    return new TaskToFutureAdapter<>(deleteTask).getInstance();
+  }
+
+  private String getPictureIdFromPath(String path) {
+    String id = path.split("/o/")[1].split("\\?")[0];
+    return id;
+  }
+
   /**
    * Downloads a picture from a given url as a Bitmap
    *
@@ -74,7 +87,6 @@ public class PictureUtil {
   public CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
         getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);
-
     CompletableFuture<byte[]> downloadFuture =
         new TaskToFutureAdapter<>(downloadTask).getInstance();
     return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);

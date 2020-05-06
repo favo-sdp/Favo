@@ -60,8 +60,9 @@ public class DatabaseWrapper {
     return new TaskToFutureAdapter<>(postTask).getInstance();
   }
 
-  static <T extends Document> void removeDocument(String key, String collection) {
-    getDocumentQuery(key, collection).delete();
+  static <T extends Document> CompletableFuture removeDocument(String key, String collection) {
+    Task deleteTask = getDocumentQuery(key, collection).delete();
+    return new TaskToFutureAdapter<>(deleteTask).getInstance();
   }
 
   static CompletableFuture updateDocument(

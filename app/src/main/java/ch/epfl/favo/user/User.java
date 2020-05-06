@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.database.Document;
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.exception.IllegalRequestException;
+import ch.epfl.favo.gps.FavoLocation;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -205,7 +205,9 @@ public class User implements Document {
     return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 
-  public int getRequestedFavors() { return requestedFavors; }
+  public int getRequestedFavors() {
+    return requestedFavors;
+  }
 
   public void setRequestedFavors(int requestedFavors) {
     this.requestedFavors = requestedFavors;

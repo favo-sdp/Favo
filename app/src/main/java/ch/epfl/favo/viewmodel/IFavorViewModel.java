@@ -15,20 +15,21 @@ import ch.epfl.favo.favor.Favor;
  * as members.
  */
 public interface IFavorViewModel {
-  CompletableFuture requestFavor(Favor favor);
+  CompletableFuture requestFavor(final Favor favor);
 
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);
 
-  CompletableFuture acceptFavor(Favor favor);
+  CompletableFuture acceptFavor(final Favor favor);
 
-  CompletableFuture completeFavor(Favor favor, boolean isRequested);
+  CompletableFuture completeFavor(final Favor favor, boolean isRequested);
 
-  CompletableFuture cancelFavor(Favor favor, boolean isRequested);
+  CompletableFuture cancelFavor(final Favor favor, boolean isRequested);
+  CompletableFuture deleteFavor(final Favor favor);
 
-  CompletableFuture reEnableFavor(Favor favor);
+  CompletableFuture reEnableFavor(final Favor favor);
 
-  CompletableFuture<Bitmap> downloadPicture(Favor favor);
+  CompletableFuture<Bitmap> downloadPicture(final Favor favor);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); // used in map view
 
