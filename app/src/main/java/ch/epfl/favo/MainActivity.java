@@ -96,10 +96,13 @@ public class MainActivity extends AppCompatActivity {
                 Uri deepLink = pendingDynamicLinkData.getLink();
 
                 if (deepLink != null) {
-                  Log.d("MainActivity", deepLink.toString());
-                  Bundle favorBundle = new Bundle();
-                  favorBundle.putString(CommonTools.FAVOR_ARGS, deepLink.toString());
-                  navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+                  String favorId = deepLink.getQueryParameter("favorId");
+
+                  if (favorId != null && !favorId.equals("")) {
+                    Bundle favorBundle = new Bundle();
+                    favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+                    navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+                  }
                 }
               }
             })
@@ -234,8 +237,11 @@ public class MainActivity extends AppCompatActivity {
     if (extras != null) {
       Bundle favorBundle = new Bundle();
       String favorId = extras.getString("FavorId");
-      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-      navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+
+      if (favorId != null && !favorId.equals("")) {
+        favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+        navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+      }
     }
   }
 

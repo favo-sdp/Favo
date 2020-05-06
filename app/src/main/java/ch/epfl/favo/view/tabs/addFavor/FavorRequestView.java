@@ -70,6 +70,7 @@ public class FavorRequestView extends Fragment {
   private Button cancelFavorBtn;
   private Button editFavorBtn;
   private Button chatBtn;
+  private Button shareBtn;
   private Button locationAccessBtn;
   private NonClickableToolbar toolbar;
   private Favor currentFavor;
@@ -233,6 +234,12 @@ public class FavorRequestView extends Fragment {
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorRequestView_to_chatView, favorBundle);
         });
+
+    shareBtn = rootView.findViewById(R.id.invite_button);
+    shareBtn.setOnClickListener(v -> {
+      onShareClicked();
+    });
+
   }
 
   /**
@@ -349,6 +356,7 @@ public class FavorRequestView extends Fragment {
         {
           toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           updateEditBtnDisplay(R.string.edit_favor, R.drawable.ic_edit_24dp);
+          shareBtn.setVisibility(View.VISIBLE);
           updateViewFromParameters(false, true, false, true, true);
           break;
         }
@@ -558,7 +566,7 @@ public class FavorRequestView extends Fragment {
   }
 
   private void onShareClicked() {
-    Uri baseUrl = Uri.parse("https://favoapp.page.link/?link=" + currentFavor.getId());
+    Uri baseUrl = Uri.parse("https://www.favoapp.com/?favorId=" + currentFavor.getId());
     String domain = "https://favoapp.page.link";
 
     DynamicLink link =
