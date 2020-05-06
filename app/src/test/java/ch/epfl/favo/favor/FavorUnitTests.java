@@ -33,7 +33,7 @@ public class FavorUnitTests {
     assertEquals(TestConstants.LOCATION, favor.getLocation());
     assertEquals(TestConstants.FAVOR_STATUS.toInt(), favor.getStatusId());
     assertEquals(TestConstants.PICTURE_URL, favor.getPictureUrl());
-    assertEquals(TestConstants.REWARD, favor.getReward());
+    assertEquals((int) TestConstants.REWARD, (int) favor.getReward());
     assertNotNull(favor.getPostedTime());
   }
 
@@ -58,7 +58,7 @@ public class FavorUnitTests {
     assertEquals(statusId.toInt(), favor.getStatusId());
     assertEquals(accepterId, favor.getAccepterId());
     assertEquals(otherPictureUrl, favor.getPictureUrl());
-    assertEquals(reward, favor.getReward());
+    assertEquals((int) reward, (int) favor.getReward());
   }
 
   @Test
@@ -80,7 +80,7 @@ public class FavorUnitTests {
     assertEquals(TestConstants.REQUESTER_ID, favors[0].getRequesterId());
     assertEquals(TestConstants.LOCATION, favors[0].getLocation());
     assertEquals(TestConstants.FAVOR_STATUS.toInt(), favors[0].getStatusId());
-    assertEquals(TestConstants.REWARD, favors[0].getReward());
+    assertEquals((int) TestConstants.REWARD, (int) favors[0].getReward());
   }
 
   @Test
@@ -97,7 +97,7 @@ public class FavorUnitTests {
     assertEquals(favor.getPostedTime(), favor2.getPostedTime());
     assertEquals(favor.getStatusId(), favor2.getStatusId());
     assertEquals(favor.getPictureUrl(), favor2.getPictureUrl());
-    assertEquals(favor.getReward(), favor2.getReward());
+    assertEquals((int) favor.getReward(), (int) favor2.getReward());
   }
 
   @Test

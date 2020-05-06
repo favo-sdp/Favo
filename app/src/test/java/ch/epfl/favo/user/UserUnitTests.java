@@ -60,7 +60,7 @@ public class UserUnitTests {
     assertEquals(0, user.getCompletedFavors());
     assertEquals(0, user.getLikes());
     assertEquals(0, user.getDislikes());
-    assertEquals(10.0, user.getBalance());
+    assertEquals(10, (int) user.getBalance());
 
     // field should initialize null and populate later
     assertNull(user.getNotificationId());
@@ -100,7 +100,7 @@ public class UserUnitTests {
     assertEquals(testNum, user.getCompletedFavors());
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
-    assertEquals(newBalance, user.getBalance());
+    assertEquals((int) newBalance, (int) user.getBalance());
   }
 
   @Test
@@ -129,7 +129,7 @@ public class UserUnitTests {
     assertEquals(user.getCompletedFavors(), user2.getCompletedFavors());
     assertEquals(user.getLikes(), user2.getLikes());
     assertEquals(user.getDislikes(), user2.getDislikes());
-    assertEquals(user.getBalance(), user2.getBalance());
+    assertEquals((int) user.getBalance(), (int) user2.getBalance());
   }
 
   @Test
