@@ -7,16 +7,14 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import javax.security.auth.callback.CallbackHandler;
-
-import ch.epfl.favo.util.PictureUtil;
+import java.util.concurrent.CompletableFuture;
 
 import static android.graphics.BitmapFactory.decodeFile;
 
@@ -82,6 +80,11 @@ public class CacheUtil {
     return preferences.getBoolean(key, false);
   }
 
+  public boolean pictureDownloaded(String pathToFolder) {
+    File file = new File(pathToFolder);
+    return file.exists();
+  }
+
   /**
    * Save given picture to Internal Storage and returns Boolean to indicate if it is a success.
    * @param context: main activity
@@ -106,11 +109,15 @@ public class CacheUtil {
   }
 
 
-  public static Bitmap loadFromInternalStorage(String pathToFolder, int picNum) {
-    Bitmap result = decodeFile(pathToFolder + String.format("/%s.jpeg", picNum));
-    if (result == null)
-      Log.e(TAG, "Failed to load bitmap from internal storage");
-    return result;
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public CompletableFuture<Bitmap> loadFromInternalStorage(String pathToFolder, int picNum){
+    return CompletableFuture.supplyAsync(() -> {
+      Bitmap result = decodeFile(pathToFolder + String.format("%s.jpeg", picNum));
+      if (result == null) {
+        Log.e(TAG, "Failed to load bitmap from internal storage");
+      }
+      return result;
+    });
   }
 
 
@@ -171,14 +178,8 @@ public class CacheUtil {
           }
         }
       }
+      Log.d(TAG, "Successfully saved picture " + image.getAbsolutePath());
       return true;
-    }
-
-    @Override
-    protected void onPostExecute(Boolean result) {
-      if (!result) {
-        Log.e(TAG, "Error: Failed to save to internal storage. Please investigate");
-      }
     }
   }
 }

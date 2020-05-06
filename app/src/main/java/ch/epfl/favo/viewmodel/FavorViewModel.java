@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,28 +184,23 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   // Save/load pictures from local storage
   @Override
   public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
-    CacheUtil.SaveToStorageTask saveToStorageTask = new CacheUtil.SaveToStorageTask();
-    String baseDir = context.getFilesDir().getAbsolutePath();
-    String favorId = favor.getId();
-    String imageNum = "0"; // Todo: Support multiple images
-    CacheUtil.SaveToStorageParams saveToStorageParams = new CacheUtil.SaveToStorageParams(
-            baseDir, favorId, imageNum, picture
-    );
-    saveToStorageTask.execute(saveToStorageParams);
+    getCacheUtility().saveToInternalStorage(context, picture, favor.getId(), 0);
+//    CacheUtil.SaveToStorageTask saveToStorageTask = new CacheUtil.SaveToStorageTask();
+//    String baseDir = context.getFilesDir().getAbsolutePath();
+//    String favorId = favor.getId();
+//    String imageNum = "0"; // Todo: Support multiple images
+//    CacheUtil.SaveToStorageParams saveToStorageParams = new CacheUtil.SaveToStorageParams(
+//            baseDir, favorId, imageNum, picture
+//    );
+//    saveToStorageTask.execute(saveToStorageParams);
   }
 
   @Override
   public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
-    return CompletableFuture.supplyAsync(() -> {
-      String baseDir = context.getFilesDir().getAbsolutePath();
-      String favorId = favor.getId();
-      String imageNum = "0";
-      Bitmap result = decodeFile(baseDir + "/" + favorId + "/" + String.format("%s.jpeg", imageNum));
-      if (result == null) {
-        Log.e(TAG, "Failed to load bitmap from internal storage");
-      }
-      return result;
-    });
+    String baseDir = context.getFilesDir().getAbsolutePath();
+    String favorId = favor.getId();
+    String pathToFolder = baseDir + "/" + favorId + "/";
+    return getCacheUtility().loadFromInternalStorage(pathToFolder, 0);
   }
 
   @Override
@@ -266,6 +262,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
+              assert documentSnapshot != null;
               setFavorValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();

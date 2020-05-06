@@ -31,6 +31,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
@@ -140,7 +141,7 @@ public class FavorRequestView extends Fragment {
   }
 
   /** When fragment is launched with favor. */
-  private void displayFavorInfo(View v) {
+  private void displayFavorInfo(View v) throws ExecutionException, InterruptedException {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
@@ -334,6 +335,7 @@ public class FavorRequestView extends Fragment {
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
       getViewModel().uploadOrUpdatePicture(currentFavor, picture);
+      getViewModel().savePictureToLocal(getContext(), currentFavor, picture);
     }
   }
 
@@ -460,6 +462,7 @@ public class FavorRequestView extends Fragment {
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
       getViewModel().uploadOrUpdatePicture(favor, picture);
+      getViewModel().savePictureToLocal(getContext(), favor, picture);
     } else {
       favor.setPictureUrl(null);
     }
