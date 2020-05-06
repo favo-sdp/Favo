@@ -25,12 +25,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
@@ -197,13 +200,14 @@ public class FavorRequestView extends Fragment {
 
     // Button: Cancel Favor
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
-    cancelFavorBtn.setOnClickListener(v -> {
-            if (currentFavor.getIsArchived()){
+    cancelFavorBtn.setOnClickListener(
+        v -> {
+          if (currentFavor.getIsArchived()) {
 
-    }
-            else{
+          } else {
             cancelFavor();
-    }});
+          }
+        });
 
     // Button: Edit favor
     editFavorBtn = rootView.findViewById(R.id.edit_favor_button);
@@ -320,8 +324,7 @@ public class FavorRequestView extends Fragment {
   private void confirmUpdatedFavor() {
 
     // DB call to update Favor details
-    CompletableFuture updateFuture =
-        getViewModel().reEnableFavor(currentFavor);
+    CompletableFuture updateFuture = getViewModel().reEnableFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 
@@ -552,5 +555,25 @@ public class FavorRequestView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
+  }
+
+  private void onShareClicked() {
+    Uri baseUrl = Uri.parse("https://favoapp.page.link/?link=" + currentFavor.getId());
+    String domain = "https://favoapp.page.link";
+
+    DynamicLink link =
+        FirebaseDynamicLinks.getInstance()
+            .createDynamicLink()
+            .setLink(baseUrl)
+            .setDomainUriPrefix(domain)
+            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("ch.epfl.favo").build())
+            .setSocialMetaTagParameters(
+                new DynamicLink.SocialMetaTagParameters.Builder()
+                    .setTitle("Favor " + currentFavor.getTitle())
+                    .setDescription("Check out this favor in the Favo App!")
+                    .build())
+            .buildDynamicLink();
+
+    ((MainActivity) requireActivity()).startShareIntent(link.getUri().toString());
   }
 }

@@ -1,8 +1,10 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,6 +25,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
+
+    setUpDeepLink();
+
     setContentView(R.layout.activity_main);
 
     // Initialize Variables
@@ -78,6 +84,26 @@ public class MainActivity extends AppCompatActivity {
     if (DependencyFactory.isOfflineMode(this)) {
       showNoConnectionSnackbar();
     }
+  }
+
+  private void setUpDeepLink() {
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(getIntent())
+        .addOnSuccessListener(
+            this,
+            pendingDynamicLinkData -> {
+              if (pendingDynamicLinkData != null) {
+                Uri deepLink = pendingDynamicLinkData.getLink();
+
+                if (deepLink != null) {
+                  Log.d("MainActivity", deepLink.toString());
+                  Bundle favorBundle = new Bundle();
+                  favorBundle.putString(CommonTools.FAVOR_ARGS, deepLink.toString());
+                  navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+                }
+              }
+            })
+        .addOnFailureListener(this, e -> Log.w("MainActivity", "getDynamicLink:onFailure", e));
   }
 
   private void setupActivity() {
@@ -149,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
               navController.popBackStack(R.id.nav_map, false);
               break;
             case R.id.nav_share:
-              startShareIntent();
+              startShareIntent(getString(R.string.app_site));
               drawerLayout.closeDrawer(GravityCompat.START);
               return false;
             default:
@@ -192,14 +218,12 @@ public class MainActivity extends AppCompatActivity {
     snack.show();
   }
 
-  private void startShareIntent() {
-    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-    shareIntent.setType("text/plain");
+  public void startShareIntent(String link) {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.putExtra(Intent.EXTRA_TEXT, link);
 
-    shareIntent.putExtra(Intent.EXTRA_TITLE, "Favo app");
-    shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.app_site));
-
-    startActivity(Intent.createChooser(shareIntent, null));
+    startActivity(Intent.createChooser(intent, "Favo App"));
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
