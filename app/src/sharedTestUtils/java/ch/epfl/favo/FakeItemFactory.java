@@ -19,7 +19,8 @@ public class FakeItemFactory {
         TestConstants.DESCRIPTION,
         TestConstants.REQUESTER_ID,
         TestConstants.LOCATION,
-        TestConstants.FAVOR_STATUS.toInt());
+        TestConstants.FAVOR_STATUS.toInt(),
+        TestConstants.REWARD);
   }
 
   public static Favor getFavorWithUrl() {

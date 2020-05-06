@@ -438,7 +438,8 @@ public class FavorRequestView extends Fragment {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
-    Favor favor = new Favor(title, desc, userId, loc, favorStatus);
+    // TODO: Get reward from frontend (currently being set by default to 0)
+    Favor favor = new Favor(title, desc, userId, loc, favorStatus, 0);
 
     // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
     // callbacks in requestFavor and confirm

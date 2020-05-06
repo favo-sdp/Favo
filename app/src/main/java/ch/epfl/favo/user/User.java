@@ -36,6 +36,7 @@ public class User implements Document {
   public static final String COMPLETED_FAVORS = "completedFavors";
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";
+  public static final String BALANCE = "balance";
 
   private String id;
   private String name;
@@ -51,6 +52,7 @@ public class User implements Document {
   private int completedFavors;
   private int likes;
   private int dislikes;
+  private double balance;
 
   public User() {
     this.activeAcceptingFavors = 0;
@@ -60,6 +62,7 @@ public class User implements Document {
     this.likes = 0;
     this.dislikes = 0;
     this.completedFavors = 0;
+    this.balance = 10.0;
   }
 
   public User(Map<String, Object> map) {
@@ -77,6 +80,7 @@ public class User implements Document {
     this.completedFavors = (int) map.get(COMPLETED_FAVORS);
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
+    this.balance = (double) map.get(BALANCE);
   }
 
   public User(
@@ -100,6 +104,7 @@ public class User implements Document {
     this.likes = 0;
     this.dislikes = 0;
     this.completedFavors = 0;
+    this.balance = 10.0;
   }
 
   public User(FirebaseUser firebaseUser, String deviceId, Location location) {
@@ -136,6 +141,7 @@ public class User implements Document {
         put(COMPLETED_FAVORS, completedFavors);
         put(LIKES, likes);
         put(DISLIKES, dislikes);
+        put(BALANCE, balance);
       }
     };
   }
@@ -155,6 +161,8 @@ public class User implements Document {
   public String getNotificationId() {
     return notificationId;
   }
+
+  public double getBalance() { return balance; }
 
   public Date getBirthDate() {
     return birthDate;
@@ -187,6 +195,8 @@ public class User implements Document {
   public void setNotificationId(String notificationId) {
     this.notificationId = notificationId;
   }
+
+  public void setBalance(Double balance) { this.balance = balance; }
 
   public void setDeviceId(String deviceId) {
     this.deviceId = deviceId;
