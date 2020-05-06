@@ -74,6 +74,8 @@ public class PictureUtil {
   }
 
   private String getPictureIdFromPath(String path) {
+    // Example:
+    // https://firebasestorage.googleapis.com/v0/b/favo-11728.appspot.com/o/V6Y8F6DOR3NKW71UEQKULUPXMQC0.jpeg?alt=media&token=f88ee85f-a201-435f-88cd-4b5803df9656
     String id = path.split("/o/")[1].split("\\?")[0];
     return id;
   }
