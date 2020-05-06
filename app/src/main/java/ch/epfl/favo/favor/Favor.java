@@ -62,7 +62,12 @@ public class Favor implements Parcelable, Document, Cloneable {
 
   // General Constructor
   public Favor(
-      String title, String description, String requesterId, FavoLocation location, int statusId, double reward) {
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      int statusId,
+      double reward) {
 
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
@@ -163,7 +168,9 @@ public class Favor implements Parcelable, Document, Cloneable {
     return title;
   }
 
-  public double getReward() { return reward; }
+  public double getReward() {
+    return reward;
+  }
 
   public String getDescription() {
     return description;
@@ -185,7 +192,9 @@ public class Favor implements Parcelable, Document, Cloneable {
     return isArchived;
   }
 
-  public void setReward(double reward) { this.reward = reward; }
+  public void setReward(double reward) {
+    this.reward = reward;
+  }
 
   public void setAccepterId(String id) {
     if (userIds != null && !userIds.isEmpty()) {

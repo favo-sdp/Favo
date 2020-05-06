@@ -162,7 +162,9 @@ public class User implements Document {
     return notificationId;
   }
 
-  public double getBalance() { return balance; }
+  public double getBalance() {
+    return balance;
+  }
 
   public Date getBirthDate() {
     return birthDate;
@@ -196,7 +198,9 @@ public class User implements Document {
     this.notificationId = notificationId;
   }
 
-  public void setBalance(Double balance) { this.balance = balance; }
+  public void setBalance(Double balance) {
+    this.balance = balance;
+  }
 
   public void setDeviceId(String deviceId) {
     this.deviceId = deviceId;
@@ -215,7 +219,9 @@ public class User implements Document {
     return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 
-  public int getRequestedFavors() { return requestedFavors; }
+  public int getRequestedFavors() {
+    return requestedFavors;
+  }
 
   public void setRequestedFavors(int requestedFavors) {
     this.requestedFavors = requestedFavors;
