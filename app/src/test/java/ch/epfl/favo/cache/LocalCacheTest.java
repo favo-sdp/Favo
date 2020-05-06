@@ -36,21 +36,28 @@ public class LocalCacheTest {
   }
 
   @Test
-  public void test_storeKeyValue() {
-    LocalCache.storeKeyValue(mockContext, "key", "value");
+  public void test_storeKeyValueStr() {
+    CacheUtil.getInstance().storeKeyValueStr(mockContext, "key", "value");
     verify(mockEditor, times(1)).putString("key", "value");
     verify(mockEditor, times(1)).apply();
   }
 
   @Test
+  public void test_storeKeyValueBool() {
+    CacheUtil.getInstance().storeKeyValueBool(mockContext, "key", true);
+    verify(mockEditor, times(1)).putBoolean("key", true);
+    verify(mockEditor, times(1)).apply();
+  }
+
+  @Test
   public void test_getValueFromCacheStr() {
-    LocalCache.getValueFromCacheStr(mockContext, "str");
+    CacheUtil.getInstance().getValueFromCacheStr(mockContext, "str");
     verify(mockSharedPreferences, times(1)).getString("str", "");
   }
 
   @Test
   public void test_getValueFromCacheBool() {
-    LocalCache.getValueFromCacheBool(mockContext, "bool");
+    CacheUtil.getInstance().getValueFromCacheBool(mockContext, "bool");
     verify(mockSharedPreferences, times(1)).getBoolean("bool", false);
   }
 }

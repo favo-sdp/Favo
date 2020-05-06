@@ -51,10 +51,10 @@ public class CacheUtil {
    * @param key: String, key for lookup
    * @param value: Boolean, value to store
    */
-  public void storeKeyValueBool(Context context, String key, String value) {
+  public void storeKeyValueBool(Context context, String key, Boolean value) {
     SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
     SharedPreferences.Editor editor = preferences.edit();
-    editor.putString(key, value);
+    editor.putBoolean(key, value);
     editor.apply();
   }
 
@@ -133,7 +133,7 @@ public class CacheUtil {
     public SaveToStorageParams(String baseDir, String favorId, String imageNum, Bitmap bitmap) {
       this.baseDir = baseDir;
       this.favorId = favorId;
-      this.imageNum = imageNum;
+      this.imageNum = "0"; // Todo: support mutliple pictures
       this.bitmap = bitmap;
     }
   }
@@ -145,10 +145,8 @@ public class CacheUtil {
 
     @Override
     protected Boolean doInBackground(SaveToStorageParams... params) {
-      String baseDir = params[0].baseDir;
-      String favorId = params[0].favorId;
-      String imageNum = params[0].imageNum;
-      Bitmap bitmap = params[0].bitmap;
+      String baseDir = params[0].baseDir; String favorId = params[0].favorId;
+      String imageNum = params[0].imageNum; Bitmap bitmap = params[0].bitmap;
 
       // If image folder for the current favor does not exist, create the directory.
       File favorDir = new File(baseDir, favorId);
@@ -161,22 +159,11 @@ public class CacheUtil {
 
       // Create the image file and write the bitmap to file.
       File image = new File(favorDir.getAbsolutePath(), String.format("%s.jpeg", imageNum));
-      FileOutputStream fos = null;
-      try {
-        fos = new FileOutputStream(image);
+      try (FileOutputStream fos = new FileOutputStream(image)) {
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-      } catch (FileNotFoundException e) {
-        Log.e(TAG, "Error: Cannot save image to internal storage.");
+      } catch (IOException e) {
         e.printStackTrace();
         return false;
-      } finally {
-        if (fos != null) {
-          try {
-            fos.close();
-          } catch (IOException e) {
-            Log.e(TAG, "Error: Failed to close FileOutputStream");
-          }
-        }
       }
       Log.d(TAG, "Successfully saved picture " + image.getAbsolutePath());
       return true;

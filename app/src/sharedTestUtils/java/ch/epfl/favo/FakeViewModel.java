@@ -1,5 +1,7 @@
 package ch.epfl.favo;
 
+import android.content.Context;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
@@ -103,6 +105,15 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
       }
     };
   }
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    return null;
+  }
+
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture){}
+
 
   private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
 
