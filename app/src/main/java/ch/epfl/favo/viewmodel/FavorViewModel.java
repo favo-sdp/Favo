@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
 
-import androidx.lifecycle.ComputableLiveData;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -19,10 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 
 import ch.epfl.favo.cache.CacheUtil;
-import ch.epfl.favo.common.FavoLocation;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
@@ -32,9 +29,6 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
 import static android.graphics.BitmapFactory.decodeFile;
-
-import static android.graphics.BitmapFactory.decodeFile;
-
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_REQUESTER;

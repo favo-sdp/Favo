@@ -223,6 +223,11 @@ public class DependencyFactory {
     return FirebaseStorage.getInstance();
   }
 
+  public static CacheUtil getCurrentCacheUtility() {
+    if (testMode && currentPictureUtility != null) return currentCacheUtility;
+    return CacheUtil.getInstance();
+  }
+
   @VisibleForTesting
   public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
     testMode = true;
@@ -236,8 +241,8 @@ public class DependencyFactory {
   }
 
   @VisibleForTesting
-  public static CacheUtil getCurrentCacheUtility() {
-    if (testMode && currentPictureUtility != null) return currentCacheUtility;
-    return CacheUtil.getInstance();
+  public static void setCurrentCacheUtility(CacheUtil cacheUtil) {
+    testMode = true;
+    currentCacheUtility = cacheUtil;
   }
 }
