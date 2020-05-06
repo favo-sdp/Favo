@@ -80,10 +80,6 @@ public class CacheUtil {
     return preferences.getBoolean(key, false);
   }
 
-  public boolean pictureDownloaded(String pathToFolder) {
-    File file = new File(pathToFolder);
-    return file.exists();
-  }
 
   /**
    * Save given picture to Internal Storage and returns Boolean to indicate if it is a success.

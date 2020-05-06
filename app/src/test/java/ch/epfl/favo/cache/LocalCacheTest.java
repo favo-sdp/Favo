@@ -2,6 +2,9 @@ package ch.epfl.favo.cache;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,6 +12,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -23,6 +29,8 @@ public class LocalCacheTest {
   @Mock SharedPreferences mockSharedPreferences;
   @Mock SharedPreferences.Editor mockEditor;
 
+  private static String FAVORID = "favorID";
+
   @Before
   public void before() {
     //
@@ -33,6 +41,9 @@ public class LocalCacheTest {
     Mockito.when(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor);
     Mockito.when(mockSharedPreferences.getString(anyString(), anyString())).thenReturn("");
     Mockito.when(mockSharedPreferences.getBoolean(anyString(), anyBoolean())).thenReturn(false);
+
+    File temp = new File("data/user/0/ch.epfl.favo/files");
+    Mockito.when(mockContext.getFilesDir()).thenReturn(temp);
   }
 
   @Test
@@ -60,4 +71,5 @@ public class LocalCacheTest {
     CacheUtil.getInstance().getValueFromCacheBool(mockContext, "bool");
     verify(mockSharedPreferences, times(1)).getBoolean("bool", false);
   }
+  
 }
