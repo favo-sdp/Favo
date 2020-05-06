@@ -31,6 +31,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
 import ch.epfl.favo.view.tabs.UserAccountPage;
+import ch.epfl.favo.view.tabs.shop.ShopPage;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         R.id.nav_map,
         R.id.nav_favorList,
         R.id.nav_account,
+        R.id.nav_shop,
         R.id.nav_settings,
         R.id.nav_about,
         R.id.nav_share
@@ -56,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
-  private int cnt = 0;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
+            case R.id.nav_shop:
             case R.id.favorDetailView:
             case R.id.favorRequestView:
               if (bottomNavigationView.getVisibility() != View.GONE) {
@@ -154,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
               navController.navigate(itemId);
           }
 
-          //currentMenuItem = itemId;
+          // currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
@@ -169,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
           if (itemId == R.id.nav_map) navController.popBackStack(R.id.nav_map, false);
           else navController.navigate(R.id.nav_favorList);
 
-          //currentMenuItem = itemId;
+          // currentMenuItem = itemId;
           return false;
         });
   }
@@ -220,15 +222,16 @@ public class MainActivity extends AppCompatActivity {
       mDrawerLayout.closeDrawer(GravityCompat.START);
     else {
       NavHostFragment host =
-              (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+          (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
       Fragment f =
-              Objects.requireNonNull(host)
-                      .getChildFragmentManager()
-                      .findFragmentById(R.id.nav_host_fragment);
+          Objects.requireNonNull(host)
+              .getChildFragmentManager()
+              .findFragmentById(R.id.nav_host_fragment);
 
       if (f instanceof UserAccountPage
-              || f instanceof FragmentAbout
-              || f instanceof FragmentSettings) {
+          || f instanceof FragmentAbout
+          || f instanceof FragmentSettings
+          || f instanceof ShopPage) {
         navController.popBackStack(R.id.nav_map, false);
         currentMenuItem = R.id.nav_map;
       } else {
@@ -256,5 +259,4 @@ public class MainActivity extends AppCompatActivity {
     super.onResume();
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
   }
-
 }

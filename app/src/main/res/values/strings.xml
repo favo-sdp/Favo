@@ -142,5 +142,12 @@
     <string name="report_description">Report the user in case of inappropriate behaviour</string>
     <string name="feedback_description">Rate your experience with this user to help others</string>
 
+    <!-- Shop Page -->
+    <string name="shop">Shop</string>
+    <string name="price_text">%d CHF</string>
+    <string name="shop_pay_message">Pay the price for the quantity of coins selected</string>
+    <string name="balance_text">Current balance: %d</string>
+    <string name="favo_coins_text">Favo Coins</string>
+
 
 </resources>

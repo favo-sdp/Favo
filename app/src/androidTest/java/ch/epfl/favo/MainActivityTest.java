@@ -1,11 +1,13 @@
 package ch.epfl.favo;
 
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,6 +20,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -26,10 +29,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.R.id.nav_about;
 import static ch.epfl.favo.R.id.nav_account;
+import static ch.epfl.favo.R.id.nav_shop;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static ch.epfl.favo.TestUtils.childAtPosition;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -129,6 +134,31 @@ public class MainActivityTest {
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.user_account_fragment), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testShopTabIsLaunched() {
+
+    // Click on menu tab
+    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+
+    // Click on account icon
+    onView(withId(nav_shop)).perform(click());
+
+    getInstrumentation().waitForIdleSync();
+    // check that tab 2 is indeed opened
+    onView(allOf(withId(R.id.shop_fragment), withParent(withId(R.id.nav_host_fragment))))
+        .check(matches(isDisplayed()));
+
+    getInstrumentation().waitForIdleSync();
+
+    ViewInteraction recyclerView =
+        onView(
+            Matchers.allOf(
+                withId(R.id.shop_items_list), childAtPosition(withId(R.id.shop_fragment), 1)));
+    recyclerView.check(matches(isDisplayed())).perform(actionOnItemAtPosition(0, click()));
   }
 
   @Test

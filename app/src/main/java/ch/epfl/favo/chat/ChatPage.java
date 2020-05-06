@@ -156,7 +156,7 @@ public class ChatPage extends Fragment {
       public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View messageView =
-            LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false);
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_message, parent, false);
 
         messageView.setOnClickListener(
             v -> {
