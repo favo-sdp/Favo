@@ -115,8 +115,6 @@ public class AddFavorTest {
   public void testChatAndLocationButtonWorkRequestView() throws Throwable {
     // Check and click on the chat
     launchFragment(fakeFavor);
-    onView(withId(R.id.chat_button)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.fragment_chat)).check(matches(isDisplayed()));
 
     // Go back to favor detail page
     pressBack();
