@@ -8,6 +8,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -198,7 +199,7 @@ public class FavorPage extends Fragment {
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-        holder.bind(model);
+        holder.bind(getContext(), model);
       }
 
       @Override
