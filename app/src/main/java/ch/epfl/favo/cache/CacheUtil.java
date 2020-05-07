@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import static android.graphics.BitmapFactory.decodeFile;
+import static androidx.preference.PreferenceManager.*;
 
 public class CacheUtil {
 
@@ -37,8 +38,7 @@ public class CacheUtil {
    * @param value: String, value to store
    */
   public void storeKeyValueStr(Context context, String key, String value) {
-    PreferenceManager
-            .getDefaultSharedPreferences(context).edit()
+    getDefaultSharedPreferences(context).edit()
             .putString(key, value).apply();
   }
 
@@ -49,8 +49,7 @@ public class CacheUtil {
    * @param value: Boolean, value to store
    */
   public void storeKeyValueBool(Context context, String key, Boolean value) {
-    PreferenceManager
-            .getDefaultSharedPreferences(context).edit()
+    getDefaultSharedPreferences(context).edit()
             .putBoolean(key, value).apply();
   }
 
@@ -61,7 +60,7 @@ public class CacheUtil {
    * @return value (String) associated with the given key
    */
   public String getValueFromCacheStr(Context context, String key) {
-    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    SharedPreferences preferences = getDefaultSharedPreferences(context);
     return preferences.getString(key, "");
   }
 
@@ -72,7 +71,7 @@ public class CacheUtil {
    * @return value (Boolean) associated with the given key
    */
   public Boolean getValueFromCacheBool(Context context, String key) {
-    SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    SharedPreferences preferences = getDefaultSharedPreferences(context);
     return preferences.getBoolean(key, false);
   }
 

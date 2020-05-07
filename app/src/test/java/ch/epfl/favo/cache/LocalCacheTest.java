@@ -39,6 +39,7 @@ public class LocalCacheTest {
         .thenReturn(mockSharedPreferences);
     Mockito.when(mockSharedPreferences.edit()).thenReturn(mockEditor);
     Mockito.when(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor);
+    Mockito.when(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor);
     Mockito.when(mockSharedPreferences.getString(anyString(), anyString())).thenReturn("");
     Mockito.when(mockSharedPreferences.getBoolean(anyString(), anyBoolean())).thenReturn(false);
 
@@ -55,8 +56,8 @@ public class LocalCacheTest {
 
   @Test
   public void test_storeKeyValueBool() {
-    CacheUtil.getInstance().storeKeyValueBool(mockContext, "key", true);
-    verify(mockEditor, times(1)).putBoolean("key", true);
+    CacheUtil.getInstance().storeKeyValueBool(mockContext, "key2", true);
+    verify(mockEditor, times(1)).putBoolean("key2", true);
     verify(mockEditor, times(1)).apply();
   }
 
