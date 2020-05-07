@@ -117,8 +117,7 @@ public class AddFavorTest {
     launchFragment(fakeFavor);
 
     // Go back to favor detail page
-    pressBack();
-    Thread.sleep(3000);
+    Thread.sleep(2000);
 
     // Check and click on the location button
     onView(withId(R.id.location_request_view_btn)).check(matches(isDisplayed())).perform(click());
