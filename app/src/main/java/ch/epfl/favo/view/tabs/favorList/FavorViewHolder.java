@@ -25,7 +25,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
 
     mTitleView = itemView.findViewById(R.id.item_title);
     mDescriptionView = itemView.findViewById(R.id.item_desc);
-    buttonViewOption = itemView.findViewById(R.id.item_menu);
+    buttonViewOption = itemView.findViewById(R.id.item_menu_btn);
   }
 
   void bind(Context context, @NonNull Favor favor) {
