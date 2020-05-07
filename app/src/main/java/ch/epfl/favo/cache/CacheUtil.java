@@ -3,15 +3,13 @@ package ch.epfl.favo.cache;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
+import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -90,7 +88,8 @@ public class CacheUtil {
    * @param imageNum: the index of the image, set to 0 for now (TODO: support multiple pitures.)
    * @return Boolean to indicate whether the write was a success
    */
-  public void saveToInternalStorage(
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public Uri saveToInternalStorage(
           Context context, Bitmap bitmapImage, String favorId, int imageNum) {
 
     /* Remark:
@@ -98,71 +97,24 @@ public class CacheUtil {
      * Thus we won't need to check/request permission here. */
 
     String baseDir = context.getFilesDir().getAbsolutePath();
-    SaveToStorageParams saveToStorageParams = new SaveToStorageParams(
-            baseDir, favorId, Integer.toString(imageNum), bitmapImage);
-    SaveToStorageTask saveToStorageTask = new SaveToStorageTask();
-    saveToStorageTask.execute(saveToStorageParams);
-  }
 
+    File favorDir = new File(baseDir, favorId);
+    if (!favorDir.isDirectory()) {
+      favorDir.mkdir();
+    }
+
+    File image = new File(favorDir.getAbsolutePath(), String.format("%s.jpeg", imageNum));
+    try (FileOutputStream fos = new FileOutputStream(image)) {
+      bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+    } catch (IOException ignore) {
+      return null;
+    }
+
+    return Uri.parse(image.getAbsolutePath());
+  }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture<Bitmap> loadFromInternalStorage(String pathToFolder, int picNum){
-    return CompletableFuture.supplyAsync(() -> {
-      Bitmap result = decodeFile(pathToFolder + String.format("%s.jpeg", picNum));
-      if (result == null) {
-        Log.e(TAG, "Failed to load bitmap from internal storage");
-      }
-      return result;
-    });
-  }
-
-
-  /**
-   * Parameter class for SaveToStorageParamsTask
-   */
-  public static class SaveToStorageParams {
-    String baseDir;
-    String favorId;
-    String imageNum;
-    Bitmap bitmap;
-
-    public SaveToStorageParams(String baseDir, String favorId, String imageNum, Bitmap bitmap) {
-      this.baseDir = baseDir;
-      this.favorId = favorId;
-      this.imageNum = "0"; // Todo: support mutliple pictures
-      this.bitmap = bitmap;
-    }
-  }
-
-  /**
-   * Store image to internal storage asynchronously
-   */
-  public static class SaveToStorageTask extends AsyncTask<SaveToStorageParams, Void, Boolean> {
-
-    @Override
-    protected Boolean doInBackground(SaveToStorageParams... params) {
-      String baseDir = params[0].baseDir; String favorId = params[0].favorId;
-      String imageNum = params[0].imageNum; Bitmap bitmap = params[0].bitmap;
-
-      // If image folder for the current favor does not exist, create the directory.
-      File favorDir = new File(baseDir, favorId);
-      if (!favorDir.isDirectory()) {
-        if (!favorDir.mkdir()) {
-          Log.e(TAG, "Error: Creating new directory to store images failed.");
-          return false;
-        }
-      }
-
-      // Create the image file and write the bitmap to file.
-      File image = new File(favorDir.getAbsolutePath(), String.format("%s.jpeg", imageNum));
-      try (FileOutputStream fos = new FileOutputStream(image)) {
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-      } catch (IOException e) {
-        e.printStackTrace();
-        return false;
-      }
-      Log.d(TAG, "Successfully saved picture " + image.getAbsolutePath());
-      return true;
-    }
+    return CompletableFuture.supplyAsync(() -> decodeFile(pathToFolder + String.format("%s.jpeg", picNum)));
   }
 }

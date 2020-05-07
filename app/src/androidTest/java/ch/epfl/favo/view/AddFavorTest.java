@@ -1,8 +1,6 @@
 package ch.epfl.favo.view;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -26,16 +24,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Objects;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
@@ -44,7 +40,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorRequestView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
@@ -58,6 +53,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
+import static ch.epfl.favo.TestConstants.FAVOR_ID;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
@@ -175,7 +171,13 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
-    Uri filePath = saveImageToInternalStorage(currentFragment.getContext(), bm);
+    Uri filePath = CacheUtil.getInstance().saveToInternalStorage(
+            Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
+    getInstrumentation().waitForIdleSync();
+    Bitmap actual = CacheUtil.getInstance().loadFromInternalStorage(
+            Objects.requireNonNull(currentFragment.getContext())
+                    .getFilesDir().getAbsolutePath() + "/" + FAVOR_ID + "/", 0).get();
+    assert(actual.sameAs(bm));
     Intent intent = new Intent();
     intent.setData(filePath);
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
@@ -468,53 +470,4 @@ public class AddFavorTest {
         .check(matches(withText(R.string.update_favor_error)));
   }
 
-  public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap) {
-
-    String mImageName = "snap.jpg";
-
-    ContextWrapper wrapper = new ContextWrapper(mContext);
-
-    File file = wrapper.getDir("Images", MODE_PRIVATE);
-
-    file = new File(file, mImageName);
-
-    try {
-
-      OutputStream stream;
-
-      stream = new FileOutputStream(file);
-
-      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-      stream.flush();
-
-      stream.close();
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    Uri mImageUri = Uri.parse(file.getAbsolutePath());
-
-    return mImageUri;
-  }
-
-  @Test
-  public void testCanInviteUser() throws Throwable {
-    // Check and click on the invite button
-    launchFragment(fakeFavor);
-
-    getInstrumentation().waitForIdleSync();
-
-    Thread.sleep(1000);
-
-    onView(withId(R.id.invite_button)).check(matches(isDisplayed())).perform(click());
-
-    // check that share intent is indeed opened
-    onView(AllOf.allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
-
-    // click back button
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.pressBack();
-  }
 }
