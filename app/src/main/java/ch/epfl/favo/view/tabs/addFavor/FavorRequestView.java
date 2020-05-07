@@ -461,8 +461,8 @@ public class FavorRequestView extends Fragment {
     // callbacks in requestFavor and confirm
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-      getViewModel().uploadOrUpdatePicture(favor, picture);
       getViewModel().savePictureToLocal(getContext(), favor, picture);
+      getViewModel().uploadOrUpdatePicture(favor, picture);
     } else {
       favor.setPictureUrl(null);
     }
