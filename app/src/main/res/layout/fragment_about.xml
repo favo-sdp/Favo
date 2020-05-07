@@ -1,87 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_about"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".view.tabs.FragmentAbout">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="371dp"
-        android:layout_height="88dp"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="176dp"
-        android:gravity="center"
-        android:text="At Favo, we believe in using technology as a means of simplifying and improving our day to day lives. Unlike many similar applications, Favo aims to capture a broader target audience by making the range of favours and help a user can request to be limitless."
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/fragment_about"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.tabs.FragmentAbout">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="388dp"
-        android:layout_height="326dp"
-        android:layout_marginTop="112dp"
-        android:gravity="center"
-        android:src="@drawable/about"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.478"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="371dp"
+            android:layout_height="88dp"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="176dp"
+            android:gravity="center"
+            android:text="At Favo, we believe in using technology as a means of simplifying and improving our day to day lives. Unlike many similar applications, Favo aims to capture a broader target audience by making the range of favours and help a user can request to be limitless."
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="36dp"
-        android:gravity="center"
-        android:text="Our Mission"
-        android:textSize="28sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.24" />
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="388dp"
+            android:layout_height="326dp"
+            android:layout_marginTop="112dp"
+            android:gravity="center"
+            android:src="@drawable/about"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.478"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="48dp"
-        android:layout_marginTop="96dp"
-        android:gravity="center"
-        android:text="Connecting people everywhere, one favour at a time.   "
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="36dp"
+            android:gravity="center"
+            android:text="Our Mission"
+            android:textSize="28sp"
+            app:layout_constraintBottom_toTopOf="@+id/textView4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.24" />
 
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="374dp"
-        android:layout_height="125dp"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="284dp"
-        android:gravity="center"
-        android:text="Our international development team currently consists of 6 developers from Canada, Colombia, China &amp; Italy. The prototype for Favo began as a classroom project at Ecolé Polytechnique in Switzerland. Since then, Favo has evolved to meet the changing demands of our users today and countless improvements have gone into the usability and overall application experience."
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="48dp"
+            android:layout_marginTop="96dp"
+            android:gravity="center"
+            android:text="Connecting people everywhere, one favour at a time.   "
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginStart="140dp"
-        android:layout_marginTop="132dp"
-        android:gravity="center"
-        android:text="About the Team"
-        android:textSize="18dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="374dp"
+            android:layout_height="125dp"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="284dp"
+            android:gravity="center"
+            android:text="Our international development team currently consists of 6 developers from Canada, Colombia, China &amp; Italy. The prototype for Favo began as a classroom project at Ecolé Polytechnique in Switzerland. Since then, Favo has evolved to meet the changing demands of our users today and countless improvements have gone into the usability and overall application experience."
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="132dp"
+            android:gravity="center"
+            android:text="About the Team"
+            android:textSize="18dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

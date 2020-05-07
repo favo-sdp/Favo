@@ -166,7 +166,12 @@ public class MapPage extends Fragment
       loc.setLongitude(latLng.longitude);
       Favor newFavor =
           new Favor(
-              "", " ", DependencyFactory.getCurrentFirebaseUser().getUid(), loc, FavorStatus.EDIT);
+              "",
+              " ",
+              DependencyFactory.getCurrentFirebaseUser().getUid(),
+              loc,
+              FavorStatus.EDIT,
+              0);
       focusedFavor = newFavor;
       Marker mk = drawFavorMarker(newFavor, true, true);
       mk.showInfoWindow();
