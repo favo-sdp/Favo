@@ -199,7 +199,7 @@ public class FavorPage extends Fragment {
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-        holder.bind(getContext(), model);
+        holder.bind(requireContext(), model);
       }
 
       @Override
