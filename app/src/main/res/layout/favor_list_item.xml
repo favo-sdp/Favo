@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -9,19 +10,42 @@
     android:paddingStart="?attr/listPreferredItemPaddingStart"
     android:paddingEnd="?attr/listPreferredItemPaddingEnd">
 
-    <TextView
-        android:id="@+id/item_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:minHeight="?attr/listPreferredItemHeight"
+        android:paddingStart="?attr/listPreferredItemPaddingStart"
+        android:paddingEnd="?attr/listPreferredItemPaddingEnd">
+
+        <TextView
+            android:id="@+id/item_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="Title"/>
+
+        <TextView
+            android:id="@+id/item_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceListItemSecondary"
+            android:text="Subtitle"/>
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/item_desc"
+        android:id="@+id/item_menu_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItemSecondary" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:paddingTop="6pt"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:text="&#8942;"
+        android:textAppearance="?android:textAppearanceLarge"
+        tools:ignore="RtlSymmetry" />
 
-</LinearLayout>
+</RelativeLayout>
