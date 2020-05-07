@@ -195,3 +195,34 @@ exports.sendNotificationOnUpdate = functions.firestore
                 });
         }
     });
+//Expire old requests
+exports.expireOldFavors = functions.https.onRequest((req,res)=>{
+    const timeInDays = request.body.timeInDays;
+    const EXPIRED_STATUS = 2;
+    const REQUESTED_STATUS = 0;
+    var now = Date.now();
+    var cutoff = now - timeInDays*24*60*60*1000;
+    var oldItemsQuery = db.collection("/favors").orderByChild("postedTime").endAt(cutoff);
+    oldItemsQuery.once('value',snapshot=>{
+        if (snapshot === null){
+        response.status(100).send("No expired favors");
+        }else {
+        const promises = [];
+        snapshot.forEach(doc=>{
+            if(doc.statusId===0){
+                promises.push(doc.ref.update({'statusId':EXPIRED_STATUS}));
+            }
+        });
+        Promise.all(promises).then(data=>{
+        console.log("Succesfully updated favor statuses.");
+        response.status(100).send("Favors successfully expired");})
+        .catch(error => {
+                console.error(error.message);
+                response.status(200).send("Some updates failed to update. Users may have modified these documents.");
+              });
+        }
+
+    }).catch(error=>{
+            console.error(error.message)
+            response.status(300).send("Favors failed to be expired")})
+});
