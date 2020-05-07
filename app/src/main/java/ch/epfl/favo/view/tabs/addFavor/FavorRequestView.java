@@ -12,15 +12,12 @@ import android.os.Bundle;
 import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -55,7 +52,7 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
-  private String TAG = "FavorRequestView";
+  private static final String TAG = "FavorRequestView";
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
@@ -206,9 +203,7 @@ public class FavorRequestView extends Fragment {
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
     cancelFavorBtn.setOnClickListener(
         v -> {
-          if (currentFavor.getIsArchived()) {
-
-          } else {
+          if (!currentFavor.getIsArchived()) {
             cancelFavor();
           }
         });
@@ -239,10 +234,10 @@ public class FavorRequestView extends Fragment {
         });
 
     shareBtn = rootView.findViewById(R.id.invite_button);
-    shareBtn.setOnClickListener(v -> {
-      onShareClicked();
-    });
-
+    shareBtn.setOnClickListener(
+        v -> {
+          onShareClicked();
+        });
   }
 
   /**

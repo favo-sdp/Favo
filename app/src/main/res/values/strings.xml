@@ -1,11 +1,19 @@
 <resources>
     <string name="app_name">Favo</string>
 
+    <string name="app_name_extended">Favo App</string>
+
     <!-- General info about the app -->
     <string name="app_site">https://github.com/favo-sdp/Favo</string>
     <string name="app_site_issues">https://github.com/favo-sdp/Favo/issues</string>
 
+    <string name="yes_text">Yes</string>
+    <string name="no_text">No</string>
+
     <!-- Auth UI - Signed in -->
+    <string name="no_email_text">No email</string>
+    <string name="delete_account_alert">Are you sure you want to delete this account?</string>
+
     <string name="sign_in_failed">Sign in failed</string>
     <string name="sign_out">Sign out</string>
     <string name="delete_account_label">Delete account</string>
@@ -67,6 +75,7 @@
 
     <!-- Offline mode -->
     <!-- map -->
+    <string name="no_connection_message">No internet connection</string>
     <string name="offline_mode_dialog_title">Offline map support</string>
     <string name="offline_mode_instructions">You can enable offline map support by downloading offline maps from the Google Maps app</string>
     <string name="offline_mode_dialog_link">Show me how</string>

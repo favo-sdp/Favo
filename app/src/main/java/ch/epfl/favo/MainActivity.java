@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -41,6 +40,9 @@ import ch.epfl.favo.view.tabs.shop.ShopPage;
  * left. Contains a bottom navigation for top-level activities.
  */
 public class MainActivity extends AppCompatActivity {
+
+  private static final String DEEP_LINK_QUERY_PARAMETER = "favorId";
+  private static final String NOTIFICATION_PARAMETER = "FavorId";
 
   private static final int[] NAVIGATION_ITEMS =
       new int[] {
@@ -96,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 Uri deepLink = pendingDynamicLinkData.getLink();
 
                 if (deepLink != null) {
-                  String favorId = deepLink.getQueryParameter("favorId");
+                  String favorId = deepLink.getQueryParameter(DEEP_LINK_QUERY_PARAMETER);
 
                   if (favorId != null && !favorId.equals("")) {
                     Bundle favorBundle = new Bundle();
@@ -105,8 +107,7 @@ public class MainActivity extends AppCompatActivity {
                   }
                 }
               }
-            })
-        .addOnFailureListener(this, e -> Log.w("MainActivity", "getDynamicLink:onFailure", e));
+            });
   }
 
   private void setupActivity() {
@@ -215,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
     Snackbar snack =
         Snackbar.make(
             findViewById(android.R.id.content).getRootView(),
-            "No internet connection",
+            R.string.no_connection_message,
             Snackbar.LENGTH_LONG);
     View view = snack.getView();
     snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
@@ -232,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
     intent.setType("text/plain");
     intent.putExtra(Intent.EXTRA_TEXT, link);
 
-    startActivity(Intent.createChooser(intent, "Favo App"));
+    startActivity(Intent.createChooser(intent, getText(R.string.app_name_extended)));
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
     Bundle extras = intent.getExtras();
     if (extras != null) {
       Bundle favorBundle = new Bundle();
-      String favorId = extras.getString("FavorId");
+      String favorId = extras.getString(NOTIFICATION_PARAMETER);
 
       if (favorId != null && !favorId.equals("")) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);

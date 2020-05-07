@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.net.IpSecManager;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -26,14 +25,12 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.GpsTracker;
 import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
-import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
   private static IGpsTracker currentGpsTracker;
   private static FirebaseUser currentFirebaseUser;
-  private static User currentUser;
   private static ICollectionWrapper currentCollectionWrapper;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
@@ -41,7 +38,6 @@ public class DependencyFactory {
   private static boolean offlineMode = false;
   private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
-  private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
   private static FavorUtil currentFavorRepository;
