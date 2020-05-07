@@ -34,17 +34,17 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
     buttonViewOption.setOnClickListener(view -> {
       PopupMenu popup = new PopupMenu(context, buttonViewOption);
       popup.inflate(R.menu.item_menu);
-      popup.setOnMenuItemClickListener(item -> {
-        switch (item.getItemId()) {
-          case R.id.item_menu_view:
-            break;
-          case R.id.item_menu_edit:
-            break;
-          case R.id.item_menu_cancel:
-            break;
-        }
-        return false;
-      });
+      popup.setOnMenuItemClickListener(item -> false);
+//        switch (item.getItemId()) {
+//          case R.id.item_menu_view:
+//            break;
+//          case R.id.item_menu_edit:
+//            break;
+//          case R.id.item_menu_cancel:
+//            break;
+//        }
+//        return false;
+//      });
       popup.show();
     });
   }
