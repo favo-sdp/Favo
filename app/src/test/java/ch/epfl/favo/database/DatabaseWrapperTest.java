@@ -89,12 +89,14 @@ public class DatabaseWrapperTest {
     Task mockEmptyTask = Mockito.mock(Task.class);
     Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).update(anyMap());
     Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).set(any());
+    Mockito.doReturn(mockEmptyTask).when(mockDocumentReference).delete();
     // mock return task
     documentSnapshotTask = Mockito.mock(Task.class);
     // mock document returned by task
     mockDocumentSnapshot = Mockito.mock(DocumentSnapshot.class);
     // return mock document when task.getresult
     Mockito.doReturn(mockDocumentSnapshot).when(documentSnapshotTask).getResult();
+
     // return task when document reference is called on get
     Mockito.doReturn(documentSnapshotTask).when(mockDocumentReference).get(any());
     Mockito.doReturn(documentSnapshotTask).when(mockDocumentReference).get();
