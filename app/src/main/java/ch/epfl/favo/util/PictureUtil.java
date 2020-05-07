@@ -25,7 +25,7 @@ public class PictureUtil {
   private final FirebaseStorage storage;
 
   private PictureUtil() {
-    storage = FirebaseStorage.getInstance();
+    storage = DependencyFactory.getCurrentFirebaseStorage();
   }
 
   public static PictureUtil getInstance() {

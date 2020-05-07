@@ -114,7 +114,6 @@ public class FavorRequestView extends Fragment {
   }
 
   private void setupFavorListener(View rootView, String favorId) {
-
     getViewModel()
         .setObservedFavor(favorId)
         .observe(
@@ -237,8 +236,8 @@ public class FavorRequestView extends Fragment {
     CompletableFuture deleteFuture = getViewModel().deleteFavor(currentFavor);
     deleteFuture.thenAccept(
         o -> {
-          CommonTools.showSnackbar(requireView(), "Favor successfully deleted");
-          requireActivity().onBackPressed();// exit view
+          CommonTools.showSnackbar(requireView(), getString(R.string.favor_delete_success_msg));
+          requireActivity().onBackPressed();
         });
     deleteFuture.exceptionally(onFailedResult(requireView()));
   }
@@ -335,6 +334,7 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. */
   private void cancelFavor() {
+    favorStatus = FavorStatus.CANCELLED_REQUESTER;
     CompletableFuture cancelFuture = getViewModel().cancelFavor(currentFavor, true);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));

@@ -201,7 +201,7 @@ exports.expireOldFavors = functions.https.onRequest((req,res)=>{
     var now = Date.now();
     var cutoff = now - timeInDays*24*60*60*1000;
     let query = db.collection('favors');
-    var oldItemsQuery = query.orderBy('postedTime').endAt(cutoff)
+    return query.orderBy('postedTime').endAt(cutoff)
     .get().then(snapshot=>{
     if (snapshot.empty){
     res.status(100).send("No expired favors");
@@ -218,9 +218,9 @@ exports.expireOldFavors = functions.https.onRequest((req,res)=>{
                   }
               })
 
-              Promise.all(promises).then(data=>{
+              return Promise.all(promises).then(data=>{
                       console.log("Succesfully updated favor statuses.");
                       res.status(100).send("Favors successfully expired");
-                      return;})}
+                      })}
 
     } )});

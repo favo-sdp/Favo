@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.net.IpSecManager;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -17,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -48,6 +48,7 @@ public class DependencyFactory {
   private static IUserUtil currentUserRepository;
   private static FirebaseInstanceId currentFirebaseInstanceId;
   private static PictureUtil currentPictureUtility;
+  private static FirebaseStorage currentFirebaseStorage;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -217,9 +218,18 @@ public class DependencyFactory {
     if (testMode && currentPictureUtility != null) return currentPictureUtility;
     return PictureUtil.getInstance();
   }
-
+  @VisibleForTesting
   public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
     testMode = true;
     currentPictureUtility = pictureUtil;
+  }
+  @VisibleForTesting
+  public static void setCurrentFirebaseStorage(FirebaseStorage dependency){
+    testMode = true;
+    currentFirebaseStorage = dependency;
+  }
+  public static FirebaseStorage getCurrentFirebaseStorage(){
+    if (testMode && currentFirebaseStorage != null) return currentFirebaseStorage;
+    return FirebaseStorage.getInstance();
   }
 }
