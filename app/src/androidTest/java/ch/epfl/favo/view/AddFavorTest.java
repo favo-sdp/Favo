@@ -477,6 +477,11 @@ public class AddFavorTest {
   public void testCanInviteUser() throws Throwable {
     // Check and click on the invite button
     launchFragment(fakeFavor);
+
+    getInstrumentation().waitForIdleSync();
+
+    Thread.sleep(1000);
+
     onView(withId(R.id.invite_button)).check(matches(isDisplayed())).perform(click());
 
     // check that share intent is indeed opened

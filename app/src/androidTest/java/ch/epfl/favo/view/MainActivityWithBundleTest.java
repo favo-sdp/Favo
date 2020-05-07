@@ -15,6 +15,7 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -60,8 +61,7 @@ public class MainActivityWithBundleTest {
     launchActivityWithIntent(url);
 
     Thread.sleep(2000);
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
+    onView(withText(FavorStatus.REQUESTED.toString())).check(matches(isDisplayed()));
   }
 
   @Test
