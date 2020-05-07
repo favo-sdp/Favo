@@ -14,10 +14,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -470,4 +472,19 @@ public class AddFavorTest {
 
     return mImageUri;
   }
+
+  @Test
+  public void testCanInviteUser() throws Throwable {
+    // Check and click on the invite button
+    launchFragment(fakeFavor);
+    onView(withId(R.id.invite_button)).check(matches(isDisplayed())).perform(click());
+
+    // check that share intent is indeed opened
+    onView(AllOf.allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
+
+    // click back button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.pressBack();
+  }
+
 }
