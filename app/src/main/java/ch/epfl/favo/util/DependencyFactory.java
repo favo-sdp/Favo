@@ -218,17 +218,20 @@ public class DependencyFactory {
     if (testMode && currentPictureUtility != null) return currentPictureUtility;
     return PictureUtil.getInstance();
   }
+
   @VisibleForTesting
   public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
     testMode = true;
     currentPictureUtility = pictureUtil;
   }
+
   @VisibleForTesting
-  public static void setCurrentFirebaseStorage(FirebaseStorage dependency){
+  public static void setCurrentFirebaseStorage(FirebaseStorage dependency) {
     testMode = true;
     currentFirebaseStorage = dependency;
   }
-  public static FirebaseStorage getCurrentFirebaseStorage(){
+
+  public static FirebaseStorage getCurrentFirebaseStorage() {
     if (testMode && currentFirebaseStorage != null) return currentFirebaseStorage;
     return FirebaseStorage.getInstance();
   }

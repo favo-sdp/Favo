@@ -99,7 +99,9 @@ public class DatabaseWrapper {
   }
 
   static Query locationBoundQuery(Location loc, double radius, String collection) {
-    double longDif = Math.toDegrees(radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
+    double longDif =
+        Math.toDegrees(
+            radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
