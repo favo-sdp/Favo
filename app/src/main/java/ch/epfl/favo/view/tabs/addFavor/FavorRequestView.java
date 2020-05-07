@@ -197,13 +197,14 @@ public class FavorRequestView extends Fragment {
 
     // Button: Cancel Favor
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
-    cancelFavorBtn.setOnClickListener(v -> {
-            if (currentFavor.getIsArchived()){
+    cancelFavorBtn.setOnClickListener(
+        v -> {
+          if (currentFavor.getIsArchived()) {
 
-    }
-            else{
+          } else {
             cancelFavor();
-    }});
+          }
+        });
 
     // Button: Edit favor
     editFavorBtn = rootView.findViewById(R.id.edit_favor_button);
@@ -320,8 +321,7 @@ public class FavorRequestView extends Fragment {
   private void confirmUpdatedFavor() {
 
     // DB call to update Favor details
-    CompletableFuture updateFuture =
-        getViewModel().reEnableFavor(currentFavor);
+    CompletableFuture updateFuture = getViewModel().reEnableFavor(currentFavor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 
@@ -438,7 +438,8 @@ public class FavorRequestView extends Fragment {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
-    Favor favor = new Favor(title, desc, userId, loc, favorStatus);
+    // TODO: Get reward from frontend (currently being set by default to 0)
+    Favor favor = new Favor(title, desc, userId, loc, favorStatus, 0);
 
     // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
     // callbacks in requestFavor and confirm
