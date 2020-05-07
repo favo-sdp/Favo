@@ -60,6 +60,7 @@ public class UserUnitTests {
     assertEquals(0, user.getCompletedFavors());
     assertEquals(0, user.getLikes());
     assertEquals(0, user.getDislikes());
+    assertEquals(10, (int) user.getBalance());
 
     // field should initialize null and populate later
     assertNull(user.getNotificationId());
@@ -73,6 +74,7 @@ public class UserUnitTests {
     User user = new User();
     int activeAcceptingFavors = User.MAX_ACCEPTING_FAVORS;
     int activeRequestingFavors = User.MAX_REQUESTING_FAVORS;
+    double newBalance = 5;
     String temporaryNotificationId = "temporaryNotificationId";
     String temporaryDeviceId = "temporaryDeviceId";
     FavoLocation newLoc = new FavoLocation();
@@ -87,6 +89,7 @@ public class UserUnitTests {
     user.setCompletedFavors(testNum);
     user.setLikes(testNum);
     user.setDislikes(testNum);
+    user.setBalance(newBalance);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
@@ -97,6 +100,7 @@ public class UserUnitTests {
     assertEquals(testNum, user.getCompletedFavors());
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
+    assertEquals((int) newBalance, (int) user.getBalance());
   }
 
   @Test
@@ -125,6 +129,7 @@ public class UserUnitTests {
     assertEquals(user.getCompletedFavors(), user2.getCompletedFavors());
     assertEquals(user.getLikes(), user2.getLikes());
     assertEquals(user.getDislikes(), user2.getDislikes());
+    assertEquals((int) user.getBalance(), (int) user2.getBalance());
   }
 
   @Test

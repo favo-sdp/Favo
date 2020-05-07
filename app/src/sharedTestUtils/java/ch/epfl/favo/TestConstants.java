@@ -26,6 +26,7 @@ public class TestConstants {
   public static final Date BIRTHDAY = new Date(0);
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
+  public static final double REWARD = 3.50;
   public static final FavorStatus FAVOR_STATUS = FavorStatus.REQUESTED;
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
   public static final String PICTURE_URL = "https://favo.com/picture";
