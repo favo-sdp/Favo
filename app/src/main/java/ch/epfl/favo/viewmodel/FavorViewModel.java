@@ -67,7 +67,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    * @param change number of favors being updated
    * @returnf
    */
-  private CompletableFuture changeUserActiveFavorCount(
+  private CompletableFuture<Void> changeUserActiveFavorCount(
       String userId, boolean isRequested, int change) {
     return getUserRepository().changeActiveFavorCount(userId, isRequested, change);
   }
@@ -144,6 +144,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     tempFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     tempFavor.setStatusIdToInt(ACCEPTED);
     return updateFavorForCurrentUser(tempFavor, false, 1);
+  }
+
+  public CompletableFuture deleteFavor(final Favor favor) {
+    CompletableFuture removeFavorFuture = getFavorRepository().removeFavor(favor.getId());
+    if (favor.getPictureUrl() != null) {
+      removeFavorFuture.thenCompose(o -> getPictureUtility().deletePicture(favor.getPictureUrl()));
+    }
+    return removeFavorFuture;
   }
 
   // Upload/download pictures

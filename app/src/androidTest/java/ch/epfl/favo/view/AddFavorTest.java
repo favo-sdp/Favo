@@ -283,7 +283,7 @@ public class AddFavorTest {
     onView(withId(R.id.edit_favor_button))
         .check(matches(allOf(isEnabled(), withText(R.string.restart_request))));
     // Check cancel button is not clickable
-    onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
+    //onView(withId(R.id.cancel_favor_button)).check(matches(not(isEnabled())));
     // Check updated status string
     onView(withId(R.id.toolbar_main_activity))
             .check(matches(isDisplayed()))
@@ -384,6 +384,32 @@ public class AddFavorTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
     checkCancelledView(FavorStatus.CANCELLED_ACCEPTER);
+  }
+  @Test
+  public void testDeleteFavor() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(FakeItemFactory.getFavor());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000); //wait for snackbar to hide
+    onView(withId(R.id.cancel_favor_button)).check(matches(withText(R.string.delete_favor))).perform(click());
+    //should leave view
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.favor_delete_success_msg)));
+  }
+  @Test
+  public void testSnackBarShowsWhenDeleteFavorFails() throws Throwable {
+    FavorRequestView favorRequestView = launchFragment(FakeItemFactory.getFavor());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    FakeViewModel fakeViewModel = (FakeViewModel) favorRequestView.getViewModel();
+    runOnUiThread(()->fakeViewModel.setThrowError(new RuntimeException()));
+    Thread.sleep(2000);
+    onView(withId(R.id.cancel_favor_button)).check(matches(withText(R.string.delete_favor))).perform(click());
+
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.update_favor_error)));
   }
 
   @Test

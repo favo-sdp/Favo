@@ -11,11 +11,11 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ICollectionWrapper<T> {
 
-  CompletableFuture addDocument(T document) throws RuntimeException;
+  CompletableFuture<Void> addDocument(T document) throws RuntimeException;
 
-  CompletableFuture updateDocument(String key, Map<String, Object> updates);
+  CompletableFuture<Void> updateDocument(String key, Map<String, Object> updates);
 
-  void removeDocument(String key);
+  CompletableFuture<Void> removeDocument(String key);
 
   CompletableFuture<T> getDocument(String key);
 

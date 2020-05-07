@@ -196,7 +196,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     // wait to refresh
     Thread.sleep(2000);
@@ -256,6 +256,60 @@ public class FavorPageTest {
 
     // check favor is displayed in archived favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testDeletedFavorUpdatesListView() throws InterruptedException {
+    // Click on favors tab
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // Click on new favor tab
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // Fill in text views with fake favor
+    Favor favor = FakeItemFactory.getFavor();
+
+    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
+
+    // Click on request button
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(4000); // wait for snackbar to hide
+
+    // Click on cancel button
+    onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
+
+    // Click on delete button
+    onView(withId(R.id.cancel_favor_button))
+        .check(matches(withText(R.string.delete_favor)))
+        .perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
+
+    onView(withId(R.id.swipe_refresh_layout))
+        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+
+    Thread.sleep(2000);
+
+    // Check favor is not displayed in active list
+    onView(withText(favor.getTitle())).check(doesNotExist());
+
+    // go to archived list
+    onView(withId(R.id.archived_toggle)).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.swipe_refresh_layout))
+        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+
+    Thread.sleep(2000);
+
+    // check favor is displayed in archived favor list view
+    onView(withText(favor.getTitle())).check(doesNotExist());
   }
 
   private void requestFavorAndSearch() throws InterruptedException {

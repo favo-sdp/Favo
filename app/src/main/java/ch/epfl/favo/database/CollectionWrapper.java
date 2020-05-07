@@ -25,8 +25,8 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
   }
 
   @Override
-  public void removeDocument(String key) {
-    DatabaseWrapper.removeDocument(key, collection);
+  public CompletableFuture removeDocument(String key) {
+    return DatabaseWrapper.removeDocument(key, collection);
   }
 
   @Override

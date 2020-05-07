@@ -79,6 +79,12 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
+  public CompletableFuture deleteFavor(Favor favor) {
+    if (isThrowingError) return failedResult;
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
   public CompletableFuture reEnableFavor(Favor favor) {
     if (isThrowingError) return failedResult;
     favor.setStatusIdToInt(FavorStatus.REQUESTED);

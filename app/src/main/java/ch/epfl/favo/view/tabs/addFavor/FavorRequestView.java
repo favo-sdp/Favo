@@ -37,7 +37,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
@@ -115,7 +114,6 @@ public class FavorRequestView extends Fragment {
   }
 
   private void setupFavorListener(View rootView, String favorId) {
-
     getViewModel()
         .setObservedFavor(favorId)
         .observe(
@@ -199,10 +197,12 @@ public class FavorRequestView extends Fragment {
     cancelFavorBtn = rootView.findViewById(R.id.cancel_favor_button);
     cancelFavorBtn.setOnClickListener(
         v -> {
-          if (currentFavor.getIsArchived()) {
-
-          } else {
+          if (!currentFavor.getIsArchived()) {
+            // if favor is active we can cancel
             cancelFavor();
+          } else if (currentFavor.getAccepterId() == null) {
+            // if favor is inactive and nobody has accepted it
+            deleteFavor();
           }
         });
 
@@ -230,6 +230,16 @@ public class FavorRequestView extends Fragment {
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorRequestView_to_chatView, favorBundle);
         });
+  }
+
+  private void deleteFavor() {
+    CompletableFuture deleteFuture = getViewModel().deleteFavor(currentFavor);
+    deleteFuture.thenAccept(
+        o -> {
+          CommonTools.showSnackbar(requireView(), getString(R.string.favor_delete_success_msg));
+          requireActivity().onBackPressed();
+        });
+    deleteFuture.exceptionally(onFailedResult(requireView()));
   }
 
   /**
@@ -263,15 +273,6 @@ public class FavorRequestView extends Fragment {
           setFavorActivatedView(requireView());
           setupFavorListener(requireView(), currentFavor.getId());
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
-
-          // update user info
-          UserUtil.getSingleInstance()
-              .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-              .thenAccept(
-                  user -> {
-                    user.setRequestedFavors(user.getRequestedFavors() + 1);
-                    UserUtil.getSingleInstance().updateUser(user);
-                  });
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
     // Show confirmation and minimize keyboard
@@ -333,7 +334,8 @@ public class FavorRequestView extends Fragment {
 
   /** Updates favor on DB. */
   private void cancelFavor() {
-    CompletableFuture cancelFuture = getViewModel().cancelFavor((Favor) currentFavor.clone(), true);
+    favorStatus = FavorStatus.CANCELLED_REQUESTER;
+    CompletableFuture cancelFuture = getViewModel().cancelFavor(currentFavor, true);
     cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
     cancelFuture.exceptionally(onFailedResult(getView()));
   }
@@ -386,9 +388,15 @@ public class FavorRequestView extends Fragment {
         }
       default: // cancelled
         {
+          boolean isCancelEnabled = false;
+          if (currentFavor.getAccepterId() == null) { // change to delete favor
+            cancelFavorBtn.setText(getString(R.string.delete_favor));
+            isCancelEnabled = true;
+          }
           toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
           updateEditBtnDisplay(R.string.restart_request, R.drawable.ic_edit_24dp);
-          updateViewFromParameters(false, true, false, true, false);
+
+          updateViewFromParameters(false, true, false, true, isCancelEnabled);
         }
     }
   }

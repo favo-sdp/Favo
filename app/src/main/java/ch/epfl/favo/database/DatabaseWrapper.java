@@ -60,8 +60,9 @@ public class DatabaseWrapper {
     return new TaskToFutureAdapter<>(postTask).getInstance();
   }
 
-  static <T extends Document> void removeDocument(String key, String collection) {
-    getDocumentQuery(key, collection).delete();
+  static <T extends Document> CompletableFuture removeDocument(String key, String collection) {
+    Task deleteTask = getDocumentQuery(key, collection).delete();
+    return new TaskToFutureAdapter<>(deleteTask).getInstance();
   }
 
   static CompletableFuture updateDocument(
@@ -98,7 +99,9 @@ public class DatabaseWrapper {
   }
 
   static Query locationBoundQuery(Location loc, double radius, String collection) {
-    double longDif = Math.toDegrees(radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
+    double longDif =
+        Math.toDegrees(
+            radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
