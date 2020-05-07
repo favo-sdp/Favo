@@ -50,16 +50,6 @@ public class ShopPage extends Fragment {
 
   public ShopPage() {}
 
-  // TODO: Customize parameter initialization
-  @SuppressWarnings("unused")
-  public static ShopPage newInstance(int columnCount) {
-    ShopPage fragment = new ShopPage();
-    Bundle args = new Bundle();
-    args.putInt(ARG_COLUMN_COUNT, columnCount);
-    fragment.setArguments(args);
-    return fragment;
-  }
-
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

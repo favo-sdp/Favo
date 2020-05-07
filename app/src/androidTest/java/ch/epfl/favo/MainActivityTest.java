@@ -160,7 +160,7 @@ public class MainActivityTest {
     ViewInteraction recyclerView =
         onView(
             Matchers.allOf(
-                withId(R.id.shop_items_list), childAtPosition(withId(R.id.shop_fragment), 2)));
+                withId(R.id.shop_items_list), childAtPosition(withId(R.id.shop_fragment), 1)));
     recyclerView.check(matches(isDisplayed())).perform(actionOnItemAtPosition(0, click()));
   }
 
