@@ -60,8 +60,8 @@ public class MainActivityWithBundleTest {
 
     launchActivityWithIntent(url);
 
-    Thread.sleep(2000);
-    onView(withText(FavorStatus.REQUESTED.toString())).check(matches(isDisplayed()));
+    Thread.sleep(3000);
+    onView(withId(R.id.fragment_favor_accept_view)).check(matches(isDisplayed()));
   }
 
   @Test

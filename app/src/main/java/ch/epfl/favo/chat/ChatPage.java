@@ -91,7 +91,7 @@ public class ChatPage extends Fragment {
     setupToolBar();
   }
 
-  public void setupToolBar() {
+  private void setupToolBar() {
     Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
     toolbar.setTitleTextColor(Color.WHITE);

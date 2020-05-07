@@ -14,11 +14,13 @@ class ShopItemViewHolder extends RecyclerView.ViewHolder {
   final ImageView imageView;
   final TextView quantityView;
   final TextView priceView;
+  final TextView expirationView;
 
   ShopItemViewHolder(@NonNull View view) {
     super(view);
     imageView = view.findViewById(R.id.item_image);
     quantityView = view.findViewById(R.id.item_quantity);
     priceView = view.findViewById(R.id.item_price);
+    expirationView = view.findViewById(R.id.item_expiration);
   }
 }

@@ -29,6 +29,19 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/AppTheme.PopupOverlay">
 
+        <TextView
+            android:id="@+id/current_balance_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="20dp"
+            android:drawableEnd="@drawable/favo_coin_icon"
+            android:drawablePadding="10dp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
     </ch.epfl.favo.view.NonClickableToolbar>
 
     <fragment

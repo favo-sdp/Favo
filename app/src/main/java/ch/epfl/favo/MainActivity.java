@@ -185,6 +185,12 @@ public class MainActivity extends AppCompatActivity {
               navController.navigate(itemId);
           }
 
+          if (itemId == R.id.nav_shop) {
+            findViewById(R.id.current_balance_text).setVisibility(View.VISIBLE);
+          } else {
+            findViewById(R.id.current_balance_text).setVisibility(View.GONE);
+          }
+
           // currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;

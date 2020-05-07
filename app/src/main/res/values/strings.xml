@@ -144,10 +144,11 @@
 
     <!-- Shop Page -->
     <string name="shop">Shop</string>
-    <string name="price_text">%d CHF</string>
+    <string name="price_text">%.2f CHF</string>
     <string name="shop_pay_message">Pay the price for the quantity of coins selected</string>
-    <string name="balance_text">Current balance: %d</string>
     <string name="favo_coins_text">Favo Coins</string>
+    <string name="special_offers_text">Special offers</string>
+    <string name="buy_favo_coins_text">Buy Favo Coins</string>
 
 
 </resources>
