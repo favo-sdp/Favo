@@ -154,10 +154,13 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
+    onView(withText(R.string.buy_favo_coins_text)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.special_offers_text)).check(matches(isDisplayed())).perform(click());
+
     ViewInteraction recyclerView =
         onView(
             Matchers.allOf(
-                withId(R.id.shop_items_list), childAtPosition(withId(R.id.shop_fragment), 1)));
+                withId(R.id.shop_items_list), childAtPosition(withId(R.id.shop_fragment), 2)));
     recyclerView.check(matches(isDisplayed())).perform(actionOnItemAtPosition(0, click()));
   }
 

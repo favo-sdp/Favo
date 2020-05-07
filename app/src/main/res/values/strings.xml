@@ -150,5 +150,7 @@
     <string name="special_offers_text">Special offers</string>
     <string name="buy_favo_coins_text">Buy Favo Coins</string>
 
+    <!-- Invite option -->
+    <string name="invite_text">Invite</string>
 
 </resources>

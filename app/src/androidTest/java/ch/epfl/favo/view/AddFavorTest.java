@@ -482,7 +482,7 @@ public class AddFavorTest {
 
     Thread.sleep(1000);
 
-    onView(withId(R.id.invite_button)).perform(click());
+    onView(withId(R.id.invite_button)).check(matches(isDisplayed())).perform(click());
 
     // check that share intent is indeed opened
     onView(AllOf.allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));

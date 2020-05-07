@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
           || f instanceof FragmentSettings
           || f instanceof ShopPage) {
         navController.popBackStack(R.id.nav_map, false);
+        findViewById(R.id.current_balance_text).setVisibility(View.GONE);
         currentMenuItem = R.id.nav_map;
       } else {
         super.onBackPressed();

@@ -109,7 +109,7 @@ public class NearbyFavorList extends Fragment {
   public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
 
     // Inflate the menu; this adds items to the action bar if it is present.
-    inflater.inflate(R.menu.options_menu, menu);
+    inflater.inflate(R.menu.favor_list_menu, menu);
     super.onCreateOptionsMenu(menu, inflater);
 
     searchMenuItem = menu.findItem(R.id.search_item);
