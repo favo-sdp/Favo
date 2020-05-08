@@ -97,7 +97,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             true,
-            1) // if user can fragment_favor_detail favor then post it in the favor collection
+            1) // if user can fragment_favor_published_view favor then post it in the favor collection
         .thenCompose((f) -> getFavorRepository().requestFavor(tempFavor));
   }
 

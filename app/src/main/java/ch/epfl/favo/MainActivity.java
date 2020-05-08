@@ -105,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
-            case R.id.favorDetailView:
-            case R.id.favorRequestView:
+            case R.id.favorPublishedView:
+            case R.id.favorEditingView:
               if (bottomNavigationView.getVisibility() != View.GONE) {
                 hideBottomNavigation();
               }
@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
       Bundle favorBundle = new Bundle();
       String favorId = extras.getString("FavorId");
       favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-      navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+      navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
     }
   }
 
@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void onFabClick(View view) {
-    navController.navigate(R.id.action_global_favorRequestView);
+    navController.navigate(R.id.action_global_favorEditingView);
   }
 
   @Override

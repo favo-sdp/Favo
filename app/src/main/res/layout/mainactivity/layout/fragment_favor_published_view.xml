@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
-    tools:context="view.tabs.addFavor.FavorRequestView">
+    tools:context=".view.tabs.addFavor.FavorEditingView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_favor_accept"

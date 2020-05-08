@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/material_green_50"
-    tools:context="view.tabs.addFavor.FavorRequestView">
+    tools:context=".view.tabs.addFavor.FavorEditingView">
 
     <!-- add above: android:background="@color/material_green_50"-->
     <androidx.constraintlayout.widget.ConstraintLayout

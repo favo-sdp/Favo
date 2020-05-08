@@ -46,8 +46,8 @@ import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
-public class FavorRequestView extends Fragment {
-  private static String TAG = "FavorRequestView";
+public class FavorEditingView extends Fragment {
+  private static String TAG = "FavorEditingView";
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
@@ -66,14 +66,14 @@ public class FavorRequestView extends Fragment {
   private NonClickableToolbar toolbar;
   private Favor currentFavor;
 
-  public FavorRequestView() {
+  public FavorEditingView() {
     // Required empty public constructor
   }
 
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View rootView = inflater.inflate(R.layout.fragment_favor_request_view, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_favor_editing_view, container, false);
     setupButtons(rootView);
     favorStatus = FavorStatus.EDIT;
 
@@ -94,7 +94,7 @@ public class FavorRequestView extends Fragment {
                 .get(DependencyFactory.getCurrentViewModelClass());
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     if (getArguments() != null) {
-      currentFavor = (Favor) getArguments().get(CommonTools.FAVOR_ARGS);
+      currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
       displayFavorInfo(rootView);
     }
     return rootView;
@@ -169,8 +169,8 @@ public class FavorRequestView extends Fragment {
   }
 
   /**
-   * Method is called when fragment_favor_detail favor button is clicked. It uploads favor
-   * fragment_favor_detail to the database and updates view so that favor is editable.
+   * Method is called when fragment_favor_published_view favor button is clicked. It uploads favor
+   * fragment_favor_published_view to the database and updates view so that favor is editable.
    */
   private void requestFavor() {
     // update currentFavor

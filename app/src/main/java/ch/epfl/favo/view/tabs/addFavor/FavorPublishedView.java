@@ -39,8 +39,8 @@ import ch.epfl.favo.viewmodel.IFavorViewModel;
 import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
-public class FavorDetailView extends Fragment {
-  private static String TAG = "FavorDetailView";
+public class FavorPublishedView extends Fragment {
+  private static String TAG = "FavorPublishedView";
   private FavorStatus favorStatus;
   private Favor currentFavor;
   private Button acceptAndCompleteFavorBtn;
@@ -51,7 +51,7 @@ public class FavorDetailView extends Fragment {
   private MenuItem editItem;
   private boolean isRequested;
 
-  public FavorDetailView() {
+  public FavorPublishedView() {
     // create favor detail from a favor
   }
 
@@ -90,7 +90,7 @@ public class FavorDetailView extends Fragment {
       Bundle favorBundle = new Bundle();
       favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
       findNavController(requireActivity(), R.id.nav_host_fragment)
-              .navigate(R.id.action_global_favorRequestView, favorBundle);
+              .navigate(R.id.action_global_favorEditingView, favorBundle);
     } else if (id == R.id.share_button){
 
     }
@@ -101,7 +101,7 @@ public class FavorDetailView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // inflate view
-    View rootView = inflater.inflate(R.layout.fragment_favor_detail, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_favor_published_view, container, false);
     setupButtons(rootView);
 
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
@@ -166,7 +166,7 @@ public class FavorDetailView extends Fragment {
           Bundle favorBundle = new Bundle();
           favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
           Navigation.findNavController(requireView())
-              .navigate(R.id.action_nav_favorDetailView_to_chatView, favorBundle);
+              .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
         });
 
     rootView
@@ -176,7 +176,7 @@ public class FavorDetailView extends Fragment {
               Bundle userBundle = new Bundle();
               userBundle.putString("USER_ARGS", currentFavor.getRequesterId());
               Navigation.findNavController(requireView())
-                  .navigate(R.id.action_nav_favorDetailView_to_UserInfoPage, userBundle);
+                  .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
             });
   }
 

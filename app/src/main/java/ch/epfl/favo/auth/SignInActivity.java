@@ -43,7 +43,7 @@ public class SignInActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_sign_in);
 
-    // check for google play services and make fragment_favor_detail if not present
+    // check for google play services and make fragment_favor_published_view if not present
     checkPlayServices();
 
     // initialize location library

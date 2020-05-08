@@ -152,7 +152,7 @@ public class FavorPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
     //
-    // Click on fragment_favor_detail button
+    // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
@@ -186,7 +186,7 @@ public class FavorPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
-    // Click on fragment_favor_detail button
+    // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(4000); // wait for snackbar to hide
@@ -235,7 +235,7 @@ public class FavorPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
-    // Click on fragment_favor_detail button
+    // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);

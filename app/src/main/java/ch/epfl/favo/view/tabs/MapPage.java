@@ -46,7 +46,7 @@ import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 /**
- * View will contain a map and a favor fragment_favor_detail pop-up. It is implemented using the {@link Fragment}
+ * View will contain a map and a favor fragment_favor_published_view pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
 @SuppressLint("NewApi")
@@ -311,7 +311,7 @@ public class MapPage extends Fragment
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode
-        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_detail is cancelled, the result arrays
+        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_published_view is cancelled, the result arrays
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
@@ -334,10 +334,10 @@ public class MapPage extends Fragment
       public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
         getLocationPermission();
         if (mLocationPermissionGranted) {
-          LocationRequest fragment_favor_detail = new LocationRequest();
-          fragment_favor_detail.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-          fragment_favor_detail.setInterval(15 * 60 * 1000);
-          fragment_favor_detail.setMaxWaitTime(30 * 60 * 1000);
+          LocationRequest fragment_favor_published_view = new LocationRequest();
+          fragment_favor_published_view.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+          fragment_favor_published_view.setInterval(15 * 60 * 1000);
+          fragment_favor_published_view.setMaxWaitTime(30 * 60 * 1000);
           Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
           locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
             @Override
@@ -390,15 +390,15 @@ public class MapPage extends Fragment
       focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
 
-      // transfer local favor to FavorRequestView via ViewModel
+      // transfer local favor to FavorEditingView via ViewModel
       favorViewModel.setFavorValue(focusedFavor);
     }
     Bundle favorBundle = new Bundle();
     favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
     if (isRequested)
-      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
+      Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     else
       Navigation.findNavController(view)
-              .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
+              .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
   }
 }
