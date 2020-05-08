@@ -185,14 +185,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
     getCacheUtility().saveToInternalStorage(context, picture, favor.getId(), 0);
-//    CacheUtil.SaveToStorageTask saveToStorageTask = new CacheUtil.SaveToStorageTask();
-//    String baseDir = context.getFilesDir().getAbsolutePath();
-//    String favorId = favor.getId();
-//    String imageNum = "0"; // Todo: Support multiple images
-//    CacheUtil.SaveToStorageParams saveToStorageParams = new CacheUtil.SaveToStorageParams(
-//            baseDir, favorId, imageNum, picture
-//    );
-//    saveToStorageTask.execute(saveToStorageParams);
   }
 
   @Override
