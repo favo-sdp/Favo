@@ -184,9 +184,17 @@ public class FavorDetailViewTest {
   @Test
   public void testCancelFlowByAccepter() throws Throwable {
     // favor is cancelled by accepter
-    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.accept_button))
+            .check(matches(withText(R.string.cancel_accept_button_display)))
+            .perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.favor_cancel_success_msg)));
+    checkCancelledView(FavorStatus.CANCELLED_ACCEPTER);
 
     // If favor is cancelled by requester, show correct view
     fakeFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
