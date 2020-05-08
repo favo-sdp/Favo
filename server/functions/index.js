@@ -36,11 +36,10 @@ function sendMulticastMessage(message, usersIds) {
                 });
 
                 if (failedTokens.length > 0) {
-                    console.log('List of tokens that caused failures: ' + failedTokens);
+                    return console.log('List of tokens that caused failures: ' + failedTokens);
                 }
             }
-        });
-}
+        return});
 
 // send new favor notification to users in the area
 exports.sendNotificationNearbyOnNewFavor = functions.firestore
@@ -54,7 +53,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
 
         const ids = newFavor.userIds;
 
-        if (ids == null) {
+        if (ids === null) {
             return;
         }
 
@@ -89,11 +88,8 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                 });
 
                 sendMulticastMessage(message, usersIds);
-
+                return;
             })
-            .catch((err) => {
-                console.log('Error getting documents', err);
-            });
     });
 
 
@@ -111,7 +107,7 @@ exports.sendNotificationOnUpdate = functions.firestore
 
         const userIds = updatedFavor.userIds;
 
-        if (userIds == null) {
+        if (userIds === null) {
             return;
         }
 
@@ -192,6 +188,39 @@ exports.sendNotificationOnUpdate = functions.firestore
                     //console.log('Users found: ', receivers);
 
                     sendMulticastMessage(message, receivers);
+                    return;
                 });
         }
     });
+//Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
+
+exports.expireOldFavors = functions.https.onRequest((req,res)=>{
+    const timeInDays = req.body.timeInDays;
+    const EXPIRED_STATUS = 2;
+    const REQUESTED_STATUS = 0;
+    var now = Date.now();
+    var cutoff = now - timeInDays*24*60*60*1000;
+    let query = db.collection('favors');
+    return query.orderBy('postedTime').endAt(cutoff)
+    .get().then(snapshot=>{
+    if (snapshot.empty){
+    res.status(100).send("No expired favors");
+    return;
+    } else {
+              const promises = [];
+              snapshot.forEach(doc=>{
+                  let favor = doc.data();
+                  if(favor.statusId===REQUESTED_STATUS){
+                      promises.push(doc.ref.update({
+                      statusId:EXPIRED_STATUS,
+                      isArchived : true
+                      }))
+                  }
+              })
+
+              return Promise.all(promises).then(data=>{
+                      console.log("Succesfully updated favor statuses.");
+                      res.status(100).send("Favors successfully expired");
+                      })}
+
+    } )});

@@ -40,7 +40,7 @@ public class FavorViewModelTest {
   private UserUtil userRepository;
   private CompletableFuture successfulResult;
   private CompletableFuture failedResult;
-  private PictureUtil pictureUtilility;
+  private PictureUtil pictureUtility;
   private Bitmap bitmap;
 
   @Before
@@ -64,14 +64,16 @@ public class FavorViewModelTest {
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     viewModel = new FavorViewModel();
     bitmap = Mockito.mock(Bitmap.class);
-    pictureUtilility = Mockito.mock(PictureUtil.class);
-    DependencyFactory.setCurrentPictureUtility(pictureUtilility);
+    pictureUtility = Mockito.mock(PictureUtil.class);
+    DependencyFactory.setCurrentPictureUtility(pictureUtility);
     setupReturns();
   }
 
   private void setupReturns() {
+    Mockito.doReturn(successfulResult).when(pictureUtility).deletePicture(Mockito.anyString());
     Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
     Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
+    Mockito.doReturn(successfulResult).when(favorRepository).removeFavor(Mockito.anyString());
     Mockito.doReturn(successfulResult)
         .when(userRepository)
         .changeActiveFavorCount(anyString(), anyBoolean(), anyInt());
@@ -183,20 +185,20 @@ public class FavorViewModelTest {
   @Test
   public void testUploadPicture() {
     Mockito.doNothing().when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
-    Mockito.when(pictureUtilility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
+    Mockito.when(pictureUtility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
     viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap);
   }
 
   @Test
   public void testDownloadPictureSuccessful() {
-    Mockito.when(pictureUtilility.downloadPicture(anyString())).thenReturn(successfulResult);
+    Mockito.when(pictureUtility.downloadPicture(anyString())).thenReturn(successfulResult);
     Assert.assertEquals(
         successfulResult, viewModel.downloadPicture(FakeItemFactory.getFavorWithUrl()));
   }
 
   @Test
   public void testDownloadPictureUnsuccessful() {
-    Mockito.when(pictureUtilility.downloadPicture(anyString())).thenReturn(successfulResult);
+    Mockito.when(pictureUtility.downloadPicture(anyString())).thenReturn(successfulResult);
     CompletableFuture<Bitmap> bitmapFuture = viewModel.downloadPicture(FakeItemFactory.getFavor());
     Assert.assertTrue(bitmapFuture.isCompletedExceptionally());
   }
@@ -236,6 +238,12 @@ public class FavorViewModelTest {
     Assert.assertThrows(
         IllegalStateException.class,
         () -> viewModel.completeFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());
+  }
+
+  @Test
+  public void testDeleteFavorIsSuccessful() {
+    Favor fakeFavor = FakeItemFactory.getFavorWithUrl();
+    viewModel.deleteFavor(fakeFavor);
   }
 
   @Test

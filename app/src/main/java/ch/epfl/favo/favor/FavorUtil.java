@@ -49,11 +49,11 @@ public class FavorUtil {
    * @param favor A favor object.
    * @throws RuntimeException Unable to post to DB.
    */
-  public CompletableFuture requestFavor(Favor favor) throws RuntimeException {
+  public CompletableFuture<Void> requestFavor(Favor favor) throws RuntimeException {
     return collection.addDocument(favor);
   }
 
-  public CompletableFuture updateFavor(Favor favor) {
+  public CompletableFuture<Void> updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
   }
 
@@ -63,6 +63,9 @@ public class FavorUtil {
    */
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
     return collection.getDocument(favorId);
+  }
+  public CompletableFuture<Void> removeFavor(String favorId){
+    return collection.removeDocument(favorId);
   }
 
   /**
