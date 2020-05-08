@@ -154,6 +154,7 @@
 
     <!-- Shop Page -->
     <string name="shop">Shop</string>
+    <string name="balance_text">%.2f</string>
     <string name="price_text">%.2f CHF</string>
     <string name="shop_pay_message">Pay the price for the quantity of coins selected</string>
     <string name="favo_coins_text">Favo Coins</string>

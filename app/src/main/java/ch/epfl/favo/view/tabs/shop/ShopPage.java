@@ -42,15 +42,19 @@ public class ShopPage extends Fragment {
           new ShopItem(R.drawable.favo_coin_six, 1000, 9.99, null),
           new ShopItem(R.drawable.favo_coin_ten, 5000, 29.99, null),
           new ShopItem(R.drawable.favo_coin_multiple, 10000, 49.99, null));
+
   private static final List<ShopItem> OFFERS =
       Arrays.asList(
           new ShopItem(R.drawable.favo_coin_three, 30, 1.49, new Date()),
           new ShopItem(R.drawable.favo_coin_six, 500, 6.99, new Date()),
           new ShopItem(R.drawable.favo_coin_ten, 1500, 12.99, new Date()),
           new ShopItem(R.drawable.favo_coin_multiple, 500000, 99.99, new Date()));
+
   private static final String ARG_COLUMN_COUNT = "column-count";
+
   private List<ShopItem> shopItems;
   private RecyclerView.Adapter adapter;
+
   private int mColumnCount = 2;
 
   public ShopPage() {}
@@ -77,7 +81,7 @@ public class ShopPage extends Fragment {
         .thenAccept(
             user -> {
               TextView currentBalance = requireActivity().findViewById(R.id.current_balance_text);
-              currentBalance.setText(String.valueOf(user.getBalance()));
+              currentBalance.setText(getString(R.string.balance_text, user.getBalance()));
             });
 
     RecyclerView recyclerView = view.findViewById(R.id.shop_items_list);
