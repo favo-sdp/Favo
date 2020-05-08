@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -199,6 +200,8 @@ public class FavorDetailView extends Fragment {
     setupTextView(rootView, R.id.title_accept_view, titleStr);
     setupTextView(rootView, R.id.details_accept_view, descriptionStr);
 
+    setupImageView(rootView, favor);
+
     UserUtil.getSingleInstance()
         .findUser(favor.getRequesterId())
         .thenAccept(
@@ -286,5 +289,22 @@ public class FavorDetailView extends Fragment {
     TextView textView = rootView.findViewById(id);
     textView.setText(text);
     textView.setKeyListener(null);
+  }
+
+  private void setupImageView(View rootView, Favor favor) {
+    String url = favor.getPictureUrl();
+    if (url != null) {
+      ImageView imageView = rootView.findViewById(R.id.imageView_accept_view);
+      View loadingPanelView = rootView.findViewById(R.id.loading_panel);
+
+      loadingPanelView.setVisibility(View.VISIBLE);
+      getViewModel()
+        .downloadPicture(favor)
+        .thenAccept(
+          picture -> {
+            imageView.setImageBitmap(picture);
+            loadingPanelView.setVisibility(View.GONE);
+          });
+    }
   }
 }
