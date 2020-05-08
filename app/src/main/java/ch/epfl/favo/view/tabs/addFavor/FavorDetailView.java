@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -247,7 +245,7 @@ public class FavorDetailView extends Fragment {
         .thenAccept(
             user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
 
-    isRequested = favor.getId().equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+    isRequested = favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
     if (isRequested) {
       if (editItem != null) editItem.setVisible(true);
       FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
@@ -266,60 +264,58 @@ public class FavorDetailView extends Fragment {
       case SUCCESSFULLY_COMPLETED:
         {
           updateCompleteBtnDisplay(
-              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp, 0);
+              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp);
           enableButtons(false);
           break;
         }
       case ACCEPTED:
         {
           updateCompleteBtnDisplay(
-              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
+              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
           toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
           break;
         }
       case REQUESTED:
         {
-          if(isRequested)
+          Log.d("iitd", isRequested + " ");
+          if (isRequested)
             updateCompleteBtnDisplay(
-                    R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
-          else
-            updateCompleteBtnDisplay(R.string.accept_favor, true, R.drawable.ic_thumb_up_24dp, 0);
+                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
+          else updateCompleteBtnDisplay(R.string.accept_favor, true, R.drawable.ic_thumb_up_24dp);
           toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           break;
         }
       case COMPLETED_ACCEPTER:
         {
-          if(!isRequested)
+          if (!isRequested)
             updateCompleteBtnDisplay(
-                    R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
+                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
           else
             updateCompleteBtnDisplay(
-                    R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
+                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
           break;
         }
       case COMPLETED_REQUESTER:
         {
-          if(isRequested)
+          if (isRequested)
             updateCompleteBtnDisplay(
-                    R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
+                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
           else
-          updateCompleteBtnDisplay(
-                  R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
+            updateCompleteBtnDisplay(
+                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
           break;
         }
       default: // includes accepted by other
         enableButtons(false);
-        updateCompleteBtnDisplay(
-            R.string.wait_complete, false, R.drawable.ic_check_box_black_24dp, 0);
+        updateCompleteBtnDisplay(R.string.wait_complete, false, R.drawable.ic_check_box_black_24dp);
         toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
 
-  private void updateCompleteBtnDisplay(int txt, boolean clickable, int icon, int weight) {
+  private void updateCompleteBtnDisplay(int txt, boolean clickable, int icon) {
     acceptAndCompleteFavorBtn.setText(txt);
     acceptAndCompleteFavorBtn.setClickable(clickable);
     // completeBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
-    //    ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = weight;
   }
 
   private void updateAcceptBtnDisplay() {

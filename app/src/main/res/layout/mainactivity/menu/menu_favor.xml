@@ -4,20 +4,16 @@
     <item
         android:id="@+id/edit_button"
         android:visible="false"
-        android:icon="@drawable/ic_people_black_24dp"
         android:title="@string/edit_favor" />
     <item
         android:id="@+id/cancel_button"
         android:visible="false"
-        android:icon="@drawable/ic_place_black_24dp"
         android:title="@string/cancel_request" />
 
     <item
         android:id="@+id/share"
         android:title="Share"
         android:visible="true"
-        app:actionViewClass="android.widget.Button"
-
         />
 
     <item
