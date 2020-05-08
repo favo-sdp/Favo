@@ -13,14 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
-import java.util.Objects;
-
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
-import ch.epfl.favo.util.DependencyFactory;
 
 public class UserInfoPage extends Fragment {
 
@@ -91,16 +88,10 @@ public class UserInfoPage extends Fragment {
   private void displayUserData(User user) {
 
     ((TextView) view.findViewById(R.id.display_name))
-        .setText(
-            TextUtils.isEmpty(user.getName())
-                ? "Name"
-                : user.getName());
+        .setText(TextUtils.isEmpty(user.getName()) ? "Name" : user.getName());
 
     ((TextView) view.findViewById(R.id.display_email))
-        .setText(
-            TextUtils.isEmpty(user.getEmail())
-                ? "Email"
-                : user.getEmail());
+        .setText(TextUtils.isEmpty(user.getEmail()) ? "Email" : user.getEmail());
 
     ((TextView) view.findViewById(R.id.user_info_favorsCreated))
         .setText(getString(R.string.favors_created_format, user.getRequestedFavors()));

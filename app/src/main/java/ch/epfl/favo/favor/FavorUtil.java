@@ -64,7 +64,8 @@ public class FavorUtil {
   public CompletableFuture<Favor> retrieveFavor(String favorId) {
     return collection.getDocument(favorId);
   }
-  public CompletableFuture<Void> removeFavor(String favorId){
+
+  public CompletableFuture<Void> removeFavor(String favorId) {
     return collection.removeDocument(favorId);
   }
 

@@ -8,9 +8,9 @@ import java.util.Map;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.exception.IllegalRequestException;
+import ch.epfl.favo.exception.NotImplementedException;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 

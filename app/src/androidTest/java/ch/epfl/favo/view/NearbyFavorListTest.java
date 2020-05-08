@@ -3,7 +3,6 @@ package ch.epfl.favo.view;
 import android.view.KeyEvent;
 import android.widget.EditText;
 
-import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -24,7 +23,6 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.NearbyFavorList;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;

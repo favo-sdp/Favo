@@ -4,8 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
