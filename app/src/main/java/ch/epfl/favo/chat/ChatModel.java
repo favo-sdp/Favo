@@ -83,11 +83,11 @@ public class ChatModel {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ChatModel chatModel = (ChatModel) o;
-    return mName.equals(chatModel.mName) &&
-            mMessage.equals(chatModel.mMessage) &&
-            mUid.equals(chatModel.mUid) &&
-            mFavorId.equals(chatModel.mFavorId) &&
-            mTimestamp.equals(chatModel.mTimestamp);
+    return mName.equals(chatModel.mName)
+        && mMessage.equals(chatModel.mMessage)
+        && mUid.equals(chatModel.mUid)
+        && mFavorId.equals(chatModel.mFavorId)
+        && mTimestamp.equals(chatModel.mTimestamp);
   }
 
   @Override

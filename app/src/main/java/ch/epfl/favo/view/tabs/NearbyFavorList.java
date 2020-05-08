@@ -86,7 +86,8 @@ public class NearbyFavorList extends Fragment {
     setupNearbyFavorsListener();
   }
 
-  private void setupNearbyFavorsListener() {// TODO: figure out a way to share view model without using main
+  private void
+      setupNearbyFavorsListener() { // TODO: figure out a way to share view model without using main
     getViewModel()
         .getFavorsAroundMe()
         .observe(

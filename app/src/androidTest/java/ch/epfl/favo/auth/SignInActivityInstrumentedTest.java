@@ -31,10 +31,10 @@ public class SignInActivityInstrumentedTest {
       new ActivityTestRule<SignInActivity>(SignInActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          if( new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER) == null)
+          if (new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER) == null)
             throw new RuntimeException("56fsd");
-                        DependencyFactory.setCurrentFirebaseUser(
-                                new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          DependencyFactory.setCurrentFirebaseUser(
+              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentUserRepository(fakeUserUtil);
         }
@@ -49,13 +49,15 @@ public class SignInActivityInstrumentedTest {
 
   @Test
   public void testSignInFlow() throws Throwable {
-    //DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    // DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI,
+    // PROVIDER));
     handleSignInResponse(RESULT_OK);
   }
 
   @Test
   public void testSignInFlowWhenUserNotFound() throws Throwable {
-    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentFirebaseUser(
+        new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     fakeUserUtil.setFindUserFail(true);
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
@@ -63,7 +65,8 @@ public class SignInActivityInstrumentedTest {
 
   @Test
   public void testSnackBarShowsWhenNewUserFailsToBePosted() throws Throwable {
-    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentFirebaseUser(
+        new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
     fakeUserUtil.setThrowResult(new RuntimeException());
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);

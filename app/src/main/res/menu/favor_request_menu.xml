@@ -4,5 +4,5 @@
     <item
         android:id="@+id/action_invite"
         android:title="@string/invite_text"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

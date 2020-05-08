@@ -79,12 +79,12 @@ public class FavorUtilTest {
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     assertThrows(Exception.class, () -> FavorUtil.getSingleInstance().requestFavor(fakeFavor));
   }
+
   @Test
-  public void testRemoveFavor(){
+  public void testRemoveFavor() {
     Favor fakeFavor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().removeFavor(fakeFavor.getId());
   }
-
 
   @Test
   public void retrieveAllFavorsForGivenUser() {

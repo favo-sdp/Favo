@@ -25,6 +25,7 @@ public interface IFavorViewModel {
   CompletableFuture completeFavor(final Favor favor, boolean isRequested);
 
   CompletableFuture cancelFavor(final Favor favor, boolean isRequested);
+
   CompletableFuture deleteFavor(final Favor favor);
 
   CompletableFuture reEnableFavor(final Favor favor);

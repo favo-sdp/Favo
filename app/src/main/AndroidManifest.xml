@@ -49,15 +49,17 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
-            android:windowSoftInputMode="adjustNothing|adjustPan" >
+            android:windowSoftInputMode="adjustNothing|adjustPan">
 
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="favoapp.com"
-                    android:scheme="https"/>
+                    android:scheme="https" />
             </intent-filter>
 
         </activity>

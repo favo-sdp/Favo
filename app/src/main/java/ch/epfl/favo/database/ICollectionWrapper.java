@@ -25,4 +25,3 @@ public interface ICollectionWrapper<T> {
 
   CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
 }
-

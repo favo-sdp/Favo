@@ -95,7 +95,8 @@ public class UserAccountPage extends Fragment {
                 : user.getDisplayName());
 
     ((TextView) view.findViewById(R.id.user_email))
-        .setText(TextUtils.isEmpty(user.getEmail()) ? getText(R.string.no_email_text) : user.getEmail());
+        .setText(
+            TextUtils.isEmpty(user.getEmail()) ? getText(R.string.no_email_text) : user.getEmail());
   }
 
   private void signOut(View view) {

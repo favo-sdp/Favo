@@ -70,7 +70,6 @@ public class FavorRequestView extends Fragment {
   private Button editFavorBtn;
   private Button chatBtn;
   private Button shareBtn;
-  private Button locationAccessBtn;
   private NonClickableToolbar toolbar;
   private Favor currentFavor;
 
@@ -134,7 +133,7 @@ public class FavorRequestView extends Fragment {
                   }
                 }
               } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
@@ -158,11 +157,7 @@ public class FavorRequestView extends Fragment {
     }
   }
 
-  /**
-   * Identifes buttons and sets onclick listeners.
-   *
-   * @param rootView
-   */
+  /** Identifes buttons and sets onclick listeners. */
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -185,7 +180,7 @@ public class FavorRequestView extends Fragment {
     }
 
     // Button: Access location
-    locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    Button locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
     locationAccessBtn.setOnClickListener(
         v -> {
           getFavorFromView();
@@ -536,8 +531,11 @@ public class FavorRequestView extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-          Bitmap imageBitmap = (Bitmap) extras.get("data");
-          mImageView.setImageBitmap(imageBitmap);
+
+          if (extras != null) {
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+          }
           break;
         }
     }

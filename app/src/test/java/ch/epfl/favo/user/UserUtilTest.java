@@ -63,18 +63,24 @@ public class UserUtilTest {
         };
     Mockito.doReturn(userFuture).when(mockCollectionWrapper).getDocument(anyString());
     UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
-    Assert.assertTrue(UserUtil.getSingleInstance().changeActiveFavorCount(FakeItemFactory.getFirebaseUser().getUid(),true, 1).isDone());
     Assert.assertTrue(
         UserUtil.getSingleInstance()
-            .changeActiveFavorCount(FakeItemFactory.getFirebaseUser().getUid(),true, User.MAX_REQUESTING_FAVORS + 1)
-            .isCompletedExceptionally());
-    Assert.assertTrue(
-        UserUtil.getSingleInstance()
-            .changeActiveFavorCount(FakeItemFactory.getFirebaseUser().getUid(),false, User.MAX_ACCEPTING_FAVORS)
+            .changeActiveFavorCount(FakeItemFactory.getFirebaseUser().getUid(), true, 1)
             .isDone());
     Assert.assertTrue(
         UserUtil.getSingleInstance()
-            .changeActiveFavorCount(FakeItemFactory.getFirebaseUser().getUid(),false, User.MAX_ACCEPTING_FAVORS + 1)
+            .changeActiveFavorCount(
+                FakeItemFactory.getFirebaseUser().getUid(), true, User.MAX_REQUESTING_FAVORS + 1)
+            .isCompletedExceptionally());
+    Assert.assertTrue(
+        UserUtil.getSingleInstance()
+            .changeActiveFavorCount(
+                FakeItemFactory.getFirebaseUser().getUid(), false, User.MAX_ACCEPTING_FAVORS)
+            .isDone());
+    Assert.assertTrue(
+        UserUtil.getSingleInstance()
+            .changeActiveFavorCount(
+                FakeItemFactory.getFirebaseUser().getUid(), false, User.MAX_ACCEPTING_FAVORS + 1)
             .isCompletedExceptionally());
   }
 
@@ -151,9 +157,7 @@ public class UserUtilTest {
         };
     DependencyFactory.setCurrentCompletableFuture(idFuture);
     Assert.assertTrue(
-        UserUtil.getSingleInstance()
-            .retrieveUserRegistrationToken(getUser())
-            .isDone());
+        UserUtil.getSingleInstance().retrieveUserRegistrationToken(getUser()).isDone());
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirebaseNotificationInstanceId(null);
   }
