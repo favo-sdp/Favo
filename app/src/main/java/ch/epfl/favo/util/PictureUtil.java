@@ -20,6 +20,8 @@ import ch.epfl.favo.database.DatabaseWrapper;
 public class PictureUtil {
 
   private static PictureUtil INSTANCE = null;
+  private static final String TAG = "PictureUtil";
+
   private static final String PICTURE_FILE_EXTENSION = ".jpeg";
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
   private final FirebaseStorage storage;

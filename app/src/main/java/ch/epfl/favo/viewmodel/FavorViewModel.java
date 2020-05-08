@@ -1,6 +1,7 @@
 package ch.epfl.favo.viewmodel;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
@@ -13,11 +14,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
@@ -26,6 +29,7 @@ import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
+import static android.graphics.BitmapFactory.decodeFile;
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_REQUESTER;
@@ -58,6 +62,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private PictureUtil getPictureUtility() {
     return DependencyFactory.getCurrentPictureUtility();
   }
+
+  private CacheUtil getCacheUtility() { return DependencyFactory.getCurrentCacheUtility(); }
 
   /**
    * Tries to update the number of active favors for a given user. Detailed implementation in
@@ -175,6 +181,20 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     }
   }
 
+  // Save/load pictures from local storage
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
+    getCacheUtility().saveToInternalStorage(context, picture, favor.getId(), 0);
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    String baseDir = context.getFilesDir().getAbsolutePath();
+    String favorId = favor.getId();
+    String pathToFolder = baseDir + "/" + favorId + "/";
+    return getCacheUtility().loadFromInternalStorage(pathToFolder, 0);
+  }
+
   @Override
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radiusInKm) {
     if (mCurrentLocation == null) mCurrentLocation = loc;
@@ -234,6 +254,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
+              assert documentSnapshot != null;
               setFavorValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();

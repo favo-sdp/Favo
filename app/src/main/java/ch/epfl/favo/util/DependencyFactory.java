@@ -20,6 +20,7 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
@@ -46,6 +47,7 @@ public class DependencyFactory {
   private static FirebaseInstanceId currentFirebaseInstanceId;
   private static PictureUtil currentPictureUtility;
   private static FirebaseStorage currentFirebaseStorage;
+  private static CacheUtil currentCacheUtility;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -216,6 +218,16 @@ public class DependencyFactory {
     return PictureUtil.getInstance();
   }
 
+  public static FirebaseStorage getCurrentFirebaseStorage() {
+    if (testMode && currentFirebaseStorage != null) return currentFirebaseStorage;
+    return FirebaseStorage.getInstance();
+  }
+
+  public static CacheUtil getCurrentCacheUtility() {
+    if (testMode && currentPictureUtility != null) return currentCacheUtility;
+    return CacheUtil.getInstance();
+  }
+
   @VisibleForTesting
   public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
     testMode = true;
@@ -228,8 +240,9 @@ public class DependencyFactory {
     currentFirebaseStorage = dependency;
   }
 
-  public static FirebaseStorage getCurrentFirebaseStorage() {
-    if (testMode && currentFirebaseStorage != null) return currentFirebaseStorage;
-    return FirebaseStorage.getInstance();
+  @VisibleForTesting
+  public static void setCurrentCacheUtility(CacheUtil cacheUtil) {
+    testMode = true;
+    currentCacheUtility = cacheUtil;
   }
 }
