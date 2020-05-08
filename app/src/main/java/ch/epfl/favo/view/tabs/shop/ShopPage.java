@@ -3,12 +3,15 @@ package ch.epfl.favo.view.tabs.shop;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -25,7 +28,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 
 public class ShopPage extends Fragment {
 
@@ -37,15 +42,19 @@ public class ShopPage extends Fragment {
           new ShopItem(R.drawable.favo_coin_six, 1000, 9.99, null),
           new ShopItem(R.drawable.favo_coin_ten, 5000, 29.99, null),
           new ShopItem(R.drawable.favo_coin_multiple, 10000, 49.99, null));
+
   private static final List<ShopItem> OFFERS =
       Arrays.asList(
           new ShopItem(R.drawable.favo_coin_three, 30, 1.49, new Date()),
           new ShopItem(R.drawable.favo_coin_six, 500, 6.99, new Date()),
           new ShopItem(R.drawable.favo_coin_ten, 1500, 12.99, new Date()),
           new ShopItem(R.drawable.favo_coin_multiple, 500000, 99.99, new Date()));
+
   private static final String ARG_COLUMN_COUNT = "column-count";
+
   private List<ShopItem> shopItems;
   private RecyclerView.Adapter adapter;
+
   private int mColumnCount = 2;
 
   public ShopPage() {}
@@ -59,6 +68,7 @@ public class ShopPage extends Fragment {
     }
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -66,10 +76,13 @@ public class ShopPage extends Fragment {
 
     shopItems = OFFERS;
 
-    //    TextView currentBalance = view.findViewById(R.id.current_balance_text);
-    //
-    //    // temporary, should get balance from database
-    //    currentBalance.setText(String.valueOf(200));
+    UserUtil.getSingleInstance()
+        .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+        .thenAccept(
+            user -> {
+              TextView currentBalance = requireActivity().findViewById(R.id.current_balance_text);
+              currentBalance.setText(getString(R.string.balance_text, user.getBalance()));
+            });
 
     RecyclerView recyclerView = view.findViewById(R.id.shop_items_list);
 
