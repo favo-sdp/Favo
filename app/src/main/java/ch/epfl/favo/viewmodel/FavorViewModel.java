@@ -97,7 +97,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             true,
-            1) // if user can request favor then post it in the favor collection
+            1) // if user can fragment_favor_detail favor then post it in the favor collection
         .thenCompose((f) -> getFavorRepository().requestFavor(tempFavor));
   }
 
@@ -171,8 +171,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radiusInKm) {
     if (mCurrentLocation == null) mCurrentLocation = loc;
     if (mRadius == -1) mRadius = radiusInKm;
-    if (activeFavorsAroundMe.getValue() == null
-        || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
+    //if (activeFavorsAroundMe.getValue() == null
+    //    || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
       getFavorRepository()
           .getNearbyFavors(loc, radiusInKm)
           .addSnapshotListener(
@@ -180,7 +180,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
               (queryDocumentSnapshots, e) ->
                   activeFavorsAroundMe.postValue(
                       getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
-    }
+    //}
     return getFavorsAroundMe();
   }
 
@@ -220,6 +220,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
+    //setFavorValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(

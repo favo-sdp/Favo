@@ -75,14 +75,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
+
                         <ImageView
                             android:id="@+id/user_profile_picture"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:contentDescription="@string/profile_picture_content_desc"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
                             android:gravity="start"
                             android:padding="5dp"
-                            android:scaleType="centerCrop"
                             app:srcCompat="@drawable/ic_anon_user_48dp" />
 
                         <TextView
@@ -142,7 +141,7 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                <androidx.cardview.widget.CardView
 
                     android:id="@+id/card_view1"
                     android:layout_width="match_parent"

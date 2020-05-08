@@ -11,7 +11,7 @@
         android:title="@string/cancel_request" />
 
     <item
-        android:id="@+id/share"
+        android:id="@+id/share_button"
         android:title="Share"
         android:visible="true"
         />

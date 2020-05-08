@@ -231,7 +231,7 @@ public class AddFavorTest {
   }
 
   public void checkRequestedView() {
-    // Check request button is gone
+    // Check fragment_favor_detail button is gone
     onView(withId(R.id.request_button))
         .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
     // Check upload picture button is not clickable

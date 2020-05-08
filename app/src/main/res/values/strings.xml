@@ -77,7 +77,7 @@
     <string name="offline_mode_instructions">You can enable offline map support by downloading offline maps from the Google Maps app</string>
     <string name="offline_mode_dialog_link">Show me how</string>
 
-    <!-- request view -->
+    <!-- fragment_favor_detail view -->
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
 
     <!-- Preference Titles -->

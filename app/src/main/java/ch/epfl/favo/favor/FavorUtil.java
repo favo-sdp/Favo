@@ -17,7 +17,7 @@ import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
-This models the favor request.
+This models the favor fragment_favor_detail.
 */
 // TODO: rename to FavorRepository?
 @SuppressLint("NewApi")

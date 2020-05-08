@@ -180,7 +180,7 @@ public class User implements Document {
 
   public void setActiveRequestingFavors(int totalRequestingFavors) {
     if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
-      throw new IllegalRequestException("Cannot request");
+      throw new IllegalRequestException("Cannot fragment_favor_detail");
     this.activeRequestingFavors = totalRequestingFavors;
   }
 
@@ -196,7 +196,7 @@ public class User implements Document {
     this.location = location;
   }
 
-  // Can only accept or request favors
+  // Can only accept or fragment_favor_detail favors
   boolean canAccept() {
     return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;
   }

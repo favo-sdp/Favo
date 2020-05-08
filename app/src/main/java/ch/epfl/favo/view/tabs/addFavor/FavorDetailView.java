@@ -65,7 +65,7 @@ public class FavorDetailView extends Fragment {
   public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
 
     // Inflate the menu; this adds items to the action bar if it is present.
-    inflater.inflate(R.menu.menu_favor, menu);
+    inflater.inflate(R.menu.menu_favor_detail, menu);
     cancelItem = menu.findItem(R.id.cancel_button);
     editItem = menu.findItem(R.id.edit_button);
     if (favorStatus != null) {
@@ -83,6 +83,16 @@ public class FavorDetailView extends Fragment {
     int id = item.getItemId();
     if (id == R.id.cancel_button) {
       cancelFavor();
+    } else if (id == R.id.edit_button){
+      cancelFavor();
+      currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
+      favorViewModel.setFavorValue(currentFavor);
+      Bundle favorBundle = new Bundle();
+      favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+      findNavController(requireActivity(), R.id.nav_host_fragment)
+              .navigate(R.id.action_global_favorRequestView, favorBundle);
+    } else if (id == R.id.share_button){
+
     }
     return super.onOptionsItemSelected(item);
   }
@@ -91,7 +101,7 @@ public class FavorDetailView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // inflate view
-    View rootView = inflater.inflate(R.layout.request, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_favor_detail, container, false);
     setupButtons(rootView);
 
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
@@ -100,6 +110,7 @@ public class FavorDetailView extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     String favorId = "";
+    Log.d(TAG, (currentFavor==null)  + " ");
     if (currentFavor != null) favorId = currentFavor.getId();
     if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
     setupFavorListener(rootView, favorId);
@@ -120,13 +131,13 @@ public class FavorDetailView extends Fragment {
               try {
                 if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
+                  Log.d(TAG, favor.getStatusId() + " once");
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
-                throw e;
               }
             });
   }
@@ -244,7 +255,7 @@ public class FavorDetailView extends Fragment {
         .findUser(favor.getRequesterId())
         .thenAccept(
             user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
-
+    Log.d(TAG, "once display");
     isRequested = favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
     if (isRequested) {
       if (editItem != null) editItem.setVisible(true);
@@ -277,7 +288,6 @@ public class FavorDetailView extends Fragment {
         }
       case REQUESTED:
         {
-          Log.d("iitd", isRequested + " ");
           if (isRequested)
             updateCompleteBtnDisplay(
                 R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);

@@ -4,30 +4,62 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation.xml"
     app:startDestination="@+id/nav_map">
+    <action
+        android:id="@+id/action_global_nav_map"
+        app:destination="@id/nav_map"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/nav_map" />
+    <action
+        android:id="@+id/action_global_favorDetailView"
+        app:destination="@id/favorDetailView">
+        <argument
+            android:name="FAVOR_ARGS"
+            android:defaultValue="@null"
+            app:argType="string" />
+    </action>
+    <action
+        android:id="@+id/action_global_favorRequestView"
+        app:destination="@id/favorRequestView">
+        <argument
+            android:name="FAVOR_VALUE_ARGS"
+            android:defaultValue="@null"
+            app:argType="Favor" />
+    </action>
+    <action
+        android:id="@+id/action_global_nav_account"
+        app:destination="@id/nav_account"
+        app:launchSingleTop="true" />
+
+    <action
+        android:id="@+id/action_global_nav_share"
+        app:destination="@id/nav_share" />
+
     <fragment
         android:id="@+id/nav_account"
         android:name="ch.epfl.favo.view.tabs.UserAccountPage"
         android:label="@string/account"
         tools:layout="@layout/fragment_user_account" />
+
     <fragment
         android:id="@id/nav_settings"
         android:name="ch.epfl.favo.view.tabs.FragmentSettings"
         android:label="@string/settings" />
+
     <fragment
         android:id="@id/nav_about"
         android:name="ch.epfl.favo.view.tabs.FragmentAbout"
         android:label="@string/about"
         tools:layout="@layout/fragment_about" />
+
+
     <fragment
         android:id="@+id/nav_share"
         android:label="@string/share" />
-
     <fragment
         android:id="@+id/userInfoView"
         android:name="ch.epfl.favo.view.tabs.UserInfoPage"
         android:label="User Info Page"
         tools:layout="@layout/fragment_user_info" />
-
     <fragment
         android:id="@+id/chatView"
         android:name="ch.epfl.favo.chat.ChatPage"
@@ -43,7 +75,6 @@
         </action>
 
     </fragment>
-
     <fragment
         android:id="@+id/nav_map"
         android:name="ch.epfl.favo.view.tabs.MapPage"
@@ -68,7 +99,6 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
-
         <action
             android:id="@+id/action_nav_map_to_userInfoView"
             app:destination="@id/userInfoView">
@@ -78,8 +108,12 @@
                 app:argType="string" />
         </action>
 
-    </fragment>
+        <argument
+            android:name="FAVOR_VALUE_ARGS"
+            android:defaultValue="@null"
+            app:argType="Favor" />
 
+    </fragment>
     <fragment
         android:id="@+id/nav_nearby_favor_list"
         android:name="ch.epfl.favo.view.tabs.NearbyFavorList"
@@ -95,21 +129,11 @@
         </action>
 
     </fragment>
-
-
     <fragment
         android:id="@+id/nav_favorList"
         android:name="ch.epfl.favo.view.tabs.favorList.FavorPage"
         android:label="FavorView"
         tools:layout="@layout/fragment_favorpage">
-        <action
-            android:id="@+id/action_nav_favorList_to_favorRequestView"
-            app:destination="@id/favorRequestView">
-            <argument
-                android:name="FAVOR_ARGS"
-                android:defaultValue="@null"
-                app:argType="string" />
-        </action>
         <action
             android:id="@+id/action_nav_favorlist_to_favorDetailView"
             app:destination="@id/favorDetailView">
@@ -119,30 +143,17 @@
                 app:argType="string" />
         </action>
     </fragment>
+
     <fragment
         android:id="@+id/favorRequestView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorRequestView"
         android:label="FavorRequestView"
-        tools:layout="@layout/fragment_favor_request_view">
-        <action
-            android:id="@+id/action_nav_favorRequestView_to_chatView"
-            app:destination="@id/chatView">
-            <argument
-                android:name="FAVOR_ARGS"
-                android:defaultValue="@null"
-                app:argType="ch.epfl.favo.favor.Favor" />
-        </action>
-    </fragment>
-    <action
-        android:id="@+id/action_global_nav_map"
-        app:destination="@id/nav_map"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/nav_map" />
+        tools:layout="@layout/fragment_favor_request_view"></fragment>
     <fragment
         android:id="@+id/favorDetailView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
         android:label="FavorDetailView"
-        tools:layout="@layout/request">
+        tools:layout="@layout/fragment_favor_detail">
 
         <action
             android:id="@+id/action_nav_favorDetailView_to_chatView"
@@ -161,29 +172,15 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
-    </fragment>
-    <action
-        android:id="@+id/action_global_favorDetailView"
-        app:destination="@id/favorDetailView">
-        <argument
-            android:name="FAVOR_ARGS"
-            android:defaultValue="@null"
-            app:argType="string" />
-    </action>
-    <action
-        android:id="@+id/action_global_favorRequestView"
-        app:destination="@id/favorRequestView">
-        <argument
-            android:name="FAVOR_ARGS"
-            android:defaultValue="@null"
-            app:argType="string" />
-    </action>
 
-    <action
-        android:id="@+id/action_global_nav_account"
-        app:destination="@id/nav_account"
-        app:launchSingleTop="true" />
-    <action
-        android:id="@+id/action_global_nav_share"
-        app:destination="@id/nav_share" />
+        <action
+            android:id="@+id/action_nav_favorPublishedView_to_edit_favorEditingView"
+            app:destination="@id/favorRequestView">
+            <argument
+                android:name="FAVOR_VALUE_ARG"
+                android:defaultValue="@null"
+                app:argType="Favor" />
+        </action>
+
+    </fragment>
 </navigation>

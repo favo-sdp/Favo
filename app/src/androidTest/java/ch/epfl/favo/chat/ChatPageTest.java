@@ -100,7 +100,7 @@ public class ChatPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
-    // Click on request button
+    // Click on fragment_favor_detail button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
@@ -123,7 +123,7 @@ public class ChatPageTest {
     // check no messages displayed
     onView(withId(R.id.emptyTextView)).check(matches(isDisplayed()));
 
-    // Go back to request page
+    // Go back to fragment_favor_detail page
     pressBack();
 
     // go back to list

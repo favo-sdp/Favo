@@ -46,7 +46,7 @@ import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 /**
- * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
+ * View will contain a map and a favor fragment_favor_detail pop-up. It is implemented using the {@link Fragment}
  * subclass.
  */
 @SuppressLint("NewApi")
@@ -311,7 +311,7 @@ public class MapPage extends Fragment
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode
-        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If request is cancelled, the result arrays
+        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_detail is cancelled, the result arrays
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
@@ -334,10 +334,10 @@ public class MapPage extends Fragment
       public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
         getLocationPermission();
         if (mLocationPermissionGranted) {
-          LocationRequest request = new LocationRequest();
-          request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-          request.setInterval(15 * 60 * 1000);
-          request.setMaxWaitTime(30 * 60 * 1000);
+          LocationRequest fragment_favor_detail = new LocationRequest();
+          fragment_favor_detail.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+          fragment_favor_detail.setInterval(15 * 60 * 1000);
+          fragment_favor_detail.setMaxWaitTime(30 * 60 * 1000);
           Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
           locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
             @Override
@@ -383,6 +383,7 @@ public class MapPage extends Fragment
   public void onInfoWindowClick(Marker marker) {
     List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
+    boolean isRequested = (boolean) markerInfo.get(1);
     if (focusedFavor != null
         && focusedFavor.getId().equals(favorId)
         && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
@@ -394,7 +395,10 @@ public class MapPage extends Fragment
     }
     Bundle favorBundle = new Bundle();
     favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-    Navigation.findNavController(view)
-          .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
+    if (isRequested)
+      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
+    else
+      Navigation.findNavController(view)
+              .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
   }
 }

@@ -32,7 +32,7 @@ public class GpsTracker implements LocationListener, IGpsTracker {
   }
 
   public static void setLastKnownLocation(Location location) {
-    // update from mapPage, it has its own position request method based on callback
+    // update from mapPage, it has its own position fragment_favor_detail method based on callback
     mLastUpdate = System.currentTimeMillis();
     mLastKnownLocation = location;
   }

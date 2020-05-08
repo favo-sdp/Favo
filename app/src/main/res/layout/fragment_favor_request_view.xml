@@ -18,50 +18,6 @@
         android:focusableInTouchMode="true"
         android:padding="20dp">
 
-        <LinearLayout
-            android:id="@+id/edit_buttons_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_view_request_view">
-
-            <Button
-                android:id="@+id/edit_favor_button"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableEnd="@drawable/ic_edit_24dp"
-                android:text="@string/edit_favor"
-                android:visibility="invisible"
-                app:layout_constraintRight_toLeftOf="@id/chat_button"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/chat_button"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:layout_weight="1"
-                android:text="@string/open_chat"
-                android:drawableEnd="@drawable/ic_chat_24dp"
-                app:layout_constraintLeft_toRightOf="@id/edit_favor_button"
-                app:layout_constraintRight_toLeftOf="@id/cancel_favor_button"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <Button
-                android:id="@+id/cancel_favor_button"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:drawableEnd="@drawable/ic_cancel_24dp"
-                android:text="@string/cancel_request"
-                android:visibility="invisible"
-                app:layout_constraintLeft_toRightOf="@id/chat_button"
-                app:layout_constraintTop_toTopOf="parent" />
-        </LinearLayout>
 
         <Button
             android:id="@+id/request_button"
@@ -146,7 +102,7 @@
             android:layout_height="0dp"
             android:layout_marginVertical="10dp"
             android:contentDescription="@string/favor_img_content_desc"
-            app:layout_constraintBottom_toTopOf="@id/edit_buttons_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
 

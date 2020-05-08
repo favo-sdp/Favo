@@ -257,11 +257,13 @@ public class Favor implements Parcelable, Document, Cloneable {
   }
 
   public boolean contentEquals(Favor other) {
+    if(other == null)
+      return false;
     return this.title.equals(other.title)
         && this.description.equals(other.description)
         && this.statusId == other.getStatusId()
         && this.location.equals(other.location)
-        && this.pictureUrl.equals(other.pictureUrl);
+        && (this.pictureUrl==null && other.pictureUrl==null || (this.pictureUrl.equals(other.pictureUrl)));
   }
 
   public Object clone() {
