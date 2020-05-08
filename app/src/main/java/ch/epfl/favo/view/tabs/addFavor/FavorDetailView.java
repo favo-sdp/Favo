@@ -3,16 +3,25 @@ package ch.epfl.favo.view.tabs.addFavor;
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -33,24 +42,58 @@ import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorDetailView extends Fragment {
-
+  private static String TAG = "FavorDetailView";
   private FavorStatus favorStatus;
   private Favor currentFavor;
-  private Button acceptAndCancelFavorBtn;
+  private Button acceptAndCompleteFavorBtn;
   private Button chatBtn;
-  private Button completeBtn;
   private IFavorViewModel favorViewModel;
   private NonClickableToolbar toolbar;
+  private MenuItem cancelItem;
+  private MenuItem editItem;
+  private boolean isRequested;
 
   public FavorDetailView() {
     // create favor detail from a favor
   }
 
   @Override
+  public void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    setHasOptionsMenu(true);
+  }
+
+  @Override
+  public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+
+    // Inflate the menu; this adds items to the action bar if it is present.
+    inflater.inflate(R.menu.menu_favor, menu);
+    cancelItem = menu.findItem(R.id.cancel_button);
+    editItem = menu.findItem(R.id.edit_button);
+    if (favorStatus != null) {
+      updateAcceptBtnDisplay();
+    }
+    if (isRequested) {
+      editItem.setVisible(true);
+    }
+    super.onCreateOptionsMenu(menu, inflater);
+  }
+
+  // handle button activities
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+    if (id == R.id.cancel_button) {
+      cancelFavor();
+    }
+    return super.onOptionsItemSelected(item);
+  }
+
+  @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     // inflate view
-    View rootView = inflater.inflate(R.layout.fragment_favor_accept_view, container, false);
+    View rootView = inflater.inflate(R.layout.request, container, false);
     setupButtons(rootView);
 
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
@@ -82,18 +125,19 @@ public class FavorDetailView extends Fragment {
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
+                throw e;
               }
             });
   }
 
   private void setupButtons(View rootView) {
-    acceptAndCancelFavorBtn = rootView.findViewById(R.id.accept_button);
-    Button locationAccessBtn = rootView.findViewById(R.id.location_accept_view_btn);
-    completeBtn = rootView.findViewById(R.id.complete_btn);
-    completeBtn.setOnClickListener(v -> completeFavor());
-    chatBtn = rootView.findViewById(R.id.chat_button_accept_view);
+    acceptAndCompleteFavorBtn = rootView.findViewById(R.id.accept_button);
+    TextView locationAccessBtn = rootView.findViewById(R.id.location);
+    chatBtn = rootView.findViewById(R.id.chat_button);
+
     locationAccessBtn.setOnClickListener(
         v -> {
           favorViewModel.setShowObservedFavor(true);
@@ -102,10 +146,10 @@ public class FavorDetailView extends Fragment {
         });
 
     // If clicking for the first time, then accept the favor
-    acceptAndCancelFavorBtn.setOnClickListener(
+    acceptAndCompleteFavorBtn.setOnClickListener(
         v -> {
           if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) acceptFavor();
-          else cancelFavor();
+          else completeFavor();
         });
 
     chatBtn.setOnClickListener(
@@ -117,7 +161,7 @@ public class FavorDetailView extends Fragment {
         });
 
     rootView
-        .findViewById(R.id.requester_name)
+        .findViewById(R.id.user_profile_picture)
         .setOnClickListener(
             v -> {
               Bundle userBundle = new Bundle();
@@ -128,7 +172,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void completeFavor() {
-    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, false);
+    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, isRequested);
     updateFuture.thenAccept(
         o ->
             CommonTools.showSnackbar(
@@ -137,7 +181,7 @@ public class FavorDetailView extends Fragment {
   }
 
   private void cancelFavor() {
-    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, false);
+    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(handleException());
   }
@@ -194,15 +238,25 @@ public class FavorDetailView extends Fragment {
     favorStatus = verifyFavorHasBeenAccepted(favor);
     updateDisplayFromViewStatus();
 
-    setupTextView(rootView, R.id.datetime_accept_view, timeStr);
-    setupTextView(rootView, R.id.title_accept_view, titleStr);
-    setupTextView(rootView, R.id.details_accept_view, descriptionStr);
+    setupTextView(rootView, R.id.time, timeStr);
+    setupTextView(rootView, R.id.title, titleStr);
+    setupTextView(rootView, R.id.description, descriptionStr);
 
     UserUtil.getSingleInstance()
         .findUser(favor.getRequesterId())
         .thenAccept(
-            user ->
-                ((TextView) rootView.findViewById(R.id.requester_name)).setText(user.getName()));
+            user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
+
+    isRequested = favor.getId().equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+    if (isRequested) {
+      if (editItem != null) editItem.setVisible(true);
+      FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
+      if (user.getPhotoUrl() != null)
+        Glide.with(this)
+            .load(user.getPhotoUrl())
+            .fitCenter()
+            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
+    }
   }
 
   private void updateDisplayFromViewStatus() {
@@ -225,60 +279,74 @@ public class FavorDetailView extends Fragment {
         }
       case REQUESTED:
         {
-          updateCompleteBtnDisplay(
-              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp, 0);
+          if(isRequested)
+            updateCompleteBtnDisplay(
+                    R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
+          else
+            updateCompleteBtnDisplay(R.string.accept_favor, true, R.drawable.ic_thumb_up_24dp, 0);
           toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           break;
         }
       case COMPLETED_ACCEPTER:
         {
-          updateCompleteBtnDisplay(
-              R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
+          if(!isRequested)
+            updateCompleteBtnDisplay(
+                    R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
+          else
+            updateCompleteBtnDisplay(
+                    R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
           break;
         }
       case COMPLETED_REQUESTER:
         {
+          if(isRequested)
+            updateCompleteBtnDisplay(
+                    R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp, 1);
+          else
           updateCompleteBtnDisplay(
-              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
+                  R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp, 1);
           break;
         }
       default: // includes accepted by other
         enableButtons(false);
         updateCompleteBtnDisplay(
-            R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp, 0);
+            R.string.wait_complete, false, R.drawable.ic_check_box_black_24dp, 0);
         toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
 
   private void updateCompleteBtnDisplay(int txt, boolean clickable, int icon, int weight) {
-    completeBtn.setText(txt);
-    completeBtn.setClickable(clickable);
-    completeBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
-    ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = weight;
+    acceptAndCompleteFavorBtn.setText(txt);
+    acceptAndCompleteFavorBtn.setClickable(clickable);
+    // completeBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
+    //    ((LinearLayout.LayoutParams) completeBtn.getLayoutParams()).weight = weight;
   }
 
   private void updateAcceptBtnDisplay() {
-    String displayMessage;
-    int backgroundColor;
-    Drawable img;
-    if (favorStatus != FavorStatus.REQUESTED) {
-      displayMessage = getString(R.string.cancel_accept_button_display);
-      backgroundColor = R.color.fui_transparent;
-      img = getResources().getDrawable(R.drawable.ic_cancel_24dp);
-    } else { // includes ACCEPTED_BY_OTHER
-      displayMessage = getResources().getString(R.string.accept_favor);
-      img = getResources().getDrawable(R.drawable.ic_thumb_up_24dp);
-      backgroundColor = android.R.drawable.btn_default;
-    }
-    acceptAndCancelFavorBtn.setText(displayMessage);
-    acceptAndCancelFavorBtn.setBackgroundResource(backgroundColor);
-    acceptAndCancelFavorBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, img);
+    // String displayMessage;
+    // int backgroundColor;
+    boolean visible;
+    // Drawable img;
+    // displayMessage = getString(R.string.complete_favor);
+    // backgroundColor = R.color.fui_transparent;
+    // img = getResources().getDrawable(R.drawable.ic_check_box_black_24dp);
+    // includes ACCEPTED_BY_OTHER
+    // displayMessage = getString(R.string.accept_favor);
+    // img = getResources().getDrawable(R.drawable.ic_thumb_up_24dp);
+    // backgroundColor = android.R.drawable.btn_default;
+    visible =
+        favorStatus == FavorStatus.ACCEPTED
+            || favorStatus == FavorStatus.COMPLETED_ACCEPTER
+            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
+    if (cancelItem != null) cancelItem.setVisible(visible);
+    // acceptAndCompleteFavorBtn.setText(displayMessage);
+    // acceptAndCompleteFavorBtn.setBackgroundResource(backgroundColor);
+    // acceptAndCancelFavorBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, img);
   }
 
   private void enableButtons(boolean enable) {
-    acceptAndCancelFavorBtn.setEnabled(enable);
+    acceptAndCompleteFavorBtn.setEnabled(enable);
     chatBtn.setEnabled(enable);
-    completeBtn.setEnabled(enable);
   }
 
   private void setupTextView(View rootView, int id, String text) {

@@ -142,7 +142,7 @@
         android:id="@+id/favorDetailView"
         android:name="ch.epfl.favo.view.tabs.addFavor.FavorDetailView"
         android:label="FavorDetailView"
-        tools:layout="@layout/fragment_favor_accept_view">
+        tools:layout="@layout/request">
 
         <action
             android:id="@+id/action_nav_favorDetailView_to_chatView"

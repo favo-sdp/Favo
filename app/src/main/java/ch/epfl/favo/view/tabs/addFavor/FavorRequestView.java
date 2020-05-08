@@ -341,6 +341,12 @@ public class FavorRequestView extends Fragment {
   /** Updates status text and button visibility on favor status changes. */
   private void updateViewFromStatus() {
     toolbar.setTitle(favorStatus.toString());
+    if(favorStatus != FavorStatus.EDIT){
+      Bundle favorBundle = new Bundle();
+      favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+      findNavController(requireActivity(), R.id.nav_host_fragment)
+              .navigate(R.id.action_global_favorDetailView, favorBundle);
+    }
     switch (favorStatus) {
       case REQUESTED:
         {

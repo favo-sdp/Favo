@@ -60,7 +60,7 @@
     <string name="map_toggle">Map</string>
 
     <!--Favor Accepting View -->
-    <string name="accept_favor">Accept Favor</string>
+    <string name="accept_favor">Acceptr</string>
     <string name="favor_respond_success_msg">Favor responded successfully.</string>
     <string name="home">Home</string>
     <string name="favor_request_success_msg">Favor added successfully.</string>
@@ -110,8 +110,8 @@
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
     <string name="request_favor_draft">Save favor draft</string>
-    <string name="edit_favor">Edit Request</string>
-    <string name="cancel_request">Cancel Request</string>
+    <string name="edit_favor">Edit</string>
+    <string name="cancel_request">Cancel</string>
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
@@ -125,7 +125,7 @@
     <string name="restart_request">Re-enable</string>
     <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
     <string name="complete_favor">Complete</string>
-    <string name="wait_complete">Wait others</string>
+    <string name="wait_complete">Wait</string>
     <string name="favor_accept_by_oneself">you cannot accept favor posted by yourself</string>
 
     <string name="title_map">Map</string>

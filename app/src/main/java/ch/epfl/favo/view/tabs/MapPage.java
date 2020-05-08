@@ -383,7 +383,6 @@ public class MapPage extends Fragment
   public void onInfoWindowClick(Marker marker) {
     List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
-    boolean isRequested = (boolean) markerInfo.get(1);
     if (focusedFavor != null
         && focusedFavor.getId().equals(favorId)
         && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
@@ -395,10 +394,7 @@ public class MapPage extends Fragment
     }
     Bundle favorBundle = new Bundle();
     favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-    if (isRequested)
-      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
-    else
-      Navigation.findNavController(view)
+    Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
   }
 }

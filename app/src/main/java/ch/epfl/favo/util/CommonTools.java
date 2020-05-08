@@ -42,7 +42,7 @@ public class CommonTools {
 
   public static String convertTime(long time) {
     Date date = new Date(time);
-    Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+    Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
     return format.format(date);
   }
 
