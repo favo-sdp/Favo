@@ -4,8 +4,6 @@ import android.location.Location;
 
 import org.junit.Test;
 
-import ch.epfl.favo.gps.FavoLocation;
-
 import static org.junit.Assert.assertEquals;
 
 public class FavoLocationTest {

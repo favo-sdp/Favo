@@ -79,27 +79,20 @@ public class ChatModel {
   }
 
   @Override
-  public boolean equals(@Nullable Object o) {
+  public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-
     ChatModel chatModel = (ChatModel) o;
-
-    return mTimestamp.equals(chatModel.mTimestamp)
+    return mName.equals(chatModel.mName)
+        && mMessage.equals(chatModel.mMessage)
         && mUid.equals(chatModel.mUid)
         && mFavorId.equals(chatModel.mFavorId)
-        && (Objects.equals(mName, chatModel.mName))
-        && (Objects.equals(mMessage, chatModel.mMessage));
+        && mTimestamp.equals(chatModel.mTimestamp);
   }
 
   @Override
   public int hashCode() {
-    int result = mName == null ? 0 : mName.hashCode();
-    result = 31 * result + (mMessage == null ? 0 : mMessage.hashCode());
-    result = 31 * result + mUid.hashCode();
-    result = 31 * result + mFavorId.hashCode();
-    result = 31 * result + mTimestamp.hashCode();
-    return result;
+    return Objects.hash(mName, mMessage, mUid, mFavorId, mTimestamp);
   }
 
   @NonNull

@@ -14,8 +14,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 public class PictureUtilTest {
   private PictureUtil pictureUtil;
   private FirebaseStorage mockStorage;
+
   @Before
-  public void setup(){
+  public void setup() {
 
     mockStorage = Mockito.mock(FirebaseStorage.class);
     StorageReference mockRef = Mockito.mock(StorageReference.class);
@@ -27,8 +28,9 @@ public class PictureUtilTest {
     DependencyFactory.setCurrentFirebaseStorage(mockStorage);
     pictureUtil = PictureUtil.getInstance();
   }
+
   @After
-  public void tearDown(){
+  public void tearDown() {
     DependencyFactory.setCurrentFirebaseStorage(null);
   }
 
@@ -37,7 +39,8 @@ public class PictureUtilTest {
 
   @Test
   public void deletePicture() {
-    String sampleUrl = "https://firebasestorage.googleapis.com/v0/b/favo-11728.appspot.com/o/V6Y8F6DOR3NKW71UEQKULUPXMQC0.jpeg?alt=media&token=f88ee85f-a201-435f-88cd-4b5803df9656";
+    String sampleUrl =
+        "https://firebasestorage.googleapis.com/v0/b/favo-11728.appspot.com/o/V6Y8F6DOR3NKW71UEQKULUPXMQC0.jpeg?alt=media&token=f88ee85f-a201-435f-88cd-4b5803df9656";
     pictureUtil.deletePicture(sampleUrl);
   }
 

@@ -1,11 +1,12 @@
 package ch.epfl.favo;
 
 import android.net.Uri;
+
 import java.util.Date;
 
 import ch.epfl.favo.database.DatabaseWrapper;
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.gps.FavoLocation;
 
 public class TestConstants {
 

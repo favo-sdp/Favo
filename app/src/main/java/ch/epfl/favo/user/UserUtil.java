@@ -53,7 +53,7 @@ public class UserUtil implements IUserUtil {
    * @return
    */
   @Override
-  public CompletableFuture changeActiveFavorCount(String userId,boolean isRequested, int change) {
+  public CompletableFuture changeActiveFavorCount(String userId, boolean isRequested, int change) {
     return findUser(userId)
         .thenCompose(
             (object) -> {

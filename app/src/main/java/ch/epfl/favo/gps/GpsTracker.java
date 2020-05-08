@@ -48,8 +48,7 @@ public class GpsTracker extends FragmentActivity implements LocationListener, IG
       if (isGPSEnabled) {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-      }
-      else if(isNetworkEnabled){
+      } else if (isNetworkEnabled) {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }

@@ -172,10 +172,9 @@ public class SignInActivity extends AppCompatActivity {
   private BiConsumer<User, Throwable> postNewUser() {
     return (user, throwable) -> {
       final User finalUser = user;
-      CompletableFuture postNewUser =
-          getCurrentUserUtil()
-              .postUser(finalUser)
-              .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(finalUser));
+      getCurrentUserUtil()
+          .postUser(finalUser)
+          .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(finalUser));
     };
   }
 

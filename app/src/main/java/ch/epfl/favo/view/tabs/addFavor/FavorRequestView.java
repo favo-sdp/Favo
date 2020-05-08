@@ -25,12 +25,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
@@ -48,7 +51,7 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorRequestView extends Fragment {
-  private String TAG = "FavorRequestView";
+  private static final String TAG = "FavorRequestView";
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
@@ -66,7 +69,7 @@ public class FavorRequestView extends Fragment {
   private Button cancelFavorBtn;
   private Button editFavorBtn;
   private Button chatBtn;
-  private Button locationAccessBtn;
+  private Button shareBtn;
   private NonClickableToolbar toolbar;
   private Favor currentFavor;
 
@@ -130,7 +133,7 @@ public class FavorRequestView extends Fragment {
                   }
                 }
               } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG, Objects.requireNonNull(e.getMessage()));
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
@@ -154,11 +157,7 @@ public class FavorRequestView extends Fragment {
     }
   }
 
-  /**
-   * Identifes buttons and sets onclick listeners.
-   *
-   * @param rootView
-   */
+  /** Identifes buttons and sets onclick listeners. */
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -181,7 +180,7 @@ public class FavorRequestView extends Fragment {
     }
 
     // Button: Access location
-    locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    Button locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
     locationAccessBtn.setOnClickListener(
         v -> {
           getFavorFromView();
@@ -229,6 +228,12 @@ public class FavorRequestView extends Fragment {
           favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorRequestView_to_chatView, favorBundle);
+        });
+
+    shareBtn = rootView.findViewById(R.id.invite_button);
+    shareBtn.setOnClickListener(
+        v -> {
+          onShareClicked();
         });
   }
 
@@ -348,6 +353,7 @@ public class FavorRequestView extends Fragment {
         {
           toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
           updateEditBtnDisplay(R.string.edit_favor, R.drawable.ic_edit_24dp);
+          shareBtn.setVisibility(View.VISIBLE);
           updateViewFromParameters(false, true, false, true, true);
           break;
         }
@@ -525,8 +531,11 @@ public class FavorRequestView extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-          Bitmap imageBitmap = (Bitmap) extras.get("data");
-          mImageView.setImageBitmap(imageBitmap);
+
+          if (extras != null) {
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+          }
           break;
         }
     }
@@ -561,5 +570,25 @@ public class FavorRequestView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
+  }
+
+  private void onShareClicked() {
+    Uri baseUrl = Uri.parse("https://www.favoapp.com/?favorId=" + currentFavor.getId());
+    String domain = "https://favoapp.page.link";
+
+    DynamicLink link =
+        FirebaseDynamicLinks.getInstance()
+            .createDynamicLink()
+            .setLink(baseUrl)
+            .setDomainUriPrefix(domain)
+            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("ch.epfl.favo").build())
+            .setSocialMetaTagParameters(
+                new DynamicLink.SocialMetaTagParameters.Builder()
+                    .setTitle("Favor " + currentFavor.getTitle())
+                    .setDescription("Check out this favor in the Favo App!")
+                    .build())
+            .buildDynamicLink();
+
+    ((MainActivity) requireActivity()).startShareIntent(link.getUri().toString());
   }
 }

@@ -26,14 +26,14 @@
             android:textAppearance="?attr/textAppearanceListItem"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="Title"/>
+            android:text="Title" />
 
         <TextView
             android:id="@+id/item_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceListItemSecondary"
-            android:text="Subtitle"/>
+            android:text="Subtitle" />
     </LinearLayout>
 
     <TextView
