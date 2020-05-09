@@ -95,6 +95,8 @@ public class FavorEditingView extends Fragment {
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
+      currentFavor.setStatusIdToInt(FavorStatus.EDIT);
+      currentFavor.setAccepterId(null);
       displayFavorInfo(rootView);
     }
     return rootView;
@@ -182,7 +184,6 @@ public class FavorEditingView extends Fragment {
     postFavorFuture.thenAccept(
         o -> {
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
-
           // update user info
           UserUtil.getSingleInstance()
               .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
@@ -206,7 +207,9 @@ public class FavorEditingView extends Fragment {
         CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
       else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
       Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      return null;
+      Log.d(TAG, ((CompletionException) exception).getStackTrace().toString());
+      throw (RuntimeException)exception;
+      //return null;
     };
   }
 

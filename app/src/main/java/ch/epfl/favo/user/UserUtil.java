@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -54,13 +55,22 @@ public class UserUtil implements IUserUtil {
    */
   @Override
   public CompletableFuture changeActiveFavorCount(String userId,boolean isRequested, int change) {
-    return findUser(userId)
-        .thenCompose(
+    return findUser(userId)//.thenAccept( user -> Log.d("UserUtilAA", "works "));
+       .thenCompose(
             (object) -> {
               User user = object;
-              if (isRequested)
+              if (isRequested){
+                Log.d("UserUtilAA", " still alive 11");
                 user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              else user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
+                Log.d("UserUtilAA", " dead");
+              }
+                //user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
+              else {
+                Log.d("UserUtilAA", " still alive 22  " + user.getActiveAcceptingFavors());
+                user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
+                Log.d("UserUtilAA", " dead");
+              }
+              Log.d("UserUtilAA", user.getActiveRequestingFavors() + " requested " + isRequested);
               return updateUser(user);
             });
   }
@@ -73,6 +83,7 @@ public class UserUtil implements IUserUtil {
   /** @param id A FireBase Uid to search for in Users table. */
   @Override
   public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
+    Log.d("UserUtilAA", "run in modelView findUser");
     return collection.getDocument(id);
   }
 

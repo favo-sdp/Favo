@@ -11,9 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -21,6 +23,9 @@ import androidx.navigation.Navigation;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
@@ -30,10 +35,12 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
+import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -49,7 +56,11 @@ public class FavorPublishedView extends Fragment {
   private NonClickableToolbar toolbar;
   private MenuItem cancelItem;
   private MenuItem editItem;
+  private MenuItem restartItem;
+  private MenuItem inviteItem;
   private boolean isRequested;
+
+  private Map<String, User> commitUsers = new HashMap<>();
 
   public FavorPublishedView() {
     // create favor detail from a favor
@@ -66,15 +77,35 @@ public class FavorPublishedView extends Fragment {
 
     // Inflate the menu; this adds items to the action bar if it is present.
     inflater.inflate(R.menu.menu_favor_detail, menu);
+
     cancelItem = menu.findItem(R.id.cancel_button);
     editItem = menu.findItem(R.id.edit_button);
-    if (favorStatus != null) {
-      updateAcceptBtnDisplay();
-    }
-    if (isRequested) {
-      editItem.setVisible(true);
-    }
+    restartItem = menu.findItem(R.id.restart_button);
+    inviteItem = menu.findItem(R.id.share_button);
+    // if (favorStatus != null) {
+    //  updateAcceptBtnDisplay();
+    // }
     super.onCreateOptionsMenu(menu, inflater);
+  }
+
+  private void updateAcceptBtnDisplay() {
+    boolean visible;
+    visible =
+        favorStatus == FavorStatus.ACCEPTED
+            || favorStatus == FavorStatus.COMPLETED_ACCEPTER
+            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
+    if (cancelItem != null) cancelItem.setVisible(visible);
+
+    visible =
+        favorStatus == FavorStatus.CANCELLED_ACCEPTER
+            || favorStatus == FavorStatus.CANCELLED_REQUESTER
+            || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED && isRequested;
+    if (restartItem != null) restartItem.setVisible(visible);
+
+    visible = isRequested && favorStatus == FavorStatus.REQUESTED;
+    if (editItem != null) editItem.setVisible(visible);
+    visible = favorStatus == FavorStatus.REQUESTED;
+    if (inviteItem != null) inviteItem.setVisible(visible);
   }
 
   // handle button activities
@@ -83,16 +114,25 @@ public class FavorPublishedView extends Fragment {
     int id = item.getItemId();
     if (id == R.id.cancel_button) {
       cancelFavor();
-    } else if (id == R.id.edit_button){
+    } else if (id == R.id.edit_button) {
+      currentFavor.setStatusIdToInt(FavorStatus.EDIT);
+      currentFavor.setAccepterId(null);
       cancelFavor();
-      currentFavor.setStatusIdToInt(FavorStatus.CANCELLED_REQUESTER);
-      favorViewModel.setFavorValue(currentFavor);
       Bundle favorBundle = new Bundle();
-      favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
       findNavController(requireActivity(), R.id.nav_host_fragment)
-              .navigate(R.id.action_global_favorEditingView, favorBundle);
-    } else if (id == R.id.share_button){
+          .navigate(R.id.action_global_favorEditingView, favorBundle);
+    } else if (id == R.id.share_button) {
 
+    } else if (id == R.id.restart_button) {
+      Favor newFavor =
+          new Favor(
+              "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT);
+      newFavor.updateToOther(currentFavor);
+      Bundle favorBundle = new Bundle();
+      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
+      findNavController(requireActivity(), R.id.nav_host_fragment)
+          .navigate(R.id.action_global_favorEditingView, favorBundle);
     }
     return super.onOptionsItemSelected(item);
   }
@@ -110,11 +150,33 @@ public class FavorPublishedView extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     String favorId = "";
-    Log.d(TAG, (currentFavor==null)  + " ");
     if (currentFavor != null) favorId = currentFavor.getId();
     if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
     setupFavorListener(rootView, favorId);
     return rootView;
+  }
+
+  private void setupListView() {
+    ListView listView = requireView().findViewById(R.id.commit_user);
+    requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
+    Log.d(TAG, " begin to add to list");
+    for (String userId : currentFavor.getUserIds()) {
+      if (!userId.equals(currentFavor.getRequesterId()))
+        UserUtil.getSingleInstance()
+            .findUser(userId)
+            .thenAccept(
+                user -> {
+                  commitUsers.put(userId, user);
+                  Log.d(TAG, user.getEmail() + " added to list");
+                  listView.setAdapter(
+                      new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
+                });
+    }
+    listView.setOnItemClickListener(
+        (parent, view, position, id) -> {
+          User user = (User) parent.getItemAtPosition(position);
+          Log.d(TAG, user.getEmail());
+        });
   }
 
   public IFavorViewModel getViewModel() {
@@ -122,7 +184,6 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void setupFavorListener(View rootView, String favorId) {
-
     getViewModel()
         .setObservedFavor(favorId)
         .observe(
@@ -131,7 +192,6 @@ public class FavorPublishedView extends Fragment {
               try {
                 if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
-                  Log.d(TAG, favor.getStatusId() + " once");
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
@@ -140,6 +200,58 @@ public class FavorPublishedView extends Fragment {
                 enableButtons(false);
               }
             });
+  }
+
+  private void acceptFavor() {
+    // TODO: we should prevent accepting favor by oneself, but with different way
+    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
+    acceptFavorFuture.thenAccept(
+        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
+    acceptFavorFuture.exceptionally(handleException());
+  }
+
+  private void completeFavor() {
+    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, isRequested);
+    updateFuture.thenAccept(
+        o ->
+            CommonTools.showSnackbar(
+                requireView(), getString(R.string.favor_complete_success_msg)));
+    updateFuture.exceptionally(handleException());
+  }
+
+  private void cancelFavor() {
+    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
+    completableFuture.thenAccept(successfullyCancelledConsumer());
+    completableFuture.exceptionally(handleException());
+  }
+
+  private Consumer successfullyCancelledConsumer() {
+    return o -> {
+      CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
+    };
+  }
+
+  // Verifies favor hasn't already been accepted
+  private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
+    FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
+    if (favor.getAccepterId() != null
+        && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+      if (favorStatus.equals(FavorStatus.ACCEPTED)
+          && !favor.getAccepterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+        favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
+      }
+    }
+    return favorStatus;
+  }
+
+  private Function handleException() {
+    return e -> {
+      Log.d(TAG, ((RuntimeException) e).getMessage());
+      if (((CompletionException) e).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
+      else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
+      return null;
+    };
   }
 
   private void setupButtons(View rootView) {
@@ -180,92 +292,35 @@ public class FavorPublishedView extends Fragment {
             });
   }
 
-  private void completeFavor() {
-    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, isRequested);
-    updateFuture.thenAccept(
-        o ->
-            CommonTools.showSnackbar(
-                requireView(), getString(R.string.favor_complete_success_msg)));
-    updateFuture.exceptionally(handleException());
-  }
-
-  private void cancelFavor() {
-    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
-    completableFuture.thenAccept(successfullyCancelledConsumer());
-    completableFuture.exceptionally(handleException());
-  }
-
-  private Consumer successfullyCancelledConsumer() {
-    return o -> {
-      CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
-    };
-  }
-
-  // Verifies favor hasn't already been accepted
-  private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
-    FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
-    if (favor.getAccepterId() != null) {
-      if (favorStatus.equals(FavorStatus.ACCEPTED)
-          && !favor.getAccepterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
-        favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
-      }
-    }
-    return favorStatus;
-  }
-
-  private void acceptFavor() {
-    // TODO: we should prevent accepting favor by oneself, but with different way
-    // this rare case only happens if I click the notification when someone accepts my favor, app
-    // will open the detail view
-    // of my requested favor, then I can accept my own favor.
-    /* if (currentFavor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
-      CommonTools.showSnackbar(getView(), getString(R.string.favor_accept_by_oneself));
-      return;
-    }*/
-    // update DB with accepted status
-    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
-    acceptFavorFuture.thenAccept(
-        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
-    acceptFavorFuture.exceptionally(handleException());
-  }
-
-  private Function handleException() {
-    return e -> {
-      if (((CompletionException) e).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
-      else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
-      return null;
-    };
-  }
-
   private void displayFromFavor(View rootView, Favor favor) {
 
     String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
-    // update status string
-    favorStatus = verifyFavorHasBeenAccepted(favor);
-    updateDisplayFromViewStatus();
-
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
-
     UserUtil.getSingleInstance()
         .findUser(favor.getRequesterId())
         .thenAccept(
             user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
-    Log.d(TAG, "once display");
-    isRequested = favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+    isRequested =
+        favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
     if (isRequested) {
-      if (editItem != null) editItem.setVisible(true);
+      // display user profile
       FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
-      if (user.getPhotoUrl() != null)
+      if (user.getPhotoUrl() != null) {
         Glide.with(this)
             .load(user.getPhotoUrl())
             .fitCenter()
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
+      }
+      // display committed user list
+      if (favor.getUserIds().size() > 1) setupListView();
     }
+    // update status string
+    favorStatus = verifyFavorHasBeenAccepted(favor);
+    updateDisplayFromViewStatus();
   }
 
   private void updateDisplayFromViewStatus() {
@@ -322,37 +377,15 @@ public class FavorPublishedView extends Fragment {
     }
   }
 
-  private void updateCompleteBtnDisplay(int txt, boolean clickable, int icon) {
+  private void updateCompleteBtnDisplay(int txt, boolean visible, int icon) {
     acceptAndCompleteFavorBtn.setText(txt);
-    acceptAndCompleteFavorBtn.setClickable(clickable);
-    // completeBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, icon, 0);
-  }
-
-  private void updateAcceptBtnDisplay() {
-    // String displayMessage;
-    // int backgroundColor;
-    boolean visible;
-    // Drawable img;
-    // displayMessage = getString(R.string.complete_favor);
-    // backgroundColor = R.color.fui_transparent;
-    // img = getResources().getDrawable(R.drawable.ic_check_box_black_24dp);
-    // includes ACCEPTED_BY_OTHER
-    // displayMessage = getString(R.string.accept_favor);
-    // img = getResources().getDrawable(R.drawable.ic_thumb_up_24dp);
-    // backgroundColor = android.R.drawable.btn_default;
-    visible =
-        favorStatus == FavorStatus.ACCEPTED
-            || favorStatus == FavorStatus.COMPLETED_ACCEPTER
-            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
-    if (cancelItem != null) cancelItem.setVisible(visible);
-    // acceptAndCompleteFavorBtn.setText(displayMessage);
-    // acceptAndCompleteFavorBtn.setBackgroundResource(backgroundColor);
-    // acceptAndCancelFavorBtn.setCompoundDrawablesWithIntrinsicBounds(null, null, null, img);
+    acceptAndCompleteFavorBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    acceptAndCompleteFavorBtn.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
   }
 
   private void enableButtons(boolean enable) {
-    acceptAndCompleteFavorBtn.setEnabled(enable);
-    chatBtn.setEnabled(enable);
+    acceptAndCompleteFavorBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+    chatBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
   }
 
   private void setupTextView(View rootView, int id, String text) {

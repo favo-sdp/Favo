@@ -2,6 +2,7 @@ package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -78,6 +79,7 @@ public class DatabaseWrapper {
     return getFuture.thenApply(
         documentSnapshot -> {
           if (documentSnapshot.exists()) {
+            Log.d("UserUtilAA", " run in database");
             return documentSnapshot.toObject(cls);
           } else {
             throw new RuntimeException(String.format("Document %s does not exist ", key));

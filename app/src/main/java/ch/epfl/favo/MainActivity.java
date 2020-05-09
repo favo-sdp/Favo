@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
   private BottomNavigationView bottomNavigationView;
 
   private int currentMenuItem;
-  private int cnt = 0;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override

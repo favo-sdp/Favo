@@ -130,7 +130,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture
-      throw new IllegalStateException();
+      throw new IllegalStateException("Wrong Status");
     }
     return updateFavorForCurrentUser(tempFavor, isRequested, -1);
   }
@@ -201,7 +201,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
-      if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+      if (favor.getRequesterId()!=null && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
           && favor.getStatusId() == REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {

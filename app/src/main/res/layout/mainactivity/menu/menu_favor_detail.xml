@@ -6,22 +6,18 @@
         android:visible="false"
         android:title="@string/edit_favor" />
     <item
+        android:id="@+id/restart_button"
+        android:visible="false"
+        android:title="@string/restart_request" />
+    <item
         android:id="@+id/cancel_button"
         android:visible="false"
         android:title="@string/cancel_request" />
 
     <item
         android:id="@+id/share_button"
-        android:title="Share"
-        android:visible="true"
-        />
-
-    <item
-        android:id="@+id/post_button"
-        android:title="Post"
+        android:title="Invite"
         android:visible="false"
-        app:actionViewClass="android.widget.Button"
-        app:showAsAction="always"
         />
 
 </menu>
