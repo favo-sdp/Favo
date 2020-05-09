@@ -31,14 +31,6 @@
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
-            <Button
-                android:layout_width="50dp"
-                android:layout_height="match_parent" />
-
-
-            <Button
-                android:layout_width="50dp"
-                android:layout_height="match_parent" />
 
         </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

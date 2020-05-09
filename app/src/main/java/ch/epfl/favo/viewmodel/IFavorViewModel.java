@@ -26,8 +26,6 @@ public interface IFavorViewModel {
 
   CompletableFuture cancelFavor(Favor favor, boolean isRequested);
 
-  CompletableFuture reEnableFavor(Favor favor);
-
   CompletableFuture<Bitmap> downloadPicture(Favor favor);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); // used in map view

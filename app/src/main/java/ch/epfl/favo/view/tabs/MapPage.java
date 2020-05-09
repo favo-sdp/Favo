@@ -384,21 +384,16 @@ public class MapPage extends Fragment
     List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
     boolean isRequested = (boolean) markerInfo.get(1);
-    if (focusedFavor != null
-        && focusedFavor.getId().equals(favorId)
-        && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
-      focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
-      focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
-
-      // transfer local favor to FavorEditingView via ViewModel
-      favorViewModel.setFavorValue(focusedFavor);
-    }
     Bundle favorBundle = new Bundle();
-    favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-    if (isRequested)
+    if (isRequested){
+      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
       Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
-    else
+    }
+    else{
+      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
       Navigation.findNavController(view)
               .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
+    }
+
   }
 }

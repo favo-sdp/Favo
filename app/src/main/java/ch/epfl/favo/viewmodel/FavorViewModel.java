@@ -115,13 +115,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return resultFuture;
   }
 
-  public CompletableFuture reEnableFavor(final Favor favor) {
-    Favor tempFavor = (Favor) favor.clone();
-    int countUpdate = (tempFavor.getIsArchived()) ? 1 : 0;
-    tempFavor.setStatusIdToInt(REQUESTED);
-    return updateFavorForCurrentUser(tempFavor, true, countUpdate);
-  }
-
   public CompletableFuture completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = (Favor) favor.clone();
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())

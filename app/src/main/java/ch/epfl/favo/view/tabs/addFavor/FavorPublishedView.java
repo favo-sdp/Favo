@@ -15,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -40,7 +40,6 @@ import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
-import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -91,7 +90,8 @@ public class FavorPublishedView extends Fragment {
   private void updateAcceptBtnDisplay() {
     boolean visible;
     visible =
-        favorStatus == FavorStatus.ACCEPTED
+        (favorStatus == FavorStatus.REQUESTED && isRequested)
+            || favorStatus == FavorStatus.ACCEPTED
             || favorStatus == FavorStatus.COMPLETED_ACCEPTER
             || favorStatus == FavorStatus.COMPLETED_REQUESTER;
     if (cancelItem != null) cancelItem.setVisible(visible);
@@ -115,9 +115,8 @@ public class FavorPublishedView extends Fragment {
     if (id == R.id.cancel_button) {
       cancelFavor();
     } else if (id == R.id.edit_button) {
-      currentFavor.setStatusIdToInt(FavorStatus.EDIT);
-      currentFavor.setAccepterId(null);
       cancelFavor();
+      currentFavor.setStatusIdToInt(FavorStatus.EDIT);
       Bundle favorBundle = new Bundle();
       favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
       findNavController(requireActivity(), R.id.nav_host_fragment)
@@ -132,7 +131,8 @@ public class FavorPublishedView extends Fragment {
       Bundle favorBundle = new Bundle();
       favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
       findNavController(requireActivity(), R.id.nav_host_fragment)
-          .navigate(R.id.action_global_favorEditingView, favorBundle);
+              .navigate(R.id.action_global_favorEditingView, favorBundle);
+
     }
     return super.onOptionsItemSelected(item);
   }
@@ -159,7 +159,6 @@ public class FavorPublishedView extends Fragment {
   private void setupListView() {
     ListView listView = requireView().findViewById(R.id.commit_user);
     requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
-    Log.d(TAG, " begin to add to list");
     for (String userId : currentFavor.getUserIds()) {
       if (!userId.equals(currentFavor.getRequesterId()))
         UserUtil.getSingleInstance()
@@ -167,7 +166,6 @@ public class FavorPublishedView extends Fragment {
             .thenAccept(
                 user -> {
                   commitUsers.put(userId, user);
-                  Log.d(TAG, user.getEmail() + " added to list");
                   listView.setAdapter(
                       new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
                 });
@@ -175,7 +173,10 @@ public class FavorPublishedView extends Fragment {
     listView.setOnItemClickListener(
         (parent, view, position, id) -> {
           User user = (User) parent.getItemAtPosition(position);
-          Log.d(TAG, user.getEmail());
+          PopupMenu popup = new PopupMenu(requireActivity(), view);
+          popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
+          //
+          popup.show();
         });
   }
 

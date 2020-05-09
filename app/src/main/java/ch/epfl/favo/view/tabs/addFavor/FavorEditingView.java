@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -96,7 +97,6 @@ public class FavorEditingView extends Fragment {
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
       currentFavor.setStatusIdToInt(FavorStatus.EDIT);
-      currentFavor.setAccepterId(null);
       displayFavorInfo(rootView);
     }
     return rootView;
@@ -110,7 +110,6 @@ public class FavorEditingView extends Fragment {
   public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
-
 
   /** When fragment is launched with favor. */
   private void displayFavorInfo(View v) {
@@ -192,6 +191,11 @@ public class FavorEditingView extends Fragment {
                     user.setRequestedFavors(user.getRequestedFavors() + 1);
                     UserUtil.getSingleInstance().updateUser(user);
                   });
+          Bundle favorBundle = new Bundle();
+          favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+          Log.d("fuck", currentFavor.getId());
+          Navigation.findNavController(currentView)
+                  .navigate(R.id.action_nav_favorEditingView_to_favorPublishedView, favorBundle);
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
     // Show confirmation and minimize keyboard
@@ -208,8 +212,8 @@ public class FavorEditingView extends Fragment {
       else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
       Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
       Log.d(TAG, ((CompletionException) exception).getStackTrace().toString());
-      throw (RuntimeException)exception;
-      //return null;
+      throw (RuntimeException) exception;
+      // return null;
     };
   }
 

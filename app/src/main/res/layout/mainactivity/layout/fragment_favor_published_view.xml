@@ -17,12 +17,12 @@
         <androidx.cardview.widget.CardView
             android:id="@+id/buttons_bar"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:background="@color/material_green_500"
                 android:orientation="horizontal"
