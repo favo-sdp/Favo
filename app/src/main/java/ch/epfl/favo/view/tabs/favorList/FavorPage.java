@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs.favorList;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -43,6 +45,7 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
  */
 public class FavorPage extends Fragment {
 
+  private View rootView;
   private TextView tipTextView;
   private SearchView searchView;
   private RadioGroup radioGroup;
@@ -86,7 +89,7 @@ public class FavorPage extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
+    rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
 
     // initialize fields
     tipTextView = rootView.findViewById(R.id.tip);
@@ -188,10 +191,11 @@ public class FavorPage extends Fragment {
         return new FavorViewHolder(view);
       }
 
+      @RequiresApi(api = Build.VERSION_CODES.N)
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-        holder.bind(requireContext(), model);
+        holder.bind(requireContext(), model, rootView);
       }
 
       @Override
