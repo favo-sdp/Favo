@@ -13,6 +13,7 @@ import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -48,7 +49,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture acceptFavor(Favor favor) {
+  public CompletableFuture acceptFavor(Favor favor, User user) {
     if (isThrowingError) return failedResult;
     favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     favor.setStatusIdToInt(FavorStatus.ACCEPTED);
@@ -79,15 +80,12 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture reEnableFavor(Favor favor) {
-    if (isThrowingError) return failedResult;
-    favor.setStatusIdToInt(FavorStatus.REQUESTED);
-    observedFavorResult.setValue(favor);
-    return getSuccessfulCompletableFuture();
-  }
+  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
 
   @Override
-  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
+  public CompletableFuture commitFavor(Favor favor, int change) {
+    return null;
+  }
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) {

@@ -48,7 +48,7 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
-
+/*
 @RunWith(AndroidJUnit4.class)
 public class FavorPublishedViewTest {
   private Favor fakeFavor;
@@ -86,7 +86,7 @@ public class FavorPublishedViewTest {
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     Bundle bundle = new Bundle();
     bundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
-    runOnUiThread(() -> navController.navigate(R.id.action_nav_map_to_favorDetailView, bundle));
+    runOnUiThread(() -> navController.navigate(R.id.action_nav_map_to_favorPublishedView, bundle));
     Fragment navHostFragment =
         activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
     getInstrumentation().waitForIdleSync();
@@ -144,31 +144,6 @@ public class FavorPublishedViewTest {
     // check update text matches Accepted by other
     checkToolbar(FavorStatus.ACCEPTED_BY_OTHER.toString());
   }
-  /*
-    @Test
-    public void testAcceptFavorBlyOneselfShowSnackbar() throws Throwable {
-      Favor favorPostByOneself =
-          new Favor(
-              TestConstants.FAVOR_ID,
-              TestConstants.TITLE,
-              TestConstants.DESCRIPTION,
-              TestConstants.USER_ID,
-              TestConstants.LOCATION,
-              TestConstants.FAVOR_STATUS.toInt());
-      runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favorPostByOneself));
-      getInstrumentation().waitForIdleSync();
-
-      // click accept button
-      onView(withId(R.id.accept_button)).perform(click());
-      getInstrumentation().waitForIdleSync();
-      // check display is updated
-      checkToolbar(FavorStatus.CANCELLED_ACCEPTER.toString());
-
-      // check snackbar shows
-      onView(withId(com.google.android.material.R.id.snackbar_text))
-          .check(matches(withText(R.string.favor_accept_by_oneself)));
-    }
-  */
   @Test
   public void testAcceptFlow() {
     // click accept button
@@ -313,4 +288,4 @@ public class FavorPublishedViewTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
   }
-}
+}*/

@@ -23,6 +23,7 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -89,6 +90,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .thenCompose(o -> getFavorRepository().updateFavor(favor));
   }
 
+  public CompletableFuture commitFavor(Favor favor, int change){
+    return changeUserActiveFavorCount(
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            false,
+            change) // if user can accept favor then post it in the favor collection
+            .thenCompose((f) -> getFavorRepository().updateFavor(favor));
+  }
+
   // save address to firebase
   @Override
   public CompletableFuture requestFavor(Favor favor) {
@@ -97,20 +106,20 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             true,
-            1) // if user can fragment_favor_published_view favor then post it in the favor collection
+            1) // if user can request favor then post it in the favor collection
         .thenCompose((f) -> getFavorRepository().requestFavor(tempFavor));
   }
 
   public CompletableFuture cancelFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = (Favor) favor.clone();
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
-    String otherUserId = isRequested ? tempFavor.getAccepterId() : tempFavor.getRequesterId();
     tempFavor.setStatusIdToInt(cancelledStatus);
     CompletableFuture resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    if (otherUserId != null) // update other user
-    {
-      resultFuture.thenCompose(o -> changeUserActiveFavorCount(otherUserId, !isRequested, -1));
+    for(int i = 1; i < favor.getUserIds().size(); i++){
+      int commitUser = i;
+      resultFuture.thenCompose(o -> changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
     }
+
 
     return resultFuture;
   }
@@ -132,11 +141,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    * @param favor should be a clone of the original object in the UI!
    * @return
    */
-  public CompletableFuture acceptFavor(final Favor favor) {
+  public CompletableFuture acceptFavor(final Favor favor, User user) {
     Favor tempFavor = (Favor) favor.clone();
-    tempFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    tempFavor.setAccepterId("");
+    tempFavor.setAccepterId(user.getId());
     tempFavor.setStatusIdToInt(ACCEPTED);
-    return updateFavorForCurrentUser(tempFavor, false, 1);
+    return getFavorRepository().updateFavor(tempFavor);
   }
 
   // Upload/download pictures

@@ -50,7 +50,7 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-
+/*
 public class ChatPageTest {
 
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
@@ -237,3 +237,4 @@ public class ChatPageTest {
     };
   }
 }
+*/

@@ -60,17 +60,12 @@ public class UserUtil implements IUserUtil {
             (object) -> {
               User user = object;
               if (isRequested){
-                Log.d("UserUtilAA", " still alive 11");
                 user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-                Log.d("UserUtilAA", " dead");
               }
                 //user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
               else {
-                Log.d("UserUtilAA", " still alive 22  " + user.getActiveAcceptingFavors());
                 user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
-                Log.d("UserUtilAA", " dead");
               }
-              Log.d("UserUtilAA", user.getActiveRequestingFavors() + " requested " + isRequested);
               return updateUser(user);
             });
   }
@@ -83,7 +78,7 @@ public class UserUtil implements IUserUtil {
   /** @param id A FireBase Uid to search for in Users table. */
   @Override
   public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
-    Log.d("UserUtilAA", "run in modelView findUser");
+    Log.e("UserUtilAA", "run in Userutils findUser");
     return collection.getDocument(id);
   }
 

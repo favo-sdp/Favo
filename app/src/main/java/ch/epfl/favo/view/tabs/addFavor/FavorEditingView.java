@@ -193,7 +193,6 @@ public class FavorEditingView extends Fragment {
                   });
           Bundle favorBundle = new Bundle();
           favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
-          Log.d("fuck", currentFavor.getId());
           Navigation.findNavController(currentView)
                   .navigate(R.id.action_nav_favorEditingView_to_favorPublishedView, favorBundle);
         });

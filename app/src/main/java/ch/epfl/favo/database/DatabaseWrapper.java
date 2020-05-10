@@ -79,7 +79,7 @@ public class DatabaseWrapper {
     return getFuture.thenApply(
         documentSnapshot -> {
           if (documentSnapshot.exists()) {
-            Log.d("UserUtilAA", " run in database");
+            Log.d("UserUtilAA", key + " run in database");
             return documentSnapshot.toObject(cls);
           } else {
             throw new RuntimeException(String.format("Document %s does not exist ", key));

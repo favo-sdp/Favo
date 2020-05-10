@@ -3,10 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/profile"
-        android:visible="false"
-        android:title="@string/edit_favor" />
+        android:title="@string/profile" />
     <item
-        android:id="@+id/accept_button"
-        android:visible="false"
-        android:title="@string/restart_request" />
+        android:id="@+id/accept"
+        android:title="@string/accept_favor" />
 </menu>

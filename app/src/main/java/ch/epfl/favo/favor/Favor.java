@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +17,7 @@ import java.util.stream.IntStream;
 import ch.epfl.favo.database.DatabaseWrapper;
 import ch.epfl.favo.database.Document;
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.util.DependencyFactory;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
@@ -177,12 +180,19 @@ public class Favor implements Parcelable, Document, Cloneable {
   }
 
   public void setAccepterId(String id) {
-    if (userIds != null && !userIds.isEmpty()) {
-      String reqId = userIds.get(0);
-      this.userIds = Arrays.asList(reqId, id);
+    if (id != null && id.equals("")){
+      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
+      Log.d("fuck", userIds.size() + " sie");
+    }
+    else if (userIds != null && !userIds.isEmpty()) {
+      ArrayList<String> arrayList = new ArrayList<>();
+      Log.d("fuck", userIds.size() + " dfec");
+      arrayList.addAll(userIds);
+      arrayList.add(id);
+      userIds = arrayList;
+      Log.d("fuck", userIds.size() + "  id:" + id + " dfdfdec " + this.title);
     }
   }
-
   public Date getPostedTime() {
     return postedTime;
   }

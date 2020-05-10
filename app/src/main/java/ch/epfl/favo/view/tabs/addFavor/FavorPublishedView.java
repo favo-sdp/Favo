@@ -87,52 +87,21 @@ public class FavorPublishedView extends Fragment {
     super.onCreateOptionsMenu(menu, inflater);
   }
 
-  private void updateAcceptBtnDisplay() {
-    boolean visible;
-    visible =
-        (favorStatus == FavorStatus.REQUESTED && isRequested)
-            || favorStatus == FavorStatus.ACCEPTED
-            || favorStatus == FavorStatus.COMPLETED_ACCEPTER
-            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
-    if (cancelItem != null) cancelItem.setVisible(visible);
-
-    visible =
-        favorStatus == FavorStatus.CANCELLED_ACCEPTER
-            || favorStatus == FavorStatus.CANCELLED_REQUESTER
-            || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED && isRequested;
-    if (restartItem != null) restartItem.setVisible(visible);
-
-    visible = isRequested && favorStatus == FavorStatus.REQUESTED;
-    if (editItem != null) editItem.setVisible(visible);
-    visible = favorStatus == FavorStatus.REQUESTED;
-    if (inviteItem != null) inviteItem.setVisible(visible);
-  }
-
   // handle button activities
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     int id = item.getItemId();
     if (id == R.id.cancel_button) {
-      cancelFavor();
+      if(isRequested)
+        cancelFavor();
+      else
+        cancelCommit();
     } else if (id == R.id.edit_button) {
-      cancelFavor();
-      currentFavor.setStatusIdToInt(FavorStatus.EDIT);
-      Bundle favorBundle = new Bundle();
-      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
-      findNavController(requireActivity(), R.id.nav_host_fragment)
-          .navigate(R.id.action_global_favorEditingView, favorBundle);
+      goEditFavor();
     } else if (id == R.id.share_button) {
 
     } else if (id == R.id.restart_button) {
-      Favor newFavor =
-          new Favor(
-              "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT);
-      newFavor.updateToOther(currentFavor);
-      Bundle favorBundle = new Bundle();
-      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-      findNavController(requireActivity(), R.id.nav_host_fragment)
-              .navigate(R.id.action_global_favorEditingView, favorBundle);
-
+      goRestartFavor();
     }
     return super.onOptionsItemSelected(item);
   }
@@ -156,30 +125,6 @@ public class FavorPublishedView extends Fragment {
     return rootView;
   }
 
-  private void setupListView() {
-    ListView listView = requireView().findViewById(R.id.commit_user);
-    requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
-    for (String userId : currentFavor.getUserIds()) {
-      if (!userId.equals(currentFavor.getRequesterId()))
-        UserUtil.getSingleInstance()
-            .findUser(userId)
-            .thenAccept(
-                user -> {
-                  commitUsers.put(userId, user);
-                  listView.setAdapter(
-                      new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
-                });
-    }
-    listView.setOnItemClickListener(
-        (parent, view, position, id) -> {
-          User user = (User) parent.getItemAtPosition(position);
-          PopupMenu popup = new PopupMenu(requireActivity(), view);
-          popup.getMenuInflater().inflate(R.menu.popup_menu, popup.getMenu());
-          //
-          popup.show();
-        });
-  }
-
   public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
@@ -193,22 +138,268 @@ public class FavorPublishedView extends Fragment {
               try {
                 if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
-                  displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
+                throw e;
               }
+              if(currentFavor != null)
+                displayFromFavor(rootView, currentFavor);
             });
   }
 
-  private void acceptFavor() {
+  private void updateAppBarMenuDisplay() {
+    boolean visible;
+    visible =
+            (favorStatus == FavorStatus.REQUESTED && isRequested)
+                    || favorStatus == FavorStatus.ACCEPTED
+                    || favorStatus == FavorStatus.COMPLETED_ACCEPTER
+                    || favorStatus == FavorStatus.COMPLETED_REQUESTER;
+    // if requester commit this favor, then he can cancel commit
+    for(int i = 1; i < currentFavor.getUserIds().size(); i++){
+      if(currentFavor.getUserIds().get(i).equals(DependencyFactory.getCurrentFirebaseUser().getUid()))
+        visible = true;
+    }
+    if (cancelItem != null) cancelItem.setVisible(visible);
+
+    visible =
+            favorStatus == FavorStatus.CANCELLED_ACCEPTER
+                    || favorStatus == FavorStatus.CANCELLED_REQUESTER
+                    || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED && isRequested;
+    if (restartItem != null) restartItem.setVisible(visible);
+
+    visible = isRequested && favorStatus == FavorStatus.REQUESTED;
+    if (editItem != null) editItem.setVisible(visible);
+
+
+    visible = favorStatus == FavorStatus.REQUESTED;
+    if (inviteItem != null) inviteItem.setVisible(visible);
+  }
+
+  private void setupButtons(View rootView) {
+    acceptAndCompleteFavorBtn = rootView.findViewById(R.id.accept_button);
+    TextView locationAccessBtn = rootView.findViewById(R.id.location);
+    chatBtn = rootView.findViewById(R.id.chat_button);
+
+    locationAccessBtn.setOnClickListener(
+            v -> {
+              favorViewModel.setShowObservedFavor(true);
+              findNavController(requireActivity(), R.id.nav_host_fragment)
+                      .popBackStack(R.id.nav_map, false);
+            });
+
+    // If clicking for the first time, then accept the favor
+    acceptAndCompleteFavorBtn.setOnClickListener(
+            v -> {
+              if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) {
+                commitFavor();
+              } else {
+                completeFavor();
+              }
+            });
+
+    chatBtn.setOnClickListener(
+            v -> {
+              Bundle favorBundle = new Bundle();
+              favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+              Navigation.findNavController(requireView())
+                      .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
+            });
+
+    rootView
+            .findViewById(R.id.user_profile_picture)
+            .setOnClickListener(
+                    v -> {
+                      Bundle userBundle = new Bundle();
+                      userBundle.putString("USER_ARGS", currentFavor.getRequesterId());
+                      Navigation.findNavController(requireView())
+                              .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+                    });
+  }
+
+  private void displayFromFavor(View rootView, Favor favor) {
+
+    String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
+    String titleStr = favor.getTitle();
+    String descriptionStr = favor.getDescription();
+    setupTextView(rootView, R.id.time, timeStr);
+    setupTextView(rootView, R.id.title, titleStr);
+    setupTextView(rootView, R.id.description, descriptionStr);
+    UserUtil.getSingleInstance()
+            .findUser(favor.getRequesterId())
+            .thenAccept(
+                    user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
+    isRequested =
+            favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+    if (isRequested) {
+      // display user profile
+      FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
+      if (user.getPhotoUrl() != null) {
+        Glide.with(this)
+                .load(user.getPhotoUrl())
+                .fitCenter()
+                .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
+      }
+      // display committed user list
+      if (favor.getUserIds().size() > 1) setupListView();
+      else requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
+    }
+    // update status string
+    favorStatus = verifyFavorHasBeenAccepted(favor);
+    updateDisplayFromViewStatus();
+  }
+
+  private void setupListView() {
+    ListView listView = requireView().findViewById(R.id.commit_user);
+    requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
+    for (String userId : currentFavor.getUserIds()) {
+      if (!userId.equals(currentFavor.getRequesterId()))
+        UserUtil.getSingleInstance()
+                .findUser(userId)
+                .thenAccept(
+                        user -> {
+                          commitUsers.put(userId, user);
+                          listView.setAdapter(
+                                  new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
+                        });
+    }
+    listView.setOnItemClickListener(
+            (parent, view, position, id) -> {
+              User user = (User) parent.getItemAtPosition(position);
+              PopupMenu popup = new PopupMenu(requireActivity(), view);
+              popup.getMenuInflater().inflate(R.menu.user_popup_menu, popup.getMenu());
+              if(currentFavor.getStatusId() != FavorStatus.REQUESTED.toInt())
+                popup.getMenu().findItem(R.id.accept).setVisible(false);
+              popup.setOnMenuItemClickListener(
+                      item -> {
+                        if (item.getItemId() == R.id.accept) {
+                          acceptFavor(user);
+                        } else if (item.getItemId() == R.id.profile) {
+                          Bundle userBundle = new Bundle();
+                          userBundle.putString("USER_ARGS", user.getId());
+                          Navigation.findNavController(requireView())
+                                  .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+                        }
+                        return false;
+                      });
+              popup.show();
+            });
+  }
+
+  private void updateDisplayFromViewStatus() {
+    updateAppBarMenuDisplay();
+    toolbar.setTitle(favorStatus.toString());
+    switch (favorStatus) {
+      case SUCCESSFULLY_COMPLETED:
+      {
+        updateCompleteBtnDisplay(
+                R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp);
+        enableButtons(false);
+        break;
+      }
+      case ACCEPTED:
+      {
+        updateCompleteBtnDisplay(
+                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
+        break;
+      }
+      case REQUESTED:
+      {
+        if (currentFavor
+                .getUserIds()
+                .contains(DependencyFactory.getCurrentFirebaseUser().getUid()))
+          updateCompleteBtnDisplay(R.string.accept_favor, false, R.drawable.ic_thumb_up_24dp);
+        else updateCompleteBtnDisplay(R.string.accept_favor, true, R.drawable.ic_thumb_up_24dp);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
+        break;
+      }
+      case COMPLETED_ACCEPTER:
+      {
+        if (!isRequested)
+          updateCompleteBtnDisplay(
+                  R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
+        else
+          updateCompleteBtnDisplay(
+                  R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
+        break;
+      }
+      case COMPLETED_REQUESTER:
+      {
+        if (isRequested)
+          updateCompleteBtnDisplay(
+                  R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
+        else
+          updateCompleteBtnDisplay(
+                  R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
+        break;
+      }
+      default: // includes accepted by other
+        enableButtons(false);
+        updateCompleteBtnDisplay(R.string.wait_complete, false, R.drawable.ic_check_box_black_24dp);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+    }
+  }
+
+  private void updateCompleteBtnDisplay(int txt, boolean visible, int icon) {
+    acceptAndCompleteFavorBtn.setText(txt);
+    acceptAndCompleteFavorBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    acceptAndCompleteFavorBtn.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
+  }
+
+  private void enableButtons(boolean enable) {
+    acceptAndCompleteFavorBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+    chatBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+  }
+
+  private void setupTextView(View rootView, int id, String text) {
+    TextView textView = rootView.findViewById(id);
+    textView.setText(text);
+    textView.setKeyListener(null);
+  }
+
+  private void commitFavor(){
+    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    CompletableFuture updateFuture =
+            getViewModel().commitFavor(currentFavor, 1);
+    updateFuture.thenAccept(
+            o ->
+                    CommonTools.showSnackbar(
+                            requireView(), getString(R.string.favor_respond_success_msg)));
+    updateFuture.exceptionally(handleException());
+  }
+
+  private void cancelCommit(){
+    for(int i = 1; i < currentFavor.getUserIds().size(); i++){
+      if(currentFavor.getUserIds().get(i).equals(DependencyFactory.getCurrentFirebaseUser().getUid()))
+        currentFavor.getUserIds().remove(i);
+    }
+    CompletableFuture updateFuture =
+            getViewModel().commitFavor(currentFavor, -1);
+    updateFuture.thenAccept(
+            o ->
+                    CommonTools.showSnackbar(
+                            requireView(), getString(R.string.favor_respond_success_msg)));
+    updateFuture.exceptionally(handleException());
+  }
+
+  private void acceptFavor(User user) {
     // TODO: we should prevent accepting favor by oneself, but with different way
-    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
+    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor, user);
     acceptFavorFuture.thenAccept(
-        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
-    acceptFavorFuture.exceptionally(handleException());
+        o -> {
+          CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
+          UserUtil.getSingleInstance()
+              .findUser(user.getId())
+              .thenAccept(
+                  user1 -> {
+                    user1.setAcceptedFavors(user1.getActiveAcceptingFavors() + 1);
+                    UserUtil.getSingleInstance().updateUser(user1);
+                  });
+        });
+    //acceptFavorFuture.exceptionally(handleException());
   }
 
   private void completeFavor() {
@@ -220,11 +411,35 @@ public class FavorPublishedView extends Fragment {
     updateFuture.exceptionally(handleException());
   }
 
+
+
+  private void goEditFavor(){
+    cancelFavor();
+    currentFavor.setStatusIdToInt(FavorStatus.EDIT);
+    Bundle favorBundle = new Bundle();
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+            .navigate(R.id.action_global_favorEditingView, favorBundle);
+  }
+
+  private void goRestartFavor(){
+    Favor newFavor =
+            new Favor(
+                    "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT);
+    newFavor.updateToOther(currentFavor);
+    Bundle favorBundle = new Bundle();
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+            .navigate(R.id.action_global_favorEditingView, favorBundle);
+  }
+
   private void cancelFavor() {
     CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
     completableFuture.thenAccept(successfullyCancelledConsumer());
     completableFuture.exceptionally(handleException());
   }
+
+
 
   private Consumer successfullyCancelledConsumer() {
     return o -> {
@@ -253,145 +468,5 @@ public class FavorPublishedView extends Fragment {
       else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
       return null;
     };
-  }
-
-  private void setupButtons(View rootView) {
-    acceptAndCompleteFavorBtn = rootView.findViewById(R.id.accept_button);
-    TextView locationAccessBtn = rootView.findViewById(R.id.location);
-    chatBtn = rootView.findViewById(R.id.chat_button);
-
-    locationAccessBtn.setOnClickListener(
-        v -> {
-          favorViewModel.setShowObservedFavor(true);
-          findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
-        });
-
-    // If clicking for the first time, then accept the favor
-    acceptAndCompleteFavorBtn.setOnClickListener(
-        v -> {
-          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) acceptFavor();
-          else completeFavor();
-        });
-
-    chatBtn.setOnClickListener(
-        v -> {
-          Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
-          Navigation.findNavController(requireView())
-              .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
-        });
-
-    rootView
-        .findViewById(R.id.user_profile_picture)
-        .setOnClickListener(
-            v -> {
-              Bundle userBundle = new Bundle();
-              userBundle.putString("USER_ARGS", currentFavor.getRequesterId());
-              Navigation.findNavController(requireView())
-                  .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
-            });
-  }
-
-  private void displayFromFavor(View rootView, Favor favor) {
-
-    String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
-    String titleStr = favor.getTitle();
-    String descriptionStr = favor.getDescription();
-    setupTextView(rootView, R.id.time, timeStr);
-    setupTextView(rootView, R.id.title, titleStr);
-    setupTextView(rootView, R.id.description, descriptionStr);
-    UserUtil.getSingleInstance()
-        .findUser(favor.getRequesterId())
-        .thenAccept(
-            user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
-    isRequested =
-        favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
-    if (isRequested) {
-      // display user profile
-      FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
-      if (user.getPhotoUrl() != null) {
-        Glide.with(this)
-            .load(user.getPhotoUrl())
-            .fitCenter()
-            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
-      }
-      // display committed user list
-      if (favor.getUserIds().size() > 1) setupListView();
-    }
-    // update status string
-    favorStatus = verifyFavorHasBeenAccepted(favor);
-    updateDisplayFromViewStatus();
-  }
-
-  private void updateDisplayFromViewStatus() {
-    updateAcceptBtnDisplay();
-    toolbar.setTitle(favorStatus.toString());
-    switch (favorStatus) {
-      case SUCCESSFULLY_COMPLETED:
-        {
-          updateCompleteBtnDisplay(
-              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp);
-          enableButtons(false);
-          break;
-        }
-      case ACCEPTED:
-        {
-          updateCompleteBtnDisplay(
-              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
-          toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
-          break;
-        }
-      case REQUESTED:
-        {
-          if (isRequested)
-            updateCompleteBtnDisplay(
-                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
-          else updateCompleteBtnDisplay(R.string.accept_favor, true, R.drawable.ic_thumb_up_24dp);
-          toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          break;
-        }
-      case COMPLETED_ACCEPTER:
-        {
-          if (!isRequested)
-            updateCompleteBtnDisplay(
-                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
-          else
-            updateCompleteBtnDisplay(
-                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
-          break;
-        }
-      case COMPLETED_REQUESTER:
-        {
-          if (isRequested)
-            updateCompleteBtnDisplay(
-                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
-          else
-            updateCompleteBtnDisplay(
-                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
-          break;
-        }
-      default: // includes accepted by other
-        enableButtons(false);
-        updateCompleteBtnDisplay(R.string.wait_complete, false, R.drawable.ic_check_box_black_24dp);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
-    }
-  }
-
-  private void updateCompleteBtnDisplay(int txt, boolean visible, int icon) {
-    acceptAndCompleteFavorBtn.setText(txt);
-    acceptAndCompleteFavorBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    acceptAndCompleteFavorBtn.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
-  }
-
-  private void enableButtons(boolean enable) {
-    acceptAndCompleteFavorBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
-    chatBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
-  }
-
-  private void setupTextView(View rootView, int id, String text) {
-    TextView textView = rootView.findViewById(id);
-    textView.setText(text);
-    textView.setKeyListener(null);
   }
 }

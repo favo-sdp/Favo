@@ -214,7 +214,7 @@ public class FavorViewModelTest {
 
   @Test
   public void testAcceptFavorIsSuccessful() {
-    Assert.assertTrue(viewModel.acceptFavor(FakeItemFactory.getFavor()).isDone());
+    Assert.assertTrue(viewModel.acceptFavor(FakeItemFactory.getFavor(), new User()).isDone());
   }
 
   @Test
