@@ -27,7 +27,7 @@
         android:clipToPadding="false"
         android:padding="16dp"
         android:layout_marginTop="@dimen/toolbar_height"
-        tools:listitem="@layout/message" />
+        tools:listitem="@layout/chat_message" />
 
     <LinearLayout
         android:id="@+id/footer"

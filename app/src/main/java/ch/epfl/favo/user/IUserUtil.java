@@ -8,7 +8,7 @@ public interface IUserUtil {
 
   CompletableFuture postUser(User user);
 
-  CompletableFuture changeActiveFavorCount(String userId,boolean isRequested, int change);
+  CompletableFuture changeActiveFavorCount(String userId, boolean isRequested, int change);
 
   CompletableFuture updateUser(User user);
 

@@ -24,12 +24,16 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
@@ -63,7 +67,6 @@ public class FavorEditingView extends Fragment {
   private Button confirmFavorBtn;
   private Button addPictureFromFilesBtn;
   private Button addPictureFromCameraBtn;
-  private Button locationAccessBtn;
   private NonClickableToolbar toolbar;
   private Favor currentFavor;
 
@@ -116,6 +119,7 @@ public class FavorEditingView extends Fragment {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
+
     String url = currentFavor.getPictureUrl();
     if (url != null) {
       v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
@@ -129,11 +133,7 @@ public class FavorEditingView extends Fragment {
     }
   }
 
-  /**
-   * Identifes buttons and sets onclick listeners.
-   *
-   * @param rootView
-   */
+  /** Identifes buttons and sets onclick listeners. */
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
@@ -156,7 +156,7 @@ public class FavorEditingView extends Fragment {
     }
 
     // Button: Access location
-    locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    Button locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
     locationAccessBtn.setOnClickListener(
         v -> {
           getFavorFromView();
@@ -233,12 +233,14 @@ public class FavorEditingView extends Fragment {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
-    Favor favor = new Favor(title, desc, userId, loc, favorStatus);
+    // TODO: Get reward from frontend (currently being set by default to 0)
+    Favor favor = new Favor(title, desc, userId, loc, favorStatus, 0);
 
     // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
     // callbacks in requestFavor and confirm
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+      getViewModel().savePictureToLocal(getContext(), favor, picture);
       getViewModel().uploadOrUpdatePicture(favor, picture);
     } else {
       favor.setPictureUrl(null);
@@ -311,8 +313,11 @@ public class FavorEditingView extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-          Bitmap imageBitmap = (Bitmap) extras.get("data");
-          mImageView.setImageBitmap(imageBitmap);
+
+          if (extras != null) {
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+          }
           break;
         }
     }
@@ -347,5 +352,25 @@ public class FavorEditingView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
+  }
+
+  private void onShareClicked() {
+    Uri baseUrl = Uri.parse("https://www.favoapp.com/?favorId=" + currentFavor.getId());
+    String domain = "https://favoapp.page.link";
+
+    DynamicLink link =
+        FirebaseDynamicLinks.getInstance()
+            .createDynamicLink()
+            .setLink(baseUrl)
+            .setDomainUriPrefix(domain)
+            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("ch.epfl.favo").build())
+            .setSocialMetaTagParameters(
+                new DynamicLink.SocialMetaTagParameters.Builder()
+                    .setTitle("Favor " + currentFavor.getTitle())
+                    .setDescription("Check out this favor in the Favo App!")
+                    .build())
+            .buildDynamicLink();
+
+    ((MainActivity) requireActivity()).startShareIntent(link.getUri().toString());
   }
 }

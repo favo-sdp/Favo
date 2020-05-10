@@ -1,11 +1,19 @@
 <resources>
     <string name="app_name">Favo</string>
 
+    <string name="app_name_extended">Favo App</string>
+
     <!-- General info about the app -->
     <string name="app_site">https://github.com/favo-sdp/Favo</string>
     <string name="app_site_issues">https://github.com/favo-sdp/Favo/issues</string>
 
+    <string name="yes_text">Yes</string>
+    <string name="no_text">No</string>
+
     <!-- Auth UI - Signed in -->
+    <string name="no_email_text">No email</string>
+    <string name="delete_account_alert">Are you sure you want to delete this account?</string>
+
     <string name="sign_in_failed">Sign in failed</string>
     <string name="sign_out">Sign out</string>
     <string name="delete_account_label">Delete account</string>
@@ -73,13 +81,14 @@
 
     <!-- Offline mode -->
     <!-- map -->
+    <string name="no_connection_message">No internet connection</string>
     <string name="offline_mode_dialog_title">Offline map support</string>
     <string name="offline_mode_instructions">You can enable offline map support by downloading offline maps from the Google Maps app</string>
     <string name="offline_mode_dialog_link">Show me how</string>
 
     <!-- fragment_favor_published_view view -->
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
-
+    <string name="favor_delete_success_msg">Favor successfully deleted</string>
     <!-- Preference Titles -->
     <string name="messages_header">Account</string>
     <string name="notification_header">Notifications</string>
@@ -113,11 +122,12 @@
     <string name="edit_favor">Edit</string>
     <string name="cancel_request">Cancel</string>
     <string name="confirm_favor_edit">Confirm Update</string>
+    <string name="delete_favor">Delete Request</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="favor_complete_success_msg">Favor successfully completed</string>
     <string name="chat_message_detail_view">Start a chat</string>
-    <string name="update_favor_error">Failed to update</string>
+    <string name="update_favor_error">Failed to perform operation</string>
     <string name="illegal_request_error">Max requested favors reached. Complete or cancel active favors</string>
     <string name="illegal_accept_error">Max accepted favors reached. Complete or cancel current favor.</string>
     <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
@@ -148,5 +158,16 @@
     <string name="report_description">Report the user in case of inappropriate behaviour</string>
     <string name="feedback_description">Rate your experience with this user to help others</string>
 
+    <!-- Shop Page -->
+    <string name="shop">Shop</string>
+    <string name="balance_text">%.2f</string>
+    <string name="price_text">%.2f CHF</string>
+    <string name="shop_pay_message">Pay the price for the quantity of coins selected</string>
+    <string name="favo_coins_text">Favo Coins</string>
+    <string name="special_offers_text">Special offers</string>
+    <string name="buy_favo_coins_text">Buy Favo Coins</string>
+
+    <!-- Invite option -->
+    <string name="invite_text">Invite</string>
 
 </resources>

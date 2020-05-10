@@ -154,6 +154,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
+                        android:id="@+id/pictures"
                         android:paddingStart="20dp">
 
                         <ImageView
@@ -161,8 +162,20 @@
                             android:layout_width="150dp"
                             android:layout_height="150dp"
                             android:scaleType="centerCrop" />
-                    </LinearLayout>
 
+                    </LinearLayout>
+                    <ProgressBar
+                        android:id="@+id/loading_panel"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_margin="125dp"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/pictures"
+                        app:layout_constraintEnd_toEndOf="@id/pictures"
+                        app:layout_constraintHorizontal_bias="0.4"
+                        app:layout_constraintStart_toStartOf="@id/pictures"
+                        app:layout_constraintTop_toTopOf="@id/pictures" />
 
                 </androidx.cardview.widget.CardView>
 
@@ -190,10 +203,11 @@
                                 android:layout_height="wrap_content"
                                 android:gravity="start"
                                 android:scaleType="fitEnd"
-                                app:srcCompat="@drawable/ic_location_on_24dp" />
+                                app:srcCompat="@drawable/favo_coin_icon" />
 
                             <TextView
                                 android:id="@+id/value"
+                                android:paddingStart="5dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:hint="worth 20 coins"

@@ -1,6 +1,8 @@
+
 package ch.epfl.favo.viewmodel;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.util.Log;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
@@ -249,6 +252,34 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public void setShowObservedFavor(Boolean show) {
     showFavor = show;
   }
+
+
+  private CacheUtil getCacheUtility() { return DependencyFactory.getCurrentCacheUtility(); }
+
+  public CompletableFuture deleteFavor(final Favor favor) {
+    CompletableFuture removeFavorFuture = getFavorRepository().removeFavor(favor.getId());
+    if (favor.getPictureUrl() != null) {
+      removeFavorFuture.thenCompose(o -> getPictureUtility().deletePicture(favor.getPictureUrl()));
+    }
+    return removeFavorFuture;
+  }
+
+
+  // Save/load pictures from local storage
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
+    getCacheUtility().saveToInternalStorage(context, picture, favor.getId(), 0);
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    String baseDir = context.getFilesDir().getAbsolutePath();
+    String favorId = favor.getId();
+    String pathToFolder = baseDir + "/" + favorId + "/";
+    return getCacheUtility().loadFromInternalStorage(pathToFolder, 0);
+  }
+
+
 
   @Override
   public boolean isShowObservedFavor() {

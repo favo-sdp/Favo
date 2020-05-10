@@ -1,8 +1,6 @@
 package ch.epfl.favo.view;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,26 +12,26 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.Objects;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
@@ -42,9 +40,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -57,12 +53,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
+import static ch.epfl.favo.TestConstants.FAVOR_ID;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
-/*
+
 @RunWith(AndroidJUnit4.class)
 public class AddFavorTest {
   private Favor fakeFavor = FakeItemFactory.getFavor();
@@ -113,12 +110,9 @@ public class AddFavorTest {
   public void testChatAndLocationButtonWorkRequestView() throws Throwable {
     // Check and click on the chat
     launchFragment(fakeFavor);
-    onView(withId(R.id.chat_button)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.fragment_chat)).check(matches(isDisplayed()));
 
     // Go back to favor detail page
-    pressBack();
-    Thread.sleep(3000);
+    Thread.sleep(2000);
 
     // Check and click on the location button
     onView(withId(R.id.location_request_view_btn)).check(matches(isDisplayed())).perform(click());
@@ -174,7 +168,13 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
-    Uri filePath = saveImageToInternalStorage(currentFragment.getContext(), bm);
+    Uri filePath = CacheUtil.getInstance().saveToInternalStorage(
+            Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
+    getInstrumentation().waitForIdleSync();
+    Bitmap actual = CacheUtil.getInstance().loadFromInternalStorage(
+            Objects.requireNonNull(currentFragment.getContext())
+                    .getFilesDir().getAbsolutePath() + "/" + FAVOR_ID + "/", 0).get();
+    assert(actual.sameAs(bm));
     Intent intent = new Intent();
     intent.setData(filePath);
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
@@ -212,16 +212,6 @@ public class AddFavorTest {
         .check(matches(withText(R.string.error_database_sync)));
   }
 
-  public void checkEditView() {
-    // Check upload picture button is  clickable
-    //onView(withId(R.id.add_picture_button)).check(matches(isEnabled()));
-    //onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled()));
-    onView(withId(R.id.toolbar_main_activity))
-            .check(matches(isDisplayed()))
-            .check(matches(hasDescendant(withText(FavorStatus.EDIT.toString()))));
-
-  }
-
   public void checkRequestedView() {
     // Check fragment_favor_published_view button is gone
     onView(withId(R.id.request_button))
@@ -234,7 +224,6 @@ public class AddFavorTest {
         .check(matches(isDisplayed()))
         .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
-
 
   @Test
   public void testRequestFavorFlow() {
@@ -257,6 +246,7 @@ public class AddFavorTest {
   }
 
   @Test
+
   public void testSnackBarShowsWhenFailPostOrUpdateOrCancelToDb() throws Throwable {
     FavorEditingView favorEditingView = launchFragment(null);
     FakeViewModel fakeViewModel = (FakeViewModel) favorEditingView.getViewModel();
@@ -277,35 +267,4 @@ public class AddFavorTest {
 
 
 
-  public static Uri saveImageToInternalStorage(Context mContext, Bitmap bitmap) {
-
-    String mImageName = "snap.jpg";
-
-    ContextWrapper wrapper = new ContextWrapper(mContext);
-
-    File file = wrapper.getDir("Images", MODE_PRIVATE);
-
-    file = new File(file, mImageName);
-
-    try {
-
-      OutputStream stream;
-
-      stream = new FileOutputStream(file);
-
-      bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-
-      stream.flush();
-
-      stream.close();
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    Uri mImageUri = Uri.parse(file.getAbsolutePath());
-
-    return mImageUri;
-  }
 }
-*/

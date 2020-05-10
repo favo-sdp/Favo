@@ -1,5 +1,7 @@
+
 package ch.epfl.favo;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
@@ -130,7 +132,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    Favor observedFavor = new Favor(favorId, " ", " ", TestConstants.REQUESTER_ID, null, 0);
+    Favor observedFavor = new Favor(favorId, " ", " ", TestConstants.REQUESTER_ID, null, 0, 5);
     observedFavor.updateToOther(FakeItemFactory.getFavor());
     setObservedFavorResult(observedFavor);
     return observedFavorResult;
@@ -154,4 +156,21 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   public boolean isShowObservedFavor() {
     return showFavor;
   }
+
+  @Override
+  public CompletableFuture deleteFavor(Favor favor) {
+    if (isThrowingError) return failedResult;
+    return getSuccessfulCompletableFuture();
+  }
+
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    return null;
+  }
+
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture){}
+
+
 }

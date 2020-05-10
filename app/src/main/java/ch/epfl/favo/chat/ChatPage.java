@@ -91,7 +91,7 @@ public class ChatPage extends Fragment {
     setupToolBar();
   }
 
-  public void setupToolBar() {
+  private void setupToolBar() {
     Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
     toolbar.setTitleTextColor(Color.WHITE);
@@ -156,7 +156,7 @@ public class ChatPage extends Fragment {
       public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View messageView =
-            LayoutInflater.from(parent.getContext()).inflate(R.layout.message, parent, false);
+            LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_message, parent, false);
 
         messageView.setOnClickListener(
             v -> {

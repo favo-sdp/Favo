@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;

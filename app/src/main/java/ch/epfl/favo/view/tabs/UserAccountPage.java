@@ -33,7 +33,6 @@ import ch.epfl.favo.util.DependencyFactory;
 public class UserAccountPage extends Fragment {
 
   private View view;
-  private User currentUser;
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -54,11 +53,7 @@ public class UserAccountPage extends Fragment {
 
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .thenAccept(
-            user -> {
-              currentUser = user;
-              displayUserDetails(user);
-            });
+        .thenAccept(this::displayUserDetails);
 
     return view;
   }
@@ -100,7 +95,8 @@ public class UserAccountPage extends Fragment {
                 : user.getDisplayName());
 
     ((TextView) view.findViewById(R.id.user_email))
-        .setText(TextUtils.isEmpty(user.getEmail()) ? "No email" : user.getEmail());
+        .setText(
+            TextUtils.isEmpty(user.getEmail()) ? getText(R.string.no_email_text) : user.getEmail());
   }
 
   private void signOut(View view) {
@@ -111,9 +107,9 @@ public class UserAccountPage extends Fragment {
 
   private void deleteAccountClicked(View view) {
     new AlertDialog.Builder(requireActivity())
-        .setMessage("Are you sure you want to delete this account?")
-        .setPositiveButton("Yes", (dialogInterface, i) -> deleteAccount())
-        .setNegativeButton("No", null)
+        .setMessage(getText(R.string.delete_account_alert))
+        .setPositiveButton(getText(R.string.yes_text), (dialogInterface, i) -> deleteAccount())
+        .setNegativeButton(getText(R.string.no_text), null)
         .show();
   }
 

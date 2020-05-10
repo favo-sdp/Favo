@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.net.IpSecManager;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
@@ -17,23 +16,23 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.concurrent.CompletableFuture;
 
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.GpsTracker;
 import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
-import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.viewmodel.FavorViewModel;
 
 public class DependencyFactory {
   private static IGpsTracker currentGpsTracker;
   private static FirebaseUser currentFirebaseUser;
-  private static User currentUser;
   private static ICollectionWrapper currentCollectionWrapper;
   private static Intent currentCameraIntent;
   private static LocationManager currentLocationManager;
@@ -41,13 +40,14 @@ public class DependencyFactory {
   private static boolean offlineMode = false;
   private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
-  private static Settings.Secure deviceSettings;
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
   private static FavorUtil currentFavorRepository;
   private static IUserUtil currentUserRepository;
   private static FirebaseInstanceId currentFirebaseInstanceId;
   private static PictureUtil currentPictureUtility;
+  private static FirebaseStorage currentFirebaseStorage;
+  private static CacheUtil currentCacheUtility;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   public static boolean isOfflineMode(Context context) {
@@ -218,8 +218,31 @@ public class DependencyFactory {
     return PictureUtil.getInstance();
   }
 
+  public static FirebaseStorage getCurrentFirebaseStorage() {
+    if (testMode && currentFirebaseStorage != null) return currentFirebaseStorage;
+    return FirebaseStorage.getInstance();
+  }
+
+  public static CacheUtil getCurrentCacheUtility() {
+    if (testMode && currentPictureUtility != null) return currentCacheUtility;
+    return CacheUtil.getInstance();
+  }
+
+  @VisibleForTesting
   public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
     testMode = true;
     currentPictureUtility = pictureUtil;
+  }
+
+  @VisibleForTesting
+  public static void setCurrentFirebaseStorage(FirebaseStorage dependency) {
+    testMode = true;
+    currentFirebaseStorage = dependency;
+  }
+
+  @VisibleForTesting
+  public static void setCurrentCacheUtility(CacheUtil cacheUtil) {
+    testMode = true;
+    currentCacheUtility = cacheUtil;
   }
 }

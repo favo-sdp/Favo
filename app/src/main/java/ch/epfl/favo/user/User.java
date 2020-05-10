@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.database.Document;
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.exception.IllegalRequestException;
+import ch.epfl.favo.gps.FavoLocation;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -36,6 +36,7 @@ public class User implements Document {
   public static final String COMPLETED_FAVORS = "completedFavors";
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";
+  public static final String BALANCE = "balance";
 
   private String id;
   private String name;
@@ -51,6 +52,7 @@ public class User implements Document {
   private int completedFavors;
   private int likes;
   private int dislikes;
+  private double balance;
 
   public User() {
     this.activeAcceptingFavors = 0;
@@ -60,6 +62,7 @@ public class User implements Document {
     this.likes = 0;
     this.dislikes = 0;
     this.completedFavors = 0;
+    this.balance = 10.0;
   }
 
   public User(Map<String, Object> map) {
@@ -77,6 +80,7 @@ public class User implements Document {
     this.completedFavors = (int) map.get(COMPLETED_FAVORS);
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
+    this.balance = (double) map.get(BALANCE);
   }
 
   public User(
@@ -100,6 +104,7 @@ public class User implements Document {
     this.likes = 0;
     this.dislikes = 0;
     this.completedFavors = 0;
+    this.balance = 10.0;
   }
 
   public User(FirebaseUser firebaseUser, String deviceId, Location location) {
@@ -136,6 +141,7 @@ public class User implements Document {
         put(COMPLETED_FAVORS, completedFavors);
         put(LIKES, likes);
         put(DISLIKES, dislikes);
+        put(BALANCE, balance);
       }
     };
   }
@@ -154,6 +160,10 @@ public class User implements Document {
 
   public String getNotificationId() {
     return notificationId;
+  }
+
+  public double getBalance() {
+    return balance;
   }
 
   public Date getBirthDate() {
@@ -188,6 +198,10 @@ public class User implements Document {
     this.notificationId = notificationId;
   }
 
+  public void setBalance(Double balance) {
+    this.balance = balance;
+  }
+
   public void setDeviceId(String deviceId) {
     this.deviceId = deviceId;
   }
@@ -205,7 +219,9 @@ public class User implements Document {
     return activeRequestingFavors <= MAX_REQUESTING_FAVORS;
   }
 
-  public int getRequestedFavors() { return requestedFavors; }
+  public int getRequestedFavors() {
+    return requestedFavors;
+  }
 
   public void setRequestedFavors(int requestedFavors) {
     this.requestedFavors = requestedFavors;

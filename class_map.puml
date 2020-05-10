@@ -41,6 +41,9 @@ Other user info
 class UserAccountPage{
 Own user info
 }
+class ShopPage{
+contains items to buy with virtual currency
+}
 class ChatPage{
 Group chat for favor
 }
@@ -65,6 +68,7 @@ MainActivity-up->FragmentAbout:Controls
 MainActivity-up->FragmentSettings
 MainActivity-up->MapPage
 MainActivity-up->UserAccountPage
+MainActivity-up->ShopPage
 FavorPage-up->FavorRequestView:see own favor
 FavorPage-up->FavorDetailView:see others favor
 UserInfoPage-down->UserUtil:Sees user data

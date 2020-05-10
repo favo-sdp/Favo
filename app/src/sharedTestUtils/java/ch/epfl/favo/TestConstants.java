@@ -1,11 +1,12 @@
 package ch.epfl.favo;
 
 import android.net.Uri;
+
 import java.util.Date;
 
 import ch.epfl.favo.database.DatabaseWrapper;
-import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.gps.FavoLocation;
 
 public class TestConstants {
 
@@ -26,6 +27,7 @@ public class TestConstants {
   public static final Date BIRTHDAY = new Date(0);
   public static final double RADIUS = 134.56;
   public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
+  public static final double REWARD = 3.50;
   public static final FavorStatus FAVOR_STATUS = FavorStatus.REQUESTED;
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
   public static final String PICTURE_URL = "https://favo.com/picture";

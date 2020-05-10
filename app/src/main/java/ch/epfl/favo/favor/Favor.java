@@ -36,6 +36,7 @@ public class Favor implements Parcelable, Document, Cloneable {
   private static final String STATUS_ID = "statusId";
   static final String PICTURE_URL = "pictureUrl";
   private static final String IS_ARCHIVED = "isArchived";
+  private static final String REWARD = "reward";
 
   public static final Creator<Favor> CREATOR =
       new Creator<Favor>() {
@@ -58,12 +59,18 @@ public class Favor implements Parcelable, Document, Cloneable {
   private int statusId;
   private String pictureUrl;
   private boolean isArchived;
+  private double reward;
 
   public Favor() {}
 
   // General Constructor
   public Favor(
-      String title, String description, String requesterId, FavoLocation location, int statusId) {
+      String title,
+      String description,
+      String requesterId,
+      FavoLocation location,
+      int statusId,
+      double reward) {
 
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
@@ -74,6 +81,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.statusId = statusId;
     this.pictureUrl = null;
     this.isArchived = false;
+    this.reward = reward;
   }
 
   // Constructor to override default generated Id
@@ -83,8 +91,9 @@ public class Favor implements Parcelable, Document, Cloneable {
       String description,
       String requesterId,
       FavoLocation location,
-      int statusId) {
-    this(title, description, requesterId, location, statusId);
+      int statusId,
+      double reward) {
+    this(title, description, requesterId, location, statusId, reward);
     this.id = id;
   }
 
@@ -94,9 +103,10 @@ public class Favor implements Parcelable, Document, Cloneable {
       String description,
       String requesterId,
       FavoLocation location,
-      FavorStatus statusId) {
+      FavorStatus statusId,
+      double reward) {
 
-    this(title, description, requesterId, location, statusId.toInt());
+    this(title, description, requesterId, location, statusId.toInt(), reward);
   }
 
   /**
@@ -114,6 +124,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.statusId = (int) map.get(STATUS_ID);
     this.pictureUrl = (String) map.get(PICTURE_URL);
     this.isArchived = (boolean) map.get(IS_ARCHIVED);
+    this.reward = (double) map.get(REWARD);
   }
 
   /**
@@ -151,12 +162,17 @@ public class Favor implements Parcelable, Document, Cloneable {
         put(STATUS_ID, statusId);
         put(PICTURE_URL, pictureUrl);
         put(IS_ARCHIVED, isArchived);
+        put(REWARD, reward);
       }
     };
   }
 
   public String getTitle() {
     return title;
+  }
+
+  public double getReward() {
+    return reward;
   }
 
   public String getDescription() {
@@ -177,6 +193,10 @@ public class Favor implements Parcelable, Document, Cloneable {
 
   public boolean getIsArchived() {
     return isArchived;
+  }
+
+  public void setReward(double reward) {
+    this.reward = reward;
   }
 
   public void setAccepterId(String id) {

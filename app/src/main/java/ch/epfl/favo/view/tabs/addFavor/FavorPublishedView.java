@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,8 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
@@ -99,7 +103,7 @@ public class FavorPublishedView extends Fragment {
     } else if (id == R.id.edit_button) {
       goEditFavor();
     } else if (id == R.id.share_button) {
-
+      onShareClicked();
     } else if (id == R.id.restart_button) {
       goRestartFavor();
     }
@@ -148,6 +152,26 @@ public class FavorPublishedView extends Fragment {
               if(currentFavor != null)
                 displayFromFavor(rootView, currentFavor);
             });
+  }
+
+  private void onShareClicked() {
+    Uri baseUrl = Uri.parse("https://www.favoapp.com/?favorId=" + currentFavor.getId());
+    String domain = "https://favoapp.page.link";
+
+    DynamicLink link =
+            FirebaseDynamicLinks.getInstance()
+                    .createDynamicLink()
+                    .setLink(baseUrl)
+                    .setDomainUriPrefix(domain)
+                    .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("ch.epfl.favo").build())
+                    .setSocialMetaTagParameters(
+                            new DynamicLink.SocialMetaTagParameters.Builder()
+                                    .setTitle("Favor " + currentFavor.getTitle())
+                                    .setDescription("Check out this favor in the Favo App!")
+                                    .build())
+                    .buildDynamicLink();
+
+    ((MainActivity) requireActivity()).startShareIntent(link.getUri().toString());
   }
 
   private void updateAppBarMenuDisplay() {
@@ -224,13 +248,16 @@ public class FavorPublishedView extends Fragment {
     String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
+    String favoCoinStr = "Worth " + (int)favor.getReward() + " coins";
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
+    setupTextView(rootView, R.id.value, favoCoinStr);
     UserUtil.getSingleInstance()
             .findUser(favor.getRequesterId())
             .thenAccept(
                     user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
+    setupImageView(rootView, favor);
     isRequested =
             favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
     if (isRequested) {
@@ -249,6 +276,23 @@ public class FavorPublishedView extends Fragment {
     // update status string
     favorStatus = verifyFavorHasBeenAccepted(favor);
     updateDisplayFromViewStatus();
+  }
+
+  private void setupImageView(View rootView, Favor favor) {
+    String url = favor.getPictureUrl();
+    if (url != null) {
+      ImageView imageView = rootView.findViewById(R.id.add_picture);
+      View loadingPanelView = rootView.findViewById(R.id.loading_panel);
+
+      loadingPanelView.setVisibility(View.VISIBLE);
+      getViewModel()
+              .downloadPicture(favor)
+              .thenAccept(
+                      picture -> {
+                        imageView.setImageBitmap(picture);
+                        loadingPanelView.setVisibility(View.GONE);
+                      });
+    }
   }
 
   private void setupListView() {
@@ -425,7 +469,7 @@ public class FavorPublishedView extends Fragment {
   private void goRestartFavor(){
     Favor newFavor =
             new Favor(
-                    "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT);
+                    "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT, 0);
     newFavor.updateToOther(currentFavor);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);

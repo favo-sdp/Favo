@@ -81,6 +81,12 @@ public class FavorUtilTest {
   }
 
   @Test
+  public void testRemoveFavor() {
+    Favor fakeFavor = FakeItemFactory.getFavor();
+    FavorUtil.getSingleInstance().removeFavor(fakeFavor.getId());
+  }
+
+  @Test
   public void retrieveAllFavorsForGivenUser() {
     String userId = TestConstants.USER_ID;
     assertThrows(

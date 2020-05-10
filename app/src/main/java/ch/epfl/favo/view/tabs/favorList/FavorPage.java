@@ -52,11 +52,14 @@ public class FavorPage extends Fragment {
   private RecyclerView mRecycler;
   private SwipeRefreshLayout mSwipeRefreshLayout;
 
+  private static final int PREFETCH_DISTANCE = 10;
+  private static final int PAGE_SIZE = 20;
+
   private PagedList.Config pagingConfig =
       new PagedList.Config.Builder()
           .setEnablePlaceholders(false)
-          .setPrefetchDistance(10)
-          .setPageSize(20)
+          .setPrefetchDistance(PREFETCH_DISTANCE)
+          .setPageSize(PAGE_SIZE)
           .build();
 
   private FirestorePagingAdapter<Favor, FavorViewHolder> adapter;
@@ -189,7 +192,7 @@ public class FavorPage extends Fragment {
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-        holder.bind(model);
+        holder.bind(requireContext(), model);
       }
 
       @Override
@@ -243,7 +246,7 @@ public class FavorPage extends Fragment {
   public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
 
     // Inflate the menu; this adds items to the action bar if it is present.
-    inflater.inflate(R.menu.options_menu, menu);
+    inflater.inflate(R.menu.favor_list_menu, menu);
     super.onCreateOptionsMenu(menu, inflater);
 
     setupSearch(menu);

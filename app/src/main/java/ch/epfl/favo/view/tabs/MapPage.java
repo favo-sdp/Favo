@@ -169,7 +169,12 @@ public class MapPage extends Fragment
       loc.setLongitude(latLng.longitude);
       Favor newFavor =
           new Favor(
-              "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), loc, FavorStatus.EDIT);
+              "",
+              " ",
+              DependencyFactory.getCurrentFirebaseUser().getUid(),
+              loc,
+              FavorStatus.EDIT,
+              0);
       focusedFavor = newFavor;
       Marker mk = drawFavorMarker(newFavor, true, true);
       mk.showInfoWindow();
@@ -385,7 +390,7 @@ public class MapPage extends Fragment
     String favorId = markerInfo.get(0).toString();
     boolean isRequested = (boolean) markerInfo.get(1);
     Bundle favorBundle = new Bundle();
-    if (isRequested){
+    if (isRequested && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()){
       favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
       Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     }

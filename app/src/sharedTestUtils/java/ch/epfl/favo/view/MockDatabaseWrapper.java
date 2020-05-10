@@ -65,7 +65,13 @@ public class MockDatabaseWrapper<T extends Document> implements ICollectionWrapp
   }
 
   @Override
-  public void removeDocument(String key) {}
+  public CompletableFuture removeDocument(String key) {
+    return new CompletableFuture<Void>() {
+      {
+        complete(null);
+      }
+    };
+  }
 
   @Override
   public CompletableFuture<T> getDocument(String key) {

@@ -1,6 +1,7 @@
 package ch.epfl.favo;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 
@@ -31,6 +33,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
 import ch.epfl.favo.view.tabs.UserAccountPage;
+import ch.epfl.favo.view.tabs.shop.ShopPage;
 
 /**
  * This view will control all the fragments that are created. Contains a navigation drawer on the
@@ -38,11 +41,15 @@ import ch.epfl.favo.view.tabs.UserAccountPage;
  */
 public class MainActivity extends AppCompatActivity {
 
+  private static final String DEEP_LINK_QUERY_PARAMETER = "favorId";
+  private static final String NOTIFICATION_PARAMETER = "FavorId";
+
   private static final int[] NAVIGATION_ITEMS =
       new int[] {
         R.id.nav_map,
         R.id.nav_favorList,
         R.id.nav_account,
+        R.id.nav_shop,
         R.id.nav_settings,
         R.id.nav_about,
         R.id.nav_share
@@ -62,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
     super.onCreate(savedInstanceState);
+
+    setUpDeepLink();
+
     setContentView(R.layout.activity_main);
 
     // Initialize Variables
@@ -76,6 +86,28 @@ public class MainActivity extends AppCompatActivity {
     if (DependencyFactory.isOfflineMode(this)) {
       showNoConnectionSnackbar();
     }
+  }
+
+  private void setUpDeepLink() {
+    FirebaseDynamicLinks.getInstance()
+        .getDynamicLink(getIntent())
+        .addOnSuccessListener(
+            this,
+            pendingDynamicLinkData -> {
+              if (pendingDynamicLinkData != null) {
+                Uri deepLink = pendingDynamicLinkData.getLink();
+
+                if (deepLink != null) {
+                  String favorId = deepLink.getQueryParameter(DEEP_LINK_QUERY_PARAMETER);
+
+                  if (favorId != null && !favorId.equals("")) {
+                    Bundle favorBundle = new Bundle();
+                    favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+                    navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
+                  }
+                }
+              }
+            });
   }
 
   private void setupActivity() {
@@ -106,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_settings:
             case R.id.favorPublishedView:
             case R.id.favorEditingView:
+            case R.id.nav_shop:
               if (bottomNavigationView.getVisibility() != View.GONE) {
                 hideBottomNavigation();
               }
@@ -146,14 +179,20 @@ public class MainActivity extends AppCompatActivity {
               navController.popBackStack(R.id.nav_map, false);
               break;
             case R.id.nav_share:
-              startShareIntent();
+              startShareIntent(getString(R.string.app_site));
               drawerLayout.closeDrawer(GravityCompat.START);
               return false;
             default:
               navController.navigate(itemId);
           }
 
-          //currentMenuItem = itemId;
+          if (itemId == R.id.nav_shop) {
+            findViewById(R.id.current_balance_text).setVisibility(View.VISIBLE);
+          } else {
+            findViewById(R.id.current_balance_text).setVisibility(View.GONE);
+          }
+
+          // currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
@@ -168,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
           if (itemId == R.id.nav_map) navController.popBackStack(R.id.nav_map, false);
           else navController.navigate(R.id.nav_favorList);
 
-          //currentMenuItem = itemId;
+          // currentMenuItem = itemId;
           return false;
         });
   }
@@ -177,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
     Snackbar snack =
         Snackbar.make(
             findViewById(android.R.id.content).getRootView(),
-            "No internet connection",
+            R.string.no_connection_message,
             Snackbar.LENGTH_LONG);
     View view = snack.getView();
     snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
@@ -189,14 +228,12 @@ public class MainActivity extends AppCompatActivity {
     snack.show();
   }
 
-  private void startShareIntent() {
-    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-    shareIntent.setType("text/plain");
+  public void startShareIntent(String link) {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("text/plain");
+    intent.putExtra(Intent.EXTRA_TEXT, link);
 
-    shareIntent.putExtra(Intent.EXTRA_TITLE, "Favo app");
-    shareIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.app_site));
-
-    startActivity(Intent.createChooser(shareIntent, null));
+    startActivity(Intent.createChooser(intent, getText(R.string.app_name_extended)));
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
@@ -206,9 +243,12 @@ public class MainActivity extends AppCompatActivity {
     Bundle extras = intent.getExtras();
     if (extras != null) {
       Bundle favorBundle = new Bundle();
-      String favorId = extras.getString("FavorId");
-      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-      navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
+      String favorId = extras.getString(NOTIFICATION_PARAMETER);
+
+      if (favorId != null && !favorId.equals("")) {
+        favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+        navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
+      }
     }
   }
 
@@ -219,16 +259,18 @@ public class MainActivity extends AppCompatActivity {
       mDrawerLayout.closeDrawer(GravityCompat.START);
     else {
       NavHostFragment host =
-              (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+          (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
       Fragment f =
-              Objects.requireNonNull(host)
-                      .getChildFragmentManager()
-                      .findFragmentById(R.id.nav_host_fragment);
+          Objects.requireNonNull(host)
+              .getChildFragmentManager()
+              .findFragmentById(R.id.nav_host_fragment);
 
       if (f instanceof UserAccountPage
-              || f instanceof FragmentAbout
-              || f instanceof FragmentSettings) {
+          || f instanceof FragmentAbout
+          || f instanceof FragmentSettings
+          || f instanceof ShopPage) {
         navController.popBackStack(R.id.nav_map, false);
+        findViewById(R.id.current_balance_text).setVisibility(View.GONE);
         currentMenuItem = R.id.nav_map;
       } else {
         super.onBackPressed();
@@ -255,5 +297,4 @@ public class MainActivity extends AppCompatActivity {
     super.onResume();
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
   }
-
 }

@@ -1,5 +1,7 @@
+
 package ch.epfl.favo.viewmodel;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
@@ -44,4 +46,13 @@ public interface IFavorViewModel {
   void setShowObservedFavor(Boolean show);
 
   boolean isShowObservedFavor();
+
+  CompletableFuture deleteFavor(final Favor favor);
+
+  // Save/load pictures
+  void savePictureToLocal(Context context, Favor favor, Bitmap picture);
+
+  CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor);
 }
+
+
