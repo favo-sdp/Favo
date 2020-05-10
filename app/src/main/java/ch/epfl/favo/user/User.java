@@ -1,7 +1,6 @@
 package ch.epfl.favo.user;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.google.firebase.auth.FirebaseUser;
 
@@ -180,7 +179,6 @@ public class User implements Document {
   }
 
   public void setActiveRequestingFavors(int totalRequestingFavors) {
-    Log.d("UserUtilAA", totalRequestingFavors + " total requested");
     if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
       throw new IllegalRequestException("Cannot request");
     this.activeRequestingFavors = totalRequestingFavors;

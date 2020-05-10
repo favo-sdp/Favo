@@ -151,14 +151,4 @@ public class NearbyFavorListTest {
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
 
-  @Test
-  public void FavorDetailViewJumptoMapTest() {
-    // check test favor is found click on found item
-    onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // Check and click on the location text
-    onView(withId(R.id.location_accept_view_btn)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
-  }
 }

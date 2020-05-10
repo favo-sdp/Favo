@@ -210,7 +210,6 @@ public class FavorEditingView extends Fragment {
         CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
       else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
       Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      Log.d(TAG, ((CompletionException) exception).getStackTrace().toString());
       throw (RuntimeException) exception;
       // return null;
     };

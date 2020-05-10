@@ -182,15 +182,12 @@ public class Favor implements Parcelable, Document, Cloneable {
   public void setAccepterId(String id) {
     if (id != null && id.equals("")){
       userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
-      Log.d("fuck", userIds.size() + " sie");
     }
     else if (userIds != null && !userIds.isEmpty()) {
       ArrayList<String> arrayList = new ArrayList<>();
-      Log.d("fuck", userIds.size() + " dfec");
       arrayList.addAll(userIds);
       arrayList.add(id);
       userIds = arrayList;
-      Log.d("fuck", userIds.size() + "  id:" + id + " dfdfdec " + this.title);
     }
   }
   public Date getPostedTime() {

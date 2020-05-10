@@ -3,7 +3,6 @@ package ch.epfl.favo.user;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -78,7 +77,6 @@ public class UserUtil implements IUserUtil {
   /** @param id A FireBase Uid to search for in Users table. */
   @Override
   public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
-    Log.e("UserUtilAA", "run in Userutils findUser");
     return collection.getDocument(id);
   }
 
