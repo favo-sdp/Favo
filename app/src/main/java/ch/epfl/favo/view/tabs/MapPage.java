@@ -221,11 +221,11 @@ public class MapPage extends Fragment
     float markerColor =
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
     String markerTitle =
-        (isEdited) // && favor.getTitle().equals("")
+        (isEdited) && favor.getTitle().equals("")
             ? getString(R.string.hint_drag_marker)
             : favor.getTitle();
     String markerDescription =
-        isEdited ? getString(R.string.hint_click_window) : favor.getDescription();
+        isEdited && favor.getDescription().equals("") ? getString(R.string.hint_click_window) : favor.getDescription();
     Marker marker =
         mMap.addMarker(
             new MarkerOptions()
@@ -391,6 +391,8 @@ public class MapPage extends Fragment
     boolean isRequested = (boolean) markerInfo.get(1);
     Bundle favorBundle = new Bundle();
     if (isRequested && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()){
+      focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
+      focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
       favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
       Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     }

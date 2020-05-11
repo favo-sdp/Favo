@@ -293,6 +293,7 @@ public class FavorPublishedView extends Fragment {
                         loadingPanelView.setVisibility(View.GONE);
                       });
     }
+    else rootView.findViewById(R.id.add_picture).setVisibility(View.GONE);
   }
 
   private void setupListView() {

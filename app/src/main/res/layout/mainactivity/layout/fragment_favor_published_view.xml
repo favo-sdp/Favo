@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,47 +14,7 @@
         android:layout_height="match_parent">
 
 
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/buttons_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent">
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="@color/material_green_500"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent">
-
-                <Button
-                    android:id="@+id/chat_button"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/accept_button"
-                    android:layout_alignBottom="@id/accept_button"
-                    android:layout_gravity="end"
-                    android:layout_toStartOf="@+id/accept_button"
-                    android:drawableStart="@drawable/ic_chat_24dp"
-                    android:text="Chat" />
-
-                <Button
-                    android:id="@+id/accept_button"
-                    android:layout_width="130dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="end"
-                    android:drawableStart="@drawable/ic_thumb_up_24dp"
-                    android:text="accept" />
-            </RelativeLayout>
-
-        </androidx.cardview.widget.CardView>
-
-
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +22,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="100dp"
                 android:orientation="vertical">
 
                 <androidx.cardview.widget.CardView
@@ -114,12 +76,10 @@
                             android:id="@+id/title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/margin_accept_view"
+                            android:layout_marginBottom="5dp"
                             android:ems="10"
                             android:focusable="true"
                             android:gravity="start"
-
-                            android:hint="Favor Title"
                             android:lines="1"
                             android:maxLines="1"
                             android:padding="10dp"
@@ -134,8 +94,6 @@
                             android:layout_marginBottom="@dimen/margin_accept_view"
                             android:ems="10"
                             android:gravity="start"
-                            android:hint="Description ... "
-                            android:maxLines="3"
                             android:padding="10dp"
                             android:textIsSelectable="true"
                             android:textSize="20sp" />
@@ -193,7 +151,6 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
                             android:paddingStart="10dp"
                             android:paddingTop="10dp">
 
@@ -288,8 +245,46 @@
 
             </LinearLayout>
 
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/buttons_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+
+                android:background="@color/material_green_500"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent">
+
+                <Button
+                    android:id="@+id/chat_button"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@id/accept_button"
+                    android:layout_alignBottom="@id/accept_button"
+                    android:layout_gravity="end"
+                    android:layout_toStartOf="@+id/accept_button"
+                    android:drawableStart="@drawable/ic_chat_24dp"
+                    android:text="Chat" />
+
+                <Button
+                    android:id="@+id/accept_button"
+                    android:layout_width="130dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="end"
+                    android:drawableStart="@drawable/ic_thumb_up_24dp"
+                    android:text="accept" />
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
