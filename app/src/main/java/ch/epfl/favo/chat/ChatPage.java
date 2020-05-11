@@ -130,6 +130,7 @@ public class ChatPage extends Fragment {
             DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
             mMessageEdit.getText().toString(),
             DependencyFactory.getCurrentFirebaseUser().getUid(),
+            currentFavor.getRequesterNotifId(),
             currentFavor.getId()));
     mMessageEdit.setText("");
   }
