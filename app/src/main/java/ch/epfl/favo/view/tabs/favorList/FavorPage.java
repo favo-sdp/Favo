@@ -54,6 +54,7 @@ public class FavorPage extends Fragment {
 
   private static final int PREFETCH_DISTANCE = 10;
   private static final int PAGE_SIZE = 20;
+  private static final char END_CODE = '\uf8ff';
 
   private PagedList.Config pagingConfig =
       new PagedList.Config.Builder()
@@ -99,6 +100,7 @@ public class FavorPage extends Fragment {
     baseQuery =
         FirebaseFirestore.getInstance()
             .collection(DependencyFactory.getCurrentFavorCollection())
+            .orderBy("title", Query.Direction.ASCENDING)
             .orderBy("postedTime", Query.Direction.DESCENDING)
             .whereArrayContains("userIds", DependencyFactory.getCurrentFirebaseUser().getUid());
 
@@ -300,7 +302,9 @@ public class FavorPage extends Fragment {
             if (newText.equals("")) {
               query = baseQuery;
             } else {
-              query = baseQuery.whereEqualTo("title", newText);
+              query = baseQuery
+                .whereGreaterThanOrEqualTo("title", newText)
+                .whereLessThanOrEqualTo("title", newText + END_CODE);
             }
 
             lastQuery = newText;
