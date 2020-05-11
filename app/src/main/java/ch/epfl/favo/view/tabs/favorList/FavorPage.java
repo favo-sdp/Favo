@@ -183,7 +183,7 @@ public class FavorPage extends Fragment {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putString("FAVOR_ARGS", favor.getId());
                   Navigation.findNavController(requireView())
-                        .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
+                        .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
                 }
               }
             });

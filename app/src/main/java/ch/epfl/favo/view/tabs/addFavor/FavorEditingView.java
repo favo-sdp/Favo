@@ -36,7 +36,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
@@ -59,9 +58,6 @@ public class FavorEditingView extends Fragment {
   private EditText mTitleView;
   private EditText mDescriptionView;
   private IGpsTracker mGpsTracker;
-  private Button confirmFavorBtn;
-  private Button addPictureFromFilesBtn;
-  private Button addPictureFromCameraBtn;
   private Favor currentFavor;
   private String favorSource;
 
@@ -93,15 +89,13 @@ public class FavorEditingView extends Fragment {
                 .get(DependencyFactory.getCurrentViewModelClass());
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
+      favorSource = getArguments().getString(CommonTools.FAVOR_SOURCE);
       currentFavor.setStatusIdToInt(FavorStatus.EDIT);
       displayFavorInfo(rootView);
-      if (getViewModel().getObservedFavor().getValue() != null
-          && currentFavor.getId().equals(getViewModel().getObservedFavor().getValue().getId())) {
+      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))) {
         setupFavorListener(rootView, currentFavor.getId());
-        favorSource = "publishedFavor";
-      } else favorSource = "map";
-
-    } else favorSource = "floatButton";
+      }
+    } else favorSource = getString(R.string.favor_source_floatButton);
     return rootView;
   }
 
@@ -114,13 +108,14 @@ public class FavorEditingView extends Fragment {
               try {
                 if (favor != null) {
                   if (favor.getUserIds().size() > currentFavor.getUserIds().size()) {
+                    currentFavor = favor;
                     CommonTools.showSnackbar(
                         rootView, getString(R.string.old_favor_accepted_by_others));
                   } else if (favor.getUserIds().size() < currentFavor.getUserIds().size()) {
+                    currentFavor = favor;
                     CommonTools.showSnackbar(
                         rootView, getString(R.string.old_favor_cancelled_by_others));
                   }
-                  currentFavor = favor;
                 }
               } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
@@ -156,7 +151,7 @@ public class FavorEditingView extends Fragment {
   private void setupButtons(View rootView) {
 
     // Button: Request Favor
-    confirmFavorBtn = rootView.findViewById(R.id.request_button);
+    Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
     confirmFavorBtn.setOnClickListener(v -> requestFavor());
 
     if (DependencyFactory.isOfflineMode(requireContext())) {
@@ -164,11 +159,11 @@ public class FavorEditingView extends Fragment {
     }
 
     // Button: Add Image from files
-    addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
+    Button addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
     addPictureFromFilesBtn.setOnClickListener(v -> openFileChooser());
 
     // Button: Add picture from camera
-    addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
+    Button addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
     addPictureFromCameraBtn.setOnClickListener(v -> takePicture());
     if (!isCameraAvailable()) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
@@ -202,12 +197,19 @@ public class FavorEditingView extends Fragment {
     postFavorFuture.thenAccept(
         o -> {
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+          // clear history
+          Navigation.findNavController(currentView)
+              .popBackStack(R.id.fragment_favor_published, true);
           // jump to favorPublished view
-          Navigation.findNavController(currentView).popBackStack(R.id.fragment_favor_published, true);
           Bundle favorBundle = new Bundle();
           favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
-          Navigation.findNavController(currentView)
-              .navigate(R.id.action_nav_favorEditingView_to_favorPublishedView, favorBundle);
+          int action;
+          // if this favor is restart from an archived one, then prevent pressback return to
+          // archived favor view.
+          if (favorSource.equals(getString(R.string.favor_source_publishedFavor)))
+            action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
+          else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
+          Navigation.findNavController(currentView).navigate(action, favorBundle);
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
     // Show confirmation and minimize keyboard
@@ -242,7 +244,7 @@ public class FavorEditingView extends Fragment {
 
     // if a favor is initiated from map, then override the current location
     // with location got from map( already saved in currentFavor )
-    if (favorSource.equals("map")) {
+    if (favorSource.equals(getString(R.string.favor_source_map))) {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }

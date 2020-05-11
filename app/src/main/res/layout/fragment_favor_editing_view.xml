@@ -96,7 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawableEnd="@drawable/ic_location_on_24dp"
-                android:text="" />
+                android:text="Loc" />
 
         </LinearLayout>
 

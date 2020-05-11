@@ -116,16 +116,15 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             change) // if user can request favor then post it in the favor collection
         .thenCompose(
             (f) -> {
-              getFavorRepository().requestFavor(tempFavor);
               // update user info
               UserUtil.getSingleInstance()
-                  .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-                  .thenAccept(
-                      user -> {
-                        user.setRequestedFavors(user.getRequestedFavors() + 1);
-                        UserUtil.getSingleInstance().updateUser(user);
-                      });
-              return false;
+                      .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+                      .thenAccept(
+                              user -> {
+                                user.setRequestedFavors(user.getRequestedFavors() + 1);
+                                UserUtil.getSingleInstance().updateUser(user);
+                              });
+              return getFavorRepository().requestFavor(tempFavor);
             });
   }
 

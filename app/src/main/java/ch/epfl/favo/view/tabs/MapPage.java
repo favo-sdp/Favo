@@ -36,6 +36,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -395,6 +396,7 @@ public class MapPage extends Fragment
       focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
       favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
+      favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_map));
       Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     }
     else{

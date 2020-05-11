@@ -114,7 +114,7 @@
     <string name="notification_chat_title">Enable chat notifications</string>
     <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
 
-    <!-- Favor published view -->
+    <!-- Help preferences -->
     <string name="error_database_sync">Failed fetching data</string>
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
@@ -133,7 +133,7 @@
     <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
     <string name="cancel_accept_button_display">Cancel</string>
     <string name="restart_request">Re-enable</string>
-    <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
+    <string name="fail_edit_favor_request_view">Cannot edit favor</string>
     <string name="complete_favor">Complete</string>
     <string name="wait_complete">Wait</string>
     <string name="favor_accepted_by_oneself">you cannot accept favor posted by yourself</string>
@@ -171,5 +171,10 @@
 
     <!-- Invite option -->
     <string name="invite_text">Invite</string>
+
+    <!-- FavorEditting Page-->
+    <string name="favor_source_map">map</string>
+    <string name="favor_source_floatButton">floatButton</string>
+    <string name="favor_source_publishedFavor">publishedFavor</string>
 
 </resources>
