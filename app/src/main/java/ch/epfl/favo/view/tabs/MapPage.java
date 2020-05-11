@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -362,7 +360,7 @@ public class MapPage extends Fragment
 
   @Override
   public View getInfoWindow(Marker marker) {
-    View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+    View mWindow = getLayoutInflater().inflate(R.layout.map_info_window, null);
     String title = marker.getTitle();
     TextView titleUi = mWindow.findViewById(R.id.title);
     setSpannableString(title, titleUi);
