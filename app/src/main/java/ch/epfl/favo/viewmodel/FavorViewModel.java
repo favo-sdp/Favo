@@ -1,4 +1,3 @@
-
 package ch.epfl.favo.viewmodel;
 
 import android.annotation.SuppressLint;
@@ -27,6 +26,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -93,12 +93,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .thenCompose(o -> getFavorRepository().updateFavor(favor));
   }
 
-  public CompletableFuture commitFavor(Favor favor, int change){
+  public CompletableFuture commitFavor(Favor favor, int change) {
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             false,
             change) // if user can accept favor then post it in the favor collection
-            .thenCompose((f) -> getFavorRepository().updateFavor(favor));
+        .thenCompose((f) -> getFavorRepository().updateFavor(favor));
   }
 
   // save address to firebase
@@ -106,11 +106,27 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public CompletableFuture requestFavor(Favor favor) {
     Favor tempFavor = (Favor) favor.clone();
     tempFavor.setStatusIdToInt(REQUESTED);
+    // if the favor has been observed, then this is during edit flow, do not add 1.
+    int change = 1;
+    if (getObservedFavor().getValue() != null
+        && favor.getId().equals(getObservedFavor().getValue().getId())) change = 0;
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             true,
-            1) // if user can request favor then post it in the favor collection
-        .thenCompose((f) -> getFavorRepository().requestFavor(tempFavor));
+            change) // if user can request favor then post it in the favor collection
+        .thenCompose(
+            (f) -> {
+              getFavorRepository().requestFavor(tempFavor);
+              // update user info
+              UserUtil.getSingleInstance()
+                  .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+                  .thenAccept(
+                      user -> {
+                        user.setRequestedFavors(user.getRequestedFavors() + 1);
+                        UserUtil.getSingleInstance().updateUser(user);
+                      });
+              return false;
+            });
   }
 
   public CompletableFuture cancelFavor(final Favor favor, boolean isRequested) {
@@ -118,11 +134,11 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
     tempFavor.setStatusIdToInt(cancelledStatus);
     CompletableFuture resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    for(int i = 1; i < favor.getUserIds().size(); i++){
+    for (int i = 1; i < favor.getUserIds().size(); i++) {
       int commitUser = i;
-      resultFuture.thenCompose(o -> changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
+      resultFuture.thenCompose(
+          o -> changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
     }
-
 
     return resultFuture;
   }
@@ -177,16 +193,16 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radiusInKm) {
     if (mCurrentLocation == null) mCurrentLocation = loc;
     if (mRadius == -1) mRadius = radiusInKm;
-    //if (activeFavorsAroundMe.getValue() == null
+    // if (activeFavorsAroundMe.getValue() == null
     //    || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
-      getFavorRepository()
-          .getNearbyFavors(loc, radiusInKm)
-          .addSnapshotListener(
-              MetadataChanges.EXCLUDE,
-              (queryDocumentSnapshots, e) ->
-                  activeFavorsAroundMe.postValue(
-                      getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
-    //}
+    getFavorRepository()
+        .getNearbyFavors(loc, radiusInKm)
+        .addSnapshotListener(
+            MetadataChanges.EXCLUDE,
+            (queryDocumentSnapshots, e) ->
+                activeFavorsAroundMe.postValue(
+                    getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
+    // }
     return getFavorsAroundMe();
   }
 
@@ -207,7 +223,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
-      if (favor.getRequesterId()!=null && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+      if (favor.getRequesterId() != null
+          && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
           && favor.getStatusId() == REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
@@ -226,7 +243,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    //setFavorValue(null);
+    // setFavorValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
@@ -253,8 +270,9 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     showFavor = show;
   }
 
-
-  private CacheUtil getCacheUtility() { return DependencyFactory.getCurrentCacheUtility(); }
+  private CacheUtil getCacheUtility() {
+    return DependencyFactory.getCurrentCacheUtility();
+  }
 
   public CompletableFuture deleteFavor(final Favor favor) {
     CompletableFuture removeFavorFuture = getFavorRepository().removeFavor(favor.getId());
@@ -263,7 +281,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     }
     return removeFavorFuture;
   }
-
 
   // Save/load pictures from local storage
   @Override
@@ -278,8 +295,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     String pathToFolder = baseDir + "/" + favorId + "/";
     return getCacheUtility().loadFromInternalStorage(pathToFolder, 0);
   }
-
-
 
   @Override
   public boolean isShowObservedFavor() {

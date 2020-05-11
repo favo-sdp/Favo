@@ -114,7 +114,7 @@
     <string name="notification_chat_title">Enable chat notifications</string>
     <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
 
-    <!-- Help preferences -->
+    <!-- Favor published view -->
     <string name="error_database_sync">Failed fetching data</string>
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
@@ -136,7 +136,9 @@
     <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
     <string name="complete_favor">Complete</string>
     <string name="wait_complete">Wait</string>
-    <string name="favor_accept_by_oneself">you cannot accept favor posted by yourself</string>
+    <string name="favor_accepted_by_oneself">you cannot accept favor posted by yourself</string>
+    <string name="old_favor_accepted_by_others">Someone commit your unmodified favor</string>
+    <string name="old_favor_cancelled_by_others">Someone cancel committing your unmodified favor</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

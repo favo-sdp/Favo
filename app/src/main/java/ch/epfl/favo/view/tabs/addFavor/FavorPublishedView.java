@@ -147,7 +147,6 @@ public class FavorPublishedView extends Fragment {
                 Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 enableButtons(false);
-                throw e;
               }
               if(currentFavor != null)
                 displayFromFavor(rootView, currentFavor);
@@ -175,31 +174,32 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void updateAppBarMenuDisplay() {
-    boolean visible;
+    boolean visible = false;
+    // if requester has committed this favor, then he can cancel commit
+    for(int i = 1; i < currentFavor.getUserIds().size(); i++){
+      if(currentFavor.getUserIds().get(i).equals(DependencyFactory.getCurrentFirebaseUser().getUid()))
+        visible = true;
+    }
+    if(cancelItem!= null) cancelItem.setVisible(visible);
     visible =
             (favorStatus == FavorStatus.REQUESTED && isRequested)
                     || favorStatus == FavorStatus.ACCEPTED
                     || favorStatus == FavorStatus.COMPLETED_ACCEPTER
                     || favorStatus == FavorStatus.COMPLETED_REQUESTER;
-    // if requester commit this favor, then he can cancel commit
-    for(int i = 1; i < currentFavor.getUserIds().size(); i++){
-      if(currentFavor.getUserIds().get(i).equals(DependencyFactory.getCurrentFirebaseUser().getUid()))
-        visible = true;
-    }
-    if (cancelItem != null) cancelItem.setVisible(visible);
+    if(cancelItem!= null) cancelItem.setVisible(visible);
 
     visible =
             favorStatus == FavorStatus.CANCELLED_ACCEPTER
                     || favorStatus == FavorStatus.CANCELLED_REQUESTER
                     || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED && isRequested;
-    if (restartItem != null) restartItem.setVisible(visible);
+    if(restartItem!= null) restartItem.setVisible(visible);
 
     visible = isRequested && favorStatus == FavorStatus.REQUESTED;
-    if (editItem != null) editItem.setVisible(visible);
+    if(editItem!= null) editItem.setVisible(visible);
 
 
     visible = favorStatus == FavorStatus.REQUESTED;
-    if (inviteItem != null) inviteItem.setVisible(visible);
+    if(inviteItem!= null) inviteItem.setVisible(visible);
   }
 
   private void setupButtons(View rootView) {
@@ -281,7 +281,7 @@ public class FavorPublishedView extends Fragment {
   private void setupImageView(View rootView, Favor favor) {
     String url = favor.getPictureUrl();
     if (url != null) {
-      ImageView imageView = rootView.findViewById(R.id.add_picture);
+      ImageView imageView = rootView.findViewById(R.id.picture);
       View loadingPanelView = rootView.findViewById(R.id.loading_panel);
 
       loadingPanelView.setVisibility(View.VISIBLE);
@@ -293,7 +293,7 @@ public class FavorPublishedView extends Fragment {
                         loadingPanelView.setVisibility(View.GONE);
                       });
     }
-    else rootView.findViewById(R.id.add_picture).setVisibility(View.GONE);
+    else rootView.findViewById(R.id.picture).setVisibility(View.GONE);
   }
 
   private void setupListView() {
@@ -440,6 +440,7 @@ public class FavorPublishedView extends Fragment {
               .findUser(user.getId())
               .thenAccept(
                   user1 -> {
+                    user1.setAcceptedFavors(user1.getAcceptedFavors() + 1);
                     user1.setAcceptedFavors(user1.getActiveAcceptingFavors() + 1);
                     UserUtil.getSingleInstance().updateUser(user1);
                   });
@@ -459,7 +460,6 @@ public class FavorPublishedView extends Fragment {
 
 
   private void goEditFavor(){
-    cancelFavor();
     currentFavor.setStatusIdToInt(FavorStatus.EDIT);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
@@ -468,6 +468,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void goRestartFavor(){
+    // restart a favor with different favorId
     Favor newFavor =
             new Favor(
                     "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT, 0);

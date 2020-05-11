@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <ScrollView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
@@ -112,11 +111,11 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:id="@+id/pictures"
+                        android:id="@+id/pictures_grid"
                         android:paddingStart="20dp">
 
                         <ImageView
-                            android:id="@+id/add_picture"
+                            android:id="@+id/picture"
                             android:layout_width="150dp"
                             android:layout_height="150dp"
                             android:scaleType="centerCrop" />
@@ -129,11 +128,11 @@
                         android:layout_height="0dp"
                         android:layout_margin="125dp"
                         android:visibility="gone"
-                        app:layout_constraintBottom_toBottomOf="@id/pictures"
-                        app:layout_constraintEnd_toEndOf="@id/pictures"
+                        app:layout_constraintBottom_toBottomOf="@id/pictures_grid"
+                        app:layout_constraintEnd_toEndOf="@id/pictures_grid"
                         app:layout_constraintHorizontal_bias="0.4"
-                        app:layout_constraintStart_toStartOf="@id/pictures"
-                        app:layout_constraintTop_toTopOf="@id/pictures" />
+                        app:layout_constraintStart_toStartOf="@id/pictures_grid"
+                        app:layout_constraintTop_toTopOf="@id/pictures_grid" />
 
                 </androidx.cardview.widget.CardView>
 

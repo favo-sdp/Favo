@@ -24,16 +24,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.dynamiclinks.DynamicLink;
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
-import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
@@ -43,7 +39,6 @@ import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static android.app.Activity.RESULT_OK;
@@ -67,8 +62,8 @@ public class FavorEditingView extends Fragment {
   private Button confirmFavorBtn;
   private Button addPictureFromFilesBtn;
   private Button addPictureFromCameraBtn;
-  private NonClickableToolbar toolbar;
   private Favor currentFavor;
+  private String favorSource;
 
   public FavorEditingView() {
     // Required empty public constructor
@@ -96,18 +91,42 @@ public class FavorEditingView extends Fragment {
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
       currentFavor.setStatusIdToInt(FavorStatus.EDIT);
       displayFavorInfo(rootView);
-    }
+      if (getViewModel().getObservedFavor().getValue() != null
+          && currentFavor.getId().equals(getViewModel().getObservedFavor().getValue().getId())) {
+        setupFavorListener(rootView, currentFavor.getId());
+        favorSource = "publishedFavor";
+      } else favorSource = "map";
+
+    } else favorSource = "floatButton";
     return rootView;
   }
 
-  @Override
-  public void onResume() {
-    super.onResume();
+  private void setupFavorListener(View rootView, String favorId) {
+    getViewModel()
+        .setObservedFavor(favorId)
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              try {
+                if (favor != null) {
+                  if (favor.getUserIds().size() > currentFavor.getUserIds().size()) {
+                    CommonTools.showSnackbar(
+                        rootView, getString(R.string.old_favor_accepted_by_others));
+                  } else if (favor.getUserIds().size() < currentFavor.getUserIds().size()) {
+                    CommonTools.showSnackbar(
+                        rootView, getString(R.string.old_favor_cancelled_by_others));
+                  }
+                  currentFavor = favor;
+                }
+              } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
+              }
+            });
   }
 
   public IFavorViewModel getViewModel() {
@@ -183,18 +202,12 @@ public class FavorEditingView extends Fragment {
     postFavorFuture.thenAccept(
         o -> {
           CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
-          // update user info
-          UserUtil.getSingleInstance()
-              .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-              .thenAccept(
-                  user -> {
-                    user.setRequestedFavors(user.getRequestedFavors() + 1);
-                    UserUtil.getSingleInstance().updateUser(user);
-                  });
+          // jump to favorPublished view
+          Navigation.findNavController(currentView).popBackStack(R.id.fragment_favor_published, true);
           Bundle favorBundle = new Bundle();
           favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
           Navigation.findNavController(currentView)
-                  .navigate(R.id.action_nav_favorEditingView_to_favorPublishedView, favorBundle);
+              .navigate(R.id.action_nav_favorEditingView_to_favorPublishedView, favorBundle);
         });
     postFavorFuture.exceptionally(onFailedResult(currentView));
     // Show confirmation and minimize keyboard
@@ -227,9 +240,9 @@ public class FavorEditingView extends Fragment {
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
 
-    // if this is not a new favor draft, then do not override the favor position with current user
-    // location.
-    if (currentFavor != null) {
+    // if a favor is initiated from map, then override the current location
+    // with location got from map( already saved in currentFavor )
+    if (favorSource.equals("map")) {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
@@ -247,11 +260,8 @@ public class FavorEditingView extends Fragment {
     }
 
     // Updates the current favor
-    if (currentFavor == null) {
-      currentFavor = favor;
-    } else {
-      currentFavor.updateToOther(favor);
-    }
+    if (currentFavor == null) currentFavor = favor;
+    else currentFavor.updateToOther(favor);
   }
 
   /**
@@ -352,25 +362,5 @@ public class FavorEditingView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
-  }
-
-  private void onShareClicked() {
-    Uri baseUrl = Uri.parse("https://www.favoapp.com/?favorId=" + currentFavor.getId());
-    String domain = "https://favoapp.page.link";
-
-    DynamicLink link =
-        FirebaseDynamicLinks.getInstance()
-            .createDynamicLink()
-            .setLink(baseUrl)
-            .setDomainUriPrefix(domain)
-            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("ch.epfl.favo").build())
-            .setSocialMetaTagParameters(
-                new DynamicLink.SocialMetaTagParameters.Builder()
-                    .setTitle("Favor " + currentFavor.getTitle())
-                    .setDescription("Check out this favor in the Favo App!")
-                    .build())
-            .buildDynamicLink();
-
-    ((MainActivity) requireActivity()).startShareIntent(link.getUri().toString());
   }
 }
