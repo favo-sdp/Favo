@@ -151,19 +151,19 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void onShareClicked() {
-    Uri baseUrl = Uri.parse("https://www.favoapp.com/?favorId=" + currentFavor.getId());
-    String domain = "https://favoapp.page.link";
+    Uri baseUrl = Uri.parse(getString(R.string.favoapp_url) + currentFavor.getId());
+    String domain = getString(R.string.favoapp_domain);
 
     DynamicLink link =
         FirebaseDynamicLinks.getInstance()
             .createDynamicLink()
             .setLink(baseUrl)
             .setDomainUriPrefix(domain)
-            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder("ch.epfl.favo").build())
+            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder(getString(R.string.favo_package_name)).build())
             .setSocialMetaTagParameters(
                 new DynamicLink.SocialMetaTagParameters.Builder()
                     .setTitle("Favor " + currentFavor.getTitle())
-                    .setDescription("Check out this favor in the Favo App!")
+                    .setDescription(getString(R.string.share_tip_checkout_favor))
                     .build())
             .buildDynamicLink();
 
@@ -172,6 +172,7 @@ public class FavorPublishedView extends Fragment {
 
   private void updateAppBarMenuDisplay() {
     boolean visible = false;
+    if (cancelItem == null) return;
     // if requester has committed this favor, then he can cancel commit
     for (int i = 1; i < currentFavor.getUserIds().size(); i++) {
       if (currentFavor
@@ -179,26 +180,26 @@ public class FavorPublishedView extends Fragment {
           .get(i)
           .equals(DependencyFactory.getCurrentFirebaseUser().getUid())) visible = true;
     }
-    if (cancelItem != null) cancelItem.setVisible(visible);
+    cancelItem.setVisible(visible);
     visible =
         (favorStatus == FavorStatus.REQUESTED && isRequested)
             || favorStatus == FavorStatus.ACCEPTED
             || favorStatus == FavorStatus.COMPLETED_ACCEPTER
             || favorStatus == FavorStatus.COMPLETED_REQUESTER;
-    if (cancelItem != null) cancelItem.setVisible(visible);
+    cancelItem.setVisible(visible);
 
     visible =
         (favorStatus == FavorStatus.CANCELLED_ACCEPTER
             || (favorStatus == FavorStatus.CANCELLED_REQUESTER
                     || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED)
                 && isRequested);
-    if (restartItem != null) restartItem.setVisible(visible);
+    restartItem.setVisible(visible);
 
     visible = isRequested && favorStatus == FavorStatus.REQUESTED;
-    if (editItem != null) editItem.setVisible(visible);
+    editItem.setVisible(visible);
 
     visible = favorStatus == FavorStatus.REQUESTED;
-    if (inviteItem != null) inviteItem.setVisible(visible);
+    inviteItem.setVisible(visible);
   }
 
   private void setupButtons(View rootView) {
@@ -226,7 +227,7 @@ public class FavorPublishedView extends Fragment {
     chatBtn.setOnClickListener(
         v -> {
           Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+          favorBundle.putParcelable(CommonTools.FAVOR_SOURCE, currentFavor);
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
         });
@@ -236,7 +237,7 @@ public class FavorPublishedView extends Fragment {
         .setOnClickListener(
             v -> {
               Bundle userBundle = new Bundle();
-              userBundle.putString("USER_ARGS", currentFavor.getRequesterId());
+              userBundle.putString(CommonTools.USER_ARGS, currentFavor.getRequesterId());
               Navigation.findNavController(requireView())
                   .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
             });
@@ -255,7 +256,12 @@ public class FavorPublishedView extends Fragment {
     UserUtil.getSingleInstance()
         .findUser(favor.getRequesterId())
         .thenAccept(
-            user -> ((TextView) rootView.findViewById(R.id.user_name)).setText(user.getName()));
+            user -> {
+              String name = user.getName();
+              if(name == null || name.equals(""))
+                name = user.getEmail().split("@")[0].replace(".", " ");
+              ((TextView) rootView.findViewById(R.id.user_name)).setText(name);
+            });
     setupImageView(rootView, favor);
     isRequested =
         favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
@@ -321,7 +327,7 @@ public class FavorPublishedView extends Fragment {
                   acceptFavor(user);
                 } else if (item.getItemId() == R.id.profile) {
                   Bundle userBundle = new Bundle();
-                  userBundle.putString("USER_ARGS", user.getId());
+                  userBundle.putString(CommonTools.USER_ARGS, user.getId());
                   Navigation.findNavController(requireView())
                       .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
                 }

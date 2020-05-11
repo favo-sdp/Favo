@@ -29,6 +29,7 @@ public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
   public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
   public static final String FAVOR_SOURCE = "FAVOR_SOURCE";
+  public static final String USER_ARGS = "USER_ARGS";
 
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();

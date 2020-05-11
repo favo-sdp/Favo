@@ -36,7 +36,7 @@ public class UserAdapter extends ArrayAdapter<User> {
         // Populate the data into the template view using the data object
         String UserName = user.getName();
         if(UserName == null || UserName.equals(""))
-            UserName = user.getEmail().split("@")[0];
+            UserName = user.getEmail().split("@")[0].replace(".", " ");
         UserNameView.setText(UserName);
        //UserProfilePic.setImageBitmap();
         // Return the completed view to render on screen

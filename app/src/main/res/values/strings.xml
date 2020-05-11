@@ -171,6 +171,10 @@
 
     <!-- Invite option -->
     <string name="invite_text">Invite</string>
+    <string name="share_tip_checkout_favor">Check out this favor in the Favo App!</string>
+    <string name="favoapp_url">https://www.favoapp.com/?favorId=</string>
+    <string name="favoapp_domain">https://favoapp.page.link</string>
+    <string name="favo_package_name">ch.epfl.favo</string>
 
     <!-- FavorEditting Page-->
     <string name="favor_source_map">map</string>

@@ -79,8 +79,6 @@
                             android:ems="10"
                             android:focusable="true"
                             android:gravity="start"
-                            android:lines="1"
-                            android:maxLines="1"
                             android:padding="10dp"
                             android:textIsSelectable="true"
                             android:textSize="20sp"
