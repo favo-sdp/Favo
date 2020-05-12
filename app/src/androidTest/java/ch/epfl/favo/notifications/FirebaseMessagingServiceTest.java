@@ -41,7 +41,7 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static com.google.android.gms.common.api.CommonStatusCodes.TIMEOUT;
 import static org.junit.Assert.assertEquals;
-/*
+
 @RunWith(AndroidJUnit4.class)
 public class FirebaseMessagingServiceTest {
 
@@ -118,4 +118,3 @@ public class FirebaseMessagingServiceTest {
     return bundle;
   }
 }
-*/

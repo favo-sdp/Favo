@@ -90,6 +90,8 @@ public class FavorPublishedView extends Fragment {
     restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
+    if(favorStatus != null)
+      updateAppBarMenuDisplay();
     super.onCreateOptionsMenu(menu, inflater);
   }
 
@@ -266,9 +268,15 @@ public class FavorPublishedView extends Fragment {
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
-    setupImageView(rootView, favor);
     isRequested =
         favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+
+    setupImageView(rootView, favor);
+    // display committed user list
+    requireView().findViewById(R.id.commit_user_group).setVisibility(View.VISIBLE);
+    Log.d("fuck", favor.getUserIds().size() + " total users");
+    if (favor.getUserIds().size() > 1) setupUserListView();
+
     displayUserProfile(favor);
     // update status string
     favorStatus = verifyFavorHasBeenAccepted(favor);
@@ -286,10 +294,6 @@ public class FavorPublishedView extends Fragment {
             .fitCenter()
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
-      // display committed user list
-      requireView().findViewById(R.id.commit_user_group).setVisibility(View.VISIBLE);
-      if (favor.getUserIds().size() > 1) setupUserListView();
-
       ((TextView) requireView().findViewById(R.id.user_name)).setText(DependencyFactory.getCurrentFirebaseUser().getDisplayName());
     }
     else {
@@ -341,12 +345,12 @@ public class FavorPublishedView extends Fragment {
           PopupMenu popup = new PopupMenu(requireActivity(), view);
           popup.getMenuInflater().inflate(R.menu.user_popup_menu, popup.getMenu());
           if (currentFavor.getStatusId() != FavorStatus.REQUESTED.toInt())
-            popup.getMenu().findItem(R.id.accept).setVisible(false);
+            popup.getMenu().findItem(R.id.accept_popup).setVisible(false);
           popup.setOnMenuItemClickListener(
               item -> {
-                if (item.getItemId() == R.id.accept) {
+                if (item.getItemId() == R.id.accept_popup) {
                   acceptFavor(user);
-                } else if (item.getItemId() == R.id.profile) {
+                } else if (item.getItemId() == R.id.profile_popup) {
                   Bundle userBundle = new Bundle();
                   userBundle.putString(CommonTools.USER_ARGS, user.getId());
                   Navigation.findNavController(requireView())

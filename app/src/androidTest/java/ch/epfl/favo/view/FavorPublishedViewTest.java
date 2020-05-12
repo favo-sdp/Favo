@@ -53,7 +53,6 @@ import static org.hamcrest.core.AllOf.allOf;
 @RunWith(AndroidJUnit4.class)
 public class FavorPublishedViewTest {
   private Favor fakeFavor;
-  private FavorPublishedView detailViewFragment;
   private FakeViewModel fakeViewModel;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
@@ -97,8 +96,7 @@ public class FavorPublishedViewTest {
   @Before
   public void setup() throws Throwable {
     fakeFavor = FakeItemFactory.getFavor();
-    detailViewFragment = launchFragment(fakeFavor);
-    fakeViewModel = (FakeViewModel) detailViewFragment.getViewModel();
+    fakeViewModel = (FakeViewModel) launchFragment(fakeFavor).getViewModel();
   }
 
   @Test
@@ -244,6 +242,11 @@ public class FavorPublishedViewTest {
 
     Thread.sleep(1000);
 
+    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+    Thread.sleep(1000);
+
+    pressBack();
+    onView(withId(R.id.user_profile_picture)).perform(click());
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 

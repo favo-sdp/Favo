@@ -135,9 +135,6 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    Favor observedFavor = new Favor(favorId, " ", " ", TestConstants.REQUESTER_ID, null, 0, 5);
-    observedFavor.updateToOther(FakeItemFactory.getFavor());
-    setObservedFavorResult(observedFavor);
     return observedFavorResult;
   }
 

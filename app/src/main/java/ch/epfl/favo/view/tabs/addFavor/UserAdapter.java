@@ -30,8 +30,8 @@ public class UserAdapter extends ArrayAdapter<User> {
                     LayoutInflater.from(getContext()).inflate(R.layout.commit_user_list_item, parent, false);
         }
         // Lookup view for data population
-        TextView UserNameView = convertView.findViewById(R.id.user_name);
-        ImageView UserProfilePic = convertView.findViewById(R.id.user_profile_picture);
+        TextView UserNameView = convertView.findViewById(R.id.user_name_commit);
+        ImageView UserProfilePic = convertView.findViewById(R.id.user_profile_picture_commit);
 
         // Populate the data into the template view using the data object
         String UserName = user.getName();
