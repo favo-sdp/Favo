@@ -17,6 +17,7 @@ public class ChatModel {
   private String mNotifId;
   private String mFavorId;
   private Date mTimestamp;
+  private boolean mIsFirstMsg;
 
   public ChatModel() {
     // Needed for Firebase
@@ -27,12 +28,14 @@ public class ChatModel {
       @Nullable String message,
       @NonNull String uid,
       @NonNull String notifId,
-      @NonNull String favorId) {
+      @NonNull String favorId,
+      @NonNull boolean isFirstMsg) {
     mName = name;
     mMessage = message;
     mUid = uid;
     mNotifId = notifId;
     mFavorId = favorId;
+    mIsFirstMsg = isFirstMsg;
   }
 
   @Nullable
