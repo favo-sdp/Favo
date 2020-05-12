@@ -234,10 +234,17 @@ public class FavorPublishedView extends Fragment {
           if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();
           else completeFavor();
         });
-    chatBtn.setOnClickListener(new toUserInfoPage());
+    chatBtn.setOnClickListener(
+            v -> {
+              Bundle favorBundle = new Bundle();
+              favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+              Navigation.findNavController(requireView())
+                      .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
+            });
     userProfile.setOnClickListener(new toUserInfoPage());
     userName.setOnClickListener(new toUserInfoPage());
   }
+  
 
   class toUserInfoPage implements View.OnClickListener {
     @Override
@@ -260,7 +267,7 @@ public class FavorPublishedView extends Fragment {
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
     isRequested =
-        favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+        favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid());
 
     setupImageView(rootView, favor);
     // display committed user list

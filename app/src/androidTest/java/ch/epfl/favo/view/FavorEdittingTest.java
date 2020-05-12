@@ -68,7 +68,7 @@ public class FavorEdittingTest {
   private User testUser =
           new User(
                   TestConstants.USER_ID,
-                  TestConstants.NAME,
+                  "commit",
                   TestConstants.EMAIL,
                   TestConstants.DEVICE_ID,
                   null,
@@ -276,10 +276,10 @@ public class FavorEdittingTest {
     Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
     favor1.setAccepterId("one helper");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
-    Thread.sleep(2000);
+    Thread.sleep(1000);
 
     // choose one committed user, click accept
-    onView(withId(R.id.user_name_commit)).check(matches(isDisplayed())).perform(click());
+    onView(withText("commit")).check(matches(isDisplayed())).perform(click());
     Thread.sleep(1000);
     onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
 
@@ -290,7 +290,7 @@ public class FavorEdittingTest {
             .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
     // check accept is gone , and click user profile
     Thread.sleep(1000);
-    onView(withId(R.id.user_name_commit)).check(matches(isDisplayed())).perform(click());
+    onView(withText("commit")).check(matches(isDisplayed())).perform(click());
     Thread.sleep(1000);
     onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
