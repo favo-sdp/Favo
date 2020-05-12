@@ -139,6 +139,7 @@
     <string name="favor_accepted_by_oneself">you cannot accept favor posted by yourself</string>
     <string name="old_favor_accepted_by_others">Someone commit your unmodified favor</string>
     <string name="old_favor_cancelled_by_others">Someone cancel committing your unmodified favor</string>
+    <string name="committed_helpers">Potential helpers"</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

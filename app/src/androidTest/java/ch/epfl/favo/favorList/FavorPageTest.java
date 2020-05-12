@@ -3,6 +3,7 @@ package ch.epfl.favo.favorList;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -31,6 +32,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
@@ -50,7 +52,7 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.core.AllOf.allOf;
-/*
+
 @RunWith(AndroidJUnit4.class)
 public class FavorPageTest {
 
@@ -70,7 +72,7 @@ public class FavorPageTest {
       GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
   @Before
-  public void setUp() throws ExecutionException, InterruptedException {
+  public void setUp() {
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
   }
@@ -224,13 +226,13 @@ public class FavorPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
-    // Click on fragment_favor_published_view button
+    // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
-    onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.item_menu_cancel)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Go back
@@ -280,12 +282,13 @@ public class FavorPageTest {
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
-    onView(withId(R.id.cancel_favor_button)).check(matches(isDisplayed())).perform(click());
+      openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+    onView(withId(R.id.item_menu_cancel)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(2000);
 
     // Click on delete button
-    onView(withId(R.id.cancel_favor_button))
+    onView(withId(R.id.item_menu_cancel))
         .check(matches(withText(R.string.delete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
@@ -409,4 +412,3 @@ public class FavorPageTest {
     onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
   }
 }
-*/

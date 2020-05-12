@@ -29,6 +29,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
@@ -61,6 +62,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem editItem;
   private MenuItem restartItem;
   private MenuItem inviteItem;
+  private MenuItem deleteItem;
   private boolean isRequested;
 
   private Map<String, User> commitUsers = new HashMap<>();
@@ -79,12 +81,13 @@ public class FavorPublishedView extends Fragment {
   public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
 
     // Inflate the menu; this adds items to the action bar if it is present.
-    inflater.inflate(R.menu.menu_favor_detail, menu);
+    inflater.inflate(R.menu.favor_published_menu, menu);
 
     cancelItem = menu.findItem(R.id.cancel_button);
     editItem = menu.findItem(R.id.edit_button);
     restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
+    deleteItem = menu.findItem(R.id.delete_button);
     // if (favorStatus != null) {
     //  updateAcceptBtnDisplay();
     // }
@@ -104,6 +107,8 @@ public class FavorPublishedView extends Fragment {
       onShareClicked();
     } else if (id == R.id.restart_button) {
       goRestartFavor();
+    } else if (id == R.id.delete_button) {
+      deleteFavor();
     }
     return super.onOptionsItemSelected(item);
   }
@@ -159,7 +164,9 @@ public class FavorPublishedView extends Fragment {
             .createDynamicLink()
             .setLink(baseUrl)
             .setDomainUriPrefix(domain)
-            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder(getString(R.string.favo_package_name)).build())
+            .setAndroidParameters(
+                new DynamicLink.AndroidParameters.Builder(getString(R.string.favo_package_name))
+                    .build())
             .setSocialMetaTagParameters(
                 new DynamicLink.SocialMetaTagParameters.Builder()
                     .setTitle("Favor " + currentFavor.getTitle())
@@ -175,18 +182,23 @@ public class FavorPublishedView extends Fragment {
     if (cancelItem == null) return;
     // if requester has committed this favor, then he can cancel commit
     for (int i = 1; i < currentFavor.getUserIds().size(); i++) {
-      if (currentFavor
-          .getUserIds()
-          .get(i)
-          .equals(DependencyFactory.getCurrentFirebaseUser().getUid())) visible = true;
+      if (!isRequested
+          && favorStatus == FavorStatus.REQUESTED
+          && currentFavor
+              .getUserIds()
+              .get(i)
+              .equals(DependencyFactory.getCurrentFirebaseUser().getUid())) visible = true;
     }
-    cancelItem.setVisible(visible);
     visible =
         (favorStatus == FavorStatus.REQUESTED && isRequested)
             || favorStatus == FavorStatus.ACCEPTED
             || favorStatus == FavorStatus.COMPLETED_ACCEPTER
-            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
+            || favorStatus == FavorStatus.COMPLETED_REQUESTER
+            || visible;
     cancelItem.setVisible(visible);
+
+    visible = currentFavor.getIsArchived();
+    deleteItem.setVisible(visible);
 
     visible =
         (favorStatus == FavorStatus.CANCELLED_ACCEPTER
@@ -205,6 +217,8 @@ public class FavorPublishedView extends Fragment {
   private void setupButtons(View rootView) {
     acceptAndCompleteFavorBtn = rootView.findViewById(R.id.accept_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
+    ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
+    TextView userName = rootView.findViewById(R.id.user_name);
     chatBtn = rootView.findViewById(R.id.chat_button);
 
     locationAccessBtn.setOnClickListener(
@@ -224,23 +238,27 @@ public class FavorPublishedView extends Fragment {
           }
         });
 
+    chatBtn.setOnClickListener(new toUserInfoPage());
     chatBtn.setOnClickListener(
         v -> {
           Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable(CommonTools.FAVOR_SOURCE, currentFavor);
+          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
         });
 
-    rootView
-        .findViewById(R.id.user_profile_picture)
-        .setOnClickListener(
-            v -> {
-              Bundle userBundle = new Bundle();
-              userBundle.putString(CommonTools.USER_ARGS, currentFavor.getRequesterId());
-              Navigation.findNavController(requireView())
-                  .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
-            });
+    userProfile.setOnClickListener(new toUserInfoPage());
+    userName.setOnClickListener(new toUserInfoPage());
+  }
+
+  class toUserInfoPage implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      Bundle userBundle = new Bundle();
+      userBundle.putString(CommonTools.USER_ARGS, currentFavor.getRequesterId());
+      Navigation.findNavController(requireView())
+          .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+    }
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
@@ -258,7 +276,7 @@ public class FavorPublishedView extends Fragment {
         .thenAccept(
             user -> {
               String name = user.getName();
-              if(name == null || name.equals(""))
+              if (name == null || name.equals(""))
                 name = user.getEmail().split("@")[0].replace(".", " ");
               ((TextView) rootView.findViewById(R.id.user_name)).setText(name);
             });
@@ -275,11 +293,12 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display committed user list
-      if (favor.getUserIds().size() > 1) setupListView();
-      else requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
+      requireView().findViewById(R.id.commit_user_group).setVisibility(View.VISIBLE);
+      if (favor.getUserIds().size() > 1) setupUserListView();
     }
     // update status string
     favorStatus = verifyFavorHasBeenAccepted(favor);
+    updateAppBarMenuDisplay();
     updateDisplayFromViewStatus();
   }
 
@@ -300,9 +319,8 @@ public class FavorPublishedView extends Fragment {
     } else rootView.findViewById(R.id.picture).setVisibility(View.GONE);
   }
 
-  private void setupListView() {
+  private void setupUserListView() {
     ListView listView = requireView().findViewById(R.id.commit_user);
-    requireView().findViewById(R.id.commit_user_line).setVisibility(View.VISIBLE);
     for (String userId : currentFavor.getUserIds()) {
       if (!userId.equals(currentFavor.getRequesterId()))
         UserUtil.getSingleInstance()
@@ -338,14 +356,11 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void updateDisplayFromViewStatus() {
-    updateAppBarMenuDisplay();
     toolbar.setTitle(favorStatus.toString());
     switch (favorStatus) {
       case SUCCESSFULLY_COMPLETED:
         {
-          updateCompleteBtnDisplay(
-              R.string.complete_favor, false, R.drawable.ic_check_box_black_24dp);
-          enableButtons(false);
+          requireView().findViewById(R.id.buttons_bar).setVisibility(View.GONE);
           break;
         }
       case ACCEPTED:
@@ -386,8 +401,10 @@ public class FavorPublishedView extends Fragment {
           break;
         }
       default: // includes accepted by other
-        enableButtons(false);
-        updateCompleteBtnDisplay(R.string.wait_complete, false, R.drawable.ic_check_box_black_24dp);
+        // enableButtons(false);
+        requireView().findViewById(R.id.buttons_bar).setVisibility(View.GONE);
+        // updateCompleteBtnDisplay(R.string.wait_complete, false,
+        // R.drawable.ic_check_box_black_24dp);
         toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
@@ -415,7 +432,7 @@ public class FavorPublishedView extends Fragment {
     updateFuture.thenAccept(
         o ->
             CommonTools.showSnackbar(requireView(), getString(R.string.favor_respond_success_msg)));
-    updateFuture.exceptionally(handleException());
+    updateFuture.exceptionally(onFailedResult(requireView()));
   }
 
   private void cancelCommit() {
@@ -430,7 +447,7 @@ public class FavorPublishedView extends Fragment {
     updateFuture.thenAccept(
         o ->
             CommonTools.showSnackbar(requireView(), getString(R.string.favor_respond_success_msg)));
-    updateFuture.exceptionally(handleException());
+    updateFuture.exceptionally(onFailedResult(requireView()));
   }
 
   private void acceptFavor(User user) {
@@ -455,14 +472,15 @@ public class FavorPublishedView extends Fragment {
         o ->
             CommonTools.showSnackbar(
                 requireView(), getString(R.string.favor_complete_success_msg)));
-    updateFuture.exceptionally(handleException());
+    updateFuture.exceptionally(onFailedResult(requireView()));
   }
 
   private void goEditFavor() {
     currentFavor.setStatusIdToInt(FavorStatus.EDIT);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
-    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+    favorBundle.putString(
+        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -475,7 +493,8 @@ public class FavorPublishedView extends Fragment {
     newFavor.updateToOther(currentFavor);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+    favorBundle.putString(
+        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -483,7 +502,17 @@ public class FavorPublishedView extends Fragment {
   private void cancelFavor() {
     CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
     completableFuture.thenAccept(successfullyCancelledConsumer());
-    completableFuture.exceptionally(handleException());
+    completableFuture.exceptionally(onFailedResult(requireView()));
+  }
+
+  private void deleteFavor() {
+    CompletableFuture deleteFuture = getViewModel().deleteFavor(currentFavor);
+    deleteFuture.thenAccept(
+        o -> {
+          CommonTools.showSnackbar(requireView(), getString(R.string.favor_delete_success_msg));
+          requireActivity().onBackPressed();
+        });
+    deleteFuture.exceptionally(onFailedResult(requireView()));
   }
 
   private Consumer successfullyCancelledConsumer() {
@@ -505,12 +534,12 @@ public class FavorPublishedView extends Fragment {
     return favorStatus;
   }
 
-  private Function handleException() {
-    return e -> {
-      Log.d(TAG, ((RuntimeException) e).getMessage());
-      if (((CompletionException) e).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
-      else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
+  private Function onFailedResult(View currentView) {
+    return (exception) -> {
+      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
+      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
       return null;
     };
   }

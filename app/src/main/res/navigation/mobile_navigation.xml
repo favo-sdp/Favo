@@ -131,7 +131,7 @@
         android:label="NearbyList"
         tools:layout="@layout/fragment_nearby_favor_list">
         <action
-            android:id="@+id/action_nav_nearby_list_to_favorDetailView"
+            android:id="@+id/action_nav_nearby_list_to_favorPublishedView"
             app:destination="@id/favorPublishedView">
             <argument
                 android:name="FAVOR_ARGS"

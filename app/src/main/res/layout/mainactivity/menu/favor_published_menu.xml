@@ -13,10 +13,14 @@
         android:id="@+id/cancel_button"
         android:visible="false"
         android:title="@string/cancel_request" />
+    <item
+        android:id="@+id/delete_button"
+        android:visible="false"
+        android:title="@string/delete_favor" />
 
     <item
         android:id="@+id/share_button"
-        android:title="Invite"
+        android:title="@string/invite_text"
         android:visible="false"
         />
 

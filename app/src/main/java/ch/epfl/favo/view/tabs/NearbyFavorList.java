@@ -183,9 +183,9 @@ public class NearbyFavorList extends Fragment {
           CommonTools.hideSoftKeyboard(requireActivity());
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
-          favorBundle.putString("FAVOR_ARGS", favor.getId());
+          favorBundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
           findNavController(requireView())
-              .navigate(R.id.action_nav_nearby_list_to_favorDetailView, favorBundle);
+              .navigate(R.id.action_nav_nearby_list_to_favorPublishedView, favorBundle);
         });
   }
 

@@ -132,6 +132,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     Favor tempFavor = (Favor) favor.clone();
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
     tempFavor.setStatusIdToInt(cancelledStatus);
+    // if favor is in requested status, then clear the list of committed helpers, so their
+    // archived favors will not counted in this favor
+    if(favor.getStatusId() == REQUESTED.toInt())
+        favor.setAccepterId("");
     CompletableFuture resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (int i = 1; i < favor.getUserIds().size(); i++) {
       int commitUser = i;

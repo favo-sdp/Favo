@@ -200,6 +200,7 @@ public class Favor implements Parcelable, Document, Cloneable {
   }
 
   public void setAccepterId(String id) {
+    // clear the list of committed/accepted user
     if (id != null && id.equals("")){
       userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
     }
