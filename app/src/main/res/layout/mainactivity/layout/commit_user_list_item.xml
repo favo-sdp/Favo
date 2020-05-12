@@ -6,6 +6,7 @@
     android:layout_height="match_parent">
 
         <LinearLayout
+            android:id="@+id/commit_user_list"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             app:layout_constraintTop_toTopOf="parent"

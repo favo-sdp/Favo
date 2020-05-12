@@ -37,7 +37,6 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
-import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -66,13 +65,13 @@ public class FavorEdittingTest {
   private FakeViewModel fakeViewModel;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
   private User testUser =
-          new User(
-                  TestConstants.USER_ID,
-                  "commit",
-                  TestConstants.EMAIL,
-                  TestConstants.DEVICE_ID,
-                  null,
-                  null);
+      new User(
+          TestConstants.USER_ID,
+          "commit",
+          TestConstants.EMAIL,
+          TestConstants.DEVICE_ID,
+          null,
+          null);
 
   @Rule
   public final ActivityTestRule<MainActivity> activityTestRule =
@@ -117,145 +116,144 @@ public class FavorEdittingTest {
     }
 
     Fragment navHostFragment =
-            activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
     getInstrumentation().waitForIdleSync();
     return (FavorEditingView) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
 
-    @Test
-    public void testChatAndLocationButtonWork() throws Throwable {
-      // Check and click on the chat
-      launchFragment(null);
+  @Test
+  public void testChatAndLocationButtonWork() throws Throwable {
+    // Check and click on the chat
+    launchFragment(null);
 
-      // Check and click on the location button
-      onView(withId(R.id.location_request_view_btn)).check(matches(isDisplayed())).perform(click());
-      onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
-    }
+    // Check and click on the location button
+    onView(withId(R.id.location_request_view_btn)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
+  }
 
-    @Test
-    public void addPictureWorks() throws Throwable {
-      // Click on fav list tab
-      FavorEditingView currentFragment = launchFragment(null);
-      // inject picture
-      Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
-      Intent intent = new Intent();
-      intent.putExtra("data", bm);
-      runOnUiThread(() -> currentFragment.onActivityResult(2, RESULT_OK, intent));
+  @Test
+  public void addPictureWorks() throws Throwable {
+    // Click on fav list tab
+    FavorEditingView currentFragment = launchFragment(null);
+    // inject picture
+    Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+    Intent intent = new Intent();
+    intent.putExtra("data", bm);
+    runOnUiThread(() -> currentFragment.onActivityResult(2, RESULT_OK, intent));
 
-      getInstrumentation().waitForIdleSync();
+    getInstrumentation().waitForIdleSync();
 
-      onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
-    }
+    onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
+  }
 
-    @Test
-    public void cameraButtonCanBeClicked() throws Throwable {
+  @Test
+  public void cameraButtonCanBeClicked() throws Throwable {
 
-      launchFragment(null);
-      getInstrumentation().waitForIdleSync();
-      Button cameraButton =
-          activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
-      runOnUiThread(() -> cameraButton.setEnabled(true));
+    launchFragment(null);
+    getInstrumentation().waitForIdleSync();
+    Button cameraButton =
+        activityTestRule.getActivity().findViewById(R.id.add_camera_picture_button);
+    runOnUiThread(() -> cameraButton.setEnabled(true));
 
-      Intent fakeIntent = new Intent();
-      DependencyFactory.setCurrentCameraIntent(fakeIntent);
+    Intent fakeIntent = new Intent();
+    DependencyFactory.setCurrentCameraIntent(fakeIntent);
 
-      getInstrumentation().waitForIdleSync();
-      // click on button
-      onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
-    }
+    getInstrumentation().waitForIdleSync();
+    // click on button
+    onView(withId(R.id.add_camera_picture_button)).check(matches(isEnabled())).perform(click());
+  }
 
-    @Test
-    public void testCanHideKeyboardOnClickOutsideOfTextView() throws Throwable {
-      launchFragment(fakeFavor);
-      onView(withId(R.id.title_request_view)).perform(typeText("ble"));
+  @Test
+  public void testCanHideKeyboardOnClickOutsideOfTextView() throws Throwable {
+    launchFragment(fakeFavor);
+    onView(withId(R.id.title_request_view)).perform(typeText("ble"));
 
-      // click outside of text view
-      UiDevice device = UiDevice.getInstance(getInstrumentation());
-      device.click(1, device.getDisplayHeight() / 3);
-    }
+    // click outside of text view
+    UiDevice device = UiDevice.getInstance(getInstrumentation());
+    device.click(1, device.getDisplayHeight() / 3);
+  }
 
-    @Test
-    public void loadSavedPicture() throws Throwable {
+  @Test
+  public void loadSavedPicture() throws Throwable {
 
-      FavorEditingView currentFragment = launchFragment(null);
-      getInstrumentation().waitForIdleSync();
-      // inject picture
-      Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
-      Uri filePath =
-          CacheUtil.getInstance()
-              .saveToInternalStorage(
-                  Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
-      getInstrumentation().waitForIdleSync();
-      Bitmap actual =
-          CacheUtil.getInstance()
-              .loadFromInternalStorage(
-                  Objects.requireNonNull(currentFragment.getContext()).getFilesDir().getAbsolutePath()
-                      + "/"
-                      + FAVOR_ID
-                      + "/",
-                  0)
-              .get();
-      assert (actual.sameAs(bm));
-      Intent intent = new Intent();
-      intent.setData(filePath);
-      runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
-      getInstrumentation().waitForIdleSync();
-      onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
-    }
+    FavorEditingView currentFragment = launchFragment(null);
+    getInstrumentation().waitForIdleSync();
+    // inject picture
+    Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+    Uri filePath =
+        CacheUtil.getInstance()
+            .saveToInternalStorage(
+                Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
+    getInstrumentation().waitForIdleSync();
+    Bitmap actual =
+        CacheUtil.getInstance()
+            .loadFromInternalStorage(
+                Objects.requireNonNull(currentFragment.getContext()).getFilesDir().getAbsolutePath()
+                    + "/"
+                    + FAVOR_ID
+                    + "/",
+                0)
+            .get();
+    assert (actual.sameAs(bm));
+    Intent intent = new Intent();
+    intent.setData(filePath);
+    runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.image_view_request_view)).check(matches(isDisplayed()));
+  }
 
-    @Test
-    public void snackbarShowsWhenIncorrectResultCodeOnImageUpload() throws Throwable {
-      // Click on fav list tab
-      FavorEditingView currentFragment = launchFragment(null);
-      getInstrumentation().waitForIdleSync();
-      Intent intent = new Intent();
-      runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_CANCELED, intent));
-      getInstrumentation().waitForIdleSync();
-      // check snackbar shows
-      onView(withId(com.google.android.material.R.id.snackbar_text))
-          .check(matches(withText(R.string.error_msg_image_request_view)));
-    }
+  @Test
+  public void snackbarShowsWhenIncorrectResultCodeOnImageUpload() throws Throwable {
+    // Click on fav list tab
+    FavorEditingView currentFragment = launchFragment(null);
+    getInstrumentation().waitForIdleSync();
+    Intent intent = new Intent();
+    runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_CANCELED, intent));
+    getInstrumentation().waitForIdleSync();
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.error_msg_image_request_view)));
+  }
 
-    @Test
-    public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabase() throws Throwable {
-      // make the collection wrapper throw an error
-      // instantiate view
-      FavorEditingView fragment = launchFragment(fakeFavor);
-      // Try to click on edit
-      FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
-      // Favor failedFavor = Mockito.mock(Favor.class);
-      // Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
-      runOnUiThread(() -> viewModel.setObservedFavorResult(null));
-      getInstrumentation().waitForIdleSync();
+  @Test
+  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabase() throws Throwable {
+    // make the collection wrapper throw an error
+    // instantiate view
+    FavorEditingView fragment = launchFragment(fakeFavor);
+    // Try to click on edit
+    FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
+    // Favor failedFavor = Mockito.mock(Favor.class);
+    // Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
+    runOnUiThread(() -> viewModel.setObservedFavorResult(null));
+    getInstrumentation().waitForIdleSync();
 
-      // check error message is printed
-      onView(withId(com.google.android.material.R.id.snackbar_text))
-          .check(matches(withText(R.string.error_database_sync)));
-    }
+    // check error message is printed
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.error_database_sync)));
+  }
 
-    @Test
-    public void testRequestFavorFlow() throws InterruptedException {
-      // Click on fav list tab
-      onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
-      onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
+  @Test
+  public void testRequestFavorFlow() throws InterruptedException {
+    // Click on fav list tab
+    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
 
-      // type the contents and submit
-      onView(withId(R.id.title_request_view)).perform(typeText("bla"));
-      onView(withId(R.id.details)).perform(typeText("bla..."));
-      onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-      getInstrumentation().waitForIdleSync();
+    // type the contents and submit
+    onView(withId(R.id.title_request_view)).perform(typeText("bla"));
+    onView(withId(R.id.details)).perform(typeText("bla..."));
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
 
-      // check snackbar shows
-      onView(withId(com.google.android.material.R.id.snackbar_text))
-          .check(matches(withText(R.string.favor_request_success_msg)));
-      // Check status display is correct
-      onView(withId(R.id.toolbar_main_activity))
-          .check(matches(isDisplayed()))
-          .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
-    }
-
+    // check snackbar shows
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_request_success_msg)));
+    // Check status display is correct
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(isDisplayed()))
+        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
+  }
 
   public void requestFavor() {
     // type the contents and request
@@ -267,7 +265,7 @@ public class FavorEdittingTest {
 
   @Test
   public void testAcceptCommittedUser() throws Throwable {
-    fakeViewModel = (FakeViewModel)launchFragment(null).getViewModel();
+    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
     requestFavor();
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
@@ -279,15 +277,18 @@ public class FavorEdittingTest {
     Thread.sleep(1000);
 
     // choose one committed user, click accept
-    onView(withText("commit")).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.commit_user_list))
+        .check(matches(hasDescendant(withText("commit"))))
+        .perform(click());
+    // onView(withText("commit")).check(matches(isDisplayed())).perform(click());
     Thread.sleep(1000);
     onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
 
     // check view become accepted
     onView(withId(R.id.accept_button))
-            .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
+        .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
     onView(withId(R.id.toolbar_main_activity))
-            .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
+        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
     // check accept is gone , and click user profile
     Thread.sleep(1000);
     onView(withText("commit")).check(matches(isDisplayed())).perform(click());
@@ -298,7 +299,7 @@ public class FavorEdittingTest {
 
   @Test
   public void testFavorGotAcceptedDuringEdit() throws Throwable {
-    fakeViewModel = (FakeViewModel)launchFragment(null).getViewModel();
+    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
     requestFavor();
 
     // cancel favor
@@ -351,13 +352,14 @@ public class FavorEdittingTest {
     onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
     // Check cancel button is there
     onView(withId(R.id.accept_button))
-            .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
+        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
     // Check status display is correct
     checkToolbar(FavorStatus.REQUESTED.toString());
   }
+
   public void checkToolbar(String expectedDisplay) {
     onView(withId(R.id.toolbar_main_activity))
-            .check(matches(hasDescendant(withText(expectedDisplay))));
+        .check(matches(hasDescendant(withText(expectedDisplay))));
   }
 
   @Test
