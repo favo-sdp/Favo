@@ -46,8 +46,8 @@ import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 /**
- * View will contain a map and a favor fragment_favor_published_view pop-up. It is implemented using the {@link Fragment}
- * subclass.
+ * View will contain a map and a favor fragment_favor_published_view pop-up. It is implemented using
+ * the {@link Fragment} subclass.
  */
 @SuppressLint("NewApi")
 public class MapPage extends Fragment
@@ -225,7 +225,9 @@ public class MapPage extends Fragment
             ? getString(R.string.hint_drag_marker)
             : favor.getTitle();
     String markerDescription =
-        isEdited && favor.getDescription().equals("") ? getString(R.string.hint_click_window) : favor.getDescription();
+        isEdited && favor.getDescription().equals("")
+            ? getString(R.string.hint_click_window)
+            : favor.getDescription();
     Marker marker =
         mMap.addMarker(
             new MarkerOptions()
@@ -316,7 +318,8 @@ public class MapPage extends Fragment
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode
-        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_published_view is cancelled, the result arrays
+        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_published_view is
+                                                       // cancelled, the result arrays
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
@@ -390,18 +393,17 @@ public class MapPage extends Fragment
     String favorId = markerInfo.get(0).toString();
     boolean isRequested = (boolean) markerInfo.get(1);
     Bundle favorBundle = new Bundle();
-    if (isRequested && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()){
+    if (isRequested && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
       focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
       favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
       favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_map));
-      Navigation.findNavController(view).navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
-    }
-    else{
+      Navigation.findNavController(view)
+          .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
+    } else {
       favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
       Navigation.findNavController(view)
-              .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
+          .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
     }
-
   }
 }

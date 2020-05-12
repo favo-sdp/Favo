@@ -63,6 +63,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem restartItem;
   private MenuItem inviteItem;
   private MenuItem deleteItem;
+  private MenuItem cancelCommitItem;
   private boolean isRequested;
 
   private Map<String, User> commitUsers = new HashMap<>();
@@ -84,10 +85,12 @@ public class FavorPublishedView extends Fragment {
     inflater.inflate(R.menu.favor_published_menu, menu);
 
     cancelItem = menu.findItem(R.id.cancel_button);
+    cancelCommitItem = menu.findItem(R.id.cancel_commit_button);
     editItem = menu.findItem(R.id.edit_button);
     restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
+
     // if (favorStatus != null) {
     //  updateAcceptBtnDisplay();
     // }
@@ -97,18 +100,25 @@ public class FavorPublishedView extends Fragment {
   // handle button activities
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    int id = item.getItemId();
-    if (id == R.id.cancel_button) {
-      if (isRequested) cancelFavor();
-      else cancelCommit();
-    } else if (id == R.id.edit_button) {
-      goEditFavor();
-    } else if (id == R.id.share_button) {
-      onShareClicked();
-    } else if (id == R.id.restart_button) {
-      goRestartFavor();
-    } else if (id == R.id.delete_button) {
-      deleteFavor();
+    switch (item.getItemId()) {
+      case R.id.cancel_button:
+        cancelFavor();
+        break;
+      case R.id.cancel_commit_button:
+        cancelCommit();
+        break;
+      case R.id.edit_button:
+        goEditFavor();
+        break;
+      case R.id.share_button:
+        onShareClicked();
+        break;
+      case R.id.restart_button:
+        goRestartFavor();
+        break;
+      case R.id.delete_button:
+        deleteFavor();
+        break;
     }
     return super.onOptionsItemSelected(item);
   }
@@ -178,48 +188,42 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void updateAppBarMenuDisplay() {
-    boolean visible = false;
+    // if one of the Item is not ready, then all of them are not ready, just return
     if (cancelItem == null) return;
     // if requester has committed this favor, then he can cancel commit
-    for (int i = 1; i < currentFavor.getUserIds().size(); i++) {
-      if (!isRequested
-          && favorStatus == FavorStatus.REQUESTED
-          && currentFavor
-              .getUserIds()
-              .get(i)
-              .equals(DependencyFactory.getCurrentFirebaseUser().getUid())) visible = true;
-    }
-    visible =
+    boolean cancelCommitVisible =
+        !isRequested
+            && favorStatus == FavorStatus.REQUESTED
+            && currentFavor
+                .getUserIds()
+                .contains(DependencyFactory.getCurrentFirebaseUser().getUid());
+    cancelCommitItem.setVisible(cancelCommitVisible);
+
+    boolean cancelVisible =
         (favorStatus == FavorStatus.REQUESTED && isRequested)
             || favorStatus == FavorStatus.ACCEPTED
             || favorStatus == FavorStatus.COMPLETED_ACCEPTER
-            || favorStatus == FavorStatus.COMPLETED_REQUESTER
-            || visible;
-    cancelItem.setVisible(visible);
+            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
+    cancelItem.setVisible(cancelVisible);
 
-    visible = currentFavor.getIsArchived();
-    deleteItem.setVisible(visible);
-
-    visible =
+    boolean restartVisible =
         (favorStatus == FavorStatus.CANCELLED_ACCEPTER
             || (favorStatus == FavorStatus.CANCELLED_REQUESTER
                     || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED)
                 && isRequested);
-    restartItem.setVisible(visible);
+    restartItem.setVisible(restartVisible);
 
-    visible = isRequested && favorStatus == FavorStatus.REQUESTED;
-    editItem.setVisible(visible);
-
-    visible = favorStatus == FavorStatus.REQUESTED;
-    inviteItem.setVisible(visible);
+    deleteItem.setVisible(currentFavor.getIsArchived());
+    editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
+    inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
 
   private void setupButtons(View rootView) {
     acceptAndCompleteFavorBtn = rootView.findViewById(R.id.accept_button);
+    chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
     ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name);
-    chatBtn = rootView.findViewById(R.id.chat_button);
 
     locationAccessBtn.setOnClickListener(
         v -> {
@@ -227,15 +231,11 @@ public class FavorPublishedView extends Fragment {
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);
         });
-
     // If clicking for the first time, then accept the favor
     acceptAndCompleteFavorBtn.setOnClickListener(
         v -> {
-          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) {
-            commitFavor();
-          } else {
-            completeFavor();
-          }
+          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();
+          else completeFavor();
         });
 
     chatBtn.setOnClickListener(new toUserInfoPage());
@@ -246,7 +246,6 @@ public class FavorPublishedView extends Fragment {
           Navigation.findNavController(requireView())
               .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
         });
-
     userProfile.setOnClickListener(new toUserInfoPage());
     userName.setOnClickListener(new toUserInfoPage());
   }
@@ -271,18 +270,17 @@ public class FavorPublishedView extends Fragment {
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
-    UserUtil.getSingleInstance()
-        .findUser(favor.getRequesterId())
-        .thenAccept(
-            user -> {
-              String name = user.getName();
-              if (name == null || name.equals(""))
-                name = user.getEmail().split("@")[0].replace(".", " ");
-              ((TextView) rootView.findViewById(R.id.user_name)).setText(name);
-            });
     setupImageView(rootView, favor);
     isRequested =
         favor.getUserIds().get(0).equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+    displayUserProfile(favor);
+    // update status string
+    favorStatus = verifyFavorHasBeenAccepted(favor);
+    updateAppBarMenuDisplay();
+    updateDisplayFromViewStatus();
+  }
+
+  void displayUserProfile(Favor favor) {
     if (isRequested) {
       // display user profile
       FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
@@ -295,11 +293,20 @@ public class FavorPublishedView extends Fragment {
       // display committed user list
       requireView().findViewById(R.id.commit_user_group).setVisibility(View.VISIBLE);
       if (favor.getUserIds().size() > 1) setupUserListView();
+
+      ((TextView) requireView().findViewById(R.id.user_name)).setText(DependencyFactory.getCurrentFirebaseUser().getDisplayName());
     }
-    // update status string
-    favorStatus = verifyFavorHasBeenAccepted(favor);
-    updateAppBarMenuDisplay();
-    updateDisplayFromViewStatus();
+    else {
+      UserUtil.getSingleInstance()
+              .findUser(favor.getRequesterId())
+              .thenAccept(
+                      user -> {
+                        String name = user.getName();
+                        if (name == null || name.equals(""))
+                          name = user.getEmail().split("@")[0].replace(".", " ");
+                        ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
+                      });
+    }
   }
 
   private void setupImageView(View rootView, Favor favor) {
@@ -401,10 +408,7 @@ public class FavorPublishedView extends Fragment {
           break;
         }
       default: // includes accepted by other
-        // enableButtons(false);
         requireView().findViewById(R.id.buttons_bar).setVisibility(View.GONE);
-        // updateCompleteBtnDisplay(R.string.wait_complete, false,
-        // R.drawable.ic_check_box_black_24dp);
         toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
     }
   }
