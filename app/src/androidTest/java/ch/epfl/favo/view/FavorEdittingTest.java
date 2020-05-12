@@ -40,6 +40,7 @@ import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -57,6 +58,7 @@ import static ch.epfl.favo.TestConstants.FAVOR_ID;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -277,10 +279,11 @@ public class FavorEdittingTest {
     Thread.sleep(1000);
 
     // choose one committed user, click accept
-    onView(withId(R.id.commit_user_list))
-        .check(matches(hasDescendant(withText("commit"))))
+    onData(anything())
+        .inAdapterView(withId(R.id.commit_user))
+        .atPosition(0)
+        .check(matches(isDisplayed()))
         .perform(click());
-    // onView(withText("commit")).check(matches(isDisplayed())).perform(click());
     Thread.sleep(1000);
     onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
 
