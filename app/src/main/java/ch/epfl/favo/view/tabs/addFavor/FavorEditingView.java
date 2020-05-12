@@ -116,7 +116,7 @@ public class FavorEditingView extends Fragment {
                     CommonTools.showSnackbar(
                         rootView, getString(R.string.old_favor_cancelled_by_others));
                   }
-                }
+                } else throw new RuntimeException(getString(R.string.error_database_sync));
               } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));

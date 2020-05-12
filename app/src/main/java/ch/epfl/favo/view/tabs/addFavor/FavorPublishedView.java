@@ -90,10 +90,6 @@ public class FavorPublishedView extends Fragment {
     restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
-
-    // if (favorStatus != null) {
-    //  updateAcceptBtnDisplay();
-    // }
     super.onCreateOptionsMenu(menu, inflater);
   }
 
@@ -541,7 +537,7 @@ public class FavorPublishedView extends Fragment {
   private Function onFailedResult(View currentView) {
     return (exception) -> {
       if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
+        CommonTools.showSnackbar(currentView, getString(R.string.illegal_accept_error));
       else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
       Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
       return null;

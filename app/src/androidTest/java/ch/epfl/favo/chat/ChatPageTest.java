@@ -44,7 +44,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 import static ch.epfl.favo.TestUtils.childAtPosition;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
-/*
+
 public class ChatPageTest {
 
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
@@ -99,7 +99,7 @@ public class ChatPageTest {
     getInstrumentation().waitForIdleSync();
 
     // wait for snackbar
-    Thread.sleep(3000);
+    Thread.sleep(4000);
 
     // Click on chat button
     onView(withId(R.id.chat_button)).perform(click());
@@ -110,7 +110,6 @@ public class ChatPageTest {
   public void testChatPageLayout() throws InterruptedException {
 
     navigateToChatPage();
-
     // check title displayed
     onView(withText(FakeItemFactory.getFavor().getTitle())).check(matches(isDisplayed()));
 
@@ -211,4 +210,3 @@ public class ChatPageTest {
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 }
-*/

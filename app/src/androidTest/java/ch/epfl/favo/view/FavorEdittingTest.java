@@ -10,19 +10,15 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
-import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import java.util.Objects;
 
@@ -47,7 +43,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
@@ -57,11 +52,9 @@ import static ch.epfl.favo.TestConstants.FAVOR_ID;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.not;
-/*
+
 @RunWith(AndroidJUnit4.class)
-public class AddFavorTest {
+public class FavorEdittingTest {
   private Favor fakeFavor = FakeItemFactory.getFavor();
 
   @Rule
@@ -94,7 +87,8 @@ public class AddFavorTest {
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
     if (favor != null) {
       Bundle bundle = new Bundle();
-      bundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
+      bundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, favor);
+      bundle.putString(CommonTools.FAVOR_SOURCE, "publishedFavor");
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView, bundle));
     } else {
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView));
@@ -107,7 +101,7 @@ public class AddFavorTest {
   }
 
   @Test
-  public void testChatAndLocationButtonWorkRequestView() throws Throwable {
+  public void testChatAndLocationButtonWork() throws Throwable {
     // Check and click on the chat
     launchFragment(fakeFavor);
 
@@ -168,13 +162,21 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
-    Uri filePath = CacheUtil.getInstance().saveToInternalStorage(
-            Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
+    Uri filePath =
+        CacheUtil.getInstance()
+            .saveToInternalStorage(
+                Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
     getInstrumentation().waitForIdleSync();
-    Bitmap actual = CacheUtil.getInstance().loadFromInternalStorage(
-            Objects.requireNonNull(currentFragment.getContext())
-                    .getFilesDir().getAbsolutePath() + "/" + FAVOR_ID + "/", 0).get();
-    assert(actual.sameAs(bm));
+    Bitmap actual =
+        CacheUtil.getInstance()
+            .loadFromInternalStorage(
+                Objects.requireNonNull(currentFragment.getContext()).getFilesDir().getAbsolutePath()
+                    + "/"
+                    + FAVOR_ID
+                    + "/",
+                0)
+            .get();
+    assert (actual.sameAs(bm));
     Intent intent = new Intent();
     intent.setData(filePath);
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
@@ -202,9 +204,9 @@ public class AddFavorTest {
     FavorEditingView fragment = launchFragment(fakeFavor);
     // Try to click on edit
     FakeViewModel viewModel = (FakeViewModel) fragment.getViewModel();
-    Favor failedFavor = Mockito.mock(Favor.class);
-    Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
-    runOnUiThread(() -> viewModel.setObservedFavorResult(failedFavor));
+    // Favor failedFavor = Mockito.mock(Favor.class);
+    // Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
+    runOnUiThread(() -> viewModel.setObservedFavorResult(null));
     getInstrumentation().waitForIdleSync();
 
     // check error message is printed
@@ -212,21 +214,8 @@ public class AddFavorTest {
         .check(matches(withText(R.string.error_database_sync)));
   }
 
-  public void checkRequestedView() {
-    // Check fragment_favor_published_view button is gone
-    onView(withId(R.id.request_button))
-        .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.INVISIBLE)));
-    // Check upload picture button is not clickable
-    onView(withId(R.id.add_picture_button)).check(matches(not(isEnabled())));
-    onView(withId(R.id.add_camera_picture_button)).check(matches(not(isEnabled())));
-    // Check status display is correct
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches(isDisplayed()))
-        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
-  }
-
   @Test
-  public void testRequestFavorFlow() {
+  public void testRequestFavorFlow() throws InterruptedException {
     // Click on fav list tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -242,11 +231,13 @@ public class AddFavorTest {
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_request_success_msg)));
-    checkRequestedView();
+    // Check status display is correct
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(isDisplayed()))
+        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 
   @Test
-
   public void testSnackBarShowsWhenFailPostOrUpdateOrCancelToDb() throws Throwable {
     FavorEditingView favorEditingView = launchFragment(null);
     FakeViewModel fakeViewModel = (FakeViewModel) favorEditingView.getViewModel();
@@ -265,4 +256,3 @@ public class AddFavorTest {
         .check(matches(withText(R.string.update_favor_error)));
   }
 }
-*/

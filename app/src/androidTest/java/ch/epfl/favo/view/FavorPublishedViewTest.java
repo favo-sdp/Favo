@@ -31,6 +31,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -48,7 +49,7 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
-/*
+
 @RunWith(AndroidJUnit4.class)
 public class FavorPublishedViewTest {
   private Favor fakeFavor;
@@ -103,24 +104,21 @@ public class FavorPublishedViewTest {
   @Test
   public void testChatAndLocationButtonWorkDetailView() {
     // Check and click on the chat
-    onView(withId(R.id.chat_button_accept_view)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.fragment_chat)).check(matches(isDisplayed()));
 
     // Go back to favor detail page
     pressBack();
 
     // Check and click on the location button
-    onView(withId(R.id.location_accept_view_btn)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.location)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
   }
 
   @Test
   public void testAcceptButtonShowsFailSnackBar() throws Throwable {
     // check that detailed view is indeed opened
-    onView(
-            allOf(
-                withId(R.id.fragment_favor_accept_view),
-                withParent(withId(R.id.nav_host_fragment))))
+    onView(allOf(withId(R.id.fragment_favor_published), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
     checkRequestedView();
 
@@ -144,26 +142,39 @@ public class FavorPublishedViewTest {
     // check update text matches Accepted by other
     checkToolbar(FavorStatus.ACCEPTED_BY_OTHER.toString());
   }
+
   @Test
-  public void testAcceptFlow() {
+  public void testAcceptFlow() throws Throwable {
     // click accept button
+    //  Thread.sleep(100000);
     onView(withId(R.id.accept_button)).perform(click());
     getInstrumentation().waitForIdleSync();
-
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_respond_success_msg)));
-    checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
+    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
+    checkToolbar(FavorStatus.REQUESTED.toString());
+
+    fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
+
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.accept_button))
+        .check(matches(allOf(isDisplayed(), withText(R.string.complete_favor))));
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
+    checkToolbar(FavorStatus.ACCEPTED.toString());
   }
 
   @Test
   public void testCancelFlowByAccepter() throws Throwable {
     // favor is cancelled by accepter
-    onView(withId(R.id.accept_button)).perform(click());
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
+    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.accept_button))
-        .check(matches(withText(R.string.cancel_accept_button_display)))
-        .perform(click());
+    onView(withText(R.string.cancel_request)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check snackbar shows
@@ -181,11 +192,15 @@ public class FavorPublishedViewTest {
   @Test
   public void testCompleteFlowByAccepter() throws Throwable {
     // accept favor
-    onView(withId(R.id.accept_button)).perform(click());
+    fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
 
     // complete firstly by accepter
-    onView(withId(R.id.complete_btn)).perform(click());
+    onView(withId(R.id.accept_button))
+        .check(matches(withText(R.string.complete_favor)))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -198,50 +213,16 @@ public class FavorPublishedViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
-    onView(withId(R.id.complete_btn)).perform(click());
+    Thread.sleep(4000);
+
+    onView(withId(R.id.accept_button))
+        .check(matches(withText(R.string.complete_favor)))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedSuccessfullyView();
-  }
-
-  public void checkRequestedView() {
-    // Check edit button is there
-    onView(withId(R.id.complete_btn)).check(matches(not(isDisplayed())));
-    // Check cancel button is there
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
-    // Check status display is correct
-    checkToolbar(FavorStatus.REQUESTED.toString());
-  }
-
-  public void checkCompletedSuccessfullyView() {
-    onView(withId(R.id.complete_btn)).check(matches(not(isDisplayed())));
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
-    checkToolbar(FavorStatus.SUCCESSFULLY_COMPLETED.toString());
-  }
-
-  public void checkCompletedOrAcceptedView(FavorStatus status) {
-    if (status == FavorStatus.COMPLETED_REQUESTER || status == FavorStatus.ACCEPTED)
-      onView(withId(R.id.complete_btn))
-          .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
-    else // if completed by accepter, complete button is changed to non-clickable waiting button
-    onView(withId(R.id.complete_btn))
-          .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.wait_complete))));
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(isEnabled(), withText(R.string.cancel_accept_button_display))));
-    checkToolbar(status.toString());
-  }
-
-  public void checkCancelledView(FavorStatus status) {
-    onView(withId(R.id.complete_btn)).check(matches(not(isDisplayed())));
-    // Check cancel button is not clickable
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(not(isEnabled()), withText(R.string.cancel_accept_button_display))));
-    // Check updated status string
-    checkToolbar(status.toString());
   }
 
   @Test
@@ -259,18 +240,11 @@ public class FavorPublishedViewTest {
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
 
-    onView(withId(R.id.requester_name)).perform(click());
+    onView(withId(R.id.user_name)).perform(click());
 
     Thread.sleep(1000);
 
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-  }
-
-  // removing this test because favors in the second tab will concern the user directly and it's not
-  // possible to accept a favor from there anymore
-  public void checkToolbar(String expectedDisplay) {
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(expectedDisplay))));
   }
 
   @Test
@@ -288,4 +262,45 @@ public class FavorPublishedViewTest {
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
   }
-}*/
+
+  // removing this test because favors in the second tab will concern the user directly and it's not
+  // possible to accept a favor from there anymore
+  public void checkToolbar(String expectedDisplay) {
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(expectedDisplay))));
+  }
+
+  public void checkRequestedView() {
+    // Check edit button is there
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
+    // Check cancel button is there
+    onView(withId(R.id.accept_button))
+        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
+    // Check status display is correct
+    checkToolbar(FavorStatus.REQUESTED.toString());
+  }
+
+  public void checkCompletedSuccessfullyView() {
+    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.chat_button)).check(matches(not(isDisplayed())));
+    checkToolbar(FavorStatus.SUCCESSFULLY_COMPLETED.toString());
+  }
+
+  public void checkCompletedOrAcceptedView(FavorStatus status) {
+    if (status == FavorStatus.COMPLETED_REQUESTER || status == FavorStatus.ACCEPTED)
+      onView(withId(R.id.accept_button))
+          .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
+    else // if completed by accepter, complete button is changed to non-clickable waiting button
+    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
+    checkToolbar(status.toString());
+  }
+
+  public void checkCancelledView(FavorStatus status) {
+    onView(withId(R.id.chat_button)).check(matches(not(isDisplayed())));
+    // Check cancel button is not clickable
+    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    // Check updated status string
+    checkToolbar(status.toString());
+  }
+}

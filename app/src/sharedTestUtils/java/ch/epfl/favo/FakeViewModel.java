@@ -86,7 +86,10 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public CompletableFuture commitFavor(Favor favor, int change) {
-    return null;
+    if (isThrowingError) return failedResult;
+    favor.setAccepterId(TestConstants.USER_ID);
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
   }
 
   @Override
@@ -163,7 +166,6 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return getSuccessfulCompletableFuture();
   }
 
-
   @Override
   public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
     return null;
@@ -171,6 +173,4 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public void savePictureToLocal(Context context, Favor favor, Bitmap picture){}
-
-
 }

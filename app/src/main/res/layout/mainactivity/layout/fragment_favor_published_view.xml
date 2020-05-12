@@ -3,13 +3,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_favor_published"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="?attr/actionBarSize"
-    tools:context=".view.tabs.addFavor.FavorEditingView">
+    tools:context=".view.tabs.addFavor.FavorPublishedView">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_favor_published"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
