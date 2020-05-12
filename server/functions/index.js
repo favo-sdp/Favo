@@ -2,7 +2,11 @@
 const functions = require('firebase-functions');
 
 const admin = require('firebase-admin');
-admin.initializeApp();
+admin.initializeApp({
+    credential: admin.credential.cert(require('./keys/admin.json')),
+    databaseURL: 'https://favo-11728.firebaseio.com'
+});
+//admin.initializeApp();
 var db = admin.firestore();
 
 // global constants
@@ -39,7 +43,7 @@ function sendMulticastMessage(message, usersIds) {
                     return console.log('List of tokens that caused failures: ' + failedTokens);
                 }
             }
-        return});
+        return});}
 
 // send new favor notification to users in the area
 exports.sendNotificationNearbyOnNewFavor = functions.firestore
@@ -192,35 +196,48 @@ exports.sendNotificationOnUpdate = functions.firestore
                 });
         }
     });
+
+
+exports.expireOldFavorsOnCreate = functions.firestore
+  .document('favors/{favorId}')
+  .onCreate((change)=>{
+                                });
 //Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
 
-exports.expireOldFavors = functions.https.onRequest((req,res)=>{
+exports.expireOldFavors = functions.https.onRequest((req, res) => {
+    console.log("start");
     const timeInDays = req.body.timeInDays;
     const EXPIRED_STATUS = 2;
     const REQUESTED_STATUS = 0;
     var now = Date.now();
-    var cutoff = now - timeInDays*24*60*60*1000;
-    let query = db.collection('favors');
+    var cutoff = now - timeInDays * 24 * 60 * 60 * 1000;
+    let query = db.collection('/favors');
     return query.orderBy('postedTime').endAt(cutoff)
-    .get().then(snapshot=>{
-    if (snapshot.empty){
-    res.status(100).send("No expired favors");
-    return;
-    } else {
-              const promises = [];
-              snapshot.forEach(doc=>{
-                  let favor = doc.data();
-                  if(favor.statusId===REQUESTED_STATUS){
-                      promises.push(doc.ref.update({
-                      statusId:EXPIRED_STATUS,
-                      isArchived : true
-                      }))
-                  }
-              })
+        .get().then(snapshot => {
+            if (snapshot.empty) {
+                res.status(100).send("No expired favors");
+            } else {
+                let batch = db.batch();
+                //const promises = [];
+                snapshot.forEach(doc => {
+                    let favor = doc.data();
+                    console.log("Before promise");
+                    if (favor.statusId === REQUESTED_STATUS) {
+                        batch.update(doc.ref,{'statusId':EXPIRED_STATUS,'isArchived':true});
+                        console.log("Added promise:"+favor.id);
+                    }
+                });
+                return batch.commit().then(data => {
+                    console.log("Succesfully updated favor statuses.");
+                    res.status(100).send("Favors successfully expired");
+                }).catch(error=>{
+                    console.log(error);
+                    res.status(400).send("Promises not fulfilled");
+                });
+            }
+        }).catch(error => {
+            console.log(error);
+            res.status(400).send("Error updating favor statuses");
+        });
 
-              return Promise.all(promises).then(data=>{
-                      console.log("Succesfully updated favor statuses.");
-                      res.status(100).send("Favors successfully expired");
-                      })}
-
-    } )});
+});
