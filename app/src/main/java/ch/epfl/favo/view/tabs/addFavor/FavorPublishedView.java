@@ -90,8 +90,7 @@ public class FavorPublishedView extends Fragment {
     restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
-    if(favorStatus != null)
-      updateAppBarMenuDisplay();
+    if (favorStatus != null) updateAppBarMenuDisplay();
     super.onCreateOptionsMenu(menu, inflater);
   }
 
@@ -235,15 +234,7 @@ public class FavorPublishedView extends Fragment {
           if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();
           else completeFavor();
         });
-
     chatBtn.setOnClickListener(new toUserInfoPage());
-    chatBtn.setOnClickListener(
-        v -> {
-          Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
-          Navigation.findNavController(requireView())
-              .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
-        });
     userProfile.setOnClickListener(new toUserInfoPage());
     userName.setOnClickListener(new toUserInfoPage());
   }
@@ -294,18 +285,18 @@ public class FavorPublishedView extends Fragment {
             .fitCenter()
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
-      ((TextView) requireView().findViewById(R.id.user_name)).setText(DependencyFactory.getCurrentFirebaseUser().getDisplayName());
-    }
-    else {
+      ((TextView) requireView().findViewById(R.id.user_name))
+          .setText(DependencyFactory.getCurrentFirebaseUser().getDisplayName());
+    } else {
       UserUtil.getSingleInstance()
-              .findUser(favor.getRequesterId())
-              .thenAccept(
-                      user -> {
-                        String name = user.getName();
-                        if (name == null || name.equals(""))
-                          name = user.getEmail().split("@")[0].replace(".", " ");
-                        ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
-                      });
+          .findUser(favor.getRequesterId())
+          .thenAccept(
+              user -> {
+                String name = user.getName();
+                if (name == null || name.equals(""))
+                  name = user.getEmail().split("@")[0].replace(".", " ");
+                ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
+              });
     }
   }
 

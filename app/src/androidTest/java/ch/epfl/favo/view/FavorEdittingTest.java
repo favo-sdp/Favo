@@ -63,9 +63,16 @@ import static org.hamcrest.core.AllOf.allOf;
 @RunWith(AndroidJUnit4.class)
 public class FavorEdittingTest {
   private Favor fakeFavor;
-  private FavorPublishedView publishedView;
   private FakeViewModel fakeViewModel;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private User testUser =
+          new User(
+                  TestConstants.USER_ID,
+                  TestConstants.NAME,
+                  TestConstants.EMAIL,
+                  TestConstants.DEVICE_ID,
+                  null,
+                  null);
 
   @Rule
   public final ActivityTestRule<MainActivity> activityTestRule =
@@ -262,14 +269,6 @@ public class FavorEdittingTest {
   public void testAcceptCommittedUser() throws Throwable {
     fakeViewModel = (FakeViewModel)launchFragment(null).getViewModel();
     requestFavor();
-    User testUser =
-            new User(
-                    TestConstants.USER_ID,
-                    TestConstants.NAME,
-                    TestConstants.EMAIL,
-                    TestConstants.DEVICE_ID,
-                    null,
-                    null);
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
@@ -277,7 +276,7 @@ public class FavorEdittingTest {
     Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
     favor1.setAccepterId("one helper");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
-    Thread.sleep(1000);
+    Thread.sleep(2000);
 
     // choose one committed user, click accept
     onView(withId(R.id.user_name_commit)).check(matches(isDisplayed())).perform(click());

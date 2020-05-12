@@ -225,7 +225,6 @@ public class FavorPageTest {
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
@@ -236,7 +235,6 @@ public class FavorPageTest {
 
     // Go back
     pressBack();
-    getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
