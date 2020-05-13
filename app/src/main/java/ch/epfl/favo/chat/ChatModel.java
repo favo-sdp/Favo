@@ -142,9 +142,9 @@ public class ChatModel {
         + '\''
         + ", mTimestamp="
         + mTimestamp
-        + '\''
-        + ", mIsFirstMsg="
+        + ", mIsFirstMsg='"
         + mIsFirstMsg
+        + '\''
         + '}';
   }
 }
