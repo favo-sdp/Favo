@@ -28,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
@@ -152,7 +153,7 @@ public class FavorEditingView extends Fragment {
 
     // Button: Request Favor
     Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
-    confirmFavorBtn.setOnClickListener(v -> requestFavor());
+    confirmFavorBtn.setOnClickListener(new onButtonClick());
 
     if (DependencyFactory.isOfflineMode(requireContext())) {
       confirmFavorBtn.setText(R.string.request_favor_draft);
@@ -160,75 +161,46 @@ public class FavorEditingView extends Fragment {
 
     // Button: Add Image from files
     Button addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
-    addPictureFromFilesBtn.setOnClickListener(v -> openFileChooser());
+    addPictureFromFilesBtn.setOnClickListener(new onButtonClick());
 
     // Button: Add picture from camera
     Button addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
-    addPictureFromCameraBtn.setOnClickListener(v -> takePicture());
+    addPictureFromCameraBtn.setOnClickListener(new onButtonClick());
     if (!isCameraAvailable()) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
 
     // Button: Access location
     Button locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
-    locationAccessBtn.setOnClickListener(
-        v -> {
+    locationAccessBtn.setOnClickListener(new onButtonClick());
+  }
+
+  class onButtonClick implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.request_button:
+          requestFavor();
+          break;
+        case R.id.add_camera_picture_button:
+          takePicture();
+          break;
+        case R.id.add_picture_button:
+          openFileChooser();
+          break;
+        case R.id.location_request_view_btn:
           getFavorFromView();
           CommonTools.hideSoftKeyboard(requireActivity());
           favorViewModel.setShowObservedFavor(true);
           favorViewModel.setFavorValue(currentFavor);
           // signal the destination is map view
           findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
-        });
-  }
-
-  /**
-   * Method is called when fragment_favor_published_view favor button is clicked. It uploads favor
-   * fragment_favor_published_view to the database and updates view so that favor is editable.
-   */
-  private void requestFavor() {
-    // update currentFavor
-    View currentView = getView();
-    favorStatus = FavorStatus.REQUESTED;
-    getFavorFromView();
-    // post to DB
-    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-    postFavorFuture.thenAccept(
-        o -> {
-          CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
-          // clear history
-          Navigation.findNavController(currentView)
-              .popBackStack(R.id.fragment_favor_published, true);
-          // jump to favorPublished view
-          Bundle favorBundle = new Bundle();
-          favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
-          int action;
-          // if this favor is restart from an archived one, then prevent pressback return to
-          // archived favor view.
-          if (favorSource.equals(getString(R.string.favor_source_publishedFavor)))
-            action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
-          else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
-          Navigation.findNavController(currentView).navigate(action, favorBundle);
-        });
-    postFavorFuture.exceptionally(onFailedResult(currentView));
-    // Show confirmation and minimize keyboard
-    if (DependencyFactory.isOfflineMode(requireContext())) {
-      showSnackbar(getString(R.string.save_draft_message));
+                  .popBackStack(R.id.nav_map, false);
+          break;
+      }
     }
-    CommonTools.hideSoftKeyboard(requireActivity());
   }
 
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      throw (RuntimeException) exception;
-      // return null;
-    };
-  }
 
   /** Extracts favor data from and assigns it to currentFavor. */
   private void getFavorFromView() {
@@ -314,7 +286,6 @@ public class FavorEditingView extends Fragment {
       showSnackbar(getString(R.string.error_msg_image_request_view));
       return;
     }
-
     switch (requestCode) {
       case PICK_IMAGE_REQUEST:
         {
@@ -325,11 +296,8 @@ public class FavorEditingView extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-
-          if (extras != null) {
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            mImageView.setImageBitmap(imageBitmap);
-          }
+          Bitmap imageBitmap = (Bitmap) extras.get("data");
+          mImageView.setImageBitmap(imageBitmap);
           break;
         }
     }
@@ -344,19 +312,12 @@ public class FavorEditingView extends Fragment {
     Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
   }
   /**
-   * Saves the key listener for the edit text items. ensures keyboard hides when user clicks outside
-   * of edit texts.
+   * ensures keyboard hides when user clicks outside of edit texts.
    *
    * @param view corresponds to root view created during onCreate
    */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    if (mTitleView.getKeyListener() != null) {
-      mTitleView.setTag(mTitleView.getKeyListener());
-    }
-    if (mDescriptionView.getKeyListener() != null) {
-      mDescriptionView.setTag(mDescriptionView.getKeyListener());
-    }
     // ensure click on view will hide keyboard
     view.findViewById(R.id.constraint_layout_req_view)
         .setOnTouchListener(
@@ -364,5 +325,52 @@ public class FavorEditingView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
+  }
+
+  /**
+   * Method is called when fragment_favor_published_view favor button is clicked. It uploads favor
+   * fragment_favor_published_view to the database and updates view so that favor is editable.
+   */
+  private void requestFavor() {
+    // update currentFavor
+    View currentView = getView();
+    favorStatus = FavorStatus.REQUESTED;
+    getFavorFromView();
+    // post to DB
+    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
+    postFavorFuture.thenAccept(onSuccessfulRequest(currentView));
+    postFavorFuture.exceptionally(onFailedResult(currentView));
+    // Show confirmation and minimize keyboard
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      showSnackbar(getString(R.string.save_draft_message));
+    }
+    CommonTools.hideSoftKeyboard(requireActivity());
+  }
+
+  private Consumer onSuccessfulRequest(View currentView){
+    return  o -> {
+      CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+      // jump to favorPublished view
+      Bundle favorBundle = new Bundle();
+      favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+      int action;
+      // if this favor restarts from an archived one, then prevent pressback from jumping to
+      // archived favor view.
+      if (favorSource.equals(getString(R.string.favor_source_publishedFavor)))
+        action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
+      else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
+      Navigation.findNavController(currentView).navigate(action, favorBundle);
+    };
+  }
+
+  private Function onFailedResult(View currentView) {
+    return (exception) -> {
+      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
+      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
+      throw (RuntimeException) exception;
+      // return null;
+    };
   }
 }

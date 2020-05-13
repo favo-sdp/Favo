@@ -277,16 +277,16 @@
                     android:id="@+id/chat_button"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/accept_button"
-                    android:layout_alignBottom="@id/accept_button"
+                    android:layout_alignTop="@id/commit_complete_button"
+                    android:layout_alignBottom="@id/commit_complete_button"
                     android:layout_gravity="end"
-                    android:layout_toStartOf="@+id/accept_button"
+                    android:layout_toStartOf="@+id/commit_complete_button"
                     android:drawableStart="@drawable/ic_chat_24dp"
                     android:backgroundTint="#ffff"
                     android:text="Chat" />
 
                 <Button
-                    android:id="@+id/accept_button"
+                    android:id="@+id/commit_complete_button"
                     android:layout_width="130dp"
                     android:layout_height="50dp"
                     android:layout_alignParentEnd="true"

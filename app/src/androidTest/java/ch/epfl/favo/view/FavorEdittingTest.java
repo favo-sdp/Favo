@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ThemedSpinnerAdapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -59,6 +60,7 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -257,14 +259,6 @@ public class FavorEdittingTest {
         .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 
-  public void requestFavor() {
-    // type the contents and request
-    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
-    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-  }
-
   @Test
   public void testAcceptCommittedUser() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
@@ -288,7 +282,7 @@ public class FavorEdittingTest {
     onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
 
     // check view become accepted
-    onView(withId(R.id.accept_button))
+    onView(withId(R.id.commit_complete_button))
         .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
     onView(withId(R.id.toolbar_main_activity))
         .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
@@ -298,7 +292,7 @@ public class FavorEdittingTest {
     Thread.sleep(1000);
     onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));*/
-  }
+}
 
   @Test
   public void testFavorGotAcceptedDuringEdit() throws Throwable {
@@ -312,7 +306,7 @@ public class FavorEdittingTest {
 
     //  someone commit the old favor
     Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
-    favor1.setAccepterId("one acceptor");
+    favor1.setAccepterId("one committer");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
     Thread.sleep(1000);
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -347,22 +341,30 @@ public class FavorEdittingTest {
     // check favor
     onView(withId(R.id.title)).check(matches(withText(fakeFavor.getTitle())));
     onView(withId(R.id.description)).check(matches(withText(fakeFavor.getDescription())));
+    Thread.sleep(1000);
     checkRequestedView();
   }
 
-  public void checkRequestedView() {
-    // Check edit button is there
-    onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
-    // Check cancel button is there
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
-    // Check status display is correct
-    checkToolbar(FavorStatus.REQUESTED.toString());
-  }
+  @Test
+  public void testCancelFavorWithCommitter() throws Throwable {
+    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
+    requestFavor();
+    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    mockDatabaseWrapper.setMockDocument(testUser);
+    mockDatabaseWrapper.setMockResult(testUser);
+    Thread.sleep(1000);
 
-  public void checkToolbar(String expectedDisplay) {
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(expectedDisplay))));
+    // someone commit the favor
+    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    favor1.setAccepterId("one committer");
+    favor1.setAccepterId("second committer");
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
+
+    // cancel favor
+    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+    Thread.sleep(10000);
+    getInstrumentation().waitForIdleSync();
+    onView(withText(R.string.cancel_request)).check(matches(isDisplayed())).perform(click());
   }
 
   @Test
@@ -374,13 +376,36 @@ public class FavorEdittingTest {
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.update_favor_error)));
+            .check(matches(withText(R.string.update_favor_error)));
 
     launchFragment(fakeFavor);
     Thread.sleep(500);
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.update_favor_error)));
+            .check(matches(withText(R.string.update_favor_error)));
+  }
+
+  public void checkRequestedView() {
+    // Check edit button is there
+    onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
+    // Check commit/complete button is not there
+    onView(withId(R.id.commit_complete_button))
+        .check(matches(allOf(not(isDisplayed()), withText(R.string.commit_favor))));
+    // Check status display is correct
+    checkToolbar(FavorStatus.REQUESTED.toString());
+  }
+
+  public void checkToolbar(String expectedDisplay) {
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(expectedDisplay))));
+  }
+
+  public void requestFavor() {
+    // type the contents and request
+    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
   }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.util.CommonTools;
 
 public class UserAdapter extends ArrayAdapter<User> {
 
@@ -36,7 +37,7 @@ public class UserAdapter extends ArrayAdapter<User> {
         // Populate the data into the template view using the data object
         String UserName = user.getName();
         if(UserName == null || UserName.equals(""))
-            UserName = user.getEmail().split("@")[0].replace(".", " ");
+            UserName = CommonTools.emailToName(user.getEmail());
         UserNameView.setText(UserName);
        //UserProfilePic.setImageBitmap();
         // Return the completed view to render on screen

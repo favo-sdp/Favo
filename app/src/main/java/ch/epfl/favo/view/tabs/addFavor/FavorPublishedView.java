@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
@@ -54,8 +53,7 @@ public class FavorPublishedView extends Fragment {
   private static String TAG = "FavorPublishedView";
   private FavorStatus favorStatus;
   private Favor currentFavor;
-  private Button acceptAndCompleteFavorBtn;
-  private Button chatBtn;
+  private Button commitAndCompleteBtn;
   private IFavorViewModel favorViewModel;
   private NonClickableToolbar toolbar;
   private MenuItem cancelItem;
@@ -65,6 +63,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
   private boolean isRequested;
+  private FirebaseUser currentUser;
 
   private Map<String, User> commitUsers = new HashMap<>();
 
@@ -76,6 +75,26 @@ public class FavorPublishedView extends Fragment {
   public void onCreate(Bundle bundle) {
     super.onCreate(bundle);
     setHasOptionsMenu(true);
+  }
+
+  @Override
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    // inflate view
+    View rootView = inflater.inflate(R.layout.fragment_favor_published_view, container, false);
+    setupButtons(rootView);
+
+    currentUser = DependencyFactory.getCurrentFirebaseUser();
+    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    favorViewModel =
+        (IFavorViewModel)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
+    String favorId = "";
+    if (currentFavor != null) favorId = currentFavor.getId();
+    if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
+    setupFavorListener(rootView, favorId);
+    return rootView;
   }
 
   @Override
@@ -92,6 +111,28 @@ public class FavorPublishedView extends Fragment {
     deleteItem = menu.findItem(R.id.delete_button);
     if (favorStatus != null) updateAppBarMenuDisplay();
     super.onCreateOptionsMenu(menu, inflater);
+  }
+
+  private void updateAppBarMenuDisplay() {
+    // if one of the Item is not ready, then all of them are not ready, just return
+    if (cancelItem == null) return;
+    // if requester has committed this favor, then he can cancel commit
+    boolean cancelCommitVisible = favorStatus == FavorStatus.REQUESTED && isPotentialHelper();
+    cancelCommitItem.setVisible(cancelCommitVisible);
+
+    boolean cancelVisible =
+        (favorStatus == FavorStatus.REQUESTED && isRequested)
+            || favorStatus == FavorStatus.ACCEPTED
+            || favorStatus == FavorStatus.COMPLETED_ACCEPTER
+            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
+    cancelItem.setVisible(cancelVisible);
+
+    boolean restartVisible = currentFavor.getIsArchived() && isRequested;
+    restartItem.setVisible(restartVisible);
+
+    deleteItem.setVisible(currentFavor.getIsArchived());
+    editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
+    inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
 
   // handle button activities
@@ -120,25 +161,6 @@ public class FavorPublishedView extends Fragment {
     return super.onOptionsItemSelected(item);
   }
 
-  @Override
-  public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    // inflate view
-    View rootView = inflater.inflate(R.layout.fragment_favor_published_view, container, false);
-    setupButtons(rootView);
-
-    toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-    favorViewModel =
-        (IFavorViewModel)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
-    String favorId = "";
-    if (currentFavor != null) favorId = currentFavor.getId();
-    if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
-    setupFavorListener(rootView, favorId);
-    return rootView;
-  }
-
   public IFavorViewModel getViewModel() {
     return favorViewModel;
   }
@@ -152,13 +174,13 @@ public class FavorPublishedView extends Fragment {
               try {
                 if (favor != null && favor.getId().equals(favorId)) {
                   currentFavor = favor;
+                  displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
-                enableButtons(false);
+                showBottomBar(false);
               }
-              if (currentFavor != null) displayFromFavor(rootView, currentFavor);
             });
   }
 
@@ -184,81 +206,53 @@ public class FavorPublishedView extends Fragment {
     ((MainActivity) requireActivity()).startShareIntent(link.getUri().toString());
   }
 
-  private void updateAppBarMenuDisplay() {
-    // if one of the Item is not ready, then all of them are not ready, just return
-    if (cancelItem == null) return;
-    // if requester has committed this favor, then he can cancel commit
-    boolean cancelCommitVisible =
-        !isRequested
-            && favorStatus == FavorStatus.REQUESTED
-            && currentFavor
-                .getUserIds()
-                .contains(DependencyFactory.getCurrentFirebaseUser().getUid());
-    cancelCommitItem.setVisible(cancelCommitVisible);
-
-    boolean cancelVisible =
-        (favorStatus == FavorStatus.REQUESTED && isRequested)
-            || favorStatus == FavorStatus.ACCEPTED
-            || favorStatus == FavorStatus.COMPLETED_ACCEPTER
-            || favorStatus == FavorStatus.COMPLETED_REQUESTER;
-    cancelItem.setVisible(cancelVisible);
-
-    boolean restartVisible =
-        (favorStatus == FavorStatus.CANCELLED_ACCEPTER
-            || (favorStatus == FavorStatus.CANCELLED_REQUESTER
-                    || favorStatus == FavorStatus.SUCCESSFULLY_COMPLETED)
-                && isRequested);
-    restartItem.setVisible(restartVisible);
-
-    deleteItem.setVisible(currentFavor.getIsArchived());
-    editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
-    inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
-  }
-
   private void setupButtons(View rootView) {
-    acceptAndCompleteFavorBtn = rootView.findViewById(R.id.accept_button);
-    chatBtn = rootView.findViewById(R.id.chat_button);
+    commitAndCompleteBtn = rootView.findViewById(R.id.commit_complete_button);
+    Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
     ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name);
 
-    locationAccessBtn.setOnClickListener(
-        v -> {
+    locationAccessBtn.setOnClickListener(new onButtonClick());
+    commitAndCompleteBtn.setOnClickListener(new onButtonClick());
+    chatBtn.setOnClickListener(new onButtonClick());
+    userProfile.setOnClickListener(new onButtonClick());
+    userName.setOnClickListener(new onButtonClick());
+  }
+
+  class onButtonClick implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.chat_button:
+          Bundle favorBundle = new Bundle();
+          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
+          Navigation.findNavController(requireView())
+              .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
+          break;
+        case R.id.commit_complete_button:
+          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();
+          else completeFavor();
+          break;
+        case R.id.user_profile_picture:
+        case R.id.user_name:
+          Bundle userBundle = new Bundle();
+          userBundle.putString(CommonTools.USER_ARGS, currentFavor.getRequesterId());
+          Navigation.findNavController(requireView())
+              .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+          break;
+        case R.id.location:
           favorViewModel.setShowObservedFavor(true);
           findNavController(requireActivity(), R.id.nav_host_fragment)
               .popBackStack(R.id.nav_map, false);
-        });
-    // If clicking for the first time, then accept the favor
-    acceptAndCompleteFavorBtn.setOnClickListener(
-        v -> {
-          if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();
-          else completeFavor();
-        });
-    chatBtn.setOnClickListener(
-            v -> {
-              Bundle favorBundle = new Bundle();
-              favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
-              Navigation.findNavController(requireView())
-                      .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
-            });
-    userProfile.setOnClickListener(new toUserInfoPage());
-    userName.setOnClickListener(new toUserInfoPage());
-  }
-  
-
-  class toUserInfoPage implements View.OnClickListener {
-    @Override
-    public void onClick(View v) {
-      Bundle userBundle = new Bundle();
-      userBundle.putString(CommonTools.USER_ARGS, currentFavor.getRequesterId());
-      Navigation.findNavController(requireView())
-          .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+          break;
+      }
     }
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
 
-    String timeStr = CommonTools.convertTime(favor.getLocation().getTime());
+    String timeStr = CommonTools.convertTime(favor.getPostedTime());
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
     String favoCoinStr = "Worth " + (int) favor.getReward() + " coins";
@@ -266,34 +260,35 @@ public class FavorPublishedView extends Fragment {
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
-    isRequested =
-        favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid());
 
-    setupImageView(rootView, favor);
-    // display committed user list
-    requireView().findViewById(R.id.commit_user_group).setVisibility(View.VISIBLE);
-    Log.d("fuck", favor.getUserIds().size() + " total users");
-    if (favor.getUserIds().size() > 1) setupUserListView();
-
-    displayUserProfile(favor);
-    // update status string
+    isRequested = favor.getRequesterId().equals(currentUser.getUid());
     favorStatus = verifyFavorHasBeenAccepted(favor);
+
+    // display committed user list
+    if (isRequested && favor.getUserIds().size() > 1) setupUserListView();
+    setupImageView(rootView, favor);
+    displayUserProfile(favor);
     updateAppBarMenuDisplay();
     updateDisplayFromViewStatus();
   }
 
+  private void setupTextView(View rootView, int id, String text) {
+    TextView textView = rootView.findViewById(id);
+    textView.setText(text);
+    textView.setKeyListener(null);
+  }
+
   void displayUserProfile(Favor favor) {
     if (isRequested) {
-      // display user profile
-      FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
-      if (user.getPhotoUrl() != null) {
+      // display user picture
+      if (currentUser.getPhotoUrl() != null) {
         Glide.with(this)
-            .load(user.getPhotoUrl())
+            .load(currentUser.getPhotoUrl())
             .fitCenter()
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
-      ((TextView) requireView().findViewById(R.id.user_name))
-          .setText(DependencyFactory.getCurrentFirebaseUser().getDisplayName());
+      // display user name
+      ((TextView) requireView().findViewById(R.id.user_name)).setText(currentUser.getDisplayName());
     } else {
       UserUtil.getSingleInstance()
           .findUser(favor.getRequesterId())
@@ -301,7 +296,7 @@ public class FavorPublishedView extends Fragment {
               user -> {
                 String name = user.getName();
                 if (name == null || name.equals(""))
-                  name = user.getEmail().split("@")[0].replace(".", " ");
+                  name = CommonTools.emailToName(user.getEmail());
                 ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
               });
     }
@@ -325,6 +320,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void setupUserListView() {
+    requireView().findViewById(R.id.commit_user_group).setVisibility(View.VISIBLE);
     ListView listView = requireView().findViewById(R.id.commit_user);
     for (String userId : currentFavor.getUserIds()) {
       if (!userId.equals(currentFavor.getRequesterId()))
@@ -362,74 +358,79 @@ public class FavorPublishedView extends Fragment {
 
   private void updateDisplayFromViewStatus() {
     toolbar.setTitle(favorStatus.toString());
+    toolbar.setBackgroundColor(getResources().getColor(CommonTools.statusColor.get(favorStatus)));
     switch (favorStatus) {
-      case SUCCESSFULLY_COMPLETED:
-        {
-          requireView().findViewById(R.id.buttons_bar).setVisibility(View.GONE);
-          break;
-        }
       case ACCEPTED:
-        {
-          updateCompleteBtnDisplay(
-              R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
-          toolbar.setBackgroundColor(getResources().getColor(R.color.accepted_status_bg));
-          break;
-        }
+        updateCompleteBtnDisplay(R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
+        break;
       case REQUESTED:
-        {
-          if (currentFavor
-              .getUserIds()
-              .contains(DependencyFactory.getCurrentFirebaseUser().getUid()))
-            updateCompleteBtnDisplay(R.string.accept_favor, false, R.drawable.ic_thumb_up_24dp);
-          else updateCompleteBtnDisplay(R.string.accept_favor, true, R.drawable.ic_thumb_up_24dp);
-          toolbar.setBackgroundColor(getResources().getColor(R.color.requested_status_bg));
-          break;
-        }
+        if (isRequested || isPotentialHelper())
+          updateCompleteBtnDisplay(R.string.commit_favor, false, R.drawable.ic_thumb_up_24dp);
+        else updateCompleteBtnDisplay(R.string.commit_favor, true, R.drawable.ic_thumb_up_24dp);
+        break;
       case COMPLETED_ACCEPTER:
-        {
-          if (!isRequested)
-            updateCompleteBtnDisplay(
-                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
-          else
-            updateCompleteBtnDisplay(
-                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
-          break;
-        }
+        updateCompleteBtnDisplay(
+            R.string.complete_favor, isRequested, R.drawable.ic_check_box_black_24dp);
+        break;
       case COMPLETED_REQUESTER:
-        {
-          if (isRequested)
-            updateCompleteBtnDisplay(
-                R.string.wait_complete, false, R.drawable.ic_watch_later_black_24dp);
-          else
-            updateCompleteBtnDisplay(
-                R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
-          break;
-        }
-      default: // includes accepted by other
-        requireView().findViewById(R.id.buttons_bar).setVisibility(View.GONE);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.cancelled_status_bg));
+        updateCompleteBtnDisplay(
+            R.string.complete_favor, !isRequested, R.drawable.ic_check_box_black_24dp);
+        break;
+      default: // archived and include accepted by other
+        showBottomBar(false);
     }
   }
 
   private void updateCompleteBtnDisplay(int txt, boolean visible, int icon) {
-    acceptAndCompleteFavorBtn.setText(txt);
-    acceptAndCompleteFavorBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
-    acceptAndCompleteFavorBtn.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
+    commitAndCompleteBtn.setText(txt);
+    commitAndCompleteBtn.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
+    commitAndCompleteBtn.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0);
   }
 
-  private void enableButtons(boolean enable) {
-    acceptAndCompleteFavorBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
-    chatBtn.setVisibility(enable ? View.VISIBLE : View.INVISIBLE);
+  private boolean isPotentialHelper() {
+    return currentFavor.getUserIds().contains(currentUser.getUid()) && (!isRequested);
   }
 
-  private void setupTextView(View rootView, int id, String text) {
-    TextView textView = rootView.findViewById(id);
-    textView.setText(text);
-    textView.setKeyListener(null);
+  private void showBottomBar(boolean visible) {
+    requireView().findViewById(R.id.buttons_bar).setVisibility(visible ? View.VISIBLE : View.GONE);
+  }
+
+  // Verifies favor hasn't already been accepted
+  private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
+    FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
+    if (favor.getAccepterId() != null && !favor.getRequesterId().equals(currentUser.getUid())) {
+      if (favorStatus.equals(FavorStatus.ACCEPTED)
+          && !favor.getAccepterId().equals(currentUser.getUid())) {
+        favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
+      }
+    }
+    return favorStatus;
+  }
+
+  private void goEditFavor() {
+    currentFavor.setStatusIdToInt(FavorStatus.EDIT);
+    Bundle favorBundle = new Bundle();
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
+    favorBundle.putString(
+        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+        .navigate(R.id.action_global_favorEditingView, favorBundle);
+  }
+
+  private void goRestartFavor() {
+    // restart a favor with different favorId
+    Favor newFavor = new Favor("", "", currentUser.getUid(), null, FavorStatus.EDIT, 0);
+    newFavor.updateToOther(currentFavor);
+    Bundle favorBundle = new Bundle();
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
+    favorBundle.putString(
+        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+        .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
 
   private void commitFavor() {
-    currentFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    currentFavor.setAccepterId(currentUser.getUid());
     CompletableFuture updateFuture = getViewModel().commitFavor(currentFavor, 1);
     updateFuture.thenAccept(
         o ->
@@ -438,13 +439,9 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void cancelCommit() {
-    for (int i = 1; i < currentFavor.getUserIds().size(); i++) {
-      if (currentFavor
-          .getUserIds()
-          .get(i)
-          .equals(DependencyFactory.getCurrentFirebaseUser().getUid()))
+    for (int i = 1; i < currentFavor.getUserIds().size(); i++)
+      if (currentFavor.getUserIds().get(i).equals(currentUser.getUid()))
         currentFavor.getUserIds().remove(i);
-    }
     CompletableFuture updateFuture = getViewModel().commitFavor(currentFavor, -1);
     updateFuture.thenAccept(
         o ->
@@ -477,33 +474,14 @@ public class FavorPublishedView extends Fragment {
     updateFuture.exceptionally(onFailedResult(requireView()));
   }
 
-  private void goEditFavor() {
-    currentFavor.setStatusIdToInt(FavorStatus.EDIT);
-    Bundle favorBundle = new Bundle();
-    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
-    favorBundle.putString(
-        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
-    findNavController(requireActivity(), R.id.nav_host_fragment)
-        .navigate(R.id.action_global_favorEditingView, favorBundle);
-  }
-
-  private void goRestartFavor() {
-    // restart a favor with different favorId
-    Favor newFavor =
-        new Favor(
-            "", "", DependencyFactory.getCurrentFirebaseUser().getUid(), null, FavorStatus.EDIT, 0);
-    newFavor.updateToOther(currentFavor);
-    Bundle favorBundle = new Bundle();
-    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(
-        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
-    findNavController(requireActivity(), R.id.nav_host_fragment)
-        .navigate(R.id.action_global_favorEditingView, favorBundle);
-  }
-
   private void cancelFavor() {
+    // remove the potential helpers before cancel
+    if (favorStatus == FavorStatus.REQUESTED)
+      for (int i = 1; i < currentFavor.getUserIds().size(); i++)
+        currentFavor.getUserIds().remove(i);
     CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
-    completableFuture.thenAccept(successfullyCancelledConsumer());
+    completableFuture.thenAccept(
+        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg)));
     completableFuture.exceptionally(onFailedResult(requireView()));
   }
 
@@ -515,25 +493,6 @@ public class FavorPublishedView extends Fragment {
           requireActivity().onBackPressed();
         });
     deleteFuture.exceptionally(onFailedResult(requireView()));
-  }
-
-  private Consumer successfullyCancelledConsumer() {
-    return o -> {
-      CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
-    };
-  }
-
-  // Verifies favor hasn't already been accepted
-  private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
-    FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
-    if (favor.getAccepterId() != null
-        && !favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
-      if (favorStatus.equals(FavorStatus.ACCEPTED)
-          && !favor.getAccepterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
-        favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
-      }
-    }
-    return favorStatus;
   }
 
   private Function onFailedResult(View currentView) {

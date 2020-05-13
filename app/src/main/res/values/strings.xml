@@ -139,7 +139,8 @@
     <string name="old_favor_accepted_by_others">Someone commit your unmodified favor</string>
     <string name="old_favor_cancelled_by_others">Someone cancel committing your unmodified favor</string>
     <string name="committed_helpers">Potential helpers"</string>
-    <string name="cancel_commit">cancel commit</string>
+    <string name="cancel_commit">Cancel commit</string>
+    <string name="commit_favor">commit</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

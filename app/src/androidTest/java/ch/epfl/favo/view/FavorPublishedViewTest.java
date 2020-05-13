@@ -114,14 +114,14 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testAcceptButtonShowsFailSnackBar() throws Throwable {
+  public void testCommitButtonShowsFailSnackBar() throws Throwable {
     // check that detailed view is indeed opened
     onView(allOf(withId(R.id.fragment_favor_published), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
     checkRequestedView();
 
     runOnUiThread(() -> fakeViewModel.setThrowError(new RuntimeException()));
-    onView(withId(R.id.accept_button)).perform(click());
+    onView(withId(R.id.commit_complete_button)).perform(click());
     Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -145,12 +145,12 @@ public class FavorPublishedViewTest {
   public void testAcceptFlow() throws Throwable {
     // click accept button
     //  Thread.sleep(100000);
-    onView(withId(R.id.accept_button)).perform(click());
+    onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_respond_success_msg)));
-    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.commit_complete_button)).check(matches(not(isDisplayed())));
     onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
     checkToolbar(FavorStatus.REQUESTED.toString());
 
@@ -159,7 +159,7 @@ public class FavorPublishedViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
 
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.accept_button))
+    onView(withId(R.id.commit_complete_button))
         .check(matches(allOf(isDisplayed(), withText(R.string.complete_favor))));
     onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
     checkToolbar(FavorStatus.ACCEPTED.toString());
@@ -196,7 +196,7 @@ public class FavorPublishedViewTest {
     checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
 
     // complete firstly by accepter
-    onView(withId(R.id.accept_button))
+    onView(withId(R.id.commit_complete_button))
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
@@ -213,7 +213,7 @@ public class FavorPublishedViewTest {
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
     Thread.sleep(4000);
 
-    onView(withId(R.id.accept_button))
+    onView(withId(R.id.commit_complete_button))
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
@@ -254,13 +254,13 @@ public class FavorPublishedViewTest {
   public void testFavorIsNotAcceptedIfSurpassedLimit() throws Throwable {
     runOnUiThread(
         () -> fakeViewModel.setThrowError(new IllegalRequestException("illegal operation!")));
-    onView(withId(R.id.accept_button)).perform(click());
+    onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
     // Try clicking again
     Thread.sleep(1000);
-    onView(withId(R.id.accept_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.commit_complete_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.illegal_accept_error)));
@@ -276,25 +276,25 @@ public class FavorPublishedViewTest {
   public void checkRequestedView() {
     // Check edit button is there
     onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
-    // Check cancel button is there
-    onView(withId(R.id.accept_button))
-        .check(matches(allOf(isEnabled(), withText(R.string.accept_favor))));
+    // Check commit/complete button is there
+    onView(withId(R.id.commit_complete_button))
+        .check(matches(allOf(isEnabled(), withText(R.string.commit_favor))));
     // Check status display is correct
     checkToolbar(FavorStatus.REQUESTED.toString());
   }
 
   public void checkCompletedSuccessfullyView() {
-    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.commit_complete_button)).check(matches(not(isDisplayed())));
     onView(withId(R.id.chat_button)).check(matches(not(isDisplayed())));
     checkToolbar(FavorStatus.SUCCESSFULLY_COMPLETED.toString());
   }
 
   public void checkCompletedOrAcceptedView(FavorStatus status) {
     if (status == FavorStatus.COMPLETED_REQUESTER || status == FavorStatus.ACCEPTED)
-      onView(withId(R.id.accept_button))
+      onView(withId(R.id.commit_complete_button))
           .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
     else // if completed by accepter, complete button is changed to non-clickable waiting button
-    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.commit_complete_button)).check(matches(not(isDisplayed())));
     onView(withId(R.id.chat_button)).check(matches(isDisplayed()));
     checkToolbar(status.toString());
   }
@@ -302,7 +302,7 @@ public class FavorPublishedViewTest {
   public void checkCancelledView(FavorStatus status) {
     onView(withId(R.id.chat_button)).check(matches(not(isDisplayed())));
     // Check cancel button is not clickable
-    onView(withId(R.id.accept_button)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.commit_complete_button)).check(matches(not(isDisplayed())));
     // Check updated status string
     checkToolbar(status.toString());
   }
