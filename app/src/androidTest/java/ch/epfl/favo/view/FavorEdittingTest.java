@@ -279,7 +279,7 @@ public class FavorEdittingTest {
     Thread.sleep(1000);
 
     // choose one committed user, click accept
-    onData(anything())
+    /*onData(anything())
         .inAdapterView(withId(R.id.commit_user))
         .atPosition(0)
         .check(matches(isDisplayed()))
@@ -297,7 +297,7 @@ public class FavorEdittingTest {
     onView(withText("commit")).check(matches(isDisplayed())).perform(click());
     Thread.sleep(1000);
     onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));*/
   }
 
   @Test
