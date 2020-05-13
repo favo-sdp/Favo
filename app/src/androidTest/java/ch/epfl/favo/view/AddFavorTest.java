@@ -171,13 +171,17 @@ public class AddFavorTest {
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+
     Uri filePath = CacheUtil.getInstance().saveToInternalStorage(
             Objects.requireNonNull(currentFragment.getContext()), bm, FAVOR_ID, 0);
     getInstrumentation().waitForIdleSync();
-    Bitmap actual = CacheUtil.getInstance().loadFromInternalStorage(
-            Objects.requireNonNull(currentFragment.getContext())
-                    .getFilesDir().getAbsolutePath() + "/" + FAVOR_ID + "/", 0).get();
+
+    // Assert the saved picture is same as the given one
+    String path = Objects.requireNonNull(currentFragment.getContext())
+            .getFilesDir().getAbsolutePath() + "/" + FAVOR_ID + "/";
+    Bitmap actual = CacheUtil.getInstance().loadFromInternalStorage(path,0).get();
     assert(actual.sameAs(bm));
+
     Intent intent = new Intent();
     intent.setData(filePath);
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
