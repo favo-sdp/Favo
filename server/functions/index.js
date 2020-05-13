@@ -1,5 +1,6 @@
 // The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 const functions = require('firebase-functions');
+const firestore = require('firebase-admin');
 
 const admin = require('firebase-admin');
 // admin.initializeApp({
@@ -29,7 +30,7 @@ function distanceInKm(lon1, lat1, lon2, lat2) {
 }
 
 function sendMulticastMessage(message, usersIds) {
-    admin.messaging().sendMulticast(message)
+    return admin.messaging().sendMulticast(message)
         .then((response) => {
             if (response.failureCount > 0) {
                 var failedTokens = [];
@@ -78,7 +79,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
         };
 
         // go through all the users
-        db.collection('/users').get()
+        return db.collection('/users').get()
             .then((snapshot) => {
                 snapshot.forEach((doc) => {
                     //Checking each user for location distance from the post
@@ -180,7 +181,7 @@ exports.sendNotificationOnUpdate = functions.firestore
                 tokens: receivers
             };
 
-            db.collection('/users').where("id", "==", userReceiver).get()
+            return db.collection('/users').where("id", "==", userReceiver).get()
                 .then((snapshot) => {
                     snapshot.forEach((doc) => {
                         var user = doc.data();
@@ -205,11 +206,15 @@ exports.expireOldFavorsOnCreate = functions.firestore
       const TIME_IN_DAYS = 1;
       const EXPIRED_STATUS = 2;
       const REQUESTED_STATUS = 0;
+      const MAX_UPDATES = 20;
       var now = Date.now();
-      var cutoff = now - TIME_IN_DAYS*24*60*60*1000;//transform to seconds
+      var cutoffTime = now - TIME_IN_DAYS*24*60*60*1000;
+      var cutoff =  admin.firestore.Timestamp.fromMillis(cutoffTime)
+      //var cutoff = firestore.Timestamp.fromMillis(cutoffTime)//transform to ms->Timestamp
+    
       let query = db.collection('/favors');
       
-      return query.where("statusId","==",REQUESTED_STATUS).orderBy("postedTime","asc").get()
+      return query.where("statusId","==",REQUESTED_STATUS).orderBy("postedTime","asc").endAt(cutoff).get()
       .then(snapshot=>{
             if (snapshot.empty)
             {
@@ -218,57 +223,38 @@ exports.expireOldFavorsOnCreate = functions.firestore
             }
             else{
                 let batch = db.batch();
-                snapshot.forEach(doc=>{
+                var totalUpdateCount = 0;
+                var userUpdates = new Map()//hashmap with user key and int value
+                const fieldValue = admin.firestore.FieldValue;
+                try{
+                snapshot.forEach(doc=>{//update favor loop
                     let favor = doc.data();
-                    var postedTime = favor.postedTime.seconds*1000//get milliseconds
                     //console.log(postedTime,",",cutoff);
-                    if (postedTime<cutoff){
-                        //console.log("updated");
-                        batch.update(doc.ref,{'statusId':EXPIRED_STATUS,'isArchived':true});
-                    }
+                    totalUpdateCount++; 
+                    var userId = favor.requesterId
+                    if (userUpdates.has(userId)) {//update count in map
+                        let newValue = userUpdates.get(userId) - 1;
+                        userUpdates.set(userId,newValue)
+                    }else{ //insert user in map
+                        totalUpdateCount++;
+                        if (totalUpdateCount>MAX_UPDATES) throw BreakException;
+                        userUpdates.set(userId,-1);
+                    }          
+                    //console.log("updated");
+                    batch.update(doc.ref,{'statusId':EXPIRED_STATUS,'isArchived':true});
+                    
                 });
-                return batch.commit().then(()=>console.log("Success"));
+            }catch(e){
+                console.log("Reached max updates per transaction (20)")
+                if (e !== BreakException) throw e;
+            } //very ugly way of breaking out of foreach loop
+                for (const [userId, updateCount] of userUpdates.entries()){
+                    var userRef = db.collection("/users").doc(userId);
+                    batch.update(userRef,{'activeRequestingFavors':fieldValue.increment(updateCount)});
+                }
+                return batch.commit().then(()=>console.log("Favors and users successfully updated"));
             }
 
       }).catch(reason=>{console.log("Failed expiring docs",reason)
                         });
  });
-//Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
-
-exports.expireOldFavors = functions.https.onRequest((req, res) => {
-    console.log("start");
-    const timeInDays = req.body.timeInDays;
-    const EXPIRED_STATUS = 2;
-    const REQUESTED_STATUS = 0;
-    var now = Date.now();
-    var cutoff = now - timeInDays * 24 * 60 * 60 * 1000;
-    let query = db.collection('/favors');
-    return query.orderBy('postedTime').endAt(cutoff)
-        .get().then(snapshot => {
-            if (snapshot.empty) {
-                res.status(100).send("No expired favors");
-                return;
-            } else {
-                let batch = db.batch();
-                //const promises = [];
-                snapshot.forEach(doc => {
-                    let favor = doc.data();
-                    console.log("Before promise");
-                    if (favor.statusId === REQUESTED_STATUS) {
-                        batch.update(doc.ref,{'statusId':EXPIRED_STATUS,'isArchived':true});
-                        console.log("Added promise:"+favor.id);
-                    }
-                });
-                var res = batch.commit()
-                return batch.commit().then(() => {
-                    console.log("Succesfully updated favor statuses.");
-                    res.status(100).send("Favors successfully expired");
-                    return;
-                });
-            }
-        }).catch(error => {
-            console.log(error);
-            res.status(400).send("Error updating favor statuses");
-        });
-
-});
