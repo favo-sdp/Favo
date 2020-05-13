@@ -130,7 +130,8 @@ public class FavorPublishedView extends Fragment {
     boolean restartVisible = currentFavor.getIsArchived() && isRequested;
     restartItem.setVisible(restartVisible);
 
-    deleteItem.setVisible(currentFavor.getIsArchived());
+    deleteItem.setVisible(
+            currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
@@ -358,7 +359,7 @@ public class FavorPublishedView extends Fragment {
 
   private void updateDisplayFromViewStatus() {
     toolbar.setTitle(favorStatus.toString());
-    toolbar.setBackgroundColor(getResources().getColor(CommonTools.statusColor.get(favorStatus)));
+    toolbar.setBackgroundColor(getResources().getColor(FavorStatus.statusColor.get(favorStatus)));
     switch (favorStatus) {
       case ACCEPTED:
         updateCompleteBtnDisplay(R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);

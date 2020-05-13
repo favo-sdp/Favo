@@ -94,11 +94,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   public CompletableFuture commitFavor(Favor favor, int change) {
+    Favor tempFavor = (Favor) favor.clone();
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             false,
             change) // if user can accept favor then post it in the favor collection
-        .thenCompose((f) -> getFavorRepository().updateFavor(favor));
+            .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
   }
 
   // save address to firebase

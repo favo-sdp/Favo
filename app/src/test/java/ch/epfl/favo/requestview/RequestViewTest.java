@@ -17,7 +17,7 @@ import static org.mockito.Mockito.spy;
 public class RequestViewTest {
 
   // These tests just want to make sure that no exception is thrown when
-  // the result action of the favor fragment_favor_published_view view is handled
+  // the result action of the favor request view is handled
 
   private FavorEditingView spy;
 

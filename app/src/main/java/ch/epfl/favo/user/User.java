@@ -210,7 +210,7 @@ public class User implements Document {
     this.location = location;
   }
 
-  // Can only accept or fragment_favor_published_view favors
+  // Can only accept or request favors
   boolean canAccept() {
     return activeAcceptingFavors <= MAX_ACCEPTING_FAVORS;
   }

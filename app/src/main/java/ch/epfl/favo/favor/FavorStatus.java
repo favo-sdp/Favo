@@ -2,6 +2,10 @@ package ch.epfl.favo.favor;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+
+import ch.epfl.favo.R;
+
 public enum FavorStatus {
   REQUESTED("Requested", 0),
   ACCEPTED("Accepted", 1),
@@ -19,6 +23,21 @@ public enum FavorStatus {
     CANCELLED_REQUESTER.toInt(),
     CANCELLED_ACCEPTER.toInt(),
     SUCCESSFULLY_COMPLETED.toInt()
+  };
+
+  public static HashMap<FavorStatus, Integer> statusColor = new HashMap<FavorStatus, Integer>() {
+    {
+      put(FavorStatus.REQUESTED, R.color.requested_status_bg);
+      put(FavorStatus.ACCEPTED, R.color.accepted_status_bg);
+      put(FavorStatus.EXPIRED, R.color.cancelled_status_bg);
+      put(FavorStatus.CANCELLED_REQUESTER, R.color.cancelled_status_bg);
+      put(FavorStatus.CANCELLED_ACCEPTER, R.color.cancelled_status_bg);
+      put(FavorStatus.SUCCESSFULLY_COMPLETED, R.color.accepted_status_bg);
+      put(FavorStatus.COMPLETED_REQUESTER, R.color.accepted_status_bg);
+      put(FavorStatus.COMPLETED_ACCEPTER, R.color.accepted_status_bg);
+      put(FavorStatus.ACCEPTED_BY_OTHER, R.color.cancelled_status_bg);
+      put(FavorStatus.EDIT, R.color.requested_status_bg);
+    }
   };
 
   private String status;

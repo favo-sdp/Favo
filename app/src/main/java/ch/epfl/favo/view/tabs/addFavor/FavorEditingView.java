@@ -175,32 +175,25 @@ public class FavorEditingView extends Fragment {
     locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
-  class onButtonClick implements View.OnClickListener {
-    @Override
-    public void onClick(View v) {
-      switch (v.getId()) {
-        case R.id.request_button:
-          requestFavor();
-          break;
-        case R.id.add_camera_picture_button:
-          takePicture();
-          break;
-        case R.id.add_picture_button:
-          openFileChooser();
-          break;
-        case R.id.location_request_view_btn:
-          getFavorFromView();
-          CommonTools.hideSoftKeyboard(requireActivity());
-          favorViewModel.setShowObservedFavor(true);
-          favorViewModel.setFavorValue(currentFavor);
-          // signal the destination is map view
-          findNavController(requireActivity(), R.id.nav_host_fragment)
-                  .popBackStack(R.id.nav_map, false);
-          break;
-      }
+  /**
+   * Method is called when request favor button is clicked. It uploads favor request to the database
+   * and updates view so that favor is editable.
+   */
+  private void requestFavor() {
+    // update currentFavor
+    View currentView = getView();
+    favorStatus = FavorStatus.REQUESTED;
+    getFavorFromView();
+    // post to DB
+    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
+    postFavorFuture.thenAccept(onSuccessfulRequest(currentView));
+    postFavorFuture.exceptionally(onFailedResult(currentView));
+    // Show confirmation and minimize keyboard
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      showSnackbar(getString(R.string.save_draft_message));
     }
+    CommonTools.hideSoftKeyboard(requireActivity());
   }
-
 
   /** Extracts favor data from and assigns it to currentFavor. */
   private void getFavorFromView() {
@@ -327,28 +320,8 @@ public class FavorEditingView extends Fragment {
             });
   }
 
-  /**
-   * Method is called when fragment_favor_published_view favor button is clicked. It uploads favor
-   * fragment_favor_published_view to the database and updates view so that favor is editable.
-   */
-  private void requestFavor() {
-    // update currentFavor
-    View currentView = getView();
-    favorStatus = FavorStatus.REQUESTED;
-    getFavorFromView();
-    // post to DB
-    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-    postFavorFuture.thenAccept(onSuccessfulRequest(currentView));
-    postFavorFuture.exceptionally(onFailedResult(currentView));
-    // Show confirmation and minimize keyboard
-    if (DependencyFactory.isOfflineMode(requireContext())) {
-      showSnackbar(getString(R.string.save_draft_message));
-    }
-    CommonTools.hideSoftKeyboard(requireActivity());
-  }
-
-  private Consumer onSuccessfulRequest(View currentView){
-    return  o -> {
+  private Consumer onSuccessfulRequest(View currentView) {
+    return o -> {
       CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
       // jump to favorPublished view
       Bundle favorBundle = new Bundle();
@@ -369,8 +342,33 @@ public class FavorEditingView extends Fragment {
         CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
       else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
       Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      throw (RuntimeException) exception;
-      // return null;
+      return null;
     };
+  }
+
+  class onButtonClick implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.request_button:
+          requestFavor();
+          break;
+        case R.id.add_camera_picture_button:
+          takePicture();
+          break;
+        case R.id.add_picture_button:
+          openFileChooser();
+          break;
+        case R.id.location_request_view_btn:
+          getFavorFromView();
+          CommonTools.hideSoftKeyboard(requireActivity());
+          favorViewModel.setShowObservedFavor(true);
+          favorViewModel.setFavorValue(currentFavor);
+          // signal the destination is map view
+          findNavController(requireActivity(), R.id.nav_host_fragment)
+                  .popBackStack(R.id.nav_map, false);
+          break;
+      }
+    }
   }
 }

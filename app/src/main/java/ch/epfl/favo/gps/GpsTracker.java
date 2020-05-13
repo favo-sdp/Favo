@@ -31,7 +31,7 @@ public class GpsTracker implements LocationListener, IGpsTracker {
   }
 
   public static void setLastKnownLocation(Location location) {
-    // update from mapPage, it has its own position fragment_favor_published_view method based on callback
+    // update from mapPage
     mLastUpdate = System.currentTimeMillis();
     mLastKnownLocation = location;
   }
@@ -42,7 +42,8 @@ public class GpsTracker implements LocationListener, IGpsTracker {
    * @return the location of phone
    */
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-    if (mLastKnownLocation != null && ((System.currentTimeMillis() - mLastUpdate) / millisecToSce) < minIntervalMs)
+    if (mLastKnownLocation != null
+            && ((System.currentTimeMillis() - mLastUpdate) / millisecToSce) < minIntervalMs)
       return mLastKnownLocation;
 
     LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
@@ -54,11 +55,12 @@ public class GpsTracker implements LocationListener, IGpsTracker {
         || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
       if (isGPSEnabled) {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs, minDistanceM, this);
+        locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, minTimeMs, minDistanceM, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-      }
-      else if(isNetworkEnabled){
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMs, minDistanceM, this);
+      } else if (isNetworkEnabled) {
+        locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER, minTimeMs, minDistanceM, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
     } else {

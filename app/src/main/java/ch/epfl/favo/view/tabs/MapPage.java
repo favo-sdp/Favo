@@ -46,8 +46,8 @@ import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 /**
- * View will contain a map and a favor fragment_favor_published_view pop-up. It is implemented using
- * the {@link Fragment} subclass.
+ * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
+ * subclass.
  */
 @SuppressLint("NewApi")
 public class MapPage extends Fragment
@@ -319,7 +319,7 @@ public class MapPage extends Fragment
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode
         == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_published_view is
-                                                       // cancelled, the result arrays
+      // cancelled, the result arrays
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;

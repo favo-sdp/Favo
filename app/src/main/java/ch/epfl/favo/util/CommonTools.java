@@ -22,9 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.view.NonClickableToolbar;
 
 public class CommonTools {
@@ -32,21 +30,6 @@ public class CommonTools {
   public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
   public static final String FAVOR_SOURCE = "FAVOR_SOURCE";
   public static final String USER_ARGS = "USER_ARGS";
-
-  public static HashMap<FavorStatus, Integer> statusColor = new HashMap<FavorStatus, Integer>(){
-    {
-      put(FavorStatus.REQUESTED, R.color.requested_status_bg);
-      put(FavorStatus.ACCEPTED, R.color.accepted_status_bg);
-      put(FavorStatus.EXPIRED, R.color.cancelled_status_bg);
-      put(FavorStatus.CANCELLED_REQUESTER, R.color.cancelled_status_bg);
-      put(FavorStatus.CANCELLED_ACCEPTER, R.color.cancelled_status_bg);
-      put(FavorStatus.SUCCESSFULLY_COMPLETED, R.color.accepted_status_bg);
-      put(FavorStatus.COMPLETED_REQUESTER, R.color.accepted_status_bg);
-      put(FavorStatus.COMPLETED_ACCEPTER, R.color.accepted_status_bg);
-      put(FavorStatus.ACCEPTED_BY_OTHER, R.color.cancelled_status_bg);
-      put(FavorStatus.EDIT, R.color.requested_status_bg);
-    }
-  };
 
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();

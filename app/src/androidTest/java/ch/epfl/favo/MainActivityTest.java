@@ -288,7 +288,7 @@ public class MainActivityTest {
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Click on new favor to open favor fragment_favor_published_view tab
+    // Click on new favor to open favor request tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
@@ -309,7 +309,7 @@ public class MainActivityTest {
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Click on new favor to open favor fragment_favor_published_view tab
+    // Click on new favor to open favor request tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
