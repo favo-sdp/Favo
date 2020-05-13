@@ -327,15 +327,27 @@ public class FavorRequestView extends Fragment {
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
 
+    // Save currentVariable since it may change by the time the future executes
+    Favor favor = currentFavor;
+
     // DB call to update Favor details
-    CompletableFuture updateFuture = getViewModel().reEnableFavor(currentFavor);
+    CompletableFuture updateFuture = getViewModel().reEnableFavor(favor);
     updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
     updateFuture.exceptionally(onFailedResult(getView()));
 
     if (mImageView.getDrawable() != null) {
+
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-      getViewModel().uploadOrUpdatePicture(currentFavor, picture);
-      getViewModel().savePictureToLocal(getContext(), currentFavor, picture);
+
+      CompletableFuture<Bitmap> cachedPictureFuture =
+        getViewModel().loadPictureFromLocal(getContext(), favor);
+
+      cachedPictureFuture.thenAccept(cachedPicture -> {
+        if (!picture.sameAs(cachedPicture)) {
+          getViewModel().uploadOrUpdatePicture(favor, picture);
+          getViewModel().savePictureToLocal(getContext(), favor, picture);
+        }
+      });
     }
   }
 
