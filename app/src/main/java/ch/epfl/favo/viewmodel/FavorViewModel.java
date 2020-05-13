@@ -14,7 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,6 @@ import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
-import static android.graphics.BitmapFactory.decodeFile;
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_REQUESTER;
@@ -98,7 +96,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   // save address to firebase
   @Override
   public CompletableFuture requestFavor(Favor favor) {
-    Favor tempFavor = (Favor) favor.clone();
+    Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
     return changeUserActiveFavorCount(
             DependencyFactory.getCurrentFirebaseUser().getUid(),
@@ -108,7 +106,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   public CompletableFuture cancelFavor(final Favor favor, boolean isRequested) {
-    Favor tempFavor = (Favor) favor.clone();
+    Favor tempFavor = new Favor(favor);
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
     String otherUserId = isRequested ? tempFavor.getAccepterId() : tempFavor.getRequesterId();
     tempFavor.setStatusIdToInt(cancelledStatus);
@@ -122,14 +120,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   public CompletableFuture reEnableFavor(final Favor favor) {
-    Favor tempFavor = (Favor) favor.clone();
+    Favor tempFavor = new Favor(favor);
     int countUpdate = (tempFavor.getIsArchived()) ? 1 : 0;
     tempFavor.setStatusIdToInt(REQUESTED);
     return updateFavorForCurrentUser(tempFavor, true, countUpdate);
   }
 
   public CompletableFuture completeFavor(final Favor favor, boolean isRequested) {
-    Favor tempFavor = (Favor) favor.clone();
+    Favor tempFavor = new Favor(favor);
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
         || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
@@ -146,7 +144,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    * @return
    */
   public CompletableFuture acceptFavor(final Favor favor) {
-    Favor tempFavor = (Favor) favor.clone();
+    Favor tempFavor = new Favor(favor);
     tempFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     tempFavor.setStatusIdToInt(ACCEPTED);
     return updateFavorForCurrentUser(tempFavor, false, 1);

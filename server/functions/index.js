@@ -2,11 +2,11 @@
 const functions = require('firebase-functions');
 
 const admin = require('firebase-admin');
-admin.initializeApp({
-    credential: admin.credential.cert(require('./keys/admin.json')),
-    databaseURL: 'https://favo-11728.firebaseio.com'
-});
-//admin.initializeApp();
+// admin.initializeApp({
+//     credential: admin.credential.cert(require('./keys/admin.json')),
+//     databaseURL: 'https://favo-11728.firebaseio.com'
+// });
+admin.initializeApp();
 var db = admin.firestore();
 
 // global constants
@@ -201,7 +201,38 @@ exports.sendNotificationOnUpdate = functions.firestore
 exports.expireOldFavorsOnCreate = functions.firestore
   .document('favors/{favorId}')
   .onCreate((change)=>{
-                                });
+      
+      const TIME_IN_DAYS = 1;
+      const EXPIRED_STATUS = 2;
+      const REQUESTED_STATUS = 0;
+      var now = Date.now();
+      var cutoff = now - TIME_IN_DAYS*24*60*60*1000;//transform to seconds
+      let query = db.collection('/favors');
+      
+      return query.where("statusId","==",REQUESTED_STATUS).orderBy("postedTime","asc").get()
+      .then(snapshot=>{
+            if (snapshot.empty)
+            {
+                console.log("Snapshot is empty")
+                return;
+            }
+            else{
+                let batch = db.batch();
+                snapshot.forEach(doc=>{
+                    let favor = doc.data();
+                    var postedTime = favor.postedTime.seconds*1000//get milliseconds
+                    //console.log(postedTime,",",cutoff);
+                    if (postedTime<cutoff){
+                        //console.log("updated");
+                        batch.update(doc.ref,{'statusId':EXPIRED_STATUS,'isArchived':true});
+                    }
+                });
+                return batch.commit().then(()=>console.log("Success"));
+            }
+
+      }).catch(reason=>{console.log("Failed expiring docs",reason)
+                        });
+ });
 //Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
 
 exports.expireOldFavors = functions.https.onRequest((req, res) => {
@@ -216,6 +247,7 @@ exports.expireOldFavors = functions.https.onRequest((req, res) => {
         .get().then(snapshot => {
             if (snapshot.empty) {
                 res.status(100).send("No expired favors");
+                return;
             } else {
                 let batch = db.batch();
                 //const promises = [];
@@ -227,12 +259,11 @@ exports.expireOldFavors = functions.https.onRequest((req, res) => {
                         console.log("Added promise:"+favor.id);
                     }
                 });
-                return batch.commit().then(data => {
+                var res = batch.commit()
+                return batch.commit().then(() => {
                     console.log("Succesfully updated favor statuses.");
                     res.status(100).send("Favors successfully expired");
-                }).catch(error=>{
-                    console.log(error);
-                    res.status(400).send("Promises not fulfilled");
+                    return;
                 });
             }
         }).catch(error => {
