@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -25,15 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.auth.util.ui.ImeHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Objects;
 
@@ -160,8 +151,7 @@ public class ChatPage extends Fragment {
 //    });
 
     // If the empty message view is visible, then this is the first message.
-    boolean isFirstMsg = (view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
-
+    String isFirstMsg = String.valueOf(view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
 
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     onAddMessage(
@@ -175,7 +165,6 @@ public class ChatPage extends Fragment {
 
     mMessageEdit.setText("");
   }
-
 
   private FirestoreRecyclerOptions<ChatModel> getFirestoreRecyclerOptions() {
     Query sChatQuery =

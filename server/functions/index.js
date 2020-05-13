@@ -192,8 +192,34 @@ exports.sendNotificationOnUpdate = functions.firestore
                 });
         }
     });
-//Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
 
+// send new favor notification to users on updates
+exports.sendNotificationOnNewChat = functions.firestore
+    .document('/chats/{chatId}')
+    .onCreate(async (snap, context) => {
+        const isFirstMsg = snap.data().isFirst;
+        if (isFirstMsg == "true") {
+            const titleToSend = "You've got a new message";
+            const favorId = snap.data().favorId;
+            const receivers = [snap.data().notifId];
+            const message = {
+                data: {
+                    FavorId: favorId,
+                },
+                notification: {
+                    title: titleToSend,
+                    body: 'Click to check out the chat message',
+                },
+
+                tokens: [receivers]
+            };
+        sendMulticastMessage(titleToSend, receivers);
+        return;
+        }
+    }
+
+
+//Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
 exports.expireOldFavors = functions.https.onRequest((req,res)=>{
     const timeInDays = req.body.timeInDays;
     const EXPIRED_STATUS = 2;
