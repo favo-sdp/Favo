@@ -99,7 +99,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             false,
             change) // if user can accept favor then post it in the favor collection
-            .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
+        .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
   }
 
   // save address to firebase
@@ -119,12 +119,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             (f) -> {
               // update user info
               UserUtil.getSingleInstance()
-                      .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-                      .thenAccept(
-                              user -> {
-                                user.setRequestedFavors(user.getRequestedFavors() + 1);
-                                UserUtil.getSingleInstance().updateUser(user);
-                              });
+                  .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+                  .thenAccept(
+                      user -> {
+                        user.setRequestedFavors(user.getRequestedFavors() + 1);
+                        UserUtil.getSingleInstance().updateUser(user);
+                      });
               return getFavorRepository().requestFavor(tempFavor);
             });
   }
@@ -135,8 +135,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     tempFavor.setStatusIdToInt(cancelledStatus);
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
-    if(favor.getStatusId() == REQUESTED.toInt())
-        favor.setAccepterId("");
+    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
     CompletableFuture resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (int i = 1; i < favor.getUserIds().size(); i++) {
       int commitUser = i;

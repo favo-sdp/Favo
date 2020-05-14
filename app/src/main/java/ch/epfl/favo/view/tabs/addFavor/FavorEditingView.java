@@ -329,7 +329,8 @@ public class FavorEditingView extends Fragment {
       int action;
       // if this favor restarts from an archived one, then prevent pressback from jumping to
       // archived favor view.
-      if (favorSource.equals(getString(R.string.favor_source_publishedFavor)))
+      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
+          || favorSource.equals(getString(R.string.restart_request)))
         action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
       else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
       Navigation.findNavController(currentView).navigate(action, favorBundle);
@@ -366,7 +367,7 @@ public class FavorEditingView extends Fragment {
           favorViewModel.setFavorValue(currentFavor);
           // signal the destination is map view
           findNavController(requireActivity(), R.id.nav_host_fragment)
-                  .popBackStack(R.id.nav_map, false);
+              .popBackStack(R.id.nav_map, false);
           break;
       }
     }

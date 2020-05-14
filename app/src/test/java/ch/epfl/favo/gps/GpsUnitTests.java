@@ -11,12 +11,17 @@ import android.location.LocationProvider;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.maps.MapFragment;
+
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Map;
 
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.MapPage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -97,5 +102,14 @@ public class GpsUnitTests extends FragmentActivity {
     gpsTracker.onProviderEnabled(LocationManager.GPS_PROVIDER);
     Intent intent = mock(Intent.class);
     assertNull(gpsTracker.onBind(intent));
+  }
+
+  @Test
+  public void RadiusToZoomLevelTest(){
+    MapPage mapPage = new MapPage();
+    assertEquals(16, mapPage.notificationRadiusToZoomLevel(1));
+    assertEquals(14, mapPage.notificationRadiusToZoomLevel(5));
+    assertEquals(13, mapPage.notificationRadiusToZoomLevel(10));
+    assertEquals(10, mapPage.notificationRadiusToZoomLevel(25));
   }
 }

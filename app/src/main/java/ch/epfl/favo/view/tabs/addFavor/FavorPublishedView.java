@@ -131,7 +131,7 @@ public class FavorPublishedView extends Fragment {
     restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
-            currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
+        currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
@@ -267,6 +267,7 @@ public class FavorPublishedView extends Fragment {
 
     // display committed user list
     if (isRequested && favor.getUserIds().size() > 1) setupUserListView();
+    else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
     displayUserProfile(favor);
     updateAppBarMenuDisplay();
@@ -279,7 +280,7 @@ public class FavorPublishedView extends Fragment {
     textView.setKeyListener(null);
   }
 
-  void displayUserProfile(Favor favor) {
+  private void displayUserProfile(Favor favor) {
     if (isRequested) {
       // display user picture
       if (currentUser.getPhotoUrl() != null) {
@@ -424,8 +425,7 @@ public class FavorPublishedView extends Fragment {
     newFavor.updateToOther(currentFavor);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(
-        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.restart_request));
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
