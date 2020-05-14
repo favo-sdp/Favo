@@ -81,7 +81,7 @@
         android:layout_height="56dp"
         android:layout_gravity="bottom"
         android:background="@color/material_green_500"
-        android:text="Done"
+        android:text="@string/done_from_request_view"
         android:textStyle="bold"
         android:textColor="@android:color/white"
         android:visibility="gone"/>

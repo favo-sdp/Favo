@@ -192,8 +192,12 @@
     <string name="title_required_message">Title must be set to request a favor</string>
     <string name="report_favor_message">Favor has been reported! Thanks for your help</string>
     <string name="report_favor_text">Report favor</string>
+    <string name="optional_text">Optional</string>
+    <string name="picture_description_text">Upload a picture or take a photo</string>
+
 
     <string name="set_location_message">The favor location is set to your current position. Would you like to change it?</string>
     <string name="set_location_yes">Yes, take me to the map</string>
     <string name="set_location_no">No, my current position is fine</string>
+    <string name="done_from_request_view">Done</string>
 </resources>
