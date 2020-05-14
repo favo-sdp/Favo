@@ -160,16 +160,6 @@ public class FavorRequestView extends Fragment {
                           getViewModel().savePictureToLocal(getContext(), currentFavor, picture);
                         });
       }
-      if (mImageView.getDrawable() != null) {
-        v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
-      }
-      getViewModel()
-          .downloadPicture(currentFavor)
-          .thenAccept(
-              picture -> {
-                mImageView.setImageBitmap(picture);
-                v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
-              });
     }
   }
 
