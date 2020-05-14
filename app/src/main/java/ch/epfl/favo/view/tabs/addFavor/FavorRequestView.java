@@ -30,9 +30,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -147,7 +145,9 @@ public class FavorRequestView extends Fragment {
     mDescriptionView.setText(currentFavor.getDescription());
     String url = currentFavor.getPictureUrl();
     if (url != null) {
-      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      if (mImageView.getDrawable() != null) {
+        v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      }
       getViewModel()
           .downloadPicture(currentFavor)
           .thenAccept(
@@ -239,13 +239,15 @@ public class FavorRequestView extends Fragment {
   }
 
   private void deleteFavor() {
-    CompletableFuture deleteFuture = getViewModel().deleteFavor(currentFavor);
-    deleteFuture.thenAccept(
-        o -> {
-          CommonTools.showSnackbar(requireView(), getString(R.string.favor_delete_success_msg));
-          requireActivity().onBackPressed();
+    CompletableFuture<Void> deleteFuture = getViewModel().deleteFavor(currentFavor);
+    deleteFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else {
+            CommonTools.showSnackbar(requireView(), getString(R.string.favor_delete_success_msg));
+            requireActivity().onBackPressed();
+          }
         });
-    deleteFuture.exceptionally(onFailedResult(requireView()));
   }
 
   /**
@@ -303,16 +305,6 @@ public class FavorRequestView extends Fragment {
     if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      return null;
-    };
-  }
-
   /**
    * Once favor has been requested.
    *
@@ -347,6 +339,9 @@ public class FavorRequestView extends Fragment {
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
 
+    // Save currentVariable since it may change by the time the future executes
+    Favor favor = currentFavor;
+
     // DB call to update Favor details
     CompletableFuture<Void> updateFuture = getViewModel().reEnableFavor(currentFavor);
     updateFuture.whenComplete(
@@ -356,9 +351,19 @@ public class FavorRequestView extends Fragment {
         });
 
     if (mImageView.getDrawable() != null) {
+
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-      getViewModel().uploadOrUpdatePicture(currentFavor, picture);
-      getViewModel().savePictureToLocal(getContext(), currentFavor, picture);
+
+      CompletableFuture<Bitmap> cachedPictureFuture =
+          getViewModel().loadPictureFromLocal(getContext(), favor);
+
+      cachedPictureFuture.thenAccept(
+          cachedPicture -> {
+            if (!picture.sameAs(cachedPicture)) {
+              getViewModel().uploadOrUpdatePicture(favor, picture);
+              getViewModel().savePictureToLocal(getContext(), favor, picture);
+            }
+          });
     }
   }
 

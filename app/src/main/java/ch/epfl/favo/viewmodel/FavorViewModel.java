@@ -171,7 +171,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   } // check what happens if updateFavorFoto fails
 
   @Override
-  public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
+  public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
     String url = favor.getPictureUrl();
     if (url == null) {
       return new CompletableFuture<Bitmap>() {
