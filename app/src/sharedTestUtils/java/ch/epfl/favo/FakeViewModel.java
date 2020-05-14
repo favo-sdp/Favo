@@ -1,10 +1,10 @@
 package ch.epfl.favo;
 
 import android.content.Context;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -15,6 +15,7 @@ import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -33,8 +34,8 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
         };
   }
 
-  private CompletableFuture getSuccessfulCompletableFuture() {
-    return new CompletableFuture() {
+  private CompletableFuture<Void> getSuccessfulCompletableFuture() {
+    return new CompletableFuture<Void>() {
       {
         complete(null);
       }
@@ -112,10 +113,18 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void savePictureToLocal(Context context, Favor favor, Bitmap picture){}
-
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {}
 
   private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
+  private MutableLiveData<User> observedUser = getUserMutableLiveData();
+
+  private MutableLiveData<User> getUserMutableLiveData() {
+    return new MutableLiveData<User>() {
+      {
+        setValue(FakeItemFactory.getUser());
+      }
+    };
+  }
 
   private MutableLiveData<Map<String, Favor>> getMapLiveData() {
 
@@ -155,13 +164,24 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return observedFavorResult;
   }
 
+  @VisibleForTesting
+  public void setFavorValue(Favor favor) {
+    observedFavorResult.setValue(favor);
+  }
+
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
   }
 
-  public void setFavorValue(Favor favor) {
-    observedFavorResult.setValue(favor);
+  @VisibleForTesting
+  public void setUserValue(User user) {
+    observedUser.setValue(user);
+  }
+
+  @Override
+  public LiveData<User> getCurrentUser() {
+    return observedUser;
   }
 
   @Override

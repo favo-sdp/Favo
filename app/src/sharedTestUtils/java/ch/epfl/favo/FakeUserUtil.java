@@ -2,14 +2,20 @@ package ch.epfl.favo;
 
 import android.content.res.Resources;
 
+import androidx.annotation.VisibleForTesting;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
+
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 
 public class FakeUserUtil implements IUserUtil {
+  private DocumentReference currentUserReference;
   private CompletableFuture successfulCompletableFuture =
-      new CompletableFuture() {
+      new CompletableFuture<Void>() {
         {
           complete(null);
         }
@@ -20,8 +26,8 @@ public class FakeUserUtil implements IUserUtil {
           completeExceptionally(new RuntimeException());
         }
       };
-  private CompletableFuture successfulUserFuture =
-      new CompletableFuture() {
+  private CompletableFuture<User> successfulUserFuture =
+      new CompletableFuture<User>() {
         {
           complete(FakeItemFactory.getUser());
         }
@@ -72,5 +78,20 @@ public class FakeUserUtil implements IUserUtil {
   @Override
   public CompletableFuture retrieveUserRegistrationToken(User user) {
     return defaultResult();
+  }
+
+  @Override
+  public DocumentReference getCurrentUserReference(String userId) {
+    return currentUserReference;
+  }
+
+  @VisibleForTesting
+  public void setCurrentUserReference(DocumentReference dependency) {
+    currentUserReference = dependency;
+  }
+
+  @Override
+  public Query getAllUserFavors(String userId) {
+    return null;
   }
 }

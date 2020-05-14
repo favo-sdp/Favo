@@ -273,19 +273,34 @@ public class FavorRequestView extends Fragment {
     favorStatus = FavorStatus.REQUESTED;
     getFavorFromView();
     // post to DB
-    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-    postFavorFuture.thenAccept(
-        o -> {
-          setFavorActivatedView(requireView());
-          setupFavorListener(requireView(), currentFavor.getId());
-          CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+    CompletableFuture<Void> postFavorFuture = getViewModel().requestFavor(currentFavor);
+    postFavorFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else {
+            setFavorActivatedView(requireView());
+            setupFavorListener(requireView(), currentFavor.getId());
+            CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+          }
         });
-    postFavorFuture.exceptionally(onFailedResult(currentView));
     // Show confirmation and minimize keyboard
     if (DependencyFactory.isOfflineMode(requireContext())) {
       showSnackbar(getString(R.string.save_draft_message));
     }
     CommonTools.hideSoftKeyboard(requireActivity());
+  }
+
+  private void handleException(Throwable throwable) {
+    if (throwable == null) return;
+    if (throwable.getCause() == null) throwable = new Exception(throwable);
+    String response;
+    if (throwable.getCause() instanceof IllegalRequestException) {
+      response = getString(R.string.illegal_request_error);
+    } else {
+      response = getString(R.string.update_favor_error);
+    }
+    CommonTools.showSnackbar(requireView(), response);
+    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 
   private Function onFailedResult(View currentView) {
@@ -319,18 +334,26 @@ public class FavorRequestView extends Fragment {
   }
 
   private void completeFavor() {
-    CompletableFuture completeFuture = getViewModel().completeFavor(currentFavor, true);
-    completeFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_complete_success_msg)));
-    completeFuture.exceptionally(onFailedResult(getView()));
+    CompletableFuture<Void> completeFuture = getViewModel().completeFavor(currentFavor, true);
+    completeFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else {
+            showSnackbar(getString(R.string.favor_complete_success_msg));
+          }
+        });
   }
 
   /** Gets called once favor has been updated on view. */
   private void confirmUpdatedFavor() {
 
     // DB call to update Favor details
-    CompletableFuture updateFuture = getViewModel().reEnableFavor(currentFavor);
-    updateFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_edit_success_msg)));
-    updateFuture.exceptionally(onFailedResult(getView()));
+    CompletableFuture<Void> updateFuture = getViewModel().reEnableFavor(currentFavor);
+    updateFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else showSnackbar(getString(R.string.favor_edit_success_msg));
+        });
 
     if (mImageView.getDrawable() != null) {
       Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
@@ -342,9 +365,12 @@ public class FavorRequestView extends Fragment {
   /** Updates favor on DB. */
   private void cancelFavor() {
     favorStatus = FavorStatus.CANCELLED_REQUESTER;
-    CompletableFuture cancelFuture = getViewModel().cancelFavor(currentFavor, true);
-    cancelFuture.thenAccept(o -> showSnackbar(getString(R.string.favor_cancel_success_msg)));
-    cancelFuture.exceptionally(onFailedResult(getView()));
+    CompletableFuture<Void> cancelFuture = getViewModel().cancelFavor(currentFavor, true);
+    cancelFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else showSnackbar(getString(R.string.favor_cancel_success_msg));
+        });
   }
 
   /** Updates status text and button visibility on favor status changes. */

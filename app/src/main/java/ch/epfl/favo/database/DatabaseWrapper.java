@@ -55,19 +55,21 @@ public class DatabaseWrapper {
     return sb.toString();
   }
 
-  public static <T extends Document> CompletableFuture addDocument(T document, String collection) {
-    Task postTask = getDocumentQuery(document.getId(), collection).set(document);
+  public static <T extends Document> CompletableFuture<Void> addDocument(
+      T document, String collection) {
+    Task<Void> postTask = getDocumentQuery(document.getId(), collection).set(document);
     return new TaskToFutureAdapter<>(postTask).getInstance();
   }
 
-  static <T extends Document> CompletableFuture removeDocument(String key, String collection) {
-    Task deleteTask = getDocumentQuery(key, collection).delete();
+  static <T extends Document> CompletableFuture<Void> removeDocument(
+      String key, String collection) {
+    Task<Void> deleteTask = getDocumentQuery(key, collection).delete();
     return new TaskToFutureAdapter<>(deleteTask).getInstance();
   }
 
-  static CompletableFuture updateDocument(
+  static CompletableFuture<Void> updateDocument(
       String key, Map<String, Object> updates, String collection) {
-    Task update = getDocumentQuery(key, collection).update(updates);
+    Task<Void> update = getDocumentQuery(key, collection).update(updates);
     return new TaskToFutureAdapter<>(update).getInstance();
   }
 
@@ -123,7 +125,7 @@ public class DatabaseWrapper {
     return getAllFuture.thenApply(querySnapshot -> querySnapshot.toObjects(cls));
   }
 
-  private static CollectionReference getCollectionReference(String collection) {
+  static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);
   }
 }

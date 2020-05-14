@@ -18,9 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
@@ -151,13 +149,13 @@ public class SignInActivity extends AppCompatActivity {
       CompletableFuture<User> userFuture = getCurrentUserUtil().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Add/update user info depending on db status
-      CompletableFuture<User> editUserFuture = userFuture.thenCompose(editDeviceId(deviceId));
-      CompletableFuture<User> newUserFuture =
+      CompletableFuture<Void> editUserFuture = userFuture.thenAccept(editDeviceId(deviceId));
+      CompletableFuture<Void> newUserFuture =
           userFuture
               .exceptionally(
                   throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()))
-              .whenComplete(postNewUser());
-      CompletableFuture postUserResult =
+              .thenAccept(postNewUser());
+      CompletableFuture<Void> postUserResult =
           editUserFuture.acceptEither(newUserFuture, user -> startMainActivity());
       postUserResult.exceptionally(
           ex -> {
@@ -169,21 +167,19 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
-  private BiConsumer<User, Throwable> postNewUser() {
-    return (user, throwable) -> {
-      final User finalUser = user;
-      getCurrentUserUtil()
-          .postUser(finalUser)
-          .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(finalUser));
-    };
+  private Consumer<User> postNewUser() {
+    return (user) ->
+        getCurrentUserUtil()
+            .postUser(user)
+            .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
   }
 
-  private Function<User, CompletionStage<User>> editDeviceId(String deviceId) {
+  private Consumer<User> editDeviceId(String deviceId) {
     return (user) -> { // user is not null
       if (!deviceId.equals(user.getDeviceId())) {
         user.setDeviceId(deviceId);
-        return getCurrentUserUtil().updateUser(user);
-      } else return CompletableFuture.supplyAsync(() -> null);
+        getCurrentUserUtil().updateUser(user);
+      } else CompletableFuture.supplyAsync(() -> null);
     };
   }
 }

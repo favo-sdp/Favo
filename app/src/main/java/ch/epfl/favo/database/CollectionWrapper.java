@@ -20,17 +20,17 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
   }
 
   @Override
-  public CompletableFuture addDocument(T document) throws RuntimeException {
+  public CompletableFuture<Void> addDocument(T document) throws RuntimeException {
     return DatabaseWrapper.addDocument(document, collection);
   }
 
   @Override
-  public CompletableFuture removeDocument(String key) {
+  public CompletableFuture<Void> removeDocument(String key) {
     return DatabaseWrapper.removeDocument(key, collection);
   }
 
   @Override
-  public CompletableFuture updateDocument(String key, Map<String, Object> updates) {
+  public CompletableFuture<Void> updateDocument(String key, Map<String, Object> updates) {
     return DatabaseWrapper.updateDocument(key, updates, collection);
   }
 
@@ -42,6 +42,11 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
   @Override
   public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
     return DatabaseWrapper.getAllDocumentsLongitudeBounded(loc, radius, cls, collection);
+  }
+
+  @Override
+  public Query getReference() {
+    return DatabaseWrapper.getCollectionReference(collection);
   }
 
   public CompletableFuture<List<T>> getAllDocuments() {

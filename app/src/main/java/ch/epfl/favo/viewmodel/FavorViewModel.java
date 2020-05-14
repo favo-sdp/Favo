@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -25,6 +26,7 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -39,21 +41,23 @@ import static ch.epfl.favo.favor.FavorStatus.SUCCESSFULLY_COMPLETED;
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private String TAG = "FIRESTORE_VIEW_MODEL";
+  private String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
   private boolean showFavor = false;
   private Location mCurrentLocation;
   private double mRadius = -1.0;
 
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  private MutableLiveData<User> currentUser = new MutableLiveData<>();
 
-  MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
+  private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
-  public FavorUtil getFavorRepository() {
+  private FavorUtil getFavorRepository() {
     return DependencyFactory.getCurrentFavorRepository();
   }
 
-  public IUserUtil getUserRepository() {
+  private IUserUtil getUserRepository() {
     return DependencyFactory.getCurrentUserRepository();
   }
 
@@ -61,7 +65,9 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return DependencyFactory.getCurrentPictureUtility();
   }
 
-  private CacheUtil getCacheUtility() { return DependencyFactory.getCurrentCacheUtility(); }
+  private CacheUtil getCacheUtility() {
+    return DependencyFactory.getCurrentCacheUtility();
+  }
 
   /**
    * Tries to update the number of active favors for a given user. Detailed implementation in
@@ -75,6 +81,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
       String userId, boolean isRequested, int change) {
     return getUserRepository().changeActiveFavorCount(userId, isRequested, change);
   }
+
   /**
    * Checks if it's possible for user to update, if so, updates his/her status. Then posts favor to
    * DB
@@ -84,25 +91,22 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    * @param activeFavorsCountChange Relative to actual amount
    * @return
    */
-  private CompletableFuture updateFavorForCurrentUser(
+  private CompletableFuture<Void> updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
-    return changeUserActiveFavorCount(
-            DependencyFactory.getCurrentFirebaseUser().getUid(),
-            isRequested,
-            activeFavorsCountChange)
-        .thenCompose(o -> getFavorRepository().updateFavor(favor));
+    return changeUserActiveFavorCount(currentUserId, isRequested, activeFavorsCountChange)
+        .thenCompose((aVoid) -> getFavorRepository().updateFavor(favor));
   }
 
   // save address to firebase
   @Override
-  public CompletableFuture requestFavor(Favor favor) {
+  public CompletableFuture<Void> requestFavor(Favor favor) {
     Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
     return changeUserActiveFavorCount(
-            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            currentUserId,
             true,
             1) // if user can request favor then post it in the favor collection
-        .thenCompose((f) -> getFavorRepository().requestFavor(tempFavor));
+        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor));
   }
 
   public CompletableFuture cancelFavor(final Favor favor, boolean isRequested) {
@@ -110,10 +114,11 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
     String otherUserId = isRequested ? tempFavor.getAccepterId() : tempFavor.getRequesterId();
     tempFavor.setStatusIdToInt(cancelledStatus);
-    CompletableFuture resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
+    CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     if (otherUserId != null) // update other user
     {
-      resultFuture.thenCompose(o -> changeUserActiveFavorCount(otherUserId, !isRequested, -1));
+      resultFuture.thenCompose(
+          (aVoid) -> changeUserActiveFavorCount(otherUserId, !isRequested, -1));
     }
 
     return resultFuture;
@@ -145,15 +150,16 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    */
   public CompletableFuture acceptFavor(final Favor favor) {
     Favor tempFavor = new Favor(favor);
-    tempFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
+    tempFavor.setAccepterId(currentUserId);
     tempFavor.setStatusIdToInt(ACCEPTED);
     return updateFavorForCurrentUser(tempFavor, false, 1);
   }
 
-  public CompletableFuture deleteFavor(final Favor favor) {
-    CompletableFuture removeFavorFuture = getFavorRepository().removeFavor(favor.getId());
+  public CompletableFuture<Void> deleteFavor(final Favor favor) {
+    CompletableFuture<Void> removeFavorFuture = getFavorRepository().removeFavor(favor.getId());
     if (favor.getPictureUrl() != null) {
-      removeFavorFuture.thenCompose(o -> getPictureUtility().deletePicture(favor.getPictureUrl()));
+      removeFavorFuture.thenCompose(
+          (aVoid) -> getPictureUtility().deletePicture(favor.getPictureUrl()));
     }
     return removeFavorFuture;
   }
@@ -227,7 +233,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
-      if (!favor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())
+      if (!favor.getRequesterId().equals(currentUserId)
           && favor.getStatusId() == REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
@@ -237,7 +243,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return favorsMap;
   }
 
-  public void handleException(FirebaseFirestoreException e) {
+  void handleException(FirebaseFirestoreException e) {
     if (e != null) {
       Log.w(TAG, "Listen Failed", e);
       throw new RuntimeException(e.getMessage());
@@ -252,10 +258,26 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
-              assert documentSnapshot != null;
-              setFavorValue(documentSnapshot.toObject(Favor.class));
+              if (documentSnapshot != null) setFavorValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();
+  }
+
+  public LiveData<User> getCurrentUser() {
+    if (currentUser.getValue() == null) {
+      DocumentReference currentUserReference =
+          getUserRepository().getCurrentUserReference(currentUserId);
+      currentUserReference.addSnapshotListener(
+          MetadataChanges.EXCLUDE,
+          (documentSnapshot, e) -> {
+            handleException(e);
+            if (documentSnapshot != null) {
+              User user = documentSnapshot.toObject(User.class);
+              currentUser.setValue(user);
+            }
+          });
+    }
+    return currentUser;
   }
 
   @Override

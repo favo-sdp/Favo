@@ -25,8 +25,8 @@ public class FavorUtil {
   private static final String TAG = "FavorUtil";
   private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
-  private static ICollectionWrapper collection =
-      DependencyFactory.getCurrentCollectionWrapper(
+  private static ICollectionWrapper<Favor> collection =
+          DependencyFactory.getCurrentCollectionWrapper(
           DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor

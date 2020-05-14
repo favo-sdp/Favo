@@ -16,9 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
@@ -132,24 +129,22 @@ public class FavorDetailView extends Fragment {
   }
 
   private void completeFavor() {
-    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, false);
-    updateFuture.thenAccept(
-        o ->
-            CommonTools.showSnackbar(
-                requireView(), getString(R.string.favor_complete_success_msg)));
-    updateFuture.exceptionally(handleException());
+    CompletableFuture<Void> updateFuture = getViewModel().completeFavor(currentFavor, false);
+    updateFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else
+            CommonTools.showSnackbar(requireView(), getString(R.string.favor_complete_success_msg));
+        });
   }
 
   private void cancelFavor() {
-    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, false);
-    completableFuture.thenAccept(successfullyCancelledConsumer());
-    completableFuture.exceptionally(handleException());
-  }
-
-  private Consumer successfullyCancelledConsumer() {
-    return o -> {
-      CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
-    };
+    CompletableFuture<Void> completableFuture = getViewModel().cancelFavor(currentFavor, false);
+    completableFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable.getCause() != null) handleException(throwable);
+          else CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg));
+        });
   }
 
   // Verifies favor hasn't already been accepted
@@ -174,19 +169,19 @@ public class FavorDetailView extends Fragment {
       return;
     }*/
     // update DB with accepted status
-    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
-    acceptFavorFuture.thenAccept(
-        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg)));
-    acceptFavorFuture.exceptionally(handleException());
+    CompletableFuture<Void> acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
+    acceptFavorFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
+        });
   }
 
-  private Function handleException() {
-    return e -> {
-      if (((CompletionException) e).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
-      else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
-      return null;
-    };
+  private void handleException(Throwable throwable) {
+    if (throwable.getCause() == null) throwable = new Exception(throwable);
+    if (throwable.getCause() instanceof IllegalRequestException)
+      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
+    else CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
@@ -301,12 +296,12 @@ public class FavorDetailView extends Fragment {
 
       loadingPanelView.setVisibility(View.VISIBLE);
       getViewModel()
-        .downloadPicture(favor)
-        .thenAccept(
-          picture -> {
-            imageView.setImageBitmap(picture);
-            loadingPanelView.setVisibility(View.GONE);
-          });
+          .downloadPicture(favor)
+          .thenAccept(
+              picture -> {
+                imageView.setImageBitmap(picture);
+                loadingPanelView.setVisibility(View.GONE);
+              });
     }
   }
 }

@@ -299,12 +299,5 @@ public class Favor implements Parcelable, Document, Cloneable {
         && this.pictureUrl.equals(other.pictureUrl);
   }
 
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Unable to clone Favor");
-    }
-  }
+
 }

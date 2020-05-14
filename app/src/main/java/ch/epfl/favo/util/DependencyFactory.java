@@ -38,7 +38,6 @@ public class DependencyFactory {
   private static LocationManager currentLocationManager;
   private static FirebaseFirestore currentFirestore;
   private static boolean offlineMode = false;
-  private static boolean testMode = false;
   private static CompletableFuture currentCompletableFuture;
   private static String currentFavorCollection = "favors";
   private static Class currentViewModelClass;
@@ -54,17 +53,13 @@ public class DependencyFactory {
     return offlineMode || CommonTools.isOffline(context);
   }
 
-  public static boolean isTestMode() {
-    return testMode && currentCompletableFuture != null;
-  }
-
   @VisibleForTesting
   public static void setOfflineMode(boolean value) {
     offlineMode = value;
   }
 
   public static FirebaseUser getCurrentFirebaseUser() {
-    if (testMode) {
+    if (currentFirebaseUser != null) {
       return currentFirebaseUser;
     }
     return FirebaseAuth.getInstance().getCurrentUser();
@@ -72,12 +67,11 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentFirebaseUser(FirebaseUser dependency) {
-    testMode = true;
     currentFirebaseUser = dependency;
   }
 
   public static IGpsTracker getCurrentGpsTracker(@Nullable Context context) {
-    if (testMode && currentGpsTracker != null) {
+    if (currentGpsTracker != null) {
       return currentGpsTracker;
     }
     return new GpsTracker(context);
@@ -85,19 +79,17 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentGpsTracker(IGpsTracker gpsTrackerDependency) {
-    testMode = true;
     currentGpsTracker = gpsTrackerDependency;
   }
 
   @VisibleForTesting
   public static void setCurrentCollectionWrapper(ICollectionWrapper dependency) {
-    testMode = true;
     currentCollectionWrapper = dependency;
   }
 
   public static ICollectionWrapper getCurrentCollectionWrapper(
       String collectionReference, Class cls) {
-    if (testMode && currentCollectionWrapper != null) {
+    if (currentCollectionWrapper != null) {
       return currentCollectionWrapper;
     }
     return new CollectionWrapper(collectionReference, cls);
@@ -105,12 +97,11 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentCameraIntent(Intent dependency) {
-    testMode = true;
     currentCameraIntent = dependency;
   }
 
   public static Intent getCurrentCameraIntent() {
-    if (testMode && currentCameraIntent != null) {
+    if (currentCameraIntent != null) {
       return currentCameraIntent;
     }
     return new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -118,12 +109,11 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentLocationManager(LocationManager dependency) {
-    testMode = true;
     currentLocationManager = dependency;
   }
 
   public static LocationManager getCurrentLocationManager(Context context) {
-    if (testMode && currentLocationManager != null) {
+    if (currentLocationManager != null) {
       return currentLocationManager;
     }
     return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
@@ -131,19 +121,18 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentFirestore(FirebaseFirestore dependency) {
-    testMode = true;
     currentFirestore = dependency;
   }
 
   public static FirebaseFirestore getCurrentFirestore() {
-    if (testMode && currentFirestore != null) {
+    if (currentFirestore != null) {
       return currentFirestore;
     }
     return FirebaseFirestore.getInstance();
   }
 
   public static String getDeviceId(@Nullable ContentResolver contentResolver) {
-    if (testMode || contentResolver == null) {
+    if (contentResolver == null) {
       return "22f523fgg3";
     }
     return Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID);
@@ -154,7 +143,6 @@ public class DependencyFactory {
   }
 
   public static void setCurrentCompletableFuture(CompletableFuture currentCompletableFuture) {
-    testMode = true;
     DependencyFactory.currentCompletableFuture = currentCompletableFuture;
   }
 
@@ -169,12 +157,11 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentViewModelClass(Class dependency) {
-    testMode = true;
     currentViewModelClass = dependency;
   }
 
   public static Class getCurrentViewModelClass() {
-    if (testMode && currentViewModelClass != null) {
+    if (currentViewModelClass != null) {
       return currentViewModelClass;
     }
     return FavorViewModel.class;
@@ -182,67 +169,61 @@ public class DependencyFactory {
 
   @VisibleForTesting
   public static void setCurrentFavorRepository(FavorUtil dependency) {
-    testMode = true;
     currentFavorRepository = dependency;
   }
 
   public static FavorUtil getCurrentFavorRepository() {
-    if (testMode && currentFavorRepository != null) return currentFavorRepository;
+    if (currentFavorRepository != null) return currentFavorRepository;
     return FavorUtil.getSingleInstance();
   }
 
   @VisibleForTesting
   public static void setCurrentUserRepository(IUserUtil dependency) {
-    testMode = true;
     currentUserRepository = dependency;
   }
 
   public static IUserUtil getCurrentUserRepository() {
-    if (testMode && currentUserRepository != null) return currentUserRepository;
+    if (currentUserRepository != null) return currentUserRepository;
     return UserUtil.getSingleInstance();
   }
 
   @VisibleForTesting
   public static void setCurrentFirebaseNotificationInstanceId(FirebaseInstanceId dependency) {
-    testMode = true;
     currentFirebaseInstanceId = dependency;
   }
 
   public static FirebaseInstanceId getCurrentFirebaseNotificationInstanceId() {
-    if (testMode && currentFirebaseInstanceId != null) return currentFirebaseInstanceId;
+    if (currentFirebaseInstanceId != null) return currentFirebaseInstanceId;
     return FirebaseInstanceId.getInstance();
   }
 
   public static PictureUtil getCurrentPictureUtility() {
-    if (testMode && currentPictureUtility != null) return currentPictureUtility;
+    if (currentPictureUtility != null) return currentPictureUtility;
     return PictureUtil.getInstance();
   }
 
   public static FirebaseStorage getCurrentFirebaseStorage() {
-    if (testMode && currentFirebaseStorage != null) return currentFirebaseStorage;
+    if (currentFirebaseStorage != null) return currentFirebaseStorage;
     return FirebaseStorage.getInstance();
   }
 
   public static CacheUtil getCurrentCacheUtility() {
-    if (testMode && currentPictureUtility != null) return currentCacheUtility;
+    if (currentPictureUtility != null) return currentCacheUtility;
     return CacheUtil.getInstance();
   }
 
   @VisibleForTesting
   public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
-    testMode = true;
     currentPictureUtility = pictureUtil;
   }
 
   @VisibleForTesting
   public static void setCurrentFirebaseStorage(FirebaseStorage dependency) {
-    testMode = true;
     currentFirebaseStorage = dependency;
   }
 
   @VisibleForTesting
   public static void setCurrentCacheUtility(CacheUtil cacheUtil) {
-    testMode = true;
     currentCacheUtility = cacheUtil;
   }
 }
