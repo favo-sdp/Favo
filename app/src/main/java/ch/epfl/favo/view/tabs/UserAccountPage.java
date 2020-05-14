@@ -27,6 +27,7 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
@@ -50,23 +51,21 @@ public class UserAccountPage extends Fragment {
     setupButtons();
 
     displayUserData(DependencyFactory.getCurrentFirebaseUser());
+    displayUserDetails(new User());
 
     viewModel =
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-
-    setupUserListener();
+    UserUtil.getSingleInstance()
+        .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+        .thenAccept(this::displayUserDetails);
 
     return view;
   }
 
   private IFavorViewModel getViewModel() {
     return viewModel;
-  }
-
-  private void setupUserListener() {
-    getViewModel().getCurrentUser().observe(getViewLifecycleOwner(), this::displayUserDetails);
   }
 
   private void setupButtons() {
@@ -78,7 +77,6 @@ public class UserAccountPage extends Fragment {
   }
 
   private void displayUserDetails(User user) {
-    if (user == null) user = new User();
     ((TextView) view.findViewById(R.id.user_account_favorsCreated))
         .setText(getString(R.string.favors_created_format, user.getRequestedFavors()));
     ((TextView) view.findViewById(R.id.user_account_favorsAccepted))

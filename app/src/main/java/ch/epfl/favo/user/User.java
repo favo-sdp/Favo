@@ -53,6 +53,7 @@ public class User implements Document {
   private int likes;
   private int dislikes;
   private double balance;
+  private String profilePicUrl;
 
   public User() {
     this.activeAcceptingFavors = 0;
@@ -115,6 +116,7 @@ public class User implements Document {
         deviceId,
         null,
         new FavoLocation(location));
+    profilePicUrl = (firebaseUser.getPhotoUrl()!=null)?firebaseUser.getPhotoUrl().toString():null;
   }
 
   // Getters
@@ -180,6 +182,13 @@ public class User implements Document {
 
   public int getActiveRequestingFavors() {
     return activeRequestingFavors;
+  }
+
+  public String getPictureUrl() {
+    return profilePicUrl;
+  }
+  public void setProfilePicUrl(String url){
+    profilePicUrl = url;
   }
 
   public void setActiveAcceptingFavors(int totalAcceptingFavors) {

@@ -265,9 +265,4 @@ public class FavorViewModelTest {
   public void testIsShowObservedFavor() {
     viewModel.isShowObservedFavor();
   }
-
-  @Test
-  public void testShowCurrentUser() {
-    viewModel.getCurrentUser();
-  }
 }

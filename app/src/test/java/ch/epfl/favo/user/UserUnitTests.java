@@ -67,6 +67,7 @@ public class UserUnitTests {
     int testNum = 2;
 
     User user = new User();
+    String pictureUrl = "someUrl";
     int activeAcceptingFavors = User.MAX_ACCEPTING_FAVORS;
     int activeRequestingFavors = User.MAX_REQUESTING_FAVORS;
     double newBalance = 5;
@@ -85,6 +86,7 @@ public class UserUnitTests {
     user.setLikes(testNum);
     user.setDislikes(testNum);
     user.setBalance(newBalance);
+    user.setProfilePicUrl(pictureUrl);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
@@ -96,6 +98,7 @@ public class UserUnitTests {
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
     assertEquals((int) newBalance, (int) user.getBalance());
+    assertEquals(pictureUrl,user.getPictureUrl());
   }
 
   @Test

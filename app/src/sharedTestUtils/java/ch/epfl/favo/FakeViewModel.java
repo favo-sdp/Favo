@@ -174,15 +174,8 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return observedFavorResult;
   }
 
-  @VisibleForTesting
-  public void setUserValue(User user) {
-    observedUser.setValue(user);
-  }
 
-  @Override
-  public LiveData<User> getCurrentUser() {
-    return observedUser;
-  }
+
 
   @Override
   public void setShowObservedFavor(Boolean show) {

@@ -47,7 +47,9 @@ function sendMulticastMessage(message, usersIds) {
                     return console.log('List of tokens that caused failures: ' + failedTokens);
                 }
             }
-        return});}
+            return
+        });
+}
 
 // send new favor notification to users in the area
 exports.sendNotificationNearbyOnNewFavor = functions.firestore
@@ -261,4 +263,3 @@ exports.expireOldFavorsOnCreate = functions.firestore
                 console.log("Failed expiring docs", reason)
             });
     });
-

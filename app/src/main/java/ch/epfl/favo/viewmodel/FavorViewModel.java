@@ -10,7 +10,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -261,23 +260,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
               if (documentSnapshot != null) setFavorValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();
-  }
-
-  public LiveData<User> getCurrentUser() {
-    if (currentUser.getValue() == null) {
-      DocumentReference currentUserReference =
-          getUserRepository().getCurrentUserReference(currentUserId);
-      currentUserReference.addSnapshotListener(
-          MetadataChanges.EXCLUDE,
-          (documentSnapshot, e) -> {
-            handleException(e);
-            if (documentSnapshot != null) {
-              User user = documentSnapshot.toObject(User.class);
-              currentUser.setValue(user);
-            }
-          });
-    }
-    return currentUser;
   }
 
   @Override
