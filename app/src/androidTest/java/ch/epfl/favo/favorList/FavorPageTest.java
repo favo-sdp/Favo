@@ -170,43 +170,6 @@ public class FavorPageTest {
     onView(withText(favor.getTitle())).check(matches(isDisplayed())).perform(click());
   }
 
-  @Test
-  public void testItemMenu() throws InterruptedException {
-    // Click on favors tab
-    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
-
-    // Click on new favor tab
-    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    // Fill in text views with fake favor
-    Favor favor = FakeItemFactory.getFavor();
-
-    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
-    //
-    // Click on request button
-    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-    Thread.sleep(1000);
-    // Click on back button
-    pressBack();
-    getInstrumentation().waitForIdleSync();
-
-    onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-
-    // wait to refresh
-    Thread.sleep(2000);
-
-    // check favor is displayed in active favor list view
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
-
-    // check item menu and all the options are displayed
-    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
-  }
 
   @Test
   public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
