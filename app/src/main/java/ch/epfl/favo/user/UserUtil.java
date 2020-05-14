@@ -55,7 +55,8 @@ public class UserUtil implements IUserUtil {
    * @return
    */
   @Override
-  public CompletableFuture<Void> changeActiveFavorCount(String userId, boolean isRequested, int change) {
+  public CompletableFuture<Void> changeActiveFavorCount(
+      String userId, boolean isRequested, int change) {
     return findUser(userId)
         .thenCompose(
             (user) -> {
@@ -84,7 +85,9 @@ public class UserUtil implements IUserUtil {
 
   @Override
   public Query getAllUserFavors(String userId) {
-    return collection.getReference()
+    return collection
+        .getReference()
+        .orderBy("title", Query.Direction.ASCENDING)
         .orderBy("postedTime", Query.Direction.DESCENDING)
         .whereArrayContains("userIds", userId);
   }
