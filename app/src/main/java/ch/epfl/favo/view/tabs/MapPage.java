@@ -12,11 +12,13 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -35,8 +37,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
@@ -113,7 +121,6 @@ public class MapPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    mMap.getUiSettings().setZoomControlsEnabled(true);
     mMap.setPadding(0, 0, 0, MAP_BOTTOM_PADDING);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
@@ -167,16 +174,21 @@ public class MapPage extends Fragment
       FavoLocation loc = new FavoLocation(mLocation);
       loc.setLatitude(latLng.latitude);
       loc.setLongitude(latLng.longitude);
-      Favor newFavor =
-          new Favor(
-              "",
-              " ",
-              DependencyFactory.getCurrentFirebaseUser().getUid(),
-              loc,
-              FavorStatus.EDIT,
-              0);
-      focusedFavor = newFavor;
-      Marker mk = drawFavorMarker(newFavor, true, true);
+
+      if (focusedFavor == null) {
+
+        Favor newFavor =
+            new Favor(
+                "",
+                " ",
+                DependencyFactory.getCurrentFirebaseUser().getUid(),
+                loc,
+                FavorStatus.EDIT,
+                0);
+        focusedFavor = newFavor;
+      }
+
+      Marker mk = drawFavorMarker(focusedFavor, true, true);
       mk.showInfoWindow();
       newMarkers.add(mk);
       mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -201,7 +213,36 @@ public class MapPage extends Fragment
                   boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
                   Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
                   // count new added marker on map
-                  if (isEdited) newMarkers.add(marker);
+                  if (isEdited) {
+                    newMarkers.add(marker);
+
+                    view.findViewById(R.id.toggle).setVisibility(View.GONE);
+                    ((MainActivity) requireActivity()).hideBottomNavigation();
+
+                    requireActivity()
+                        .findViewById(R.id.hamburger_menu_button)
+                        .setVisibility(View.GONE);
+
+                    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+                    toolbar.setNavigationIcon(null);
+
+                    Button doneButton =
+                        requireView().findViewById(R.id.button_location_from_request_view);
+                    doneButton.setVisibility(View.VISIBLE);
+
+                    doneButton.setOnClickListener(
+                        v -> {
+                          focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
+                          focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
+
+                          focusedFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+                          // post to DB
+                          CompletableFuture postFavorFuture =
+                              getViewModel().requestFavor(focusedFavor);
+                          postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
+                          postFavorFuture.exceptionally(onFailedResult(requireView()));
+                        });
+                  }
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation(), true);
                 }
@@ -209,6 +250,30 @@ public class MapPage extends Fragment
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
+  }
+
+  private Consumer onSuccessfulRequest(View currentView) {
+    return o -> {
+      if (DependencyFactory.isOfflineMode(requireContext())) {
+        CommonTools.showSnackbar(currentView, getString(R.string.save_draft_message));
+      } else {
+        CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+      }
+      // jump to favorPublished view
+      Bundle favorBundle = new Bundle();
+      favorBundle.putString(CommonTools.FAVOR_ARGS, focusedFavor.getId());
+      Navigation.findNavController(currentView)
+          .navigate(R.id.action_nav_map_to_favorPublishedView_via_RequestView, favorBundle);
+    };
+  }
+
+  private Function onFailedResult(View currentView) {
+    return (exception) -> {
+      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
+      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      return null;
+    };
   }
 
   public IFavorViewModel getViewModel() {
@@ -401,9 +466,11 @@ public class MapPage extends Fragment
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     } else {
-      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-      Navigation.findNavController(view)
-          .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
+      if (isRequested) {
+        favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+        Navigation.findNavController(view)
+            .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
+      }
     }
   }
 }

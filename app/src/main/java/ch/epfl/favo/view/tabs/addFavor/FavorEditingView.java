@@ -28,13 +28,12 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -168,7 +167,7 @@ public class FavorEditingView extends Fragment {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
-    mFavoCoinsView.setText(String.valueOf((int)currentFavor.getReward()));
+    mFavoCoinsView.setText(String.valueOf((int) currentFavor.getReward()));
 
     String url = currentFavor.getPictureUrl();
     if (url != null) {
@@ -198,8 +197,8 @@ public class FavorEditingView extends Fragment {
     }
 
     // Button: Access location
-    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
-    locationAccessBtn.setOnClickListener(new onButtonClick());
+//    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+//    locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
   /**
@@ -211,20 +210,39 @@ public class FavorEditingView extends Fragment {
 
     EditText titleElem = requireView().findViewById(R.id.title_request_view);
     if (titleElem.getText().toString().equals("")) {
-      showSnackbar(getString(R.string.title_required_message));
+      CommonTools.showSnackbar(requireView(), getString(R.string.title_required_message));
     } else {
 
-      favorStatus = FavorStatus.REQUESTED;
       getFavorFromView();
-      // post to DB
-      CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-      postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-      postFavorFuture.exceptionally(onFailedResult(requireView()));
-      // Show confirmation and minimize keyboard
-      if (DependencyFactory.isOfflineMode(requireContext())) {
-        showSnackbar(getString(R.string.save_draft_message));
-      }
       CommonTools.hideSoftKeyboard(requireActivity());
+
+      new AlertDialog.Builder(requireActivity())
+          .setMessage(getText(R.string.set_location_message))
+          .setPositiveButton(
+              getText(R.string.set_location_yes),
+              (dialogInterface, i) -> {
+                getFavorFromView();
+                CommonTools.hideSoftKeyboard(requireActivity());
+                favorViewModel.setShowObservedFavor(true);
+                favorViewModel.setFavorValue(currentFavor);
+                // signal the destination is map view
+                findNavController(requireActivity(), R.id.nav_host_fragment)
+                    .navigate(R.id.action_favorEditingView_to_nav_map, null);
+              })
+          .setNegativeButton(
+              getText(R.string.set_location_no),
+              (dialogInterface, i) -> {
+                favorStatus = FavorStatus.REQUESTED;
+                // post to DB
+                CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
+                postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
+                postFavorFuture.exceptionally(onFailedResult(requireView()));
+                // Show confirmation and minimize keyboard
+                if (DependencyFactory.isOfflineMode(requireContext())) {
+                  CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+                }
+              })
+          .show();
     }
   }
 
@@ -313,7 +331,7 @@ public class FavorEditingView extends Fragment {
     super.onActivityResult(requestCode, resultCode, data);
     // If intent was not succesful
     if (resultCode != RESULT_OK || data == null) {
-      showSnackbar(getString(R.string.error_msg_image_request_view));
+      CommonTools.showSnackbar(requireView(), getString(R.string.error_msg_image_request_view));
       return;
     }
     switch (requestCode) {
@@ -334,14 +352,6 @@ public class FavorEditingView extends Fragment {
   }
 
   /**
-   * Will display error message in the form of a snack bar. This method is wrapped for unit tests
-   *
-   * @param errorMessageRes error message.
-   */
-  private void showSnackbar(String errorMessageRes) {
-    Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
-  }
-  /**
    * ensures keyboard hides when user clicks outside of edit texts.
    *
    * @param view corresponds to root view created during onCreate
@@ -359,7 +369,11 @@ public class FavorEditingView extends Fragment {
 
   private Consumer onSuccessfulRequest(View currentView) {
     return o -> {
-      CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+      if (DependencyFactory.isOfflineMode(requireContext())) {
+        CommonTools.showSnackbar(currentView, getString(R.string.save_draft_message));
+      } else {
+        CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+      }
       // jump to favorPublished view
       Bundle favorBundle = new Bundle();
       favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
@@ -392,15 +406,6 @@ public class FavorEditingView extends Fragment {
           break;
         case R.id.add_picture_button:
           openFileChooser();
-          break;
-        case R.id.location_request_view_btn:
-          getFavorFromView();
-          CommonTools.hideSoftKeyboard(requireActivity());
-          favorViewModel.setShowObservedFavor(true);
-          favorViewModel.setFavorValue(currentFavor);
-          // signal the destination is map view
-          findNavController(requireActivity(), R.id.nav_host_fragment)
-              .navigate(R.id.action_favorEditingView_to_nav_map, null);
           break;
       }
     }

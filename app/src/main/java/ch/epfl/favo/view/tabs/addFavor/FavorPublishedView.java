@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -501,6 +502,42 @@ public class FavorPublishedView extends Fragment {
             CommonTools.showSnackbar(
                 requireView(), getString(R.string.favor_complete_success_msg)));
     updateFuture.exceptionally(onFailedResult(requireView()));
+
+    // review favor
+    reviewFavorExperience();
+  }
+
+  private void reviewFavorExperience() {
+    String otherUserId;
+    if (currentFavor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+      otherUserId = currentFavor.getAccepterId();
+    } else {
+      otherUserId = currentFavor.getRequesterId();
+    }
+
+    UserUtil.getSingleInstance()
+        .findUser(otherUserId)
+        .thenAccept(
+            user ->
+                new AlertDialog.Builder(requireActivity())
+                    .setMessage(getText(R.string.feedback_description))
+                    .setPositiveButton(
+                        getText(R.string.positive_feedback),
+                        (dialogInterface, i) -> {
+                          user.setLikes(user.getLikes() + 1);
+                          UserUtil.getSingleInstance().updateUser(user);
+
+                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                        })
+                    .setNegativeButton(
+                        getText(R.string.negative_feedback),
+                        (dialogInterface, i) -> {
+                          user.setDislikes(user.getDislikes() + 1);
+                          UserUtil.getSingleInstance().updateUser(user);
+
+                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                        })
+                    .show());
   }
 
   private void cancelFavor() {

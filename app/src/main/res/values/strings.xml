@@ -164,6 +164,9 @@
     <string name="report_user_text">Report user</string>
     <string name="report_description">Report the user in case of inappropriate behaviour</string>
     <string name="feedback_description">Rate your experience with this user to help others</string>
+    <string name="positive_feedback">All good!</string>
+    <string name="negative_feedback">Bad experience</string>
+
 
     <!-- Shop Page -->
     <string name="shop">Shop</string>
@@ -190,6 +193,7 @@
     <string name="report_favor_message">Favor has been reported! Thanks for your help</string>
     <string name="report_favor_text">Report favor</string>
 
-
-
+    <string name="set_location_message">The favor location is set to your current position. Would you like to change it?</string>
+    <string name="set_location_yes">Yes, take me to the map</string>
+    <string name="set_location_no">No, my current position is fine</string>
 </resources>
