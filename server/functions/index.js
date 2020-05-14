@@ -193,6 +193,7 @@ exports.sendNotificationOnUpdate = functions.firestore
         }
     });
 
+
 // send new favor notification to users on updates
 exports.sendNotificationOnNewChat = functions.firestore
     .document('/chats/{chatId}')
@@ -216,7 +217,7 @@ exports.sendNotificationOnNewChat = functions.firestore
         sendMulticastMessage(titleToSend, receivers);
         return;
         }
-    }
+    });
 
 
 //Expire old requests: https://us-central1-favo-11728.cloudfunctions.net/expireOldFavors
@@ -244,9 +245,9 @@ exports.expireOldFavors = functions.https.onRequest((req,res)=>{
                   }
               })
 
-              return Promise.all(promises).then(data=>{
-                      console.log("Succesfully updated favor statuses.");
-                      res.status(100).send("Favors successfully expired");
-                      })}
+    return Promise.all(promises).then(data=>{
+            console.log("Succesfully updated favor statuses.");
+            res.status(100).send("Favors successfully expired");
+            })}
 
-    } )});
+        })})};
