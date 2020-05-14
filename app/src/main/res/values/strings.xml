@@ -74,7 +74,7 @@
     <string name="favor_respond_success_msg">Favor responded successfully.</string>
     <string name="home">Home</string>
     <string name="favor_request_success_msg">Favor added successfully.</string>
-    <string name="profile">profile</string>
+    <string name="profile">Profile</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
@@ -120,7 +120,7 @@
     <string name="error_database_sync">Failed fetching data</string>
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
-    <string name="request_favor_draft">Save favor draft</string>
+    <string name="request_favor_draft">Save draft</string>
     <string name="edit_favor">Edit</string>
     <string name="reuse_favor">Reuse</string>
     <string name="cancel_request">Cancel</string>
@@ -191,7 +191,7 @@
     <string name="request_page_title">New favor</string>
     <string name="title_required_message">Title must be set to request a favor</string>
     <string name="report_favor_message">Favor has been reported! Thanks for your help</string>
-    <string name="report_favor_text">Report favor</string>
+    <string name="report_favor_text">Report</string>
     <string name="optional_text">Optional</string>
     <string name="picture_description_text">Upload a picture or take a photo</string>
 

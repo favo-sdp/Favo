@@ -49,7 +49,7 @@ public class UserAccountPage extends Fragment {
 
     displayUserData(DependencyFactory.getCurrentFirebaseUser());
 
-    displayUserDetails(new User());
+    displayUserDetails(new User(null, "Name", "Email", null, null, null));
 
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())

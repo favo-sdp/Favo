@@ -233,6 +233,7 @@ public class FavorEditingView extends Fragment {
               getText(R.string.set_location_no),
               (dialogInterface, i) -> {
                 favorStatus = FavorStatus.REQUESTED;
+                currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
                 // post to DB
                 CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
                 postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));

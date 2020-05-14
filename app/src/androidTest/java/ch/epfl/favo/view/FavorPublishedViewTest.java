@@ -144,7 +144,7 @@ public class FavorPublishedViewTest {
   @Test
   public void testAcceptFlow() throws Throwable {
     // click accept button
-    //  Thread.sleep(100000);
+    //Thread.sleep(2000);
     onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
