@@ -135,8 +135,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     tempFavor.setStatusIdToInt(cancelledStatus);
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
-    if(favor.getStatusId() == REQUESTED.toInt())
-        favor.setAccepterId("");
+    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
     CompletableFuture resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (int i = 1; i < favor.getUserIds().size(); i++) {
       int commitUser = i;
@@ -166,7 +165,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    */
   public CompletableFuture acceptFavor(final Favor favor, User user) {
     Favor tempFavor = (Favor) favor.clone();
-    tempFavor.setAccepterId("");
     tempFavor.setAccepterId(user.getId());
     tempFavor.setStatusIdToInt(ACCEPTED);
     return getFavorRepository().updateFavor(tempFavor);
@@ -197,16 +195,16 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radiusInKm) {
     if (mCurrentLocation == null) mCurrentLocation = loc;
     if (mRadius == -1) mRadius = radiusInKm;
-    // if (activeFavorsAroundMe.getValue() == null
-    //    || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
-    getFavorRepository()
-        .getNearbyFavors(loc, radiusInKm)
-        .addSnapshotListener(
-            MetadataChanges.EXCLUDE,
-            (queryDocumentSnapshots, e) ->
-                activeFavorsAroundMe.postValue(
-                    getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
-    // }
+    if (activeFavorsAroundMe.getValue() == null
+            || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
+      getFavorRepository()
+              .getNearbyFavors(loc, radiusInKm)
+              .addSnapshotListener(
+                      MetadataChanges.EXCLUDE,
+                      (queryDocumentSnapshots, e) ->
+                              activeFavorsAroundMe.postValue(
+                                      getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
+    }
     return getFavorsAroundMe();
   }
 

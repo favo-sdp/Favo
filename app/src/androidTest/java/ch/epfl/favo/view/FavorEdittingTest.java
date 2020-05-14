@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.ThemedSpinnerAdapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -16,7 +15,6 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
-import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +39,6 @@ import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -59,7 +56,6 @@ import static ch.epfl.favo.TestConstants.FAVOR_ID;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -314,7 +310,7 @@ public class FavorEdittingTest {
 
     // someone uncommit the old favor
     Favor favor2 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
-    favor2.setAccepterId("");
+      favor2.uncommitHelper("one committer");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor2));
     Thread.sleep(1000);
     getInstrumentation().waitForIdleSync();

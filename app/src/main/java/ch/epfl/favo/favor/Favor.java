@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,18 +198,39 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.reward = reward;
   }
 
+  /**
+   * structure of userIds: a list with the first position always setting as requester Id, following
+   * with potential helpers who commit this favor. When a requester finally decide a accepter, he
+   * reset this list with his own Id and accepter's ID *
+   */
   public void setAccepterId(String id) {
-    // clear the list of committed/accepted user
-    if (id != null && id.equals("")){
-      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
+
+    if (userIds != null && !userIds.isEmpty() && id != null) {
+      // append the new user id to the end of list, meaning a new user commit this favor
+      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid(), id);
     }
-    else if (userIds != null && !userIds.isEmpty()) {
+  }
+
+  public void commitPotentialHelper(String id) {
+    if (userIds != null && !userIds.isEmpty()) {
+      // append committed user id to the end of list
       ArrayList<String> arrayList = new ArrayList<>();
       arrayList.addAll(userIds);
       arrayList.add(id);
       userIds = arrayList;
     }
   }
+
+  public void uncommitHelper(String id) {
+    if (userIds != null && !userIds.isEmpty()) {
+      // append committed user id to the end of list
+      for (int i = 1; i < userIds.size(); i++) {
+        if (userIds.get(i).equals(id))
+          userIds.remove(i);
+      }
+    }
+  }
+
   public Date getPostedTime() {
     return postedTime;
   }

@@ -117,7 +117,7 @@ public class FavorEditingView extends Fragment {
                     CommonTools.showSnackbar(
                         rootView, getString(R.string.old_favor_cancelled_by_others));
                   }
-                } else throw new RuntimeException(getString(R.string.error_database_sync));
+                }
               } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
@@ -329,20 +329,11 @@ public class FavorEditingView extends Fragment {
       int action;
       // if this favor restarts from an archived one, then prevent pressback from jumping to
       // archived favor view.
-      if (favorSource.equals(getString(R.string.favor_source_publishedFavor)))
+      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
+              || favorSource.equals(getString(R.string.restart_request)))
         action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
       else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
       Navigation.findNavController(currentView).navigate(action, favorBundle);
-    };
-  }
-
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      return null;
     };
   }
 
@@ -370,5 +361,15 @@ public class FavorEditingView extends Fragment {
           break;
       }
     }
+  }
+
+  private Function onFailedResult(View currentView) {
+    return (exception) -> {
+      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
+        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
+      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
+      return null;
+    };
   }
 }

@@ -17,10 +17,12 @@ import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class GpsTracker implements LocationListener, IGpsTracker {
-  private static final int millisecToSce = 100;
-  private static final int minIntervalMs = 60;
-  private static final int minTimeMs = 10000;
-  private static final int minDistanceM = 10;
+  private static final int millisecToSec = 1000; // for converting unit from millisecond to second
+  private static final int minInterval =
+          60; // minimum time interval for requesting new location, unit in second
+  private static final int minTime =
+          10000; // minimum time interval for updating system location, unit in millisecond
+  private static final int minDistance = 10; // minimum distance difference, unit in meter
 
   private final Context context;
   private static Location mLastKnownLocation = null;
@@ -42,8 +44,9 @@ public class GpsTracker implements LocationListener, IGpsTracker {
    * @return the location of phone
    */
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
+    // if time less than minium interval, just return last location,
     if (mLastKnownLocation != null
-            && ((System.currentTimeMillis() - mLastUpdate) / millisecToSce) < minIntervalMs)
+            && ((System.currentTimeMillis() - mLastUpdate) / millisecToSec) < minInterval)
       return mLastKnownLocation;
 
     LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
@@ -56,11 +59,11 @@ public class GpsTracker implements LocationListener, IGpsTracker {
             == PackageManager.PERMISSION_GRANTED) {
       if (isGPSEnabled) {
         locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, minTimeMs, minDistanceM, this);
+                LocationManager.GPS_PROVIDER, minTime, minDistance, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       } else if (isNetworkEnabled) {
         locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, minTimeMs, minDistanceM, this);
+                LocationManager.NETWORK_PROVIDER, minTime, minDistance, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
     } else {
