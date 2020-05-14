@@ -153,8 +153,5 @@ public class UserUtilTest {
   public void testUserReference(){
     UserUtil.getSingleInstance().getCurrentUserReference("randomId");
   }
-  @Test
-  public void testActiveFavorQuery(){
-    UserUtil.getSingleInstance().getAllUserFavors("randomId");
-  }
+
 }

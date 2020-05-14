@@ -3,7 +3,6 @@ package ch.epfl.favo.user;
 import android.content.res.Resources;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.Query;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,5 +20,4 @@ public interface IUserUtil {
 
   DocumentReference getCurrentUserReference(String userId);
 
-  Query getAllUserFavors(String userId);
 }

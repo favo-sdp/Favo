@@ -83,14 +83,7 @@ public class UserUtil implements IUserUtil {
     return collection.getDocumentQuery(userId);
   }
 
-  @Override
-  public Query getAllUserFavors(String userId) {
-    return collection
-        .getReference()
-        .orderBy("title", Query.Direction.ASCENDING)
-        .orderBy("postedTime", Query.Direction.DESCENDING)
-        .whereArrayContains("userIds", userId);
-  }
+
 
   /**
    * Returns all the favors that are active in a given radius.
