@@ -147,7 +147,9 @@ public class FavorRequestView extends Fragment {
     mDescriptionView.setText(currentFavor.getDescription());
     String url = currentFavor.getPictureUrl();
     if (url != null) {
-      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      if (mImageView.getDrawable() != null) {
+        v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      }
       getViewModel()
           .downloadPicture(currentFavor)
           .thenAccept(
