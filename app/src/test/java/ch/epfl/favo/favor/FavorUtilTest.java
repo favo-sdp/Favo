@@ -2,6 +2,7 @@ package ch.epfl.favo.favor;
 
 import android.location.Location;
 
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 
@@ -22,6 +23,8 @@ import ch.epfl.favo.util.DependencyFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 
 /** Unit tests for favor util class */
 public class FavorUtilTest {
@@ -51,7 +54,7 @@ public class FavorUtilTest {
     Favor fakeFavor = FakeItemFactory.getFavor();
     CompletableFuture<Favor> futureFavor = new CompletableFuture<>();
     futureFavor.complete(fakeFavor);
-    Mockito.doReturn(futureFavor).when(mockDatabaseWrapper).getDocument(Mockito.anyString());
+    Mockito.doReturn(futureFavor).when(mockDatabaseWrapper).getDocument(anyString());
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
 
     CompletableFuture<Favor> obtainedFutureFavor =
@@ -66,7 +69,7 @@ public class FavorUtilTest {
     successfulTask.complete(null);
     Mockito.doReturn(successfulTask)
         .when(mockDatabaseWrapper)
-        .updateDocument(Mockito.anyString(), Mockito.anyMap());
+        .updateDocument(anyString(), Mockito.anyMap());
     assertTrue(FavorUtil.getSingleInstance().updateFavor(fakeFavor).isDone());
   }
 
@@ -75,7 +78,7 @@ public class FavorUtilTest {
     Favor fakeFavor = FakeItemFactory.getFavor();
     Mockito.doThrow(new RuntimeException())
         .when(mockDatabaseWrapper)
-        .addDocument(Mockito.any(Favor.class));
+        .addDocument(any(Favor.class));
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     assertThrows(Exception.class, () -> FavorUtil.getSingleInstance().requestFavor(fakeFavor));
   }
@@ -133,7 +136,7 @@ public class FavorUtilTest {
     Query mockQuery = Mockito.mock(Query.class);
     Mockito.doReturn(mockQuery)
         .when(mockDatabaseWrapper)
-        .locationBoundQuery(Mockito.any(Location.class), Mockito.anyDouble());
+        .locationBoundQuery(any(Location.class), Mockito.anyDouble());
     assertEquals(
         mockQuery,
         FavorUtil.getSingleInstance().getNearbyFavors(Mockito.mock(Location.class), 3.0));
@@ -144,7 +147,7 @@ public class FavorUtilTest {
     DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
     Mockito.doReturn(mockDocumentReference)
         .when(mockDatabaseWrapper)
-        .getDocumentQuery(Mockito.anyString());
+        .getDocumentQuery(anyString());
     assertEquals(mockDocumentReference, FavorUtil.getSingleInstance().getFavorReference("bla"));
   }
 
@@ -153,7 +156,7 @@ public class FavorUtilTest {
     CompletableFuture result = Mockito.mock(CompletableFuture.class);
     Mockito.doReturn(result)
         .when(mockDatabaseWrapper)
-        .getAllDocumentsLongitudeBounded(Mockito.any(Location.class), Mockito.anyDouble());
+        .getAllDocumentsLongitudeBounded(any(Location.class), Mockito.anyDouble());
     assertEquals(
         result,
         FavorUtil.getSingleInstance()
@@ -166,5 +169,21 @@ public class FavorUtilTest {
     String newPictureUrl = TestConstants.OTHER_PICTURE_URL;
     FavorUtil.getSingleInstance().updateFavorPhoto(fakeFavor, newPictureUrl);
     assertEquals(newPictureUrl, fakeFavor.getPictureUrl());
+  }
+  @Test
+  public void testGetAllActiveFavorsFromUser(){
+//    .orderBy("title", Query.Direction.ASCENDING)
+//            .orderBy("postedTime", Query.Direction.DESCENDING)
+//            .whereArrayContains("userIds", userId);
+    CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
+    Query mockOrderByTitle = Mockito.mock(Query.class);
+    Query mockOrderByPostedTime = Mockito.mock(Query.class);
+    Query mockWhereArrayContains = Mockito.mock(Query.class);
+    Mockito.doReturn(mockCollectionReference).when(mockDatabaseWrapper).getReference();
+    Mockito.doReturn(mockOrderByTitle).when(mockCollectionReference).orderBy(anyString(), any(Query.Direction.class));
+    Mockito.doReturn(mockOrderByPostedTime).when(mockOrderByTitle).orderBy(anyString(), any(Query.Direction.class));
+    Mockito.doReturn(mockWhereArrayContains).when(mockOrderByPostedTime).whereArrayContains(anyString(),any());
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    FavorUtil.getSingleInstance().getAllUserFavors("someId");
   }
 }

@@ -5,7 +5,6 @@ import android.content.res.Resources;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.Query;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -88,10 +87,5 @@ public class FakeUserUtil implements IUserUtil {
   @VisibleForTesting
   public void setCurrentUserReference(DocumentReference dependency) {
     currentUserReference = dependency;
-  }
-
-  @Override
-  public Query getAllUserFavors(String userId) {
-    return null;
   }
 }

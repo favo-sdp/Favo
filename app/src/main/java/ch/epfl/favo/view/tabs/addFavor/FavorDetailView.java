@@ -131,11 +131,12 @@ public class FavorDetailView extends Fragment {
   private void completeFavor() {
     CompletableFuture<Void> updateFuture = getViewModel().completeFavor(currentFavor, false);
     updateFuture.whenComplete(
-        (aVoid, throwable) -> {
-          if (throwable != null) handleException(throwable);
-          else
-            CommonTools.showSnackbar(requireView(), getString(R.string.favor_complete_success_msg));
-        });
+        (aVoid, throwable) -> handleResult(throwable, R.string.favor_complete_success_msg));
+  }
+
+  private void handleResult(Throwable throwable, int p) {
+    if (throwable != null) handleException(throwable);
+    else CommonTools.showSnackbar(requireView(), getString(p));
   }
 
   private void cancelFavor() {
@@ -171,10 +172,7 @@ public class FavorDetailView extends Fragment {
     // update DB with accepted status
     CompletableFuture<Void> acceptFavorFuture = getViewModel().acceptFavor(currentFavor);
     acceptFavorFuture.whenComplete(
-        (aVoid, throwable) -> {
-          if (throwable != null) handleException(throwable);
-          else CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
-        });
+        (aVoid, throwable) -> handleResult(throwable, R.string.favor_respond_success_msg));
   }
 
   private void handleException(Throwable throwable) {

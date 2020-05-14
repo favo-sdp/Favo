@@ -12,10 +12,13 @@ var db = admin.firestore();
 
 // global constants
 const maxDistance = 100.0; // in km
+const REQUESTED_STATUS = 0;
+const ACCEPTED_STATUS = 1;
+const EXPIRED_STATUS = 2;
+const CANCELLED_REQUESTER_STATUS = 3;
+const CANCELLED_ACCEPTER_STATUS = 4;
 
-const accepted = 1;
-const cancelledByRequester = 3;
-const cancelledByAccepter = 4;
+
 
 // function to calculate the distance between two points given their coordinates
 function distanceInKm(lon1, lat1, lon2, lat2) {
@@ -134,21 +137,21 @@ exports.sendNotificationOnUpdate = functions.firestore
             //console.log('Status has changed');
 
             // favor has been accepted, send notification to requester
-            if (newStatus === accepted) {
+            if (newStatus === ACCEPTED_STATUS) {
                 //console.log('Favor has been accepted');
                 titleToSend = "Favor " + favorTitle + " has been accepted";
                 userReceiver = requesterId;
             }
 
             // favor has been cancelled by requester, send notification to accepter, if it exists
-            if (newStatus === cancelledByRequester) {
+            if (newStatus === CANCELLED_REQUESTER_STATUS) {
                 //console.log('Favor has been cancelled by the requester');
                 titleToSend = "Favor " + favorTitle + " has been cancelled by the requester";
                 userReceiver = accepterId;
             }
 
             // favor has been cancelled by accepter, send notification to requester
-            if (newStatus === cancelledByAccepter) {
+            if (newStatus === CANCELLED_ACCEPTER_STATUS) {
                 //console.log('Favor has been cancelled by the accepter');
                 titleToSend = "Favor " + favorTitle + " has been cancelled by the accepter";
                 userReceiver = requesterId;
@@ -204,14 +207,11 @@ exports.expireOldFavorsOnCreate = functions.firestore
   .onCreate((change)=>{
       
       const TIME_IN_DAYS = 1;
-      const EXPIRED_STATUS = 2;
-      const REQUESTED_STATUS = 0;
       const MAX_UPDATES = 20;
       var now = Date.now();
       var cutoffTime = now - TIME_IN_DAYS*24*60*60*1000;
       var cutoff =  admin.firestore.Timestamp.fromMillis(cutoffTime)
-      //var cutoff = firestore.Timestamp.fromMillis(cutoffTime)//transform to ms->Timestamp
-    
+
       let query = db.collection('/favors');
       
       return query.where("statusId","==",REQUESTED_STATUS).orderBy("postedTime","asc").endAt(cutoff).get()
@@ -223,38 +223,45 @@ exports.expireOldFavorsOnCreate = functions.firestore
             }
             else{
                 let batch = db.batch();
-                var totalUpdateCount = 0;
-                var userUpdates = new Map()//hashmap with user key and int value
-                const fieldValue = admin.firestore.FieldValue;
-                try{
-                snapshot.forEach(doc=>{//update favor loop
-                    let favor = doc.data();
-                    //console.log(postedTime,",",cutoff);
-                    totalUpdateCount++; 
-                    var userId = favor.requesterId
-                    if (userUpdates.has(userId)) {//update count in map
-                        let newValue = userUpdates.get(userId) - 1;
-                        userUpdates.set(userId,newValue)
-                    }else{ //insert user in map
-                        totalUpdateCount++;
-                        if (totalUpdateCount>MAX_UPDATES) throw BreakException;
-                        userUpdates.set(userId,-1);
-                    }          
-                    //console.log("updated");
-                    batch.update(doc.ref,{'statusId':EXPIRED_STATUS,'isArchived':true});
-                    
-                });
-            }catch(e){
-                console.log("Reached max updates per transaction (20)")
-                if (e !== BreakException) throw e;
-            } //very ugly way of breaking out of foreach loop
-                for (const [userId, updateCount] of userUpdates.entries()){
-                    var userRef = db.collection("/users").doc(userId);
-                    batch.update(userRef,{'activeRequestingFavors':fieldValue.increment(updateCount)});
-                }
+                updateFavorsAndUsers(snapshot, MAX_UPDATES, batch);
                 return batch.commit().then(()=>console.log("Favors and users successfully updated"));
             }
 
       }).catch(reason=>{console.log("Failed expiring docs",reason)
                         });
  });
+
+function updateFavorsAndUsers(snapshot, MAX_UPDATES, batch) {
+    var totalUpdateCount = 0;
+    var userUpdates = new Map(); //hashmap with user key and int value
+    const fieldValue = admin.firestore.FieldValue;
+    try {
+        snapshot.forEach(doc => {
+            let favor = doc.data();
+            //console.log(postedTime,",",cutoff);
+            totalUpdateCount++;
+            var userId = favor.requesterId;
+            if (userUpdates.has(userId)) { //update count in map
+                let newValue = userUpdates.get(userId) - 1;
+                userUpdates.set(userId, newValue);
+            }
+            else { //insert user in map
+                totalUpdateCount++;
+                if (totalUpdateCount > MAX_UPDATES)
+                    throw BreakException;
+                userUpdates.set(userId, -1);
+            }
+            //console.log("updated");
+            batch.update(doc.ref, { 'statusId': EXPIRED_STATUS, 'isArchived': true });
+        });
+    }
+    catch (e) {
+        console.log("Reached max updates per transaction (20)");
+        if (e !== BreakException)
+            throw e;
+    } //very ugly way of breaking out of foreach loop
+    for (const [userId, updateCount] of userUpdates.entries()) {
+        var userRef = db.collection("/users").doc(userId);
+        batch.update(userRef, { 'activeRequestingFavors': fieldValue.increment(updateCount) });
+    }
+}
