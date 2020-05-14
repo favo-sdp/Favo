@@ -162,7 +162,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="30dp"
             android:padding="15dp"
-            android:text="@string/report_text"
+            android:text="@string/report_user_text"
             android:textSize="16sp"
             android:theme="@style/WarnButton" />
 

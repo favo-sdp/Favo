@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +69,8 @@ public class Favor implements Parcelable, Document, Cloneable {
       String requesterId,
       FavoLocation location,
       int statusId,
-      double reward) {
+      double reward,
+      String pictureUrl) {
 
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
@@ -79,7 +79,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
-    this.pictureUrl = null;
+    this.pictureUrl = pictureUrl;
     this.isArchived = false;
     this.reward = reward;
   }
@@ -93,7 +93,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       FavoLocation location,
       int statusId,
       double reward) {
-    this(title, description, requesterId, location, statusId, reward);
+    this(title, description, requesterId, location, statusId, reward, null);
     this.id = id;
   }
 
@@ -106,7 +106,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       FavorStatus statusId,
       double reward) {
 
-    this(title, description, requesterId, location, statusId.toInt(), reward);
+    this(title, description, requesterId, location, statusId.toInt(), reward, null);
   }
 
   /**
@@ -201,16 +201,16 @@ public class Favor implements Parcelable, Document, Cloneable {
 
   public void setAccepterId(String id) {
     // clear the list of committed/accepted user
-    if (id != null && id.equals("")){
+    if (id != null && id.equals("")) {
       userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
-    }
-    else if (userIds != null && !userIds.isEmpty()) {
+    } else if (userIds != null && !userIds.isEmpty()) {
       ArrayList<String> arrayList = new ArrayList<>();
       arrayList.addAll(userIds);
       arrayList.add(id);
       userIds = arrayList;
     }
   }
+
   public Date getPostedTime() {
     return postedTime;
   }

@@ -131,7 +131,7 @@ public class FavorPublishedView extends Fragment {
     restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
-            currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
+        currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
@@ -158,8 +158,19 @@ public class FavorPublishedView extends Fragment {
       case R.id.delete_button:
         deleteFavor();
         break;
+      case R.id.reuse_button:
+        reuseFavor();
+        break;
+      case R.id.report_favor_button:
+        reportFavor();
+        break;
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void reportFavor() {
+    // TODO decide what to do with reported favors
+    CommonTools.showSnackbar(getView(), getString(R.string.report_favor_message));
   }
 
   public IFavorViewModel getViewModel() {
@@ -414,6 +425,23 @@ public class FavorPublishedView extends Fragment {
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
     favorBundle.putString(
         CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+        .navigate(R.id.action_global_favorEditingView, favorBundle);
+  }
+
+  private void reuseFavor() {
+    Bundle favorBundle = new Bundle();
+    Favor newFavor =
+        new Favor(
+            currentFavor.getTitle(),
+            currentFavor.getDescription(),
+            currentFavor.getRequesterId(),
+            currentFavor.getLocation(),
+            FavorStatus.EDIT.toInt(),
+            currentFavor.getReward(),
+            currentFavor.getPictureUrl());
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
+    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_floatButton));
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }

@@ -180,6 +180,10 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_favorEditingView_to_nav_map"
+            app:destination="@id/nav_map"
+            app:launchSingleTop="true" />
     </fragment>
 
     <fragment

@@ -27,4 +27,16 @@
         android:title="@string/invite_text"
         android:visible="false" />
 
+    <item
+        android:id="@+id/report_favor_button"
+        android:title="@string/report_favor_text"
+        android:visible="true" />
+
+
+    <item
+        android:id="@+id/reuse_button"
+        android:title="@string/reuse_favor"
+        android:visible="true" />
+
+
 </menu>

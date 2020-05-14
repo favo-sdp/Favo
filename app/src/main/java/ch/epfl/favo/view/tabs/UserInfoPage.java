@@ -82,7 +82,7 @@ public class UserInfoPage extends Fragment {
 
     Button reportUserButton = view.findViewById(R.id.report_user);
     reportUserButton.setOnClickListener(
-        v -> CommonTools.showSnackbar(getView(), getString(R.string.report_message)));
+        v -> CommonTools.showSnackbar(getView(), getString(R.string.report_user_message)));
   }
 
   private void displayUserData(User user) {
