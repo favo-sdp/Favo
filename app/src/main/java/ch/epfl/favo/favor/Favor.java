@@ -205,9 +205,9 @@ public class Favor implements Parcelable, Document, Cloneable {
    */
   public void setAccepterId(String id) {
 
-    if (userIds != null && !userIds.isEmpty() && id != null) {
+    if (userIds != null && !userIds.isEmpty()) {
       // append the new user id to the end of list, meaning a new user commit this favor
-      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid(), id);
+      userIds = Arrays.asList(getRequesterId(), id);
     }
   }
 
