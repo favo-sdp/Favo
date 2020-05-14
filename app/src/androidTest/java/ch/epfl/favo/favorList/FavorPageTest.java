@@ -328,7 +328,7 @@ public class FavorPageTest {
 
     Thread.sleep(2000);
 
-    // check favor is displayed in archived favor list view
+    // check favor is not displayed in archived favor list view
     onView(withText(favor.getTitle())).check(doesNotExist());
   }
 
