@@ -225,18 +225,22 @@ public class FavorEditingView extends Fragment {
     // TODO: Get reward from frontend (currently being set by default to 0)
     Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, 0);
     if (currentFavor == null) currentFavor = favor;
-    else
+    else{
       // do not override the pictureUrl of currentFavor
       favor.setPictureUrl(currentFavor.getPictureUrl());
-    currentFavor.updateToOther(favor);
+      currentFavor.updateToOther(favor);
+    }
   }
 
   private void savePicture() {
+    Favor favorForPicture;
     // empty field will be override later
-    Favor favor = new Favor("", "", currentUser.getUid(), null, favorStatus, 0);
+    // if currentFavor is null, start from a new one, otherwise use the current one
+    if(currentFavor == null) favorForPicture = new Favor("", "", currentUser.getUid(), null, favorStatus, 0);
+    else favorForPicture = currentFavor;
     Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
     CompletableFuture<Bitmap> cachedPictureFuture =
-        getViewModel().loadPictureFromLocal(getContext(), favor);
+        getViewModel().loadPictureFromLocal(getContext(), favorForPicture);
     if (cachedPictureFuture != null)
       cachedPictureFuture.thenAccept(
           cachedPicture -> {
@@ -246,11 +250,11 @@ public class FavorEditingView extends Fragment {
               // Upload picture to database if it exists //TODO: extract to FavorViewModel and
               // implement
               // callbacks in requestFavor and confirm
-              getViewModel().uploadOrUpdatePicture(favor, picture);
-              getViewModel().savePictureToLocal(getContext(), favor, picture);
+              getViewModel().uploadOrUpdatePicture(favorForPicture, picture);
+              getViewModel().savePictureToLocal(getContext(), favorForPicture, picture);
             }
           });
-    currentFavor = favor;
+    currentFavor = favorForPicture;
   }
 
   /**
