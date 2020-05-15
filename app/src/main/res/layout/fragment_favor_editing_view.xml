@@ -65,17 +65,17 @@
             android:padding="15dp"
             android:scrollbars="vertical" />
 
-<!--        <EditText-->
-<!--            android:id="@+id/location_request_view_btn"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_margin="10dp"-->
-<!--            android:autofillHints=""-->
-<!--            android:drawableStart="@drawable/ic_place_green_24dp"-->
-<!--            android:drawablePadding="20dp"-->
-<!--            android:hint="@string/favor_location_hint"-->
-<!--            android:inputType="none"-->
-<!--            android:padding="15dp" />-->
+        <!--        <EditText-->
+        <!--            android:id="@+id/location_request_view_btn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_margin="10dp"-->
+        <!--            android:autofillHints=""-->
+        <!--            android:drawableStart="@drawable/ic_place_green_24dp"-->
+        <!--            android:drawablePadding="20dp"-->
+        <!--            android:hint="@string/favor_location_hint"-->
+        <!--            android:inputType="none"-->
+        <!--            android:padding="15dp" />-->
 
         <EditText
             android:id="@+id/favor_reward"

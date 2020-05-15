@@ -249,7 +249,7 @@ public class FavorEdittingTest {
   }
 
   @Test
-  public void testRequestFavorFlowWithLocation() {
+  public void testRequestFavorFlowWithLocation() throws InterruptedException {
     // Click on fav list tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -262,20 +262,18 @@ public class FavorEdittingTest {
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    onView(withText(R.string.set_location_yes))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+    onView(withText(R.string.set_location_yes)).inRoot(isDialog()).perform(click());
+
+    Thread.sleep(1000);
 
     onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.button_location_from_request_view))
-        .check(matches(isDisplayed()))
-        .perform(click());
+    onView(withId(R.id.button_location_from_request_view)).perform(click());
+
+    Thread.sleep(1000);
 
     // Check status display is correct
     onView(withId(R.id.toolbar_main_activity))
-        .check(matches(isDisplayed()))
         .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 
@@ -338,7 +336,7 @@ public class FavorEdittingTest {
 
     onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
     onView(withId(R.id.favor_reward))
-            .perform(typeText(String.valueOf((int) fakeFavor.getReward())));
+        .perform(typeText(String.valueOf((int) fakeFavor.getReward())));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
 
     onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
