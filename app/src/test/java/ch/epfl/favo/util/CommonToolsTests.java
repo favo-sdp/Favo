@@ -15,8 +15,8 @@ public class CommonToolsTests {
 
   @Test
   public void ConvertTimeTest() {
-    long date = new Date().getTime();
-    Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+    Date date = new Date();
+    Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
     String time = format.format(date);
     assertEquals(CommonTools.convertTime(date), time);
   }

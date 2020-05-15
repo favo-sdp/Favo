@@ -25,6 +25,8 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
+import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -62,10 +64,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return DependencyFactory.getCurrentPictureUtility();
   }
 
-  private CacheUtil getCacheUtility() {
-    return DependencyFactory.getCurrentCacheUtility();
-  }
-
   /**
    * Tries to update the number of active favors for a given user. Detailed implementation in
    * UserUtil
@@ -94,41 +92,62 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .thenCompose((aVoid) -> getFavorRepository().updateFavor(favor));
   }
 
+  @Override
+  public CompletableFuture<Void> commitFavor(Favor favor, int change) {
+    Favor tempFavor = new Favor(favor);
+    return changeUserActiveFavorCount(
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            false,
+            change) // if user can accept favor then post it in the favor collection
+        .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
+  }
+
   // save address to firebase
   @Override
   public CompletableFuture<Void> requestFavor(Favor favor) {
     Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
+    // if the favor has been observed, then this is during edit flow, do not add 1.
+    int change = 1;
+    if (getObservedFavor().getValue() != null
+        && favor.getId().equals(getObservedFavor().getValue().getId())) change = 0;
     return changeUserActiveFavorCount(
             currentUserId,
             true,
-            1) // if user can request favor then post it in the favor collection
-        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor));
+            change) // if user can request favor then post it in the favor collection
+        .thenCompose(
+            (aVoid) -> {
+              // update user info
+              UserUtil.getSingleInstance()
+                  .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+                  .thenAccept(
+                      user -> {
+                        user.setRequestedFavors(user.getRequestedFavors() + 1);
+                        UserUtil.getSingleInstance().updateUser(user);
+                      });
+              return getFavorRepository().requestFavor(tempFavor);
+            });
   }
 
-  public CompletableFuture cancelFavor(final Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
-    String otherUserId = isRequested ? tempFavor.getAccepterId() : tempFavor.getRequesterId();
     tempFavor.setStatusIdToInt(cancelledStatus);
+    // if favor is in requested status, then clear the list of committed helpers, so their
+    // archived favors will not counted in this favor
+    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    if (otherUserId != null) // update other user
-    {
+    for (int i = 1; i < favor.getUserIds().size(); i++) {
+      int commitUser = i;
       resultFuture.thenCompose(
-          (aVoid) -> changeUserActiveFavorCount(otherUserId, !isRequested, -1));
+          aVoid ->
+              changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
     }
 
     return resultFuture;
   }
 
-  public CompletableFuture reEnableFavor(final Favor favor) {
-    Favor tempFavor = new Favor(favor);
-    int countUpdate = (tempFavor.getIsArchived()) ? 1 : 0;
-    tempFavor.setStatusIdToInt(REQUESTED);
-    return updateFavorForCurrentUser(tempFavor, true, countUpdate);
-  }
-
-  public CompletableFuture completeFavor(final Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
         || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
@@ -136,20 +155,31 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture
-      throw new IllegalStateException();
+      throw new IllegalStateException("Wrong Status");
     }
     return updateFavorForCurrentUser(tempFavor, isRequested, -1);
   }
 
   /**
-   * @param favor should be a clone of the original object in the UI!
+   *
+    * @param favor
+   * @param user could be requester
    * @return
    */
-  public CompletableFuture acceptFavor(final Favor favor) {
+  public CompletableFuture<Void> acceptFavor(final Favor favor, User user) {
     Favor tempFavor = new Favor(favor);
-    tempFavor.setAccepterId(currentUserId);
+    tempFavor.setAccepterId(user.getId());
     tempFavor.setStatusIdToInt(ACCEPTED);
-    return updateFavorForCurrentUser(tempFavor, false, 1);
+    return getFavorRepository()
+        .updateFavor(tempFavor)
+        .thenCompose(aVoid ->
+                getUserRepository()
+                    .findUser(user.getId())
+                    .thenCompose(
+                        user1 -> {
+                          user1.setAcceptedFavors(user1.getAcceptedFavors() + 1);
+                          return getUserRepository().updateUser(user1);
+                        }));
   }
 
   public CompletableFuture<Void> deleteFavor(final Favor favor) {
@@ -180,20 +210,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     } else {
       return getPictureUtility().downloadPicture(url);
     }
-  }
-
-  // Save/load pictures from local storage
-  @Override
-  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
-    getCacheUtility().saveToInternalStorage(context, picture, favor.getId(), 0);
-  }
-
-  @Override
-  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
-    String baseDir = context.getFilesDir().getAbsolutePath();
-    String favorId = favor.getId();
-    String pathToFolder = baseDir + "/" + favorId + "/";
-    return getCacheUtility().loadFromInternalStorage(pathToFolder, 0);
   }
 
   @Override
@@ -230,7 +246,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // Filter latitude because Firebase only filters longitude
     double latDif = Math.toDegrees(radius / FavoLocation.EARTH_RADIUS);
     for (Favor favor : favorsList) {
-      if (!favor.getRequesterId().equals(currentUserId)
+      if (favor.getRequesterId() != null
+          && !favor.getRequesterId().equals(currentUserId)
           && favor.getStatusId() == REQUESTED.toInt()
           && favor.getLocation().getLatitude() > loc.getLatitude() - latDif
           && favor.getLocation().getLatitude() < loc.getLatitude() + latDif) {
@@ -249,13 +266,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
+    // setFavorValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
             MetadataChanges.EXCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
-              if (documentSnapshot != null) setFavorValue(documentSnapshot.toObject(Favor.class));
+              setFavorValue(documentSnapshot.toObject(Favor.class));
             });
     return getObservedFavor();
   }
@@ -273,6 +291,24 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public void setShowObservedFavor(Boolean show) {
     showFavor = show;
+  }
+
+  private CacheUtil getCacheUtility() {
+    return DependencyFactory.getCurrentCacheUtility();
+  }
+
+  // Save/load pictures from local storage
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {
+    getCacheUtility().saveToInternalStorage(context, picture, favor.getId(), 0);
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    String baseDir = context.getFilesDir().getAbsolutePath();
+    String favorId = favor.getId();
+    String pathToFolder = baseDir + "/" + favorId + "/";
+    return getCacheUtility().loadFromInternalStorage(pathToFolder, 0);
   }
 
   @Override

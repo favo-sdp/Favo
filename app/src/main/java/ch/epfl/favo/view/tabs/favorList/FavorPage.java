@@ -179,17 +179,8 @@ public class FavorPage extends Fragment {
                 if (favor != null) {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putString("FAVOR_ARGS", favor.getId());
-
-                  // if favor was requested, open request view
-                  if (favor
-                      .getRequesterId()
-                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
-                    Navigation.findNavController(requireView())
-                        .navigate(R.id.action_nav_favorList_to_favorRequestView, favorBundle);
-                  } else { // if favor was accepted, open accept view
-                    Navigation.findNavController(requireView())
-                        .navigate(R.id.action_nav_favorlist_to_favorDetailView, favorBundle);
-                  }
+                  Navigation.findNavController(requireView())
+                        .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
                 }
               }
             });

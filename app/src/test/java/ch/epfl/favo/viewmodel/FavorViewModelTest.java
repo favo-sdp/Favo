@@ -221,12 +221,7 @@ public class FavorViewModelTest {
 
   @Test
   public void testAcceptFavorIsSuccessful() {
-    Assert.assertTrue(viewModel.acceptFavor(FakeItemFactory.getFavor()).isDone());
-  }
-
-  @Test
-  public void testReEneableFavorIsSuccessful() {
-    Assert.assertTrue(viewModel.reEnableFavor(FakeItemFactory.getFavor()).isDone());
+    Assert.assertTrue(viewModel.acceptFavor(FakeItemFactory.getFavor(), new User()).isDone());
   }
 
   @Test

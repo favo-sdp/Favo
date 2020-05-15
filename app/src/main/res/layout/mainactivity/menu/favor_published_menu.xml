@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/edit_button"
+        android:title="@string/edit_favor"
+        android:visible="false" />
+    <item
+        android:id="@+id/restart_button"
+        android:title="@string/restart_request"
+        android:visible="false" />
+    <item
+        android:id="@+id/cancel_button"
+        android:title="@string/cancel_request"
+        android:visible="false" />
+    <item
+        android:id="@+id/cancel_commit_button"
+        android:title="@string/cancel_commit"
+        android:visible="false" />
+    <item
+        android:id="@+id/delete_button"
+        android:title="@string/delete_favor"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/share_button"
+        android:title="@string/invite_text"
+        android:visible="false" />
+
+</menu>

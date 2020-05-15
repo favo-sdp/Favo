@@ -27,6 +27,9 @@ import ch.epfl.favo.view.NonClickableToolbar;
 
 public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
+  public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
+  public static final String FAVOR_SOURCE = "FAVOR_SOURCE";
+  public static final String USER_ARGS = "USER_ARGS";
 
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
@@ -40,10 +43,13 @@ public class CommonTools {
     toolbar.setTitle("");
   }
 
-  public static String convertTime(long time) {
-    Date date = new Date(time);
-    Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
-    return format.format(date);
+  public static String convertTime(Date time) {
+    Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
+    return format.format(time);
+  }
+
+  public static String emailToName(String email){
+    return email.split("@")[0].replace(".", " ");
   }
 
   public static void hideSoftKeyboard(Activity activity) {

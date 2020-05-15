@@ -10,18 +10,22 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.User;
 
 /**
  * This class is the sole dependency of all the fragments and activities. It contains Util classes
  * as members.
  */
 public interface IFavorViewModel {
+
   CompletableFuture<Void> requestFavor(final Favor favor);
 
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);
 
-  CompletableFuture<Void> acceptFavor(final Favor favor);
+  CompletableFuture<Void> commitFavor(Favor favor, int change);
+
+  CompletableFuture<Void> acceptFavor(final Favor favor, User user);
 
   CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested);
 
@@ -29,14 +33,7 @@ public interface IFavorViewModel {
 
   CompletableFuture<Void> deleteFavor(final Favor favor);
 
-  CompletableFuture<Void> reEnableFavor(final Favor favor);
-
-  CompletableFuture<Bitmap> downloadPicture(final Favor favor);
-
-  // Save/load pictures
-  void savePictureToLocal(Context context, Favor favor, Bitmap picture);
-
-  CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor);
+  CompletableFuture<Bitmap> downloadPicture(Favor favor);
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radius); // used in map view
 
@@ -46,10 +43,14 @@ public interface IFavorViewModel {
 
   LiveData<Favor> getObservedFavor();
 
-
   void setFavorValue(Favor favor);
 
   void setShowObservedFavor(Boolean show);
 
   boolean isShowObservedFavor();
+
+  // Save/load pictures
+  void savePictureToLocal(Context context, Favor favor, Bitmap picture);
+
+  CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor);
 }

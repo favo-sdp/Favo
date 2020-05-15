@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.stream.IntStream;
 import ch.epfl.favo.database.DatabaseWrapper;
 import ch.epfl.favo.database.Document;
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.util.DependencyFactory;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
@@ -211,10 +213,20 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.reward = reward;
   }
 
+  /**
+   * structure of userIds: a list with the first position always setting as requester Id, following
+   * with potential helpers who commit this favor. When a requester finally decide a accepter, he
+   * reset this list with his own Id and accepter's ID *
+   */
   public void setAccepterId(String id) {
-    if (userIds != null && !userIds.isEmpty()) {
-      String reqId = userIds.get(0);
-      this.userIds = Arrays.asList(reqId, id);
+    // if argument is "", clear the list of committed/accepted user
+    if (id != null && id.equals("")) {
+      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
+    } else if (userIds != null && !userIds.isEmpty()) {
+      ArrayList<String> arrayList = new ArrayList<>();
+      arrayList.addAll(userIds);
+      arrayList.add(id);
+      userIds = arrayList;
     }
   }
 
@@ -292,11 +304,13 @@ public class Favor implements Parcelable, Document, Cloneable {
   }
 
   public boolean contentEquals(Favor other) {
+    if (other == null) return false;
     return this.title.equals(other.title)
         && this.description.equals(other.description)
         && this.statusId == other.getStatusId()
         && this.location.equals(other.location)
-        && this.pictureUrl.equals(other.pictureUrl);
+        && (this.pictureUrl == null && other.pictureUrl == null
+            || (this.pictureUrl.equals(other.pictureUrl)));
   }
 
 

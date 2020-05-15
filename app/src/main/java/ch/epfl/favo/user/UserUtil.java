@@ -59,9 +59,11 @@ public class UserUtil implements IUserUtil {
     return findUser(userId)
         .thenCompose(
             (user) -> {
-              if (isRequested)
+              if (isRequested) {
                 user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              else user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
+              } else {
+                user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
+              }
               return updateUser(user);
             });
   }

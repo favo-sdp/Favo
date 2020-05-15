@@ -26,11 +26,11 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     // Check if an existing view is being reused, otherwise inflate the view
     if (convertView == null) {
       convertView =
-          LayoutInflater.from(getContext()).inflate(R.layout.nearby_favor_list_item, parent, false);
+          LayoutInflater.from(getContext()).inflate(R.layout.favor_list_item, parent, false);
     }
     // Lookup view for data population
-    TextView favorTitle = convertView.findViewById(R.id.title);
-    TextView favorDesc = convertView.findViewById(R.id.desc);
+    TextView favorTitle = convertView.findViewById(R.id.item_title);
+    TextView favorDesc = convertView.findViewById(R.id.item_desc);
     // Populate the data into the template view using the data object
     assert favor.getTitle() != null;
     assert favor.getDescription() != null;

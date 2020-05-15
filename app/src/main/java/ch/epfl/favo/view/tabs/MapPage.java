@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,8 @@ public class MapPage extends Fragment
 
   // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+  private static final int MAP_BOTTOM_PADDING = 140;
+  private int defaultZoomLevel = 16;
 
   private boolean mLocationPermissionGranted = false;
   private boolean firstOpenApp = true;
@@ -106,18 +109,22 @@ public class MapPage extends Fragment
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
+    String setting = UserSettings.getNotificationRadius(requireContext());
+    if (setting.equals(getString(R.string.setting_disabled)))
+      setting = getString(R.string.default_radius);
+    // split the radius setting string pattern, like "10 Km"
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+    defaultZoomLevel = notificationRadiusToZoomLevel(radiusThreshold);
+
     mMap = googleMap;
     mMap.clear();
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
     mMap.getUiSettings().setZoomControlsEnabled(true);
-    mMap.setPadding(0, 0, 0, 140);
+    mMap.setPadding(0, 0, 0, MAP_BOTTOM_PADDING);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
-    String setting = UserSettings.getNotificationRadius(requireContext());
-    if (setting.equals("disabled")) setting = "10 Km";
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     } catch (Exception e) {
@@ -138,6 +145,25 @@ public class MapPage extends Fragment
     }
   }
 
+  public int notificationRadiusToZoomLevel(double radius) {
+    int level;
+    int r = (int) radius;
+    switch (r) {
+      case 1:
+        level = 16;
+        break;
+      case 5:
+        level = 14;
+        break;
+      case 10:
+        level = 13;
+        break;
+      default: // 25
+        level = 9;
+    }
+    return level;
+  }
+
   private class MarkerDrag implements GoogleMap.OnMarkerDragListener {
 
     @Override
@@ -145,8 +171,7 @@ public class MapPage extends Fragment
 
     @Override
     public void onMarkerDrag(Marker marker) {
-      mMap.animateCamera(
-          CameraUpdateFactory.newLatLngZoom(marker.getPosition(), mMap.getMaxZoomLevel() - 5));
+      mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), defaultZoomLevel));
     }
 
     @Override
@@ -218,10 +243,13 @@ public class MapPage extends Fragment
     float markerColor =
         isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
     String markerTitle =
-        (isEdited) // && favor.getTitle().equals("")
-            ? "Drag marker to desired location"
+        (isEdited) && favor.getTitle().equals("")
+            ? getString(R.string.hint_drag_marker)
             : favor.getTitle();
-    String markerDescription = isEdited ? "Click window to request favor" : favor.getDescription();
+    String markerDescription =
+        isEdited && favor.getDescription().equals("")
+            ? getString(R.string.hint_click_window)
+            : favor.getDescription();
     Marker marker =
         mMap.addMarker(
             new MarkerOptions()
@@ -242,8 +270,8 @@ public class MapPage extends Fragment
 
   private void focusViewOnLocation(Location location, boolean animate) {
     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, mMap.getMaxZoomLevel() - 5));
+    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
+    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
   }
 
   private void onOfflineMapClick(View view) {
@@ -256,9 +284,7 @@ public class MapPage extends Fragment
             (dialogInterface, i) -> {
               Intent browserIntent =
                   new Intent(
-                      Intent.ACTION_VIEW,
-                      Uri.parse(
-                          "https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&hl=en"));
+                      Intent.ACTION_VIEW, Uri.parse(getString(R.string.download_offline_map)));
               startActivity(browserIntent);
             })
         .show();
@@ -314,7 +340,8 @@ public class MapPage extends Fragment
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
     if (requestCode
-        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If request is cancelled, the result arrays
+        == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) { // If fragment_favor_published_view is
+      // cancelled, the result arrays
       // are empty.
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         mLocationPermissionGranted = true;
@@ -337,10 +364,10 @@ public class MapPage extends Fragment
       public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
         getLocationPermission();
         if (mLocationPermissionGranted) {
-          LocationRequest request = new LocationRequest();
-          request.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-          request.setInterval(15 * 60 * 1000);
-          request.setMaxWaitTime(30 * 60 * 1000);
+          LocationRequest fragment_favor_published_view = new LocationRequest();
+          fragment_favor_published_view.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+          fragment_favor_published_view.setInterval(15 * 60 * 1000);
+          fragment_favor_published_view.setMaxWaitTime(30 * 60 * 1000);
           Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
           locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
             @Override
@@ -358,7 +385,7 @@ public class MapPage extends Fragment
 
   @Override
   public View getInfoWindow(Marker marker) {
-    View mWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+    View mWindow = getLayoutInflater().inflate(R.layout.map_info_window, null);
     String title = marker.getTitle();
     TextView titleUi = mWindow.findViewById(R.id.title);
     setSpannableString(title, titleUi);
@@ -387,21 +414,18 @@ public class MapPage extends Fragment
     List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
     boolean isRequested = (boolean) markerInfo.get(1);
-    if (focusedFavor != null
-        && focusedFavor.getId().equals(favorId)
-        && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
+    Bundle favorBundle = new Bundle();
+    if (isRequested && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
       focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
       focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
-
-      // transfer local favor to FavorRequestView via ViewModel
-      favorViewModel.setFavorValue(focusedFavor);
-    }
-    Bundle favorBundle = new Bundle();
-    favorBundle.putString("FAVOR_ARGS", favorId);
-    if (isRequested)
-      Navigation.findNavController(view).navigate(R.id.action_global_favorRequestView, favorBundle);
-    else
+      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
+      favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_map));
       Navigation.findNavController(view)
-          .navigate(R.id.action_nav_map_to_favorDetailView, favorBundle);
+          .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
+    } else {
+      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+      Navigation.findNavController(view)
+          .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
+    }
   }
 }

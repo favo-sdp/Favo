@@ -51,7 +51,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture acceptFavor(Favor favor) {
+  public CompletableFuture acceptFavor(Favor favor, User user) {
     if (isThrowingError) return failedResult;
     favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     favor.setStatusIdToInt(FavorStatus.ACCEPTED);
@@ -82,21 +82,15 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture deleteFavor(Favor favor) {
-    if (isThrowingError) return failedResult;
-    return getSuccessfulCompletableFuture();
-  }
+  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
 
   @Override
-  public CompletableFuture reEnableFavor(Favor favor) {
+  public CompletableFuture<Void> commitFavor(Favor favor, int change) {
     if (isThrowingError) return failedResult;
-    favor.setStatusIdToInt(FavorStatus.REQUESTED);
+    favor.setAccepterId(TestConstants.USER_ID);
     observedFavorResult.setValue(favor);
     return getSuccessfulCompletableFuture();
   }
-
-  @Override
-  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
@@ -106,14 +100,6 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
       }
     };
   }
-
-  @Override
-  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
-    return null;
-  }
-
-  @Override
-  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {}
 
   private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
   private MutableLiveData<User> observedUser = getUserMutableLiveData();
@@ -158,9 +144,6 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    Favor observedFavor = new Favor(favorId, " ", " ", TestConstants.REQUESTER_ID, null, 0, 5);
-    observedFavor.updateToOther(FakeItemFactory.getFavor());
-    setObservedFavorResult(observedFavor);
     return observedFavorResult;
   }
 
@@ -174,9 +157,6 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return observedFavorResult;
   }
 
-
-
-
   @Override
   public void setShowObservedFavor(Boolean show) {
     showFavor = show;
@@ -186,4 +166,18 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   public boolean isShowObservedFavor() {
     return showFavor;
   }
+
+  @Override
+  public CompletableFuture deleteFavor(Favor favor) {
+    if (isThrowingError) return failedResult;
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
+  public CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor) {
+    return null;
+  }
+
+  @Override
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {}
 }

@@ -11,19 +11,31 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
 
-public class GpsTracker extends FragmentActivity implements LocationListener, IGpsTracker {
+public class GpsTracker implements LocationListener, IGpsTracker {
+  private static final int millisecToSec = 1000; // for converting unit from millisecond to second
+  private static final int minInterval =
+      60; // minimum time interval for requesting new location, unit in second
+  private static final int minTime =
+      10000; // minimum time interval for updating system location, unit in millisecond
+  private static final int minDistance = 10; // minimum distance difference, unit in meter
 
   private final Context context;
   private static Location mLastKnownLocation = null;
+  private static long mLastUpdate = 0;
 
   public GpsTracker(Context context) {
     this.context = context;
+  }
+
+  public static void setLastKnownLocation(Location location) {
+    // update from mapPage
+    mLastUpdate = System.currentTimeMillis();
+    mLastKnownLocation = location;
   }
 
   /**
@@ -31,12 +43,12 @@ public class GpsTracker extends FragmentActivity implements LocationListener, IG
    * @throws RuntimeException Should check if location is finally found
    * @return the location of phone
    */
-  public static void setLastKnownLocation(Location location) {
-    // update from mapPage, it has its own position request method based on callback
-    mLastKnownLocation = location;
-  }
-
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
+    // if time less than minium interval, just return last location,
+    if (mLastKnownLocation != null
+        && ((System.currentTimeMillis() - mLastUpdate) / millisecToSec) < minInterval)
+      return mLastKnownLocation;
+
     LocationManager locationManager = DependencyFactory.getCurrentLocationManager(context);
     boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -46,10 +58,12 @@ public class GpsTracker extends FragmentActivity implements LocationListener, IG
         || ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED) {
       if (isGPSEnabled) {
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER, minTime, minDistance, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
       } else if (isNetworkEnabled) {
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 10, this);
+        locationManager.requestLocationUpdates(
+            LocationManager.NETWORK_PROVIDER, minTime, minDistance, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
     } else {
@@ -57,12 +71,14 @@ public class GpsTracker extends FragmentActivity implements LocationListener, IG
     }
     if (mLastKnownLocation == null)
       throw new NoPositionFoundException("Permission is granted, but no position is found");
+    mLastUpdate = System.currentTimeMillis();
     return mLastKnownLocation;
   }
 
   // followings are the default method if we implement LocationListener //
   public void onLocationChanged(Location location) {
     mLastKnownLocation = location;
+    mLastUpdate = System.currentTimeMillis();
   }
 
   public void onStatusChanged(String Provider, int status, Bundle extras) {
