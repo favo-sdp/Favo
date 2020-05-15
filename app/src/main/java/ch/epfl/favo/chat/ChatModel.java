@@ -14,8 +14,10 @@ public class ChatModel {
   private String mName;
   private String mMessage;
   private String mUid;
+  private String mNotifId;
   private String mFavorId;
   private Date mTimestamp;
+  private String mIsFirstMsg;
 
   public ChatModel() {
     // Needed for Firebase
@@ -25,11 +27,15 @@ public class ChatModel {
       @Nullable String name,
       @Nullable String message,
       @NonNull String uid,
-      @NonNull String favorId) {
+      @NonNull String notifId,
+      @NonNull String favorId,
+      @NonNull String isFirstMsg) {
     mName = name;
     mMessage = message;
     mUid = uid;
+    mNotifId = notifId;
     mFavorId = favorId;
+    mIsFirstMsg = isFirstMsg;
   }
 
   @Nullable
@@ -68,6 +74,24 @@ public class ChatModel {
     this.mFavorId = mFavorId;
   }
 
+  @NonNull
+  public String getNotifId() {
+    return mNotifId;
+  }
+
+  public void setNotifId(String mNotifId) {
+    this.mNotifId = mNotifId;
+  }
+
+  @NonNull
+  public String getIsFirstMsg() {
+    return mIsFirstMsg;
+  }
+
+  public void setIsFirstMsg(String isFirstMsg) {
+    this.mIsFirstMsg = isFirstMsg;
+  }
+
   @ServerTimestamp
   @Nullable
   public Date getTimestamp() {
@@ -86,13 +110,15 @@ public class ChatModel {
     return mName.equals(chatModel.mName)
         && mMessage.equals(chatModel.mMessage)
         && mUid.equals(chatModel.mUid)
+        && mNotifId.equals(chatModel.mNotifId)
         && mFavorId.equals(chatModel.mFavorId)
-        && mTimestamp.equals(chatModel.mTimestamp);
+        && mTimestamp.equals(chatModel.mTimestamp)
+        && mIsFirstMsg.equals(chatModel.mIsFirstMsg);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(mName, mMessage, mUid, mFavorId, mTimestamp);
+    return Objects.hash(mName, mMessage, mUid, mNotifId, mFavorId, mTimestamp, mIsFirstMsg);
   }
 
   @NonNull
@@ -108,11 +134,17 @@ public class ChatModel {
         + ", mUid='"
         + mUid
         + '\''
+        + ", mNotifId='"
+        + mNotifId
+        + '\''
         + ", mFavorId='"
         + mFavorId
         + '\''
         + ", mTimestamp="
         + mTimestamp
+        + ", mIsFirstMsg='"
+        + mIsFirstMsg
+        + '\''
         + '}';
   }
 }

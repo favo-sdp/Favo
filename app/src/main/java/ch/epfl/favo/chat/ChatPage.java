@@ -38,9 +38,15 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 public class ChatPage extends Fragment {
 
+  private static String TAG = "ChatPage";
+
   private View view;
   private RecyclerView recyclerView;
   private Favor currentFavor;
+
+  private static String FAVOR_ID = "favorId";
+  private static String NOTIF_ID = "notifId";
+  private static String USER_ID = "uid";
 
   @Override
   public View onCreateView(
@@ -124,13 +130,39 @@ public class ChatPage extends Fragment {
   }
 
   private void onSendClick() {
+    String favorId = currentFavor.getId();
+    String requesterNotifId = currentFavor.getRequesterNotifId();
+    String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
+
+//    boolean isFirstMsg = false;
+//    CollectionReference chat = FirebaseFirestore.getInstance().collection("chat");
+//    Query query = chat.whereEqualTo(FAVOR_ID, favorId)
+//            .whereEqualTo(NOTIF_ID, requesterNotifId)
+//            .whereEqualTo(USER_ID, responderUserId);
+//
+//    query.get().addOnCompleteListener(task -> {
+//      if (task.isSuccessful()) {
+//        for (QueryDocumentSnapshot document : task.getResult()) {
+//          Log.d(TAG, document.getId() + " => " + document.getData());
+//        }
+//      } else {
+//        Log.d(TAG, "Error getting documents: ", task.getException());
+//      }
+//    });
+
+    // If the empty message view is visible, then this is the first message.
+    String isFirstMsg = String.valueOf(view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
+
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     onAddMessage(
         new ChatModel(
             DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
             mMessageEdit.getText().toString(),
-            DependencyFactory.getCurrentFirebaseUser().getUid(),
-            currentFavor.getId()));
+            responderUserId,
+            requesterNotifId,
+            favorId,
+            isFirstMsg));
+
     mMessageEdit.setText("");
   }
 

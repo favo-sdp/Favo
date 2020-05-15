@@ -1,7 +1,6 @@
 package ch.epfl.favo.view;
 
 import android.graphics.Point;
-import android.util.Log;
 import android.view.Display;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;

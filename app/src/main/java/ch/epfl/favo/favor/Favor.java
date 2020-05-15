@@ -59,6 +59,7 @@ public class Favor implements Parcelable, Document, Cloneable {
   private String pictureUrl;
   private boolean isArchived;
   private double reward;
+  private String notifId; // notification id of the requester
 
   public Favor() {}
 
@@ -69,7 +70,8 @@ public class Favor implements Parcelable, Document, Cloneable {
       String requesterId,
       FavoLocation location,
       int statusId,
-      double reward) {
+      double reward,
+      String pictureUrl) {
 
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
@@ -78,7 +80,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
-    this.pictureUrl = null;
+    this.pictureUrl = pictureUrl;
     this.isArchived = false;
     this.reward = reward;
   }
@@ -92,7 +94,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       FavoLocation location,
       int statusId,
       double reward) {
-    this(title, description, requesterId, location, statusId, reward);
+    this(title, description, requesterId, location, statusId, reward, null);
     this.id = id;
   }
   // copy constructor
@@ -120,7 +122,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       FavorStatus statusId,
       double reward) {
 
-    this(title, description, requesterId, location, statusId.toInt(), reward);
+    this(title, description, requesterId, location, statusId.toInt(), reward, null);
   }
 
   /**
@@ -275,6 +277,14 @@ public class Favor implements Parcelable, Document, Cloneable {
 
   public void setPictureUrl(String pictureUrl) {
     this.pictureUrl = pictureUrl;
+  }
+
+  public String getRequesterNotifId() {
+    return this.notifId;
+  }
+
+  public void setRequesterNotifId(String notifId) {
+    this.notifId = notifId;
   }
 
   @Override

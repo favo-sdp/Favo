@@ -51,7 +51,8 @@ public class UserAccountPage extends Fragment {
     setupButtons();
 
     displayUserData(DependencyFactory.getCurrentFirebaseUser());
-    displayUserDetails(new User());
+
+    displayUserDetails(new User(null, "Name", "Email", null, null, null));
 
     viewModel =
         (IFavorViewModel)

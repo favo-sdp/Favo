@@ -1,144 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_favor"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/material_green_50"
+    android:clipToPadding="false"
     tools:context=".view.tabs.addFavor.FavorEditingView">
 
-    <!-- add above: android:background="@color/material_green_50"-->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/constraint_layout_req_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:padding="20dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/request_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/favor_confirm_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:background="@color/material_green_500"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="50dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp">
 
+            <EditText
+                android:id="@+id/title_request_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:autofillHints=""
+                android:hint="@string/favor_title_hint"
+                android:inputType="textShortMessage"
+                android:padding="15dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/title_request_view"
+        </LinearLayout>
 
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-
-            android:autofillHints=""
-            android:hint="@string/favor_title_hint"
-            android:inputType="textShortMessage"
-
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/request_button" />
-
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:text="@string/optional_text"
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:autofillHints=""
-            android:gravity="top|start"
+            android:drawableStart="@drawable/ic_info_green_24dp"
+            android:drawablePadding="20dp"
             android:hint="@string/favor_details_hint"
             android:inputType="textMultiLine"
             android:lines="5"
-            android:maxLines="5"
-            android:minLines="3"
-            android:scrollbars="vertical"
+            android:maxLines="3"
+            android:minLines="2"
+            android:padding="15dp"
+            android:scrollbars="vertical" />
 
-            app:layout_constraintTop_toBottomOf="@id/title_request_view" />
+        <!--        <EditText-->
+        <!--            android:id="@+id/location_request_view_btn"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_margin="10dp"-->
+        <!--            android:autofillHints=""-->
+        <!--            android:drawableStart="@drawable/ic_place_green_24dp"-->
+        <!--            android:drawablePadding="20dp"-->
+        <!--            android:hint="@string/favor_location_hint"-->
+        <!--            android:inputType="none"-->
+        <!--            android:padding="15dp" />-->
+
+        <EditText
+            android:id="@+id/favor_reward"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:autofillHints=""
+            android:drawableStart="@drawable/favo_coin_icon"
+            android:drawablePadding="20dp"
+            android:hint="@string/favor_payment_hint"
+            android:inputType="number"
+            android:padding="15dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="10dp"
+            android:text="@string/picture_description_text"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:id="@+id/picture_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/image_view_request_view"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/details">
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/invite_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/invite_text"
-                android:visibility="gone" />
-
-            <Button
+            <ImageButton
                 android:id="@+id/add_picture_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_image_24dp"
-                android:text="Upload" />
+                android:layout_marginEnd="10dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="picture button"
+                android:src="@drawable/ic_image_green_48dp" />
 
-            <Button
+            <ImageButton
                 android:id="@+id/add_camera_picture_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_photo_camera_24dp"
-                android:text="Take" />
-
-            <Button
-                android:id="@+id/location_request_view_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableEnd="@drawable/ic_location_on_24dp"
-                android:text="Loc" />
+                android:layout_marginStart="10dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="camera button"
+                android:src="@drawable/ic_camera_green_48dp" />
 
         </LinearLayout>
 
-
         <ImageView
             android:id="@+id/image_view_request_view"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginVertical="10dp"
-            android:contentDescription="@string/favor_img_content_desc"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/picture_buttons" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:contentDescription="@string/favor_img_content_desc" />
 
         <ProgressBar
             android:id="@+id/loading_panel"
             style="?android:attr/progressBarStyle"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="125dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/image_view_request_view"
-            app:layout_constraintEnd_toEndOf="@id/image_view_request_view"
-            app:layout_constraintHorizontal_bias="0.4"
-            app:layout_constraintStart_toStartOf="@id/image_view_request_view"
-            app:layout_constraintTop_toTopOf="@id/image_view_request_view" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/errorText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:text=""
             android:textColor="#FF0000"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/request_button"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            android:textSize="20sp" />
+    </LinearLayout>
+</ScrollView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</FrameLayout>
+    <!--        &lt;!&ndash; add above: android:background="@color/material_green_50"&ndash;&gt;-->
+    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+    <!--        android:id="@+id/constraint_layout_req_view"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:clickable="true"-->
+    <!--        android:focusable="true"-->
+    <!--        android:focusableInTouchMode="true"-->
+    <!--        android:padding="20dp">-->
+
+    <!--        <Button-->
+    <!--            android:id="@+id/request_button"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:text="@string/favor_confirm_button"-->
+    <!--            app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--            app:layout_constraintRight_toRightOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <!--        -->
+    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+    <!--</FrameLayout>-->

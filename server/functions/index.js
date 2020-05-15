@@ -264,3 +264,29 @@ exports.expireOldFavorsOnCreate = functions.firestore
                 console.log("Failed expiring docs", reason)
             });
     });
+
+
+// send new favor notification to users on updates
+exports.sendNotificationOnNewChat = functions.firestore
+    .document('/chats/{chatId}')
+    .onCreate((snap, context) => {
+        const isFirstMsg = snap.data().isFirstMsg;
+        if (isFirstMsg === "true") {
+            const titleToSend = "You've got a new message";
+            const favorId = snap.data().favorId;
+            const receivers = [snap.data().notifId];
+            const message = {
+                data: {
+                    FavorId: favorId,
+                },
+                notification: {
+                    title: titleToSend,
+                    body: 'Click to check out the chat message',
+                },
+                tokens: receivers
+            };
+            return sendMulticastMessage(message, receivers);
+
+        }
+    });
+

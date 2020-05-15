@@ -5,25 +5,36 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -33,11 +44,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
@@ -59,9 +70,11 @@ public class FavorEditingView extends Fragment {
   private ImageView mImageView;
   private EditText mTitleView;
   private EditText mDescriptionView;
+  private EditText mFavoCoinsView;
   private IGpsTracker mGpsTracker;
   private Favor currentFavor;
   private String favorSource;
+  private MenuItem requestItem;
   private FirebaseUser currentUser;
 
   public FavorEditingView() {
@@ -69,19 +82,38 @@ public class FavorEditingView extends Fragment {
   }
 
   @Override
+  public void onCreate(Bundle bundle) {
+    super.onCreate(bundle);
+    setHasOptionsMenu(true);
+  }
+
+  @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_favor_editing_view, container, false);
     setupButtons(rootView);
+
+    setupToolBar();
+
     favorStatus = FavorStatus.EDIT;
     currentUser = DependencyFactory.getCurrentFirebaseUser();
-    // Edit text:
+
     mTitleView = rootView.findViewById(R.id.title_request_view);
-    mTitleView.requestFocus();
     mDescriptionView = rootView.findViewById(R.id.details);
     setupView(rootView);
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
+
+    mFavoCoinsView = rootView.findViewById(R.id.favor_reward);
+
+    UserUtil.getSingleInstance()
+        .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+        .thenAccept(
+            user ->
+                mFavoCoinsView.setFilters(
+                    new InputFilter[] {
+                      new InputFilterMinMax(0, (int) user.getBalance())
+                    }));
 
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());
@@ -90,6 +122,7 @@ public class FavorEditingView extends Fragment {
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
+
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
       favorSource = getArguments().getString(CommonTools.FAVOR_SOURCE);
@@ -109,7 +142,7 @@ public class FavorEditingView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null) {
+                if (favor != null && favor.getId().equals(favorId)) {
                   if (favor.getUserIds().size() > currentFavor.getUserIds().size()) {
                     currentFavor = favor;
                     CommonTools.showSnackbar(
@@ -136,6 +169,7 @@ public class FavorEditingView extends Fragment {
     favorStatus = FavorStatus.toEnum(currentFavor.getStatusId());
     mTitleView.setText(currentFavor.getTitle());
     mDescriptionView.setText(currentFavor.getDescription());
+    mFavoCoinsView.setText(String.valueOf((int) currentFavor.getReward()));
 
     String url = currentFavor.getPictureUrl();
     if (url != null) {
@@ -155,53 +189,65 @@ public class FavorEditingView extends Fragment {
   /** Identifes buttons and sets onclick listeners. */
   private void setupButtons(View rootView) {
 
-    // Button: Request Favor
-    Button confirmFavorBtn = rootView.findViewById(R.id.request_button);
-    confirmFavorBtn.setOnClickListener(new onButtonClick());
-
-    if (DependencyFactory.isOfflineMode(requireContext())) {
-      confirmFavorBtn.setText(R.string.request_favor_draft);
-    }
-
     // Button: Add Image from files
-    Button addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
+    ImageButton addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
     addPictureFromFilesBtn.setOnClickListener(new onButtonClick());
 
     // Button: Add picture from camera
-    Button addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
+    ImageButton addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
     addPictureFromCameraBtn.setOnClickListener(new onButtonClick());
     if (!isCameraAvailable()) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
 
     // Button: Access location
-    Button locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
-    locationAccessBtn.setOnClickListener(new onButtonClick());
+    //    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    //    locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
-  class onButtonClick implements View.OnClickListener {
-    @Override
-    public void onClick(View v) {
-      switch (v.getId()) {
-        case R.id.request_button:
-          requestFavor();
-          break;
-        case R.id.add_camera_picture_button:
-          takePicture();
-          break;
-        case R.id.add_picture_button:
-          openFileChooser();
-          break;
-        case R.id.location_request_view_btn:
-          getFavorFromView();
-          CommonTools.hideSoftKeyboard(requireActivity());
-          favorViewModel.setShowObservedFavor(true);
-          favorViewModel.setFavorValue(currentFavor);
-          // signal the destination is map view
-          findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
-          break;
-      }
+  /**
+   * Method is called when request favor button is clicked. It uploads favor request to the database
+   * and updates view so that favor is editable.
+   */
+  private void requestFavor() {
+    // update currentFavor
+
+    EditText titleElem = requireView().findViewById(R.id.title_request_view);
+    if (titleElem.getText().toString().equals("")) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.title_required_message));
+    } else {
+
+      getFavorFromView();
+      CommonTools.hideSoftKeyboard(requireActivity());
+
+      new AlertDialog.Builder(requireActivity())
+          .setMessage(getText(R.string.set_location_message))
+          .setPositiveButton(
+              getText(R.string.set_location_yes),
+              (dialogInterface, i) -> {
+                getFavorFromView();
+                CommonTools.hideSoftKeyboard(requireActivity());
+                favorViewModel.setShowObservedFavor(true);
+                favorViewModel.setFavorValue(currentFavor);
+                // signal the destination is map view
+                findNavController(requireActivity(), R.id.nav_host_fragment)
+                    .navigate(R.id.action_favorEditingView_to_nav_map, null);
+              })
+          .setNegativeButton(
+              getText(R.string.set_location_no),
+              (dialogInterface, i) -> {
+                favorStatus = FavorStatus.REQUESTED;
+                currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+                // post to DB
+                CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
+                postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
+                postFavorFuture.exceptionally(onFailedResult(requireView()));
+                // Show confirmation and minimize keyboard
+                if (DependencyFactory.isOfflineMode(requireContext())) {
+                  CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+                }
+              })
+          .show();
     }
   }
 
@@ -209,11 +255,15 @@ public class FavorEditingView extends Fragment {
   private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
-    EditText titleElem = requireView().findViewById(R.id.title_request_view);
-    EditText descElem = requireView().findViewById(R.id.details);
+    String title = mTitleView.getText().toString();
+    String desc = mDescriptionView.getText().toString();
+    String rewardString = mFavoCoinsView.getText().toString();
 
-    String title = titleElem.getText().toString();
-    String desc = descElem.getText().toString();
+    double reward = 0;
+    if (!rewardString.equals("")) {
+      reward = Double.parseDouble(rewardString);
+    }
+
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     // if a favor is initiated from map, then override the current location
     // with location got from map( already saved in currentFavor )
@@ -222,8 +272,7 @@ public class FavorEditingView extends Fragment {
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
 
-    // TODO: Get reward from frontend (currently being set by default to 0)
-    Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, 0);
+    Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, reward);
     if (currentFavor == null) currentFavor = favor;
     else {
       // do not override the pictureUrl of currentFavor
@@ -236,6 +285,8 @@ public class FavorEditingView extends Fragment {
     Favor favorForPicture;
     // empty field will be override later
     // if currentFavor is null, start from a new one, otherwise use the current one
+    getFavorFromView();
+
     if (currentFavor == null)
       favorForPicture = new Favor("", "", currentUser.getUid(), null, favorStatus, 0);
     else favorForPicture = currentFavor;
@@ -247,10 +298,7 @@ public class FavorEditingView extends Fragment {
           cachedPicture -> {
             // include the case where cachedPicture is null, because there is no local cache
             if (!picture.sameAs(cachedPicture)) {
-              // TODO: Get reward from frontend (currently being set by default to 0)
-              // Upload picture to database if it exists //TODO: extract to FavorViewModel and
-              // implement
-              // callbacks in requestFavor and confirm
+              // Upload picture to database if it exists
               getViewModel().uploadOrUpdatePicture(favorForPicture, picture);
               getViewModel().savePictureToLocal(getContext(), favorForPicture, picture);
             }
@@ -303,7 +351,7 @@ public class FavorEditingView extends Fragment {
     super.onActivityResult(requestCode, resultCode, data);
     // If intent was not succesful
     if (resultCode != RESULT_OK || data == null) {
-      showSnackbar(getString(R.string.error_msg_image_request_view));
+      CommonTools.showSnackbar(requireView(), getString(R.string.error_msg_image_request_view));
       return;
     }
     switch (requestCode) {
@@ -325,14 +373,6 @@ public class FavorEditingView extends Fragment {
   }
 
   /**
-   * Will display error message in the form of a snack bar. This method is wrapped for unit tests
-   *
-   * @param errorMessageRes error message.
-   */
-  private void showSnackbar(String errorMessageRes) {
-    Snackbar.make(requireView(), errorMessageRes, Snackbar.LENGTH_LONG).show();
-  }
-  /**
    * ensures keyboard hides when user clicks outside of edit texts.
    *
    * @param view corresponds to root view created during onCreate
@@ -340,7 +380,7 @@ public class FavorEditingView extends Fragment {
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
     // ensure click on view will hide keyboard
-    view.findViewById(R.id.constraint_layout_req_view)
+    view.findViewById(R.id.fragment_favor)
         .setOnTouchListener(
             (v, event) -> {
               hideSoftKeyboard(requireActivity());
@@ -348,29 +388,12 @@ public class FavorEditingView extends Fragment {
             });
   }
 
-  /**
-   * Method is called when request favor button is clicked. It uploads favor request to the database
-   * and updates view so that favor is editable.
-   */
-  private void requestFavor() {
-    // update currentFavor
-    View currentView = getView();
-    favorStatus = FavorStatus.REQUESTED;
-    getFavorFromView();
-    // post to DB
-    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-    postFavorFuture.thenAccept(onSuccessfulRequest(currentView));
-    postFavorFuture.exceptionally(onFailedResult(currentView));
-    // Show confirmation and minimize keyboard
-    if (DependencyFactory.isOfflineMode(requireContext())) {
-      showSnackbar(getString(R.string.save_draft_message));
-    }
-    CommonTools.hideSoftKeyboard(requireActivity());
-  }
-
   private Consumer onSuccessfulRequest(View currentView) {
     return o -> {
-      CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
+      CommonTools.showSnackbar(
+          currentView,
+          getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
+
       // jump to favorPublished view
       Bundle favorBundle = new Bundle();
       favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
@@ -387,11 +410,62 @@ public class FavorEditingView extends Fragment {
 
   private Function onFailedResult(View currentView) {
     return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
+      CommonTools.showSnackbar(
+          currentView,
+          getString(
+              CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
       return null;
     };
+  }
+
+  class onButtonClick implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.add_camera_picture_button:
+          takePicture();
+          break;
+        case R.id.add_picture_button:
+          openFileChooser();
+          break;
+      }
+    }
+  }
+
+  private void setupToolBar() {
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    toolbar.setTitleTextColor(Color.WHITE);
+    toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
+    toolbar.setTitle(R.string.request_page_title);
+    Objects.requireNonNull(toolbar.getNavigationIcon())
+        .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
+  }
+
+  @Override
+  public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+
+    // Inflate the menu; this adds items to the action bar if it is present.
+    inflater.inflate(R.menu.request_view_menu, menu);
+
+    requestItem = menu.findItem(R.id.request_button);
+
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      requestItem.setTitle(R.string.request_favor_draft);
+    }
+
+    SpannableString spanString = new SpannableString(requestItem.getTitle().toString());
+    spanString.setSpan(new ForegroundColorSpan(Color.WHITE), 0, spanString.length(), 0);
+    requestItem.setTitle(spanString);
+
+    super.onCreateOptionsMenu(menu, inflater);
+  }
+
+  // handle button activities
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.request_button) {
+      requestFavor();
+    }
+    return super.onOptionsItemSelected(item);
   }
 }

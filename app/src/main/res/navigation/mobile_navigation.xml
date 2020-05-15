@@ -112,6 +112,18 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
+
+        <action
+            android:id="@+id/action_nav_map_to_favorPublishedView_via_RequestView"
+            app:destination="@id/favorPublishedView"
+            app:popUpTo="@+id/favorEditingView"
+            app:popUpToInclusive="true">
+            <argument
+                android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
         <action
             android:id="@+id/action_nav_map_to_userInfoView"
             app:destination="@id/userInfoView">
@@ -180,6 +192,10 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_favorEditingView_to_nav_map"
+            app:destination="@id/nav_map"
+            app:launchSingleTop="true" />
     </fragment>
 
     <fragment

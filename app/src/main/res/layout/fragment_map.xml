@@ -30,7 +30,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         map:uiCompass="true"
-        map:uiZoomControls="true"
         tools:context=".view.tabs.MapPage" />
 
     <RadioGroup
@@ -75,5 +74,16 @@
             android:text="@string/list_toggle"
             android:textColor="@android:color/tertiary_text_dark" />
     </RadioGroup>
+
+    <Button
+        android:id="@+id/button_location_from_request_view"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="bottom"
+        android:background="@color/material_green_500"
+        android:text="@string/done_from_request_view"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
 
 </FrameLayout>

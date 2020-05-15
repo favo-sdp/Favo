@@ -32,6 +32,7 @@ import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -94,8 +95,12 @@ public class ChatPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
-      // Click on request button
+    // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
 
     // wait for snackbar
@@ -116,7 +121,7 @@ public class ChatPageTest {
     // check no messages displayed
     onView(withId(R.id.emptyTextView)).check(matches(isDisplayed()));
 
-      // Go back to request page
+    // Go back to request page
     pressBack();
 
     // go back to list

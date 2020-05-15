@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -156,8 +157,19 @@ public class FavorPublishedView extends Fragment {
       case R.id.delete_button:
         deleteFavor();
         break;
+      case R.id.reuse_button:
+        reuseFavor();
+        break;
+      case R.id.report_favor_button:
+        reportFavor();
+        break;
     }
     return super.onOptionsItemSelected(item);
+  }
+
+  private void reportFavor() {
+    // should decide what to do with reported favors
+    CommonTools.showSnackbar(getView(), getString(R.string.report_favor_message));
   }
 
   public IFavorViewModel getViewModel() {
@@ -417,6 +429,23 @@ public class FavorPublishedView extends Fragment {
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
 
+  private void reuseFavor() {
+    Bundle favorBundle = new Bundle();
+    Favor newFavor =
+        new Favor(
+            currentFavor.getTitle(),
+            currentFavor.getDescription(),
+            currentFavor.getRequesterId(),
+            currentFavor.getLocation(),
+            FavorStatus.EDIT.toInt(),
+            currentFavor.getReward(),
+            currentFavor.getPictureUrl());
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
+    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_floatButton));
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+        .navigate(R.id.action_global_favorEditingView, favorBundle);
+  }
+
   private void goRestartFavor() {
     // restart a favor with different favorId
     Favor newFavor = new Favor("", "", currentUser.getUid(), null, FavorStatus.EDIT, 0);
@@ -455,6 +484,42 @@ public class FavorPublishedView extends Fragment {
     CompletableFuture<Void> completeFuture =
         getViewModel().completeFavor(currentFavor, isRequested);
     handleResult(completeFuture, R.string.favor_complete_success_msg);
+
+    // review favor
+    reviewFavorExperience();
+  }
+
+  private void reviewFavorExperience() {
+    String otherUserId;
+    if (currentFavor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
+      otherUserId = currentFavor.getAccepterId();
+    } else {
+      otherUserId = currentFavor.getRequesterId();
+    }
+
+    UserUtil.getSingleInstance()
+        .findUser(otherUserId)
+        .thenAccept(
+            user ->
+                new AlertDialog.Builder(requireActivity())
+                    .setMessage(getText(R.string.feedback_description))
+                    .setPositiveButton(
+                        getText(R.string.positive_feedback),
+                        (dialogInterface, i) -> {
+                          user.setLikes(user.getLikes() + 1);
+                          UserUtil.getSingleInstance().updateUser(user);
+
+                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                        })
+                    .setNegativeButton(
+                        getText(R.string.negative_feedback),
+                        (dialogInterface, i) -> {
+                          user.setDislikes(user.getDislikes() + 1);
+                          UserUtil.getSingleInstance().updateUser(user);
+
+                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                        })
+                    .show());
   }
 
   private void cancelFavor() {
