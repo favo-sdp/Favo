@@ -13,11 +13,15 @@ import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -28,7 +32,7 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
-public class FavorEdittingOfflineTest {
+public class FavorEditingOfflineTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -66,12 +70,17 @@ public class FavorEdittingOfflineTest {
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
 
-    // check that different message is displayed
-    onView(withText(R.string.request_favor_draft)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.title_request_view)).perform(typeText("fake favor"));
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // check snackbar shows with the different message
-    //    onView(withId(com.google.android.material.R.id.snackbar_text))
-    //        .check(matches(withText(R.string.save_draft_message)));
+    // Check favor saved correctly even offline
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(isDisplayed()))
+        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 }

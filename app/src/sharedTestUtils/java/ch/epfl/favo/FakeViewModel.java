@@ -1,4 +1,3 @@
-
 package ch.epfl.favo;
 
 import android.content.Context;
@@ -169,5 +168,5 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void savePictureToLocal(Context context, Favor favor, Bitmap picture){}
+  public void savePictureToLocal(Context context, Favor favor, Bitmap picture) {}
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/edit_button"
         android:title="@string/edit_favor"
@@ -25,6 +24,18 @@
     <item
         android:id="@+id/share_button"
         android:title="@string/invite_text"
-        android:visible="false" />
+        android:visible="true" />
+
+    <item
+        android:id="@+id/report_favor_button"
+        android:title="@string/report_favor_text"
+        android:visible="true" />
+
+
+    <item
+        android:id="@+id/reuse_button"
+        android:title="@string/reuse_favor"
+        android:visible="true" />
+
 
 </menu>

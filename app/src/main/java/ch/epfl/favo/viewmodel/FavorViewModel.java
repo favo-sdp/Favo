@@ -196,14 +196,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     if (mCurrentLocation == null) mCurrentLocation = loc;
     if (mRadius == -1) mRadius = radiusInKm;
     if (activeFavorsAroundMe.getValue() == null
-            || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
+        || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
       getFavorRepository()
-              .getNearbyFavors(loc, radiusInKm)
-              .addSnapshotListener(
-                      MetadataChanges.EXCLUDE,
-                      (queryDocumentSnapshots, e) ->
-                              activeFavorsAroundMe.postValue(
-                                      getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
+          .getNearbyFavors(loc, radiusInKm)
+          .addSnapshotListener(
+              MetadataChanges.EXCLUDE,
+              (queryDocumentSnapshots, e) ->
+                  activeFavorsAroundMe.postValue(
+                      getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
     }
     return getFavorsAroundMe();
   }

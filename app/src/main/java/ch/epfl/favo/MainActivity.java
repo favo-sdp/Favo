@@ -33,7 +33,6 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
 import ch.epfl.favo.view.tabs.UserAccountPage;
-import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
 import ch.epfl.favo.view.tabs.shop.ShopPage;
 
 /**

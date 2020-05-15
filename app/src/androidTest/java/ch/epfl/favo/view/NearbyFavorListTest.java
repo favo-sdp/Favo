@@ -148,5 +148,4 @@ public class NearbyFavorListTest {
     // check favor is displayed in active favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
-
 }

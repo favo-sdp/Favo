@@ -2,9 +2,6 @@ package ch.epfl.favo.cache;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +11,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -72,5 +68,4 @@ public class LocalCacheTest {
     CacheUtil.getInstance().getValueFromCacheBool(mockContext, "bool");
     verify(mockSharedPreferences, times(1)).getBoolean("bool", false);
   }
-  
 }

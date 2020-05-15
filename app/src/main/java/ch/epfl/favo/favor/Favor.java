@@ -69,7 +69,8 @@ public class Favor implements Parcelable, Document, Cloneable {
       String requesterId,
       FavoLocation location,
       int statusId,
-      double reward) {
+      double reward,
+      String pictureUrl) {
 
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
@@ -78,7 +79,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
-    this.pictureUrl = null;
+    this.pictureUrl = pictureUrl;
     this.isArchived = false;
     this.reward = reward;
   }
@@ -92,7 +93,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       FavoLocation location,
       int statusId,
       double reward) {
-    this(title, description, requesterId, location, statusId, reward);
+    this(title, description, requesterId, location, statusId, reward, null);
     this.id = id;
   }
 
@@ -105,7 +106,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       FavorStatus statusId,
       double reward) {
 
-    this(title, description, requesterId, location, statusId.toInt(), reward);
+    this(title, description, requesterId, location, statusId.toInt(), reward, null);
   }
 
   /**

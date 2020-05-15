@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
@@ -38,6 +39,7 @@ import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
@@ -50,6 +52,7 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static org.hamcrest.core.AllOf.allOf;
+
 @RunWith(AndroidJUnit4.class)
 public class FavorPageTest {
 
@@ -153,6 +156,10 @@ public class FavorPageTest {
     //
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
@@ -188,6 +195,10 @@ public class FavorPageTest {
     //
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
@@ -225,6 +236,10 @@ public class FavorPageTest {
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
@@ -275,6 +290,10 @@ public class FavorPageTest {
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(4000); // wait for snackbar to hide
 
@@ -394,6 +413,10 @@ public class FavorPageTest {
 
     // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button

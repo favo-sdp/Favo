@@ -41,6 +41,8 @@
     <string name="favor_title_hint">What\'s up? (ex: Need a bike pump)</string>
     <string name="favor_img_content_desc">Descriptive image</string>
     <string name="favor_details_hint">Add more details? (ex: Had a flat tire!)</string>
+    <string name="favor_payment_hint">Add payment (Default: free favor)</string>
+    <string name="favor_location_hint">Add location</string>
     <string name="favor_confirm_button">Request Favor</string>
     <string name="favor_no_active_favor">You have no active favors</string>
     <string name="favor_no_archived_favor">You have no archived favors</string>
@@ -72,7 +74,7 @@
     <string name="favor_respond_success_msg">Favor responded successfully.</string>
     <string name="home">Home</string>
     <string name="favor_request_success_msg">Favor added successfully.</string>
-    <string name="profile">profile</string>
+    <string name="profile">Profile</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
@@ -118,8 +120,9 @@
     <string name="error_database_sync">Failed fetching data</string>
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
-    <string name="request_favor_draft">Save favor draft</string>
+    <string name="request_favor_draft">Save draft</string>
     <string name="edit_favor">Edit</string>
+    <string name="reuse_favor">Reuse</string>
     <string name="cancel_request">Cancel</string>
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="delete_favor">Delete Request</string>
@@ -157,10 +160,13 @@
     <string name="likes_format">Positive\nfeedbacks: %d</string>
     <string name="dislikes_format">Negative\nfeedbacks: %d</string>
     <string name="feedback_message">Feedback received! Thanks for sharing your opinion</string>
-    <string name="report_message">User has been reported! Thanks for your help</string>
-    <string name="report_text">Report user</string>
+    <string name="report_user_message">User has been reported! Thanks for your help</string>
+    <string name="report_user_text">Report user</string>
     <string name="report_description">Report the user in case of inappropriate behaviour</string>
     <string name="feedback_description">Rate your experience with this user to help others</string>
+    <string name="positive_feedback">All good!</string>
+    <string name="negative_feedback">Bad experience</string>
+
 
     <!-- Shop Page -->
     <string name="shop">Shop</string>
@@ -182,5 +188,16 @@
     <string name="favor_source_map">map</string>
     <string name="favor_source_floatButton">floatButton</string>
     <string name="favor_source_publishedFavor">publishedFavor</string>
+    <string name="request_page_title">New favor</string>
+    <string name="title_required_message">Title must be set to request a favor</string>
+    <string name="report_favor_message">Favor has been reported! Thanks for your help</string>
+    <string name="report_favor_text">Report</string>
+    <string name="optional_text">Optional</string>
+    <string name="picture_description_text">Upload a picture or take a photo</string>
 
+
+    <string name="set_location_message">The favor location is set to your current position. Would you like to change it?</string>
+    <string name="set_location_yes">Yes, take me to the map</string>
+    <string name="set_location_no">No, my current position is fine</string>
+    <string name="done_from_request_view">Done</string>
 </resources>

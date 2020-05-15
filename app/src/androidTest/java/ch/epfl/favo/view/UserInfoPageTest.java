@@ -105,7 +105,7 @@ public class UserInfoPageTest {
     Thread.sleep(4000);
     onView(withId(R.id.report_user)).perform(click());
     Thread.sleep(1000);
-    onView(withText(R.string.report_message)).check(matches(isDisplayed()));
+    onView(withText(R.string.report_user_message)).check(matches(isDisplayed()));
   }
 
   // commenting these tests because not working on cirrus for some reason

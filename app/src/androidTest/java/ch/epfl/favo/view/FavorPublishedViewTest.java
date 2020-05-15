@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
+import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -110,8 +112,9 @@ public class FavorPublishedViewTest {
 
     // check error message is printed
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.error_database_sync)));
+        .check(matches(withText(R.string.error_database_sync)));
   }
+
   @Test
   public void testChatAndLocationButtonWorkDetailView() {
     // Check and click on the chat
@@ -155,9 +158,27 @@ public class FavorPublishedViewTest {
   }
 
   @Test
+  public void testOnShareFavorClicked() throws Throwable {
+    // click accept button
+    // Thread.sleep(2000);
+    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+    getInstrumentation().waitForIdleSync();
+
+    onView(withText(R.string.invite_text)).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    // check that share intent is indeed opened
+    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
+
+    // click back button
+    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    mDevice.pressBack();
+  }
+
+  @Test
   public void testAcceptFlow() throws Throwable {
     // click accept button
-    //  Thread.sleep(100000);
+    // Thread.sleep(2000);
     onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
