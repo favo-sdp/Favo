@@ -26,12 +26,12 @@ import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.firebase.ui.firestore.paging.LoadingState;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
@@ -98,11 +98,8 @@ public class FavorPage extends Fragment {
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
     baseQuery =
-        FirebaseFirestore.getInstance()
-            .collection(DependencyFactory.getCurrentFavorCollection())
-            .orderBy("title", Query.Direction.ASCENDING)
-            .orderBy("postedTime", Query.Direction.DESCENDING)
-            .whereArrayContains("userIds", DependencyFactory.getCurrentFirebaseUser().getUid());
+        FavorUtil.getSingleInstance()
+            .getAllUserFavors(DependencyFactory.getCurrentFirebaseUser().getUid());
 
     activeFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", false));
     archiveFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", true));

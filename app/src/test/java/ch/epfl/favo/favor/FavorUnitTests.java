@@ -62,6 +62,13 @@ public class FavorUnitTests {
   }
 
   @Test
+  public void testCopyConstructor() {
+    Favor favor = FakeItemFactory.getFavorWithUrl();
+    Favor newFavor = new Favor(favor);
+    assertTrue(favor.contentEquals(newFavor));
+  }
+
+  @Test
   public void describeContentsCorrect() {
 
     Favor favor = FakeItemFactory.getFavor();

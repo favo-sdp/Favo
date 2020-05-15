@@ -250,9 +250,6 @@ public class FavorEditingTest {
 
   @Test
   public void testRequestFavorFlowWithLocation() throws InterruptedException {
-    // Click on fav list tab
-    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
@@ -287,7 +284,7 @@ public class FavorEditingTest {
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
 
-    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor1 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor1.setAccepterId("one helper");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
     Thread.sleep(1000);
@@ -365,7 +362,7 @@ public class FavorEditingTest {
     onView(withText(R.string.edit_favor)).check(matches(isDisplayed())).perform(click());
 
     //  someone commit the old favor
-    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor1 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor1.setAccepterId("one committer");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
     Thread.sleep(1000);
@@ -373,7 +370,7 @@ public class FavorEditingTest {
         .check(matches(withText(R.string.old_favor_accepted_by_others)));
 
     // someone uncommit the old favor
-    Favor favor2 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor2 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor2.setAccepterId("");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor2));
     Thread.sleep(1000);
@@ -419,7 +416,7 @@ public class FavorEditingTest {
     Thread.sleep(1000);
 
     // someone commit the favor
-    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor1 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor1.setAccepterId("one committer");
     favor1.setAccepterId("second committer");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));

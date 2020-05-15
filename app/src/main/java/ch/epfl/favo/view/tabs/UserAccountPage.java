@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -29,10 +30,12 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 public class UserAccountPage extends Fragment {
 
   private View view;
+  private IFavorViewModel viewModel;
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -51,11 +54,19 @@ public class UserAccountPage extends Fragment {
 
     displayUserDetails(new User(null, "Name", "Email", null, null, null));
 
+    viewModel =
+        (IFavorViewModel)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(this::displayUserDetails);
 
     return view;
+  }
+
+  private IFavorViewModel getViewModel() {
+    return viewModel;
   }
 
   private void setupButtons() {

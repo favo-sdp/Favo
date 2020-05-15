@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -28,7 +29,7 @@ public class UserUtil implements IUserUtil {
   // Single private instance
   private static final String TAG = "UserUtil";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
-  private static ICollectionWrapper collection =
+  private static ICollectionWrapper<User> collection =
       DependencyFactory.getCurrentCollectionWrapper("users", User.class);
 
   // Private constructor
@@ -44,7 +45,7 @@ public class UserUtil implements IUserUtil {
    * @throws RuntimeException Unable to post to DB.
    */
   @Override
-  public CompletableFuture postUser(User user) { // TODO: catch exception in view not here
+  public CompletableFuture<Void> postUser(User user) { // TODO: catch exception in view not here
     return collection.addDocument(user);
   }
 
@@ -53,16 +54,14 @@ public class UserUtil implements IUserUtil {
    * @return
    */
   @Override
-  public CompletableFuture changeActiveFavorCount(String userId, boolean isRequested, int change) {
+  public CompletableFuture<Void> changeActiveFavorCount(
+      String userId, boolean isRequested, int change) {
     return findUser(userId)
         .thenCompose(
-            (object) -> {
-              User user = object;
+            (user) -> {
               if (isRequested) {
                 user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              }
-              // user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              else {
+              } else {
                 user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
               }
               return updateUser(user);
@@ -70,7 +69,7 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
-  public CompletableFuture updateUser(User user) {
+  public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());
   }
 
@@ -80,25 +79,9 @@ public class UserUtil implements IUserUtil {
     return collection.getDocument(id);
   }
 
-  /**
-   * Allows user to login to their account.
-   *
-   * @param username Valid username in DB.
-   * @param password Valid Pw in DB.
-   */
-  public void logInAccount(String username, String password) {
-    /*
-    TODO: Login with Google Firebase. If not found, throw NotInDBException()
-     */
-    throw new NotImplementedException();
-  }
-
-  public void logOutAccount() {
-    throw new NotImplementedException();
-  }
-
-  public void deleteAccount() {
-    throw new NotImplementedException();
+  @Override
+  public DocumentReference getCurrentUserReference(String userId) {
+    return collection.getDocumentQuery(userId);
   }
 
   /**
@@ -117,7 +100,7 @@ public class UserUtil implements IUserUtil {
    *
    * @param user A user object.
    */
-  public CompletableFuture retrieveUserRegistrationToken(User user) {
+  public CompletableFuture<Void> retrieveUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();
     CompletableFuture<InstanceIdResult> futureIdTask =
@@ -126,23 +109,11 @@ public class UserUtil implements IUserUtil {
         (instanceIdResult) -> {
           String token = Objects.requireNonNull(instanceIdResult).getToken();
           user.setNotificationId(token);
-          Map<String, String> notifMap = new HashMap<>();
+          Map<String, Object> notifMap = new HashMap<>();
           notifMap.put(User.NOTIFICATION_ID, token);
           return collection.updateDocument(user.getId(), notifMap);
         });
   }
-  //        addOnCompleteListener(
-  //            task -> {
-  //              if (!task.isSuccessful()) {
-  //                return;
-  //              }
-  //              String token = Objects.requireNonNull(task.getResult()).getToken();
-  //              user.setNotificationId(token);
-  //
-  //              Map<String, String> notifMap = new HashMap<String, String>();
-  //              notifMap.put("notificationId", token);
-  //              collection.updateDocument(user.getId(), notifMap);
-  //            });
 
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;

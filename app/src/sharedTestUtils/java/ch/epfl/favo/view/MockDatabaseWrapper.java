@@ -101,4 +101,9 @@ public class MockDatabaseWrapper<T extends Document> implements ICollectionWrapp
     }
     return future;
   }
+
+  @Override
+  public Query getReference() {
+    return null;
+  }
 }

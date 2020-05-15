@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -33,8 +34,8 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
         };
   }
 
-  private CompletableFuture getSuccessfulCompletableFuture() {
-    return new CompletableFuture() {
+  private CompletableFuture<Void> getSuccessfulCompletableFuture() {
+    return new CompletableFuture<Void>() {
       {
         complete(null);
       }
@@ -42,7 +43,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture requestFavor(Favor favor) {
+  public CompletableFuture<Void> requestFavor(Favor favor) {
 
     if (isThrowingError) return failedResult;
     observedFavorResult.setValue(favor);
@@ -50,7 +51,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture acceptFavor(Favor favor, User user) {
+  public CompletableFuture<Void> acceptFavor(Favor favor, User user) {
     if (isThrowingError) return failedResult;
     favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     favor.setStatusIdToInt(FavorStatus.ACCEPTED);
@@ -59,7 +60,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture completeFavor(Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> completeFavor(Favor favor, boolean isRequested) {
     if (isThrowingError) return failedResult;
     if (favor.getStatusId() == FavorStatus.COMPLETED_REQUESTER.toInt()
         || favor.getStatusId() == FavorStatus.COMPLETED_ACCEPTER.toInt())
@@ -72,7 +73,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> cancelFavor(Favor favor, boolean isRequested) {
     if (isThrowingError) return failedResult;
     favor.setStatusIdToInt(
         isRequested ? FavorStatus.CANCELLED_REQUESTER : FavorStatus.CANCELLED_ACCEPTER);
@@ -84,10 +85,12 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
 
   @Override
-  public CompletableFuture commitFavor(Favor favor, int change) {
+  public CompletableFuture<Void> commitFavor(final Favor favor, boolean isCancelled) {
+    Favor tempFavor = new Favor(favor);
     if (isThrowingError) return failedResult;
-    favor.setAccepterId(TestConstants.USER_ID);
-    observedFavorResult.setValue(favor);
+    if (isCancelled) tempFavor.getUserIds().remove(TestConstants.USER_ID);
+    else tempFavor.setAccepterId(TestConstants.USER_ID);
+    observedFavorResult.setValue(tempFavor);
     return getSuccessfulCompletableFuture();
   }
 
@@ -101,6 +104,15 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
+  private MutableLiveData<User> observedUser = getUserMutableLiveData();
+
+  private MutableLiveData<User> getUserMutableLiveData() {
+    return new MutableLiveData<User>() {
+      {
+        setValue(FakeItemFactory.getUser());
+      }
+    };
+  }
 
   private MutableLiveData<Map<String, Favor>> getMapLiveData() {
 
@@ -137,13 +149,14 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return observedFavorResult;
   }
 
+  @VisibleForTesting
+  public void setFavorValue(Favor favor) {
+    observedFavorResult.setValue(favor);
+  }
+
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
-  }
-
-  public void setFavorValue(Favor favor) {
-    observedFavorResult.setValue(favor);
   }
 
   @Override
@@ -157,7 +170,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture deleteFavor(Favor favor) {
+  public CompletableFuture<Void> deleteFavor(Favor favor) {
     if (isThrowingError) return failedResult;
     return getSuccessfulCompletableFuture();
   }

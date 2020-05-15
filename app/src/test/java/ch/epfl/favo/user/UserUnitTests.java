@@ -1,5 +1,9 @@
 package ch.epfl.favo.user;
 
+import android.location.Location;
+
+import com.google.firebase.auth.FirebaseUser;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,8 +12,8 @@ import java.util.Map;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
-import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
@@ -29,12 +33,6 @@ public class UserUnitTests {
   @Before
   public void setup() {
     DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
-  }
-
-  @Test
-  public void userCanRemoveDetailsFromDatabase() {
-
-    assertThrows(NotImplementedException.class, () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
   @Test
@@ -72,6 +70,7 @@ public class UserUnitTests {
     int testNum = 2;
 
     User user = new User();
+    String pictureUrl = "someUrl";
     int activeAcceptingFavors = User.MAX_ACCEPTING_FAVORS;
     int activeRequestingFavors = User.MAX_REQUESTING_FAVORS;
     double newBalance = 5;
@@ -90,6 +89,7 @@ public class UserUnitTests {
     user.setLikes(testNum);
     user.setDislikes(testNum);
     user.setBalance(newBalance);
+    user.setProfilePicUrl(pictureUrl);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
@@ -101,6 +101,15 @@ public class UserUnitTests {
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
     assertEquals((int) newBalance, (int) user.getBalance());
+    assertEquals(pictureUrl, user.getPictureUrl());
+  }
+
+  @Test
+  public void testUserConstructedFromFirebase() {
+    FirebaseUser fbUser = FakeItemFactory.getFirebaseUser();
+    String deviceId = TestConstants.DEVICE_ID;
+    Location loc = TestConstants.LOCATION;
+    User user = new User(fbUser, deviceId, loc);
   }
 
   @Test
@@ -137,12 +146,12 @@ public class UserUnitTests {
 
     User user = new User();
     assertThrows(
-        IllegalRequestException.class,
+        IllegalAcceptException.class,
         () -> user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS + 1));
     assertThrows(
         IllegalRequestException.class,
-        () -> user.setActiveAcceptingFavors(User.MAX_REQUESTING_FAVORS + 1));
-    assertThrows(IllegalRequestException.class, () -> user.setActiveAcceptingFavors(-1));
+        () -> user.setActiveRequestingFavors(User.MAX_REQUESTING_FAVORS + 1));
+    assertThrows(IllegalAcceptException.class, () -> user.setActiveAcceptingFavors(-1));
     assertThrows(IllegalRequestException.class, () -> user.setActiveRequestingFavors(-1));
     user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS);
     user.setActiveRequestingFavors(User.MAX_REQUESTING_FAVORS);

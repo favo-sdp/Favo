@@ -24,4 +24,6 @@ public interface ICollectionWrapper<T> {
   Query locationBoundQuery(Location loc, double radius);
 
   CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
+
+  Query getReference();
 }

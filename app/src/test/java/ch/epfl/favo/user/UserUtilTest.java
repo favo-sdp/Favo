@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -25,13 +26,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 public class UserUtilTest {
   private CollectionWrapper mockCollectionWrapper;
-  private CompletableFuture successfulFuture =
-      new CompletableFuture() {
+  private CompletableFuture<Void> successfulFuture =
+      new CompletableFuture<Void>() {
         {
           complete(null);
         }
       };
-  private CompletableFuture failedFuture = new CompletableFuture();
+  private CompletableFuture<Void> failedFuture = new CompletableFuture<Void>();
 
   @Before
   public void setup() {
@@ -43,6 +44,12 @@ public class UserUtilTest {
     Mockito.doReturn(successfulFuture)
         .when(mockCollectionWrapper)
         .addDocument(Mockito.any(Document.class));
+    Query mockCollectionReference = Mockito.mock(Query.class);
+    Query orderByResult = Mockito.mock(Query.class);
+    Query arrayContainsResult = Mockito.mock(Query.class);
+    Mockito.doReturn(mockCollectionReference).when(mockCollectionWrapper).getReference();
+    Mockito.doReturn(arrayContainsResult).when(orderByResult).whereArrayContains(anyString(),Mockito.any());
+    Mockito.doReturn(orderByResult).when(mockCollectionReference).orderBy(anyString(),Mockito.any(Query.Direction.class));
     DependencyFactory.setCurrentCollectionWrapper(mockCollectionWrapper);
   }
 
@@ -56,7 +63,7 @@ public class UserUtilTest {
     User fakeUser = getUser();
     fakeUser.setActiveRequestingFavors(0);
     CompletableFuture<User> userFuture =
-        new CompletableFuture() {
+        new CompletableFuture<User>() {
           {
             complete(fakeUser);
           }
@@ -98,7 +105,7 @@ public class UserUtilTest {
     // check successful result
     User fakeUser = getUser();
     CompletableFuture<User> userFuture =
-        new CompletableFuture() {
+        new CompletableFuture<User>() {
           {
             complete(fakeUser);
           }
@@ -106,25 +113,6 @@ public class UserUtilTest {
     Mockito.doReturn(userFuture).when(mockCollectionWrapper).getDocument(anyString());
     UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
     Assert.assertTrue(UserUtil.getSingleInstance().findUser("bla").isDone());
-  }
-
-  @Test
-  public void testLogInAccount() {
-    Assert.assertThrows(
-        NotImplementedException.class,
-        () -> UserUtil.getSingleInstance().logInAccount("bla", "ble"));
-  }
-
-  @Test
-  public void testLogOutAccount() {
-    Assert.assertThrows(
-        NotImplementedException.class, () -> UserUtil.getSingleInstance().logOutAccount());
-  }
-
-  @Test
-  public void testDeleteAccount() {
-    Assert.assertThrows(
-        NotImplementedException.class, () -> UserUtil.getSingleInstance().deleteAccount());
   }
 
   @Test
@@ -161,4 +149,9 @@ public class UserUtilTest {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirebaseNotificationInstanceId(null);
   }
+  @Test
+  public void testUserReference(){
+    UserUtil.getSingleInstance().getCurrentUserReference("randomId");
+  }
+
 }

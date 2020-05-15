@@ -69,7 +69,7 @@ public class PictureUtil {
     return urlFuture.thenApply(Uri::toString);
   }
 
-  public CompletableFuture deletePicture(@NonNull String imagePath) {
+  public CompletableFuture<Void> deletePicture(@NonNull String imagePath) {
     String pictureId = getPictureIdFromPath(imagePath);
     Task<Void> deleteTask = getStorage().getReference().child(pictureId).delete();
     return new TaskToFutureAdapter<>(deleteTask).getInstance();

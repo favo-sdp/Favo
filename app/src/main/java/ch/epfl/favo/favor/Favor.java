@@ -97,6 +97,21 @@ public class Favor implements Parcelable, Document, Cloneable {
     this(title, description, requesterId, location, statusId, reward, null);
     this.id = id;
   }
+  // copy constructor
+  public Favor(Favor other) {
+    this(
+        other.getId(),
+        other.getTitle(),
+        other.getDescription(),
+        other.getRequesterId(),
+        other.getLocation(),
+        other.getStatusId(),
+        other.getReward());
+    this.isArchived = other.isArchived;
+    this.pictureUrl = other.getPictureUrl();
+    this.postedTime = other.getPostedTime();
+    this.userIds = other.getUserIds();
+  }
 
   // Constructor to make statusId int conversion implicit
   public Favor(
@@ -308,12 +323,5 @@ public class Favor implements Parcelable, Document, Cloneable {
             || (this.pictureUrl.equals(other.pictureUrl)));
   }
 
-  public Object clone() {
-    try {
-      return super.clone();
-    } catch (CloneNotSupportedException e) {
-      e.printStackTrace();
-      throw new RuntimeException("Unable to clone Favor");
-    }
-  }
+
 }

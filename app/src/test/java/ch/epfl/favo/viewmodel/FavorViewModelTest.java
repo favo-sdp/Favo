@@ -42,6 +42,7 @@ public class FavorViewModelTest {
   private CompletableFuture failedResult;
   private PictureUtil pictureUtility;
   private Bitmap bitmap;
+  private DocumentReference documentReference;
 
   @Before
   public void setup() {
@@ -65,11 +66,13 @@ public class FavorViewModelTest {
     viewModel = new FavorViewModel();
     bitmap = Mockito.mock(Bitmap.class);
     pictureUtility = Mockito.mock(PictureUtil.class);
+    documentReference = Mockito.mock(DocumentReference.class);
     DependencyFactory.setCurrentPictureUtility(pictureUtility);
     setupReturns();
   }
 
   private void setupReturns() {
+    Mockito.doReturn(documentReference).when(userRepository).getCurrentUserReference(anyString());
     Mockito.doReturn(successfulResult).when(pictureUtility).deletePicture(Mockito.anyString());
     Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
     Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
@@ -103,8 +106,10 @@ public class FavorViewModelTest {
   @Test
   public void testRepositoryDoesNotThrowErrorOnRepositoryPostFavorFailedResult() {
     Mockito.doReturn(failedResult).when(favorRepository).requestFavor(any(Favor.class));
-    Assert.assertTrue(
-        viewModel.requestFavor(FakeItemFactory.getFavor()).isCompletedExceptionally());
+    CompletableFuture<Void> voidCompletableFuture =
+        viewModel.requestFavor(FakeItemFactory.getFavor());
+    voidCompletableFuture.whenComplete(
+        (aVoid, throwable) -> Assert.assertTrue(throwable.getCause() instanceof RuntimeException));
   }
 
   @Test

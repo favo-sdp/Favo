@@ -25,7 +25,7 @@ import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.exception.IllegalRequestException;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;
@@ -287,7 +287,7 @@ public class FavorPublishedViewTest {
   @Test
   public void testFavorIsNotAcceptedIfSurpassedLimit() throws Throwable {
     runOnUiThread(
-        () -> fakeViewModel.setThrowError(new IllegalRequestException("illegal operation!")));
+        () -> fakeViewModel.setThrowError(new IllegalAcceptException("illegal operation!")));
     onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))

@@ -3,10 +3,6 @@ const functions = require('firebase-functions');
 const firestore = require('firebase-admin');
 
 const admin = require('firebase-admin');
-// admin.initializeApp({
-//     credential: admin.credential.cert(require('./keys/admin.json')),
-//     databaseURL: 'https://favo-11728.firebaseio.com'
-// });
 admin.initializeApp();
 var db = admin.firestore();
 
@@ -47,7 +43,9 @@ function sendMulticastMessage(message, usersIds) {
                     return console.log('List of tokens that caused failures: ' + failedTokens);
                 }
             }
-        return});}
+            return
+        });
+}
 
 // send new favor notification to users in the area
 exports.sendNotificationNearbyOnNewFavor = functions.firestore
@@ -214,7 +212,8 @@ exports.expireOldFavorsOnCreate = functions.firestore
 
         let query = db.collection('/favors');
 
-        return query.where("statusId", "==", REQUESTED_STATUS).orderBy("postedTime", "asc").endAt(cutoff).get()
+        return query.where("statusId", "==", REQUESTED_STATUS)
+            .orderBy("postedTime", "asc").endAt(cutoff).get()
             .then(snapshot => {
                 if (snapshot.empty) {
                     console.log("Snapshot is empty")
@@ -229,20 +228,22 @@ exports.expireOldFavorsOnCreate = functions.firestore
                         snapshot.forEach(doc => {
                             let favor = doc.data();
                             //console.log(postedTime,",",cutoff);
-                            totalUpdateCount++;
-                            var userId = favor.requesterId;
-                            if (userUpdates.has(userId)) { //update count in map
-                                let newValue = userUpdates.get(userId) - 1;
-                                userUpdates.set(userId, newValue);
-                            }
-                            else { //insert user in map
+                            if (favor.userIds.length === 1) {
                                 totalUpdateCount++;
-                                if (totalUpdateCount > MAX_UPDATES)
-                                    throw BreakException;
-                                userUpdates.set(userId, -1);
+                                var userId = favor.requesterId;
+                                if (userUpdates.has(userId)) { //update count in map
+                                    let newValue = userUpdates.get(userId) - 1;
+                                    userUpdates.set(userId, newValue);
+                                }
+                                else { //insert user in map
+                                    totalUpdateCount++;
+                                    if (totalUpdateCount > MAX_UPDATES)
+                                        throw BreakException;
+                                    userUpdates.set(userId, -1);
+                                }
+                                //console.log("updated");
+                                batch.update(doc.ref, { 'statusId': EXPIRED_STATUS, 'isArchived': true });
                             }
-                            //console.log("updated");
-                            batch.update(doc.ref, { 'statusId': EXPIRED_STATUS, 'isArchived': true });
                         });
                     }
                     catch (e) {
@@ -261,6 +262,7 @@ exports.expireOldFavorsOnCreate = functions.firestore
                 console.log("Failed expiring docs", reason)
             });
     });
+
 
 // send new favor notification to users on updates
 exports.sendNotificationOnNewChat = functions.firestore

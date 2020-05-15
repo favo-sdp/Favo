@@ -23,12 +23,11 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import ch.epfl.favo.FakeFirebaseUser;
-import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.MockDatabaseWrapper;
 import ch.epfl.favo.view.MockGpsTracker;
 
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
@@ -53,10 +52,7 @@ public class FirebaseMessagingServiceTest {
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-          MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper();
-          mockDatabaseWrapper.setMockDocument(FakeItemFactory.getFavor());
-          mockDatabaseWrapper.setThrowError(false);
-          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
 
@@ -76,6 +72,7 @@ public class FirebaseMessagingServiceTest {
 
   @Test
   public void testNotifications() {
+
     Bundle bundle = generateBundle();
     FirebaseMessagingService.showNotification(
         mainActivityTestRule.getActivity(), new RemoteMessage(bundle), "Default channel id");

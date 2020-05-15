@@ -111,9 +111,7 @@ public class FavorEditingView extends Fragment {
         .thenAccept(
             user ->
                 mFavoCoinsView.setFilters(
-                    new InputFilter[] {
-                      new InputFilterMinMax(0, (int) user.getBalance())
-                    }));
+                    new InputFilter[] {new InputFilterMinMax(0, (int) user.getBalance())}));
 
     // Get dependencies
     mGpsTracker = DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext());

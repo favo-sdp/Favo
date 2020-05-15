@@ -17,18 +17,21 @@ import ch.epfl.favo.user.User;
  * as members.
  */
 public interface IFavorViewModel {
-  CompletableFuture requestFavor(Favor favor);
+
+  CompletableFuture<Void> requestFavor(final Favor favor);
 
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);
 
-  CompletableFuture commitFavor(Favor favor, int change);
+  CompletableFuture<Void> commitFavor(Favor favor, boolean isCancelled);
 
-  CompletableFuture acceptFavor(Favor favor, User user);
+  CompletableFuture<Void> acceptFavor(final Favor favor, User user);
 
-  CompletableFuture completeFavor(Favor favor, boolean isRequested);
+  CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested);
 
-  CompletableFuture cancelFavor(Favor favor, boolean isRequested);
+  CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested);
+
+  CompletableFuture<Void> deleteFavor(final Favor favor);
 
   CompletableFuture<Bitmap> downloadPicture(Favor favor);
 
@@ -45,8 +48,6 @@ public interface IFavorViewModel {
   void setShowObservedFavor(Boolean show);
 
   boolean isShowObservedFavor();
-
-  CompletableFuture deleteFavor(final Favor favor);
 
   // Save/load pictures
   void savePictureToLocal(Context context, Favor favor, Bitmap picture);
