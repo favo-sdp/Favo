@@ -432,47 +432,33 @@ public class FavorPublishedView extends Fragment {
 
   private void commitFavor() {
     currentFavor.setAccepterId(currentUser.getUid());
-    CompletableFuture updateFuture = getViewModel().commitFavor(currentFavor, 1);
-    updateFuture.thenAccept(
-        o ->
-            CommonTools.showSnackbar(requireView(), getString(R.string.favor_respond_success_msg)));
-    updateFuture.exceptionally(onFailedResult(requireView()));
+    CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, 1);
+    handleResult(commitFuture, R.string.favor_respond_success_msg);
   }
 
   private void cancelCommit() {
-    for (int i = 1; i < currentFavor.getUserIds().size(); i++)
-      if (currentFavor.getUserIds().get(i).equals(currentUser.getUid()))
-        currentFavor.getUserIds().remove(i);
-    CompletableFuture updateFuture = getViewModel().commitFavor(currentFavor, -1);
-    updateFuture.thenAccept(
-        o ->
-            CommonTools.showSnackbar(requireView(), getString(R.string.favor_respond_success_msg)));
-    updateFuture.exceptionally(onFailedResult(requireView()));
+    CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, -1);
+    handleResult(commitFuture, R.string.favor_respond_success_msg);
+    commitFuture.thenAccept(aVoid -> currentFavor.getUserIds().remove(currentUser.getUid()));
+  }
+
+  private void handleResult(CompletableFuture<Void> commitFuture, int successMessage) {
+    commitFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) handleException(throwable);
+          else CommonTools.showSnackbar(requireView(), getString(successMessage));
+        });
   }
 
   private void acceptFavor(User user) {
-    CompletableFuture acceptFavorFuture = getViewModel().acceptFavor(currentFavor, user);
-    acceptFavorFuture.thenAccept(
-        o -> {
-          CommonTools.showSnackbar(getView(), getString(R.string.favor_respond_success_msg));
-          UserUtil.getSingleInstance()
-              .findUser(user.getId())
-              .thenAccept(
-                  user1 -> {
-                    user1.setAcceptedFavors(user1.getAcceptedFavors() + 1);
-                    UserUtil.getSingleInstance().updateUser(user1);
-                  });
-        });
-    // acceptFavorFuture.exceptionally(handleException());
+    CompletableFuture<Void> acceptFavorFuture = getViewModel().acceptFavor(currentFavor, user);
+    handleResult(acceptFavorFuture, R.string.favor_respond_success_msg);
   }
 
   private void completeFavor() {
-    CompletableFuture updateFuture = getViewModel().completeFavor(currentFavor, isRequested);
-    updateFuture.thenAccept(
-        o ->
-            CommonTools.showSnackbar(
-                requireView(), getString(R.string.favor_complete_success_msg)));
-    updateFuture.exceptionally(onFailedResult(requireView()));
+    CompletableFuture<Void> completeFuture =
+        getViewModel().completeFavor(currentFavor, isRequested);
+    handleResult(completeFuture, R.string.favor_complete_success_msg);
   }
 
   private void cancelFavor() {
@@ -480,20 +466,26 @@ public class FavorPublishedView extends Fragment {
     if (favorStatus == FavorStatus.REQUESTED)
       for (int i = 1; i < currentFavor.getUserIds().size(); i++)
         currentFavor.getUserIds().remove(i);
-    CompletableFuture completableFuture = getViewModel().cancelFavor(currentFavor, isRequested);
-    completableFuture.thenAccept(
-        o -> CommonTools.showSnackbar(getView(), getString(R.string.favor_cancel_success_msg)));
-    completableFuture.exceptionally(onFailedResult(requireView()));
+    CompletableFuture<Void> cancelFuture = getViewModel().cancelFavor(currentFavor, isRequested);
+    handleResult(cancelFuture, R.string.favor_cancel_success_msg);
+  }
+
+  private void handleException(Throwable throwable) {
+    if (throwable == null) return;
+    if (throwable.getCause() == null) throwable = new Exception(throwable);
+    String response;
+    if (throwable.getCause() instanceof IllegalRequestException) {
+      response = getString(R.string.illegal_request_error);
+    } else {
+      response = getString(R.string.update_favor_error);
+    }
+    CommonTools.showSnackbar(requireView(), response);
+    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 
   private void deleteFavor() {
-    CompletableFuture deleteFuture = getViewModel().deleteFavor(currentFavor);
-    deleteFuture.thenAccept(
-        o -> {
-          CommonTools.showSnackbar(requireView(), getString(R.string.favor_delete_success_msg));
-          requireActivity().onBackPressed();
-        });
-    deleteFuture.exceptionally(onFailedResult(requireView()));
+    CompletableFuture<Void> deleteFuture = getViewModel().deleteFavor(currentFavor);
+    handleResult(deleteFuture, R.string.favor_delete_success_msg);
   }
 
   private Function onFailedResult(View currentView) {
