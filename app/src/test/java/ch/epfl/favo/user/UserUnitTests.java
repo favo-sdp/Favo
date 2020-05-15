@@ -12,6 +12,7 @@ import java.util.Map;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
@@ -145,12 +146,12 @@ public class UserUnitTests {
 
     User user = new User();
     assertThrows(
-        IllegalRequestException.class,
+        IllegalAcceptException.class,
         () -> user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS + 1));
     assertThrows(
         IllegalRequestException.class,
-        () -> user.setActiveAcceptingFavors(User.MAX_REQUESTING_FAVORS + 1));
-    assertThrows(IllegalRequestException.class, () -> user.setActiveAcceptingFavors(-1));
+        () -> user.setActiveRequestingFavors(User.MAX_REQUESTING_FAVORS + 1));
+    assertThrows(IllegalAcceptException.class, () -> user.setActiveAcceptingFavors(-1));
     assertThrows(IllegalRequestException.class, () -> user.setActiveRequestingFavors(-1));
     user.setActiveAcceptingFavors(User.MAX_ACCEPTING_FAVORS);
     user.setActiveRequestingFavors(User.MAX_REQUESTING_FAVORS);
