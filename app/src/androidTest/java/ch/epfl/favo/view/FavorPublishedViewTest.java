@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
@@ -101,6 +102,18 @@ public class FavorPublishedViewTest {
     fakeViewModel = (FakeViewModel) launchFragment(fakeFavor).getViewModel();
   }
 
+  @Test
+  public void testSnackbarShowsWhenFavorCannotBeFetchedFromDatabase() throws Throwable {
+
+    Favor failedFavor = Mockito.mock(Favor.class);
+    Mockito.doThrow(new RuntimeException()).when(failedFavor).getTitle();
+    runOnUiThread(() -> fakeViewModel.setObservedFavorResult(failedFavor));
+    getInstrumentation().waitForIdleSync();
+
+    // check error message is printed
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.error_database_sync)));
+  }
   @Test
   public void testChatAndLocationButtonWorkDetailView() {
     // Check and click on the chat

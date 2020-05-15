@@ -199,8 +199,13 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.reward = reward;
   }
 
+  /**
+   * structure of userIds: a list with the first position always setting as requester Id, following
+   * with potential helpers who commit this favor. When a requester finally decide a accepter, he
+   * reset this list with his own Id and accepter's ID *
+   */
   public void setAccepterId(String id) {
-    // clear the list of committed/accepted user
+    // if argument is "", clear the list of committed/accepted user
     if (id != null && id.equals("")) {
       userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
     } else if (userIds != null && !userIds.isEmpty()) {

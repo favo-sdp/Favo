@@ -35,6 +35,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -74,6 +77,7 @@ public class FavorEditingView extends Fragment {
   private Favor currentFavor;
   private String favorSource;
   private MenuItem requestItem;
+  private FirebaseUser currentUser;
 
   public FavorEditingView() {
     // Required empty public constructor
@@ -94,9 +98,9 @@ public class FavorEditingView extends Fragment {
     setupToolBar();
 
     favorStatus = FavorStatus.EDIT;
+    currentUser = DependencyFactory.getCurrentFirebaseUser();
 
     mTitleView = rootView.findViewById(R.id.title_request_view);
-
     mDescriptionView = rootView.findViewById(R.id.details);
     setupView(rootView);
     // Extract other elements
@@ -171,7 +175,9 @@ public class FavorEditingView extends Fragment {
 
     String url = currentFavor.getPictureUrl();
     if (url != null) {
-      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      if (mImageView.getDrawable() != null) {
+        v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      }
       getViewModel()
           .downloadPicture(currentFavor)
           .thenAccept(
@@ -251,7 +257,6 @@ public class FavorEditingView extends Fragment {
   private void getFavorFromView() {
 
     // Extract details and post favor to Firebase
-    String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = mTitleView.getText().toString();
     String desc = mDescriptionView.getText().toString();
     String rewardString = mFavoCoinsView.getText().toString();
@@ -262,7 +267,6 @@ public class FavorEditingView extends Fragment {
     }
 
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-
     // if a favor is initiated from map, then override the current location
     // with location got from map( already saved in currentFavor )
     if (favorSource.equals(getString(R.string.favor_source_map))) {
@@ -270,21 +274,40 @@ public class FavorEditingView extends Fragment {
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
 
-    Favor favor = new Favor(title, desc, userId, loc, favorStatus, reward);
-
-    // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
-    // callbacks in requestFavor and confirm
-    if (mImageView.getDrawable() != null) {
-      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-      getViewModel().savePictureToLocal(getContext(), favor, picture);
-      getViewModel().uploadOrUpdatePicture(favor, picture);
-    } else {
-      favor.setPictureUrl(null);
-    }
-
-    // Updates the current favor
+    // TODO: Get reward from frontend (currently being set by default to 0)
+    Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, reward);
     if (currentFavor == null) currentFavor = favor;
-    else currentFavor.updateToOther(favor);
+    else {
+      // do not override the pictureUrl of currentFavor
+      favor.setPictureUrl(currentFavor.getPictureUrl());
+      currentFavor.updateToOther(favor);
+    }
+  }
+
+  private void savePicture() {
+    Favor favorForPicture;
+    // empty field will be override later
+    // if currentFavor is null, start from a new one, otherwise use the current one
+    if (currentFavor == null)
+      favorForPicture = new Favor("", "", currentUser.getUid(), null, favorStatus, 0);
+    else favorForPicture = currentFavor;
+    Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+    CompletableFuture<Bitmap> cachedPictureFuture =
+        getViewModel().loadPictureFromLocal(getContext(), favorForPicture);
+    if (cachedPictureFuture != null)
+      cachedPictureFuture.thenAccept(
+          cachedPicture -> {
+            // include the case where cachedPicture is null, because there is no local cache
+            if (!picture.sameAs(cachedPicture)) {
+              // TODO: Get reward from frontend (currently being set by default to 0)
+              // Upload picture to database if it exists //TODO: extract to FavorViewModel and
+              // implement
+              // callbacks in requestFavor and confirm
+              getViewModel().uploadOrUpdatePicture(favorForPicture, picture);
+              getViewModel().savePictureToLocal(getContext(), favorForPicture, picture);
+            }
+          });
+    currentFavor = favorForPicture;
   }
 
   /**
@@ -350,6 +373,7 @@ public class FavorEditingView extends Fragment {
           break;
         }
     }
+    savePicture();
   }
 
   /**
@@ -381,7 +405,8 @@ public class FavorEditingView extends Fragment {
       int action;
       // if this favor restarts from an archived one, then prevent pressback from jumping to
       // archived favor view.
-      if (favorSource.equals(getString(R.string.favor_source_publishedFavor)))
+      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
+          || favorSource.equals(getString(R.string.restart_request)))
         action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
       else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
       Navigation.findNavController(currentView).navigate(action, favorBundle);

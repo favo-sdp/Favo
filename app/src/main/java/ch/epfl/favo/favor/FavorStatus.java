@@ -25,20 +25,21 @@ public enum FavorStatus {
     SUCCESSFULLY_COMPLETED.toInt()
   };
 
-  public static HashMap<FavorStatus, Integer> statusColor = new HashMap<FavorStatus, Integer>() {
-    {
-      put(FavorStatus.REQUESTED, R.color.requested_status_bg);
-      put(FavorStatus.ACCEPTED, R.color.accepted_status_bg);
-      put(FavorStatus.EXPIRED, R.color.cancelled_status_bg);
-      put(FavorStatus.CANCELLED_REQUESTER, R.color.cancelled_status_bg);
-      put(FavorStatus.CANCELLED_ACCEPTER, R.color.cancelled_status_bg);
-      put(FavorStatus.SUCCESSFULLY_COMPLETED, R.color.accepted_status_bg);
-      put(FavorStatus.COMPLETED_REQUESTER, R.color.accepted_status_bg);
-      put(FavorStatus.COMPLETED_ACCEPTER, R.color.accepted_status_bg);
-      put(FavorStatus.ACCEPTED_BY_OTHER, R.color.cancelled_status_bg);
-      put(FavorStatus.EDIT, R.color.requested_status_bg);
-    }
-  };
+  public static HashMap<FavorStatus, Integer> statusColor =
+      new HashMap<FavorStatus, Integer>() {
+        {
+          put(FavorStatus.REQUESTED, R.color.requested_status_bg);
+          put(FavorStatus.ACCEPTED, R.color.accepted_status_bg);
+          put(FavorStatus.EXPIRED, R.color.cancelled_status_bg);
+          put(FavorStatus.CANCELLED_REQUESTER, R.color.cancelled_status_bg);
+          put(FavorStatus.CANCELLED_ACCEPTER, R.color.cancelled_status_bg);
+          put(FavorStatus.SUCCESSFULLY_COMPLETED, R.color.accepted_status_bg);
+          put(FavorStatus.COMPLETED_REQUESTER, R.color.accepted_status_bg);
+          put(FavorStatus.COMPLETED_ACCEPTER, R.color.accepted_status_bg);
+          put(FavorStatus.ACCEPTED_BY_OTHER, R.color.cancelled_status_bg);
+          put(FavorStatus.EDIT, R.color.requested_status_bg);
+        }
+      };
 
   private String status;
   private int code;
