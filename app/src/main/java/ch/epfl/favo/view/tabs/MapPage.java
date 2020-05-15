@@ -125,7 +125,6 @@ public class MapPage extends Fragment
     mMap.setPadding(0, 0, 0, MAP_BOTTOM_PADDING);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
-    Log.d("fuck", defaultZoomLevel + " level");
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     } catch (Exception e) {
@@ -160,7 +159,7 @@ public class MapPage extends Fragment
         level = 13;
         break;
       default: // 25
-        level = 10;
+        level = 9;
     }
     return level;
   }

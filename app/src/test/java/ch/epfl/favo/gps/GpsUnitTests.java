@@ -110,6 +110,6 @@ public class GpsUnitTests extends FragmentActivity {
     assertEquals(16, mapPage.notificationRadiusToZoomLevel(1));
     assertEquals(14, mapPage.notificationRadiusToZoomLevel(5));
     assertEquals(13, mapPage.notificationRadiusToZoomLevel(10));
-    assertEquals(10, mapPage.notificationRadiusToZoomLevel(25));
+    assertEquals(9, mapPage.notificationRadiusToZoomLevel(25));
   }
 }

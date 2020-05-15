@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -61,6 +62,7 @@ public class FavorEditingView extends Fragment {
   private IGpsTracker mGpsTracker;
   private Favor currentFavor;
   private String favorSource;
+  private FirebaseUser currentUser;
 
   public FavorEditingView() {
     // Required empty public constructor
@@ -72,7 +74,7 @@ public class FavorEditingView extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_favor_editing_view, container, false);
     setupButtons(rootView);
     favorStatus = FavorStatus.EDIT;
-
+    currentUser = DependencyFactory.getCurrentFirebaseUser();
     // Edit text:
     mTitleView = rootView.findViewById(R.id.title_request_view);
     mTitleView.requestFocus();
@@ -137,7 +139,9 @@ public class FavorEditingView extends Fragment {
 
     String url = currentFavor.getPictureUrl();
     if (url != null) {
-      v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      if (mImageView.getDrawable() != null) {
+        v.findViewById(R.id.loading_panel).setVisibility(View.VISIBLE);
+      }
       getViewModel()
           .downloadPicture(currentFavor)
           .thenAccept(
@@ -175,24 +179,30 @@ public class FavorEditingView extends Fragment {
     locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
-  /**
-   * Method is called when request favor button is clicked. It uploads favor request to the database
-   * and updates view so that favor is editable.
-   */
-  private void requestFavor() {
-    // update currentFavor
-    View currentView = getView();
-    favorStatus = FavorStatus.REQUESTED;
-    getFavorFromView();
-    // post to DB
-    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-    postFavorFuture.thenAccept(onSuccessfulRequest(currentView));
-    postFavorFuture.exceptionally(onFailedResult(currentView));
-    // Show confirmation and minimize keyboard
-    if (DependencyFactory.isOfflineMode(requireContext())) {
-      showSnackbar(getString(R.string.save_draft_message));
+  class onButtonClick implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.request_button:
+          requestFavor();
+          break;
+        case R.id.add_camera_picture_button:
+          takePicture();
+          break;
+        case R.id.add_picture_button:
+          openFileChooser();
+          break;
+        case R.id.location_request_view_btn:
+          getFavorFromView();
+          CommonTools.hideSoftKeyboard(requireActivity());
+          favorViewModel.setShowObservedFavor(true);
+          favorViewModel.setFavorValue(currentFavor);
+          // signal the destination is map view
+          findNavController(requireActivity(), R.id.nav_host_fragment)
+              .popBackStack(R.id.nav_map, false);
+          break;
+      }
     }
-    CommonTools.hideSoftKeyboard(requireActivity());
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
@@ -202,33 +212,43 @@ public class FavorEditingView extends Fragment {
     EditText titleElem = requireView().findViewById(R.id.title_request_view);
     EditText descElem = requireView().findViewById(R.id.details);
 
-    String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String title = titleElem.getText().toString();
     String desc = descElem.getText().toString();
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
-
     // if a favor is initiated from map, then override the current location
     // with location got from map( already saved in currentFavor )
     if (favorSource.equals(getString(R.string.favor_source_map))) {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
+
     // TODO: Get reward from frontend (currently being set by default to 0)
-    Favor favor = new Favor(title, desc, userId, loc, favorStatus, 0);
-
-    // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
-    // callbacks in requestFavor and confirm
-    if (mImageView.getDrawable() != null) {
-      Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-      getViewModel().savePictureToLocal(getContext(), favor, picture);
-      getViewModel().uploadOrUpdatePicture(favor, picture);
-    } else {
-      favor.setPictureUrl(null);
-    }
-
-    // Updates the current favor
+    Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, 0);
     if (currentFavor == null) currentFavor = favor;
-    else currentFavor.updateToOther(favor);
+    else
+      // do not override the pictureUrl of currentFavor
+      favor.setPictureUrl(currentFavor.getPictureUrl());
+    currentFavor.updateToOther(favor);
+  }
+
+  private void savePicture() {
+    // empty field will be override later
+    Favor favor = new Favor("", "", currentUser.getUid(), null, favorStatus, 0);
+    Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+    CompletableFuture<Bitmap> cachedPictureFuture =
+        getViewModel().loadPictureFromLocal(getContext(), favor);
+    cachedPictureFuture.thenAccept(
+        cachedPicture -> {
+          // include the case where cachedPicture is null, because there is no local cache
+          if (!picture.sameAs(cachedPicture)) {
+            // TODO: Get reward from frontend (currently being set by default to 0)
+            // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
+            // callbacks in requestFavor and confirm
+            getViewModel().uploadOrUpdatePicture(favor, picture);
+            getViewModel().savePictureToLocal(getContext(), favor, picture);
+          }
+        });
+    currentFavor = favor;
   }
 
   /**
@@ -294,6 +314,7 @@ public class FavorEditingView extends Fragment {
           break;
         }
     }
+    savePicture();
   }
 
   /**
@@ -318,6 +339,26 @@ public class FavorEditingView extends Fragment {
               hideSoftKeyboard(requireActivity());
               return false;
             });
+  }
+
+  /**
+   * Method is called when request favor button is clicked. It uploads favor request to the database
+   * and updates view so that favor is editable.
+   */
+  private void requestFavor() {
+    // update currentFavor
+    View currentView = getView();
+    favorStatus = FavorStatus.REQUESTED;
+    getFavorFromView();
+    // post to DB
+    CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
+    postFavorFuture.thenAccept(onSuccessfulRequest(currentView));
+    postFavorFuture.exceptionally(onFailedResult(currentView));
+    // Show confirmation and minimize keyboard
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      showSnackbar(getString(R.string.save_draft_message));
+    }
+    CommonTools.hideSoftKeyboard(requireActivity());
   }
 
   private Consumer onSuccessfulRequest(View currentView) {
@@ -345,31 +386,5 @@ public class FavorEditingView extends Fragment {
       Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
       return null;
     };
-  }
-
-  class onButtonClick implements View.OnClickListener {
-    @Override
-    public void onClick(View v) {
-      switch (v.getId()) {
-        case R.id.request_button:
-          requestFavor();
-          break;
-        case R.id.add_camera_picture_button:
-          takePicture();
-          break;
-        case R.id.add_picture_button:
-          openFileChooser();
-          break;
-        case R.id.location_request_view_btn:
-          getFavorFromView();
-          CommonTools.hideSoftKeyboard(requireActivity());
-          favorViewModel.setShowObservedFavor(true);
-          favorViewModel.setFavorValue(currentFavor);
-          // signal the destination is map view
-          findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
-          break;
-      }
-    }
   }
 }
