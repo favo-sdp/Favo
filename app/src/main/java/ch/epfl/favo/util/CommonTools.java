@@ -21,7 +21,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletionException;
 
+import ch.epfl.favo.R;
+import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.view.NonClickableToolbar;
 
@@ -86,5 +89,21 @@ public class CommonTools {
         favorsFound.put(favor.getId(), favor);
     }
     return favorsFound;
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.M)
+  public static int getSnackbarMessageForRequestedFavor(Context context) {
+    if (DependencyFactory.isOfflineMode(context)) {
+      return R.string.save_draft_message;
+    } else {
+      return R.string.favor_request_success_msg;
+    }
+  }
+
+  public static int getSnackbarMessageForFailedRequest(CompletionException exception) {
+    if (exception.getCause() instanceof IllegalRequestException)
+      return R.string.illegal_request_error;
+    else
+      return R.string.update_favor_error;
   }
 }

@@ -44,7 +44,6 @@ import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
@@ -274,11 +273,10 @@ public class MapPage extends Fragment
 
   private Consumer onSuccessfulRequest(View currentView) {
     return o -> {
-      if (DependencyFactory.isOfflineMode(requireContext())) {
-        CommonTools.showSnackbar(currentView, getString(R.string.save_draft_message));
-      } else {
-        CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
-      }
+      CommonTools.showSnackbar(
+          currentView,
+          getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
+
       // jump to favorPublished view
       Bundle favorBundle = new Bundle();
       favorBundle.putString(CommonTools.FAVOR_ARGS, focusedFavor.getId());
@@ -289,9 +287,10 @@ public class MapPage extends Fragment
 
   private Function onFailedResult(View currentView) {
     return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
+      CommonTools.showSnackbar(
+          currentView,
+          getString(
+              CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
       return null;
     };
   }

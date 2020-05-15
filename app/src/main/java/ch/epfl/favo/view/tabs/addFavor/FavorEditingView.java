@@ -44,7 +44,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
@@ -113,7 +112,7 @@ public class FavorEditingView extends Fragment {
             user ->
                 mFavoCoinsView.setFilters(
                     new InputFilter[] {
-                      new InputFilterMinMax("0", String.valueOf((int) user.getBalance()))
+                      new InputFilterMinMax(0, (int) user.getBalance())
                     }));
 
     // Get dependencies
@@ -391,11 +390,10 @@ public class FavorEditingView extends Fragment {
 
   private Consumer onSuccessfulRequest(View currentView) {
     return o -> {
-      if (DependencyFactory.isOfflineMode(requireContext())) {
-        CommonTools.showSnackbar(currentView, getString(R.string.save_draft_message));
-      } else {
-        CommonTools.showSnackbar(currentView, getString(R.string.favor_request_success_msg));
-      }
+      CommonTools.showSnackbar(
+          currentView,
+          getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
+
       // jump to favorPublished view
       Bundle favorBundle = new Bundle();
       favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
@@ -412,10 +410,10 @@ public class FavorEditingView extends Fragment {
 
   private Function onFailedResult(View currentView) {
     return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
+      CommonTools.showSnackbar(
+          currentView,
+          getString(
+              CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
       return null;
     };
   }
