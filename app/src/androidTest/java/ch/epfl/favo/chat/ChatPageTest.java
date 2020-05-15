@@ -94,12 +94,12 @@ public class ChatPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
 
-    // Click on request button
+      // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // wait for snackbar
-    Thread.sleep(3000);
+    Thread.sleep(4000);
 
     // Click on chat button
     onView(withId(R.id.chat_button)).perform(click());
@@ -110,14 +110,13 @@ public class ChatPageTest {
   public void testChatPageLayout() throws InterruptedException {
 
     navigateToChatPage();
-
     // check title displayed
     onView(withText(FakeItemFactory.getFavor().getTitle())).check(matches(isDisplayed()));
 
     // check no messages displayed
     onView(withId(R.id.emptyTextView)).check(matches(isDisplayed()));
 
-    // Go back to request page
+      // Go back to request page
     pressBack();
 
     // go back to list

@@ -33,6 +33,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
 import ch.epfl.favo.view.tabs.FragmentSettings;
 import ch.epfl.favo.view.tabs.UserAccountPage;
+import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
 import ch.epfl.favo.view.tabs.shop.ShopPage;
 
 /**
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                   if (favorId != null && !favorId.equals("")) {
                     Bundle favorBundle = new Bundle();
                     favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-                    navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+                    navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
                   }
                 }
               }
@@ -136,9 +137,9 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_account:
             case R.id.nav_about:
             case R.id.nav_settings:
+            case R.id.favorPublishedView:
+            case R.id.favorEditingView:
             case R.id.nav_shop:
-            case R.id.favorDetailView:
-            case R.id.favorRequestView:
               if (bottomNavigationView.getVisibility() != View.GONE) {
                 hideBottomNavigation();
               }
@@ -247,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
 
       if (favorId != null && !favorId.equals("")) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-        navController.navigate(R.id.action_global_favorDetailView, favorBundle);
+        navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
       }
     }
   }
@@ -289,7 +290,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void onFabClick(View view) {
-    navController.navigate(R.id.action_global_favorRequestView);
+    navController.navigate(R.id.action_global_favorEditingView);
   }
 
   @Override

@@ -58,9 +58,13 @@ public class UserUtil implements IUserUtil {
         .thenCompose(
             (object) -> {
               User user = object;
-              if (isRequested)
+              if (isRequested){
                 user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              else user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
+              }
+                //user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
+              else {
+                user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
+              }
               return updateUser(user);
             });
   }

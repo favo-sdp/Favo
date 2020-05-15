@@ -31,6 +31,12 @@
     <!-- TAB 1 Map and Nearby List -->
     <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
+    <string name="download_offline_map">https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&amp;hl=en</string>
+    <string name="hint_drag_marker">Drag marker to desired location</string>
+    <string name="hint_click_window">Click window to request favor</string>
+    <string name="default_radius">10 Km</string>
+    <string name="setting_disabled">disabled</string>
+
     <!-- TAB 2 (David) -->
     <string name="favor_title_hint">What\'s up? (ex: Need a bike pump)</string>
     <string name="favor_img_content_desc">Descriptive image</string>
@@ -61,12 +67,12 @@
     <string name="list_toggle">List</string>
     <string name="map_toggle">Map</string>
 
-    <!--Favor Accepting View -->
-    <string name="accept_favor">Accept Favor</string>
+    <!--Favor Published View -->
+    <string name="accept_favor">Accept</string>
     <string name="favor_respond_success_msg">Favor responded successfully.</string>
     <string name="home">Home</string>
     <string name="favor_request_success_msg">Favor added successfully.</string>
-
+    <string name="profile">profile</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
@@ -80,7 +86,7 @@
     <string name="offline_mode_instructions">You can enable offline map support by downloading offline maps from the Google Maps app</string>
     <string name="offline_mode_dialog_link">Show me how</string>
 
-    <!-- request view -->
+    <!-- fragment_favor_published_view view -->
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
     <string name="favor_delete_success_msg">Favor successfully deleted</string>
     <!-- Preference Titles -->
@@ -113,8 +119,8 @@
     <string name="help_title">Send feedback</string>
     <string name="help_subtitle">Report technical issues or suggest new features</string>
     <string name="request_favor_draft">Save favor draft</string>
-    <string name="edit_favor">Edit Request</string>
-    <string name="cancel_request">Cancel Request</string>
+    <string name="edit_favor">Edit</string>
+    <string name="cancel_request">Cancel</string>
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="delete_favor">Delete Request</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
@@ -125,12 +131,16 @@
     <string name="illegal_request_error">Max requested favors reached. Complete or cancel active favors</string>
     <string name="illegal_accept_error">Max accepted favors reached. Complete or cancel current favor.</string>
     <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
-    <string name="cancel_accept_button_display">Cancel</string>
     <string name="restart_request">Re-enable</string>
-    <string name="fail_edit_favor_request_view">Cannot edit favor.</string>
+    <string name="fail_edit_favor_request_view">Cannot edit favor</string>
     <string name="complete_favor">Complete</string>
-    <string name="wait_complete">Wait others</string>
-    <string name="favor_accept_by_oneself">you cannot accept favor posted by yourself</string>
+    <string name="wait_complete">Wait</string>
+    <string name="favor_accepted_by_oneself">you cannot accept favor posted by yourself</string>
+    <string name="old_favor_accepted_by_others">Someone commit your unmodified favor</string>
+    <string name="old_favor_cancelled_by_others">Someone cancel committing your unmodified favor</string>
+    <string name="committed_helpers">Potential helpers"</string>
+    <string name="cancel_commit">Cancel commit</string>
+    <string name="commit_favor">commit</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>
@@ -163,5 +173,14 @@
 
     <!-- Invite option -->
     <string name="invite_text">Invite</string>
+    <string name="share_tip_checkout_favor">Check out this favor in the Favo App!</string>
+    <string name="favoapp_url">https://www.favoapp.com/?favorId=</string>
+    <string name="favoapp_domain">https://favoapp.page.link</string>
+    <string name="favo_package_name">ch.epfl.favo</string>
+
+    <!-- FavorEditting Page-->
+    <string name="favor_source_map">map</string>
+    <string name="favor_source_floatButton">floatButton</string>
+    <string name="favor_source_publishedFavor">publishedFavor</string>
 
 </resources>
