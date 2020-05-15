@@ -25,7 +25,7 @@
     <item
         android:id="@+id/share_button"
         android:title="@string/invite_text"
-        android:visible="false" />
+        android:visible="true" />
 
     <item
         android:id="@+id/report_favor_button"
