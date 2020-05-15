@@ -237,17 +237,19 @@ public class FavorEditingView extends Fragment {
     Bitmap picture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
     CompletableFuture<Bitmap> cachedPictureFuture =
         getViewModel().loadPictureFromLocal(getContext(), favor);
-    cachedPictureFuture.thenAccept(
-        cachedPicture -> {
-          // include the case where cachedPicture is null, because there is no local cache
-          if (!picture.sameAs(cachedPicture)) {
-            // TODO: Get reward from frontend (currently being set by default to 0)
-            // Upload picture to database if it exists //TODO: extract to FavorViewModel and implement
-            // callbacks in requestFavor and confirm
-            getViewModel().uploadOrUpdatePicture(favor, picture);
-            getViewModel().savePictureToLocal(getContext(), favor, picture);
-          }
-        });
+    if (cachedPictureFuture != null)
+      cachedPictureFuture.thenAccept(
+          cachedPicture -> {
+            // include the case where cachedPicture is null, because there is no local cache
+            if (!picture.sameAs(cachedPicture)) {
+              // TODO: Get reward from frontend (currently being set by default to 0)
+              // Upload picture to database if it exists //TODO: extract to FavorViewModel and
+              // implement
+              // callbacks in requestFavor and confirm
+              getViewModel().uploadOrUpdatePicture(favor, picture);
+              getViewModel().savePictureToLocal(getContext(), favor, picture);
+            }
+          });
     currentFavor = favor;
   }
 
