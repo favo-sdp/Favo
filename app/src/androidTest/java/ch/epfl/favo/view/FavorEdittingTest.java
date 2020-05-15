@@ -269,7 +269,7 @@ public class FavorEdittingTest {
 
     onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
 
-    onView(withId(R.id.button_location_from_request_view)).perform(click());
+    onView(withText(R.string.done_from_request_view)).perform(click());
 
     Thread.sleep(1000);
 
