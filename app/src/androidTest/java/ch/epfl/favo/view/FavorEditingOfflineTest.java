@@ -32,7 +32,7 @@ import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
-public class FavorEdittingOfflineTest {
+public class FavorEditingOfflineTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
