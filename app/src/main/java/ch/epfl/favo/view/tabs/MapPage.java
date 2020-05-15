@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -199,13 +198,14 @@ public class MapPage extends Fragment
 
       if (focusedFavor == null) {
 
-        focusedFavor = new Favor(
-            "",
-            " ",
-            DependencyFactory.getCurrentFirebaseUser().getUid(),
-            loc,
-            FavorStatus.EDIT,
-            0);
+        focusedFavor =
+            new Favor(
+                "",
+                " ",
+                DependencyFactory.getCurrentFirebaseUser().getUid(),
+                loc,
+                FavorStatus.EDIT,
+                0);
       }
 
       Marker mk = drawFavorMarker(focusedFavor, true, true);

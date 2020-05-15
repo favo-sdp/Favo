@@ -25,13 +25,13 @@ public class FakeItemFactory {
 
   public static Favor getFavorForRequester() {
     return new Favor(
-            TestConstants.FAVOR_ID,
-            TestConstants.TITLE,
-            TestConstants.DESCRIPTION,
-            TestConstants.USER_ID,
-            TestConstants.LOCATION,
-            TestConstants.FAVOR_STATUS.toInt(),
-            TestConstants.REWARD);
+        TestConstants.FAVOR_ID,
+        TestConstants.TITLE,
+        TestConstants.DESCRIPTION,
+        TestConstants.USER_ID,
+        TestConstants.LOCATION,
+        TestConstants.FAVOR_STATUS.toInt(),
+        TestConstants.REWARD);
   }
 
   public static Favor getFavorWithUrl() {

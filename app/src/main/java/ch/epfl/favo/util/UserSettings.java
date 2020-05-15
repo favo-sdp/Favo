@@ -1,6 +1,7 @@
 package ch.epfl.favo.util;
 
 import android.content.Context;
+
 import ch.epfl.favo.cache.CacheUtil;
 
 public class UserSettings {

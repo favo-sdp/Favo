@@ -84,6 +84,6 @@
         android:text="@string/done_from_request_view"
         android:textStyle="bold"
         android:textColor="@android:color/white"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </FrameLayout>

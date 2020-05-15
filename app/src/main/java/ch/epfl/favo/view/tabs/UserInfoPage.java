@@ -57,31 +57,31 @@ public class UserInfoPage extends Fragment {
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons() {
-//    ImageView likeButton = view.findViewById(R.id.like_button);
-//    likeButton.setOnClickListener(
-//        v -> {
-//          currentUser.setLikes(currentUser.getLikes() + 1);
-//          UserUtil.getSingleInstance()
-//              .updateUser(currentUser)
-//              .thenAccept(user -> displayUserData(currentUser));
-//
-//          likeButton.setImageResource(R.drawable.ic_like_colored_48dp);
-//          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-//        });
-//
-//    ImageView dislikeButton = view.findViewById(R.id.dislike_button);
-//    dislikeButton.setOnClickListener(
-//        v -> {
-//          currentUser.setDislikes(currentUser.getDislikes() + 1);
-//          UserUtil.getSingleInstance()
-//              .updateUser(currentUser)
-//              .thenAccept(user -> displayUserData(currentUser));
-//
-//          dislikeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
-//          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-//        });
+    //    ImageView likeButton = view.findViewById(R.id.like_button);
+    //    likeButton.setOnClickListener(
+    //        v -> {
+    //          currentUser.setLikes(currentUser.getLikes() + 1);
+    //          UserUtil.getSingleInstance()
+    //              .updateUser(currentUser)
+    //              .thenAccept(user -> displayUserData(currentUser));
+    //
+    //          likeButton.setImageResource(R.drawable.ic_like_colored_48dp);
+    //          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+    //        });
+    //
+    //    ImageView dislikeButton = view.findViewById(R.id.dislike_button);
+    //    dislikeButton.setOnClickListener(
+    //        v -> {
+    //          currentUser.setDislikes(currentUser.getDislikes() + 1);
+    //          UserUtil.getSingleInstance()
+    //              .updateUser(currentUser)
+    //              .thenAccept(user -> displayUserData(currentUser));
+    //
+    //          dislikeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
+    //          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+    //        });
 
-    // TODO decide what to do with reported users
+    // should decide what to do with reported users
     Button reportUserButton = view.findViewById(R.id.report_user);
     reportUserButton.setOnClickListener(
         v -> CommonTools.showSnackbar(getView(), getString(R.string.report_user_message)));
@@ -90,7 +90,10 @@ public class UserInfoPage extends Fragment {
   private void displayUserData(User user) {
 
     ((TextView) view.findViewById(R.id.display_name))
-        .setText(TextUtils.isEmpty(user.getName()) ? Objects.requireNonNull(user.getEmail()).split("@")[0] : user.getName());
+        .setText(
+            TextUtils.isEmpty(user.getName())
+                ? Objects.requireNonNull(user.getEmail()).split("@")[0]
+                : user.getName());
 
     ((TextView) view.findViewById(R.id.display_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "Email" : user.getEmail());

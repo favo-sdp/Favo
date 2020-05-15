@@ -112,8 +112,9 @@ public class FavorPublishedViewTest {
 
     // check error message is printed
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.error_database_sync)));
+        .check(matches(withText(R.string.error_database_sync)));
   }
+
   @Test
   public void testChatAndLocationButtonWorkDetailView() {
     // Check and click on the chat

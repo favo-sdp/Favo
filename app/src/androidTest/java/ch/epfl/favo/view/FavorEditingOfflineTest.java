@@ -72,12 +72,15 @@ public class FavorEditingOfflineTest {
 
     onView(withId(R.id.title_request_view)).perform(typeText("fake favor"));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-    onView(withText(R.string.set_location_no)).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+        .inRoot(isDialog())
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Check favor saved correctly even offline
     onView(withId(R.id.toolbar_main_activity))
-            .check(matches(isDisplayed()))
-            .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
+        .check(matches(isDisplayed()))
+        .check(matches(hasDescendant(withText(FavorStatus.REQUESTED.toString()))));
   }
 }

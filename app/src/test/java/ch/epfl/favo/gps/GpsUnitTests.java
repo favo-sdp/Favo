@@ -11,12 +11,8 @@ import android.location.LocationProvider;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.android.gms.maps.MapFragment;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Map;
 
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
@@ -105,7 +101,7 @@ public class GpsUnitTests extends FragmentActivity {
   }
 
   @Test
-  public void RadiusToZoomLevelTest(){
+  public void RadiusToZoomLevelTest() {
     MapPage mapPage = new MapPage();
     assertEquals(16, mapPage.notificationRadiusToZoomLevel(1));
     assertEquals(14, mapPage.notificationRadiusToZoomLevel(5));

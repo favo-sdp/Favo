@@ -35,7 +35,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -144,7 +143,7 @@ public class FavorEditingView extends Fragment {
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null) {
+                if (favor != null && favor.getId().equals(favorId)) {
                   if (favor.getUserIds().size() > currentFavor.getUserIds().size()) {
                     currentFavor = favor;
                     CommonTools.showSnackbar(
@@ -203,8 +202,8 @@ public class FavorEditingView extends Fragment {
     }
 
     // Button: Access location
-//    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
-//    locationAccessBtn.setOnClickListener(new onButtonClick());
+    //    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    //    locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
   /**
@@ -274,7 +273,6 @@ public class FavorEditingView extends Fragment {
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
 
-    // TODO: Get reward from frontend (currently being set by default to 0)
     Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, reward);
     if (currentFavor == null) currentFavor = favor;
     else {
@@ -288,6 +286,8 @@ public class FavorEditingView extends Fragment {
     Favor favorForPicture;
     // empty field will be override later
     // if currentFavor is null, start from a new one, otherwise use the current one
+    getFavorFromView();
+
     if (currentFavor == null)
       favorForPicture = new Favor("", "", currentUser.getUid(), null, favorStatus, 0);
     else favorForPicture = currentFavor;
@@ -299,10 +299,7 @@ public class FavorEditingView extends Fragment {
           cachedPicture -> {
             // include the case where cachedPicture is null, because there is no local cache
             if (!picture.sameAs(cachedPicture)) {
-              // TODO: Get reward from frontend (currently being set by default to 0)
-              // Upload picture to database if it exists //TODO: extract to FavorViewModel and
-              // implement
-              // callbacks in requestFavor and confirm
+              // Upload picture to database if it exists
               getViewModel().uploadOrUpdatePicture(favorForPicture, picture);
               getViewModel().savePictureToLocal(getContext(), favorForPicture, picture);
             }

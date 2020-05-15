@@ -48,7 +48,7 @@ public class CommonTools {
     return format.format(time);
   }
 
-  public static String emailToName(String email){
+  public static String emailToName(String email) {
     return email.split("@")[0].replace(".", " ");
   }
 

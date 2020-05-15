@@ -183,7 +183,7 @@ public class FavorPage extends Fragment {
                   Bundle favorBundle = new Bundle();
                   favorBundle.putString("FAVOR_ARGS", favor.getId());
                   Navigation.findNavController(requireView())
-                        .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
+                      .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
                 }
               }
             });
@@ -293,9 +293,10 @@ public class FavorPage extends Fragment {
             if (newText.equals("")) {
               query = baseQuery;
             } else {
-              query = baseQuery
-                .whereGreaterThanOrEqualTo("title", newText)
-                .whereLessThanOrEqualTo("title", newText + END_CODE);
+              query =
+                  baseQuery
+                      .whereGreaterThanOrEqualTo("title", newText)
+                      .whereLessThanOrEqualTo("title", newText + END_CODE);
             }
 
             lastQuery = newText;

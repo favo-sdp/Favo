@@ -1,4 +1,3 @@
-
 package ch.epfl.favo.viewmodel;
 
 import android.content.Context;
@@ -54,5 +53,3 @@ public interface IFavorViewModel {
 
   CompletableFuture<Bitmap> loadPictureFromLocal(Context context, Favor favor);
 }
-
-
