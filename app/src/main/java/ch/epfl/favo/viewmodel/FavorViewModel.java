@@ -93,13 +93,15 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture<Void> commitFavor(Favor favor, int change) {
+  public CompletableFuture<Void> commitFavor(Favor favor, boolean isCancelled) {
     Favor tempFavor = new Favor(favor);
+    if (isCancelled) tempFavor.getUserIds().remove(currentUserId);
+    else tempFavor.setAccepterId(currentUserId);
     return changeUserActiveFavorCount(
-            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            currentUserId,
             false,
-            change) // if user can accept favor then post it in the favor collection
-        .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
+            isCancelled ? -1 : 1) // if user can accept favor then post it in the favor collection
+        .thenCompose((aVoid) -> getFavorRepository().updateFavor(tempFavor));
   }
 
   // save address to firebase
@@ -161,8 +163,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   /**
-   *
-    * @param favor
+   * @param favor
    * @param user could be requester
    * @return
    */
@@ -172,7 +173,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     tempFavor.setStatusIdToInt(ACCEPTED);
     return getFavorRepository()
         .updateFavor(tempFavor)
-        .thenCompose(aVoid ->
+        .thenCompose(
+            aVoid ->
                 getUserRepository()
                     .findUser(user.getId())
                     .thenCompose(

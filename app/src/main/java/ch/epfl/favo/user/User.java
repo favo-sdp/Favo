@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.epfl.favo.database.Document;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.gps.FavoLocation;
 
@@ -116,7 +117,8 @@ public class User implements Document {
         deviceId,
         null,
         new FavoLocation(location));
-    profilePicUrl = (firebaseUser.getPhotoUrl()!=null)?firebaseUser.getPhotoUrl().toString():null;
+    profilePicUrl =
+        (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;
   }
 
   // Getters
@@ -187,13 +189,14 @@ public class User implements Document {
   public String getPictureUrl() {
     return profilePicUrl;
   }
-  public void setProfilePicUrl(String url){
+
+  public void setProfilePicUrl(String url) {
     profilePicUrl = url;
   }
 
   public void setActiveAcceptingFavors(int totalAcceptingFavors) {
     if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
-      throw new IllegalRequestException("Cannot accept");
+      throw new IllegalAcceptException("Cannot accept");
     this.activeAcceptingFavors = totalAcceptingFavors;
   }
 

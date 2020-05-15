@@ -29,13 +29,11 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
@@ -431,15 +429,13 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void commitFavor() {
-    currentFavor.setAccepterId(currentUser.getUid());
-    CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, 1);
+    CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, false);
     handleResult(commitFuture, R.string.favor_respond_success_msg);
   }
 
   private void cancelCommit() {
-    CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, -1);
+    CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, true);
     handleResult(commitFuture, R.string.favor_respond_success_msg);
-    commitFuture.thenAccept(aVoid -> currentFavor.getUserIds().remove(currentUser.getUid()));
   }
 
   private void handleResult(CompletableFuture<Void> commitFuture, int successMessage) {
@@ -476,6 +472,8 @@ public class FavorPublishedView extends Fragment {
     String response;
     if (throwable.getCause() instanceof IllegalRequestException) {
       response = getString(R.string.illegal_request_error);
+    } else if (throwable.getCause() instanceof IllegalAcceptException) {
+      response = getString(R.string.illegal_accept_error);
     } else {
       response = getString(R.string.update_favor_error);
     }
@@ -486,15 +484,6 @@ public class FavorPublishedView extends Fragment {
   private void deleteFavor() {
     CompletableFuture<Void> deleteFuture = getViewModel().deleteFavor(currentFavor);
     handleResult(deleteFuture, R.string.favor_delete_success_msg);
-  }
-
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, getString(R.string.illegal_accept_error));
-      else CommonTools.showSnackbar(currentView, getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      return null;
-    };
+    deleteFuture.thenAccept(aVoid -> requireActivity().onBackPressed());
   }
 }

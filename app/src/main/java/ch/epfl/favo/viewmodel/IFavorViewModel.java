@@ -23,7 +23,7 @@ public interface IFavorViewModel {
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);
 
-  CompletableFuture<Void> commitFavor(Favor favor, int change);
+  CompletableFuture<Void> commitFavor(Favor favor, boolean isCancelled);
 
   CompletableFuture<Void> acceptFavor(final Favor favor, User user);
 

@@ -1,5 +1,9 @@
 package ch.epfl.favo.user;
 
+import android.location.Location;
+
+import com.google.firebase.auth.FirebaseUser;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,8 +33,6 @@ public class UserUnitTests {
   public void setup() {
     DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
   }
-
-
 
   @Test
   public void userGettersReturnCorrectValues() {
@@ -98,7 +100,15 @@ public class UserUnitTests {
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
     assertEquals((int) newBalance, (int) user.getBalance());
-    assertEquals(pictureUrl,user.getPictureUrl());
+    assertEquals(pictureUrl, user.getPictureUrl());
+  }
+
+  @Test
+  public void testUserConstructedFromFirebase() {
+    FirebaseUser fbUser = FakeItemFactory.getFirebaseUser();
+    String deviceId = TestConstants.DEVICE_ID;
+    Location loc = TestConstants.LOCATION;
+    User user = new User(fbUser, deviceId, loc);
   }
 
   @Test

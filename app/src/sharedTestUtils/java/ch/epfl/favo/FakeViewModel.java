@@ -43,7 +43,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture requestFavor(Favor favor) {
+  public CompletableFuture<Void> requestFavor(Favor favor) {
 
     if (isThrowingError) return failedResult;
     observedFavorResult.setValue(favor);
@@ -51,7 +51,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture acceptFavor(Favor favor, User user) {
+  public CompletableFuture<Void> acceptFavor(Favor favor, User user) {
     if (isThrowingError) return failedResult;
     favor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     favor.setStatusIdToInt(FavorStatus.ACCEPTED);
@@ -60,7 +60,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture completeFavor(Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> completeFavor(Favor favor, boolean isRequested) {
     if (isThrowingError) return failedResult;
     if (favor.getStatusId() == FavorStatus.COMPLETED_REQUESTER.toInt()
         || favor.getStatusId() == FavorStatus.COMPLETED_ACCEPTER.toInt())
@@ -73,7 +73,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture cancelFavor(Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> cancelFavor(Favor favor, boolean isRequested) {
     if (isThrowingError) return failedResult;
     favor.setStatusIdToInt(
         isRequested ? FavorStatus.CANCELLED_REQUESTER : FavorStatus.CANCELLED_ACCEPTER);
@@ -85,10 +85,12 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
 
   @Override
-  public CompletableFuture<Void> commitFavor(Favor favor, int change) {
+  public CompletableFuture<Void> commitFavor(final Favor favor, boolean isCancelled) {
+    Favor tempFavor = new Favor(favor);
     if (isThrowingError) return failedResult;
-    favor.setAccepterId(TestConstants.USER_ID);
-    observedFavorResult.setValue(favor);
+    if (isCancelled) tempFavor.getUserIds().remove(TestConstants.USER_ID);
+    else tempFavor.setAccepterId(TestConstants.USER_ID);
+    observedFavorResult.setValue(tempFavor);
     return getSuccessfulCompletableFuture();
   }
 
@@ -168,7 +170,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture deleteFavor(Favor favor) {
+  public CompletableFuture<Void> deleteFavor(Favor favor) {
     if (isThrowingError) return failedResult;
     return getSuccessfulCompletableFuture();
   }

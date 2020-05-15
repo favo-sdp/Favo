@@ -263,7 +263,7 @@ public class FavorEdittingTest {
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
 
-    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor1 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor1.setAccepterId("one helper");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
     Thread.sleep(1000);
@@ -301,7 +301,7 @@ public class FavorEdittingTest {
     onView(withText(R.string.edit_favor)).check(matches(isDisplayed())).perform(click());
 
     //  someone commit the old favor
-    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor1 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor1.setAccepterId("one committer");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));
     Thread.sleep(1000);
@@ -309,7 +309,7 @@ public class FavorEdittingTest {
         .check(matches(withText(R.string.old_favor_accepted_by_others)));
 
     // someone uncommit the old favor
-    Favor favor2 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor2 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor2.setAccepterId("");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor2));
     Thread.sleep(1000);
@@ -351,7 +351,7 @@ public class FavorEdittingTest {
     Thread.sleep(1000);
 
     // someone commit the favor
-    Favor favor1 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
+    Favor favor1 = new Favor(fakeViewModel.getObservedFavor().getValue());
     favor1.setAccepterId("one committer");
     favor1.setAccepterId("second committer");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor1));

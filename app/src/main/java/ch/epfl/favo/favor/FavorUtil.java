@@ -8,12 +8,12 @@ import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.exception.NotImplementedException;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
@@ -90,7 +90,15 @@ public class FavorUtil {
   }
 
   public Query getNearbyFavors(Location loc, Double radius) {
-    return collection.locationBoundQuery(loc, radius);
+    double longDif =
+            Math.toDegrees(
+                    radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
+    return collection
+            .getReference()
+            .whereEqualTo("isArchived",false)
+            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+            .whereLessThan("location.longitude", loc.getLongitude() + longDif)
+            .limit(50);
   }
 
   /**
@@ -132,19 +140,6 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-  /**
-   * Returns all the favors that are active in a given radius.
-   *
-   * @param loc a given Location (Android location type)
-   * @param radius a given radius to search within
-   */
-  public CompletableFuture<List<Favor>> retrieveAllFavorsInGivenLongitudeRange(
-      Location loc, double radius) {
-    /**
-     * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface*
-     */
-    return collection.getAllDocumentsLongitudeBounded(loc, radius);
-  }
 
   /**
    * Update the Favor photo url and update the database to match if not done already

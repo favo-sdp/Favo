@@ -216,7 +216,8 @@ exports.expireOldFavorsOnCreate = functions.firestore
 
         let query = db.collection('/favors');
 
-        return query.where("statusId", "==", REQUESTED_STATUS).orderBy("postedTime", "asc").endAt(cutoff).get()
+        return query.where("statusId", "==", REQUESTED_STATUS)
+        .orderBy("postedTime", "asc").endAt(cutoff).limit(MAX_UPDATES - 1).get()
             .then(snapshot => {
                 if (snapshot.empty) {
                     console.log("Snapshot is empty")
