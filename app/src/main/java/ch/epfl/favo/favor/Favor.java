@@ -204,30 +204,14 @@ public class Favor implements Parcelable, Document, Cloneable {
    * reset this list with his own Id and accepter's ID *
    */
   public void setAccepterId(String id) {
-
-    if (userIds != null && !userIds.isEmpty()) {
-      // append the new user id to the end of list, meaning a new user commit this favor
-      userIds = Arrays.asList(getRequesterId(), id);
-    }
-  }
-
-  public void commitPotentialHelper(String id) {
-    if (userIds != null && !userIds.isEmpty()) {
-      // append committed user id to the end of list
+    // if argument is "", clear the list of committed/accepted user
+    if (id != null && id.equals("")) {
+      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
+    } else if (userIds != null && !userIds.isEmpty()) {
       ArrayList<String> arrayList = new ArrayList<>();
       arrayList.addAll(userIds);
       arrayList.add(id);
       userIds = arrayList;
-    }
-  }
-
-  public void uncommitHelper(String id) {
-    if (userIds != null && !userIds.isEmpty()) {
-      // append committed user id to the end of list
-      for (int i = 1; i < userIds.size(); i++) {
-        if (userIds.get(i).equals(id))
-          userIds.remove(i);
-      }
     }
   }
 

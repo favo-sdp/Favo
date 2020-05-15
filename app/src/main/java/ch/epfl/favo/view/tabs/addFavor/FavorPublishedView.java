@@ -131,7 +131,7 @@ public class FavorPublishedView extends Fragment {
     restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
-            currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
+        currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
@@ -431,7 +431,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void commitFavor() {
-    currentFavor.commitPotentialHelper(currentUser.getUid());
+    currentFavor.setAccepterId(currentUser.getUid());
     CompletableFuture updateFuture = getViewModel().commitFavor(currentFavor, 1);
     updateFuture.thenAccept(
         o ->
@@ -440,7 +440,9 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void cancelCommit() {
-    currentFavor.uncommitHelper(currentUser.getUid());
+    for (int i = 1; i < currentFavor.getUserIds().size(); i++)
+      if (currentFavor.getUserIds().get(i).equals(currentUser.getUid()))
+        currentFavor.getUserIds().remove(i);
     CompletableFuture updateFuture = getViewModel().commitFavor(currentFavor, -1);
     updateFuture.thenAccept(
         o ->

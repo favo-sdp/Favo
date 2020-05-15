@@ -288,7 +288,7 @@ public class FavorEdittingTest {
     Thread.sleep(1000);
     onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));*/
-}
+  }
 
   @Test
   public void testFavorGotAcceptedDuringEdit() throws Throwable {
@@ -310,7 +310,7 @@ public class FavorEdittingTest {
 
     // someone uncommit the old favor
     Favor favor2 = (Favor) fakeViewModel.getObservedFavor().getValue().clone();
-      favor2.uncommitHelper("one committer");
+    favor2.setAccepterId("");
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor2));
     Thread.sleep(1000);
     getInstrumentation().waitForIdleSync();
@@ -372,14 +372,14 @@ public class FavorEdittingTest {
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.update_favor_error)));
+        .check(matches(withText(R.string.update_favor_error)));
 
     launchFragment(fakeFavor);
     Thread.sleep(500);
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.update_favor_error)));
+        .check(matches(withText(R.string.update_favor_error)));
   }
 
   public void checkRequestedView() {

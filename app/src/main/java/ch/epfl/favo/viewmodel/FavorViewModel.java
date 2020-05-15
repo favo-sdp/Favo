@@ -99,7 +99,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             DependencyFactory.getCurrentFirebaseUser().getUid(),
             false,
             change) // if user can accept favor then post it in the favor collection
-            .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
+        .thenCompose((f) -> getFavorRepository().updateFavor(tempFavor));
   }
 
   // save address to firebase
@@ -119,12 +119,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             (f) -> {
               // update user info
               UserUtil.getSingleInstance()
-                      .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-                      .thenAccept(
-                              user -> {
-                                user.setRequestedFavors(user.getRequestedFavors() + 1);
-                                UserUtil.getSingleInstance().updateUser(user);
-                              });
+                  .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+                  .thenAccept(
+                      user -> {
+                        user.setRequestedFavors(user.getRequestedFavors() + 1);
+                        UserUtil.getSingleInstance().updateUser(user);
+                      });
               return getFavorRepository().requestFavor(tempFavor);
             });
   }
@@ -178,7 +178,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   } // check what happens if updateFavorFoto fails
 
   @Override
-  public CompletableFuture<Bitmap> downloadPicture(Favor favor) throws RuntimeException {
+  public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
     String url = favor.getPictureUrl();
     if (url == null) {
       return new CompletableFuture<Bitmap>() {

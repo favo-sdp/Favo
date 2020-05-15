@@ -105,7 +105,7 @@ public class DatabaseWrapper {
     return getCollectionReference(collection)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
-            .limit(50);
+        .limit(50);
   }
 
   /**

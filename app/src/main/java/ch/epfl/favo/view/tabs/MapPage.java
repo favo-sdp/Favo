@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -108,6 +109,13 @@ public class MapPage extends Fragment
 
   @Override
   public void onMapReady(GoogleMap googleMap) {
+    String setting = UserSettings.getNotificationRadius(requireContext());
+    if (setting.equals(getString(R.string.setting_disabled)))
+      setting = getString(R.string.default_radius);
+    // split the radius setting string pattern, like "10 Km"
+    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+    defaultZoomLevel = notificationRadiusToZoomLevel(radiusThreshold);
+
     mMap = googleMap;
     mMap.clear();
     mMap.setMyLocationEnabled(true);
@@ -117,11 +125,6 @@ public class MapPage extends Fragment
     mMap.setPadding(0, 0, 0, MAP_BOTTOM_PADDING);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
-    String setting = UserSettings.getNotificationRadius(requireContext());
-    if (setting.equals(getString(R.string.setting_disabled)))
-      setting = getString(R.string.default_radius);
-    // split the radius setting string pattern, like "10 Km"
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     } catch (Exception e) {
@@ -140,6 +143,25 @@ public class MapPage extends Fragment
       centerViewOnMyLocation();
       firstOpenApp = false;
     }
+  }
+
+  public int notificationRadiusToZoomLevel(double radius) {
+    int level;
+    int r = (int) radius;
+    switch (r) {
+      case 1:
+        level = 16;
+        break;
+      case 5:
+        level = 14;
+        break;
+      case 10:
+        level = 13;
+        break;
+      default: // 25
+        level = 9;
+    }
+    return level;
   }
 
   private class MarkerDrag implements GoogleMap.OnMarkerDragListener {
@@ -248,7 +270,7 @@ public class MapPage extends Fragment
 
   private void focusViewOnLocation(Location location, boolean animate) {
     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
     else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
   }
 
