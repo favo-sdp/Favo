@@ -25,7 +25,6 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
-import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -47,7 +46,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private double mRadius = -1.0;
 
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
-  private MutableLiveData<User> currentUser = new MutableLiveData<>();
 
   private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();

@@ -76,6 +76,9 @@ public class FirebaseMessagingServiceTest {
 
   @Test
   public void testNotifications() {
+    DependencyFactory.setCurrentFirebaseUser(
+        new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+
     Bundle bundle = generateBundle();
     FirebaseMessagingService.showNotification(
         mainActivityTestRule.getActivity(), new RemoteMessage(bundle), "Default channel id");
