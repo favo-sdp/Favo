@@ -532,17 +532,15 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void handleException(Throwable throwable) {
-    if (throwable == null) return;
-    if (throwable.getCause() == null) throwable = new Exception(throwable);
-    String response;
-    if (throwable.getCause() instanceof IllegalRequestException) {
-      response = getString(R.string.illegal_request_error);
-    } else if (throwable.getCause() instanceof IllegalAcceptException) {
-      response = getString(R.string.illegal_accept_error);
+    Throwable cause =
+        (throwable.getCause() == null) ? new Exception(throwable) : throwable.getCause();
+    if (cause instanceof IllegalRequestException) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
+    } else if (cause instanceof IllegalAcceptException) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
     } else {
-      response = getString(R.string.update_favor_error);
+      CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
     }
-    CommonTools.showSnackbar(requireView(), response);
     if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 
