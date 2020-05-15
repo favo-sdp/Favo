@@ -177,15 +177,13 @@ public class MapPage extends Fragment
 
       if (focusedFavor == null) {
 
-        Favor newFavor =
-            new Favor(
-                "",
-                " ",
-                DependencyFactory.getCurrentFirebaseUser().getUid(),
-                loc,
-                FavorStatus.EDIT,
-                0);
-        focusedFavor = newFavor;
+        focusedFavor = new Favor(
+            "",
+            " ",
+            DependencyFactory.getCurrentFirebaseUser().getUid(),
+            loc,
+            FavorStatus.EDIT,
+            0);
       }
 
       Marker mk = drawFavorMarker(focusedFavor, true, true);

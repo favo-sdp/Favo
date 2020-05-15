@@ -38,6 +38,7 @@ import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayingAtLeast;
@@ -153,6 +154,10 @@ public class FavorPageTest {
     //
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
@@ -188,6 +193,10 @@ public class FavorPageTest {
     //
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
@@ -225,6 +234,10 @@ public class FavorPageTest {
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
@@ -275,6 +288,10 @@ public class FavorPageTest {
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(4000); // wait for snackbar to hide
 
@@ -394,6 +411,10 @@ public class FavorPageTest {
 
     // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.set_location_no))
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button

@@ -23,6 +23,17 @@ public class FakeItemFactory {
         TestConstants.REWARD);
   }
 
+  public static Favor getFavorForRequester() {
+    return new Favor(
+            TestConstants.FAVOR_ID,
+            TestConstants.TITLE,
+            TestConstants.DESCRIPTION,
+            TestConstants.USER_ID,
+            TestConstants.LOCATION,
+            TestConstants.FAVOR_STATUS.toInt(),
+            TestConstants.REWARD);
+  }
+
   public static Favor getFavorWithUrl() {
     Favor favor = getFavor();
     favor.setPictureUrl(TestConstants.PICTURE_URL);

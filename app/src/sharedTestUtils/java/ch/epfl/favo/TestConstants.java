@@ -22,7 +22,7 @@ public class TestConstants {
   // Favor related test constants
   public static final String TITLE = "fake test title";
   public static final String DESCRIPTION = "fake test description";
-  public static final String REQUESTER_ID = USER_ID;
+  public static final String REQUESTER_ID = DatabaseWrapper.generateRandomId();
   public static final FavoLocation LOCATION = new FavoLocation(PROVIDER);
   public static final Date BIRTHDAY = new Date(0);
   public static final double RADIUS = 134.56;
