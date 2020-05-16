@@ -271,6 +271,7 @@ public class FavorEditingView extends Fragment {
     }
 
     Favor favor = new Favor(title, desc, currentUser.getUid(), loc, favorStatus, reward);
+    favor.setRequesterNotifId(DependencyFactory.getCurrentFirebaseNotificationInstanceId().getToken());
     if (currentFavor == null) currentFavor = favor;
     else {
       // do not override the pictureUrl of currentFavor
