@@ -30,12 +30,12 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     }
     // Lookup view for data population
     TextView favorTitle = convertView.findViewById(R.id.item_title);
-    TextView favorDesc = convertView.findViewById(R.id.item_desc);
+//    TextView favorDesc = convertView.findViewById(R.id.item_desc);
     // Populate the data into the template view using the data object
     assert favor.getTitle() != null;
     assert favor.getDescription() != null;
     favorTitle.setText(favor.getTitle());
-    favorDesc.setText(favor.getDescription());
+//    favorDesc.setText(favor.getDescription());
     // Return the completed view to render on screen
     return convertView;
   }

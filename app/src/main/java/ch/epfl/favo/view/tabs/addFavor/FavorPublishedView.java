@@ -294,6 +294,7 @@ public class FavorPublishedView extends Fragment {
     if (isRequested) {
       // display user picture
       if (currentUser.getPhotoUrl() != null) {
+
         Glide.with(this)
             .load(currentUser.getPhotoUrl())
             .fitCenter()
