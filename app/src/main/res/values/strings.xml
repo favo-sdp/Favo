@@ -201,4 +201,9 @@
     <string name="set_location_yes">Yes, take me to the map</string>
     <string name="set_location_no">No, my current position is fine</string>
     <string name="done_from_request_view">Done</string>
+
+    <!-- List item menu -->
+    <string name="edit">Edit</string>
+    <string name="view">View</string>
+    <string name="cancel">Cancel</string>
 </resources>
