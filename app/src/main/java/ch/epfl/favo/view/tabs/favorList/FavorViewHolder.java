@@ -104,6 +104,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
                     CompletableFuture cancelFuture = favorViewModel.cancelFavor(favor, favor.getStatusId() == FavorStatus.REQUESTED.toInt());
                     cancelFuture.thenAccept(o -> CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.favor_cancel_success_msg_listView)));
                     cancelFuture.exceptionally(onFailedResult(context, parentView));
+                    break;
                   case R.id.item_menu_edit:
 //                    Bundle favorBundle = new Bundle();
 //                    favorBundle.putString("FAVOR_ARGS", favor.getId());
@@ -116,6 +117,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
                             CommonTools.FAVOR_SOURCE, context.getResources().getString(R.string.favor_source_publishedFavor));
                     findNavController((Activity) context, R.id.nav_host_fragment)
                             .navigate(R.id.action_global_favorEditingView, favorBundle);
+                    break;
                   case R.id.item_menu_commit:
                     assert !currentUserIsRequester;
                     favorViewModel.commitFavor(favor, false)
@@ -124,6 +126,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
                               if (throwable != null) handleException(throwable, parentView, context.getResources());
                               else CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.favor_respond_success_msg));
                             });
+                    break;
                 }
                 return false;
               });
