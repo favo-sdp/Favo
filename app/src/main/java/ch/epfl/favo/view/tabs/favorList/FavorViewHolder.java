@@ -26,6 +26,7 @@ import java.util.function.Function;
 import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.FavorViewModel;
@@ -62,8 +63,8 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
                     favorViewModel = (IFavorViewModel)
                             new ViewModelProvider((FragmentActivity) context)
                               .get(DependencyFactory.getCurrentViewModelClass());
-                    CompletableFuture cancelFuture = favorViewModel.cancelFavor((Favor) favor.clone(), true);
-                    cancelFuture.thenAccept(o -> CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.favor_cancel_success_msg)));
+                    CompletableFuture cancelFuture = favorViewModel.cancelFavor(favor, favor.getStatusId() == FavorStatus.REQUESTED.toInt());
+                    cancelFuture.thenAccept(o -> CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.favor_cancel_success_msg_listView)));
                     cancelFuture.exceptionally(onFailedResult(context, parentView));
                 }
                 return false;

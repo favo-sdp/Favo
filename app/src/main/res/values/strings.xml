@@ -127,6 +127,7 @@
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="delete_favor">Delete Request</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
+    <string name="favor_cancel_success_msg_listView">Favor successfully cancelled. Swipe down to refresh</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="favor_complete_success_msg">Favor successfully completed</string>
     <string name="chat_message_detail_view">Start a chat</string>
