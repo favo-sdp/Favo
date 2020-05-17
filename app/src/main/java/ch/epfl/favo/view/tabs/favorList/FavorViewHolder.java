@@ -3,7 +3,6 @@ package ch.epfl.favo.view.tabs.favorList;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -13,10 +12,6 @@ import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.fragment.app.Fragment;
-
-import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -29,8 +24,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.viewmodel.FavorViewModel;
-import ch.epfl.favo.viewmodel.FavorViewModel.*;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 class FavorViewHolder extends RecyclerView.ViewHolder {
@@ -56,7 +49,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
     mDescriptionView.setText(String.valueOf(favor.getDescription()));
     buttonViewOption.setOnClickListener(view -> {
       PopupMenu popup = new PopupMenu(context, buttonViewOption);
-      popup.inflate(R.menu.item_menu);
+      popup.inflate(R.menu.item_menu_active);
       popup.setOnMenuItemClickListener(item -> {
                 switch (item.getItemId()) {
                   case R.id.item_menu_cancel:

@@ -206,4 +206,5 @@
     <string name="edit">Edit</string>
     <string name="view">View</string>
     <string name="cancel">Cancel</string>
+    <string name="commit">Commit</string>
 </resources>
