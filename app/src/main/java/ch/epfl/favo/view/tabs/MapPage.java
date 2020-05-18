@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,6 +92,7 @@ public class MapPage extends Fragment
     // mFusedLocationProviderClient =
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
+    if (R.drawable.logo != 2131230957) throw new RuntimeException("Id not equal");
     getLocationPermission();
     view = inflater.inflate(R.layout.fragment_map, container, false);
     // setup offline map button
@@ -164,7 +166,7 @@ public class MapPage extends Fragment
         level = 13;
         break;
       default: // 25
-        level = 9;
+        level = 11;
     }
     return level;
   }
@@ -303,7 +305,7 @@ public class MapPage extends Fragment
     LatLng latLng =
         new LatLng(favor.getLocation().getLatitude(), favor.getLocation().getLongitude());
     float markerColor =
-        isRequested ? BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED;
+        isRequested ? BitmapDescriptorFactory.HUE_ORANGE : BitmapDescriptorFactory.HUE_VIOLET;
     String markerTitle =
         (isEdited) && favor.getTitle().equals("")
             ? getString(R.string.hint_drag_marker)
@@ -485,11 +487,9 @@ public class MapPage extends Fragment
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     } else {
-      if (focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
-        favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-        Navigation.findNavController(view)
-            .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
-      }
+      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+      Navigation.findNavController(view)
+          .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
     }
   }
 }
