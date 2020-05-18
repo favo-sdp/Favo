@@ -61,7 +61,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem inviteItem;
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
-  private boolean isRequested;
+  private boolean isRequestedByCurrentUser;
   private FirebaseUser currentUser;
 
   private Map<String, User> commitUsers = new HashMap<>();
@@ -120,18 +120,18 @@ public class FavorPublishedView extends Fragment {
     cancelCommitItem.setVisible(cancelCommitVisible);
 
     boolean cancelVisible =
-        (favorStatus == FavorStatus.REQUESTED && isRequested)
+        (favorStatus == FavorStatus.REQUESTED && isRequestedByCurrentUser)
             || favorStatus == FavorStatus.ACCEPTED
             || favorStatus == FavorStatus.COMPLETED_ACCEPTER
             || favorStatus == FavorStatus.COMPLETED_REQUESTER;
     cancelItem.setVisible(cancelVisible);
 
-    boolean restartVisible = currentFavor.getIsArchived() && isRequested;
+    boolean restartVisible = currentFavor.getIsArchived() && isRequestedByCurrentUser;
     restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
-        currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
-    editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
+        currentFavor.getIsArchived() && isRequestedByCurrentUser && currentFavor.getAccepterId() == null);
+    editItem.setVisible(isRequestedByCurrentUser && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
   }
 
@@ -272,11 +272,11 @@ public class FavorPublishedView extends Fragment {
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
 
-    isRequested = favor.getRequesterId().equals(currentUser.getUid());
+    isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getUid());
     favorStatus = verifyFavorHasBeenAccepted(favor);
 
     // display committed user list
-    if (isRequested && favor.getUserIds().size() > 1) setupUserListView();
+    if (isRequestedByCurrentUser && favor.getUserIds().size() > 1) setupUserListView();
     else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
     displayUserProfile(favor);
@@ -291,7 +291,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void displayUserProfile(Favor favor) {
-    if (isRequested) {
+    if (isRequestedByCurrentUser) {
       // display user picture
       if (currentUser.getPhotoUrl() != null) {
 
@@ -377,17 +377,17 @@ public class FavorPublishedView extends Fragment {
         updateCompleteBtnDisplay(R.string.complete_favor, true, R.drawable.ic_check_box_black_24dp);
         break;
       case REQUESTED:
-        if (isRequested || isPotentialHelper())
+        if (isRequestedByCurrentUser || isPotentialHelper())
           updateCompleteBtnDisplay(R.string.commit_favor, false, R.drawable.ic_thumb_up_24dp);
         else updateCompleteBtnDisplay(R.string.commit_favor, true, R.drawable.ic_thumb_up_24dp);
         break;
       case COMPLETED_ACCEPTER:
         updateCompleteBtnDisplay(
-            R.string.complete_favor, isRequested, R.drawable.ic_check_box_black_24dp);
+            R.string.complete_favor, isRequestedByCurrentUser, R.drawable.ic_check_box_black_24dp);
         break;
       case COMPLETED_REQUESTER:
         updateCompleteBtnDisplay(
-            R.string.complete_favor, !isRequested, R.drawable.ic_check_box_black_24dp);
+            R.string.complete_favor, !isRequestedByCurrentUser, R.drawable.ic_check_box_black_24dp);
         break;
       default: // archived and include accepted by other
         showBottomBar(false);
@@ -401,7 +401,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private boolean isPotentialHelper() {
-    return currentFavor.getUserIds().contains(currentUser.getUid()) && (!isRequested);
+    return currentFavor.getUserIds().contains(currentUser.getUid()) && (!isRequestedByCurrentUser);
   }
 
   private void showBottomBar(boolean visible) {
@@ -483,7 +483,7 @@ public class FavorPublishedView extends Fragment {
 
   private void completeFavor() {
     CompletableFuture<Void> completeFuture =
-        getViewModel().completeFavor(currentFavor, isRequested);
+        getViewModel().completeFavor(currentFavor, isRequestedByCurrentUser);
     handleResult(completeFuture, R.string.favor_complete_success_msg);
 
     // review favor
@@ -528,7 +528,7 @@ public class FavorPublishedView extends Fragment {
     if (favorStatus == FavorStatus.REQUESTED)
       for (int i = 1; i < currentFavor.getUserIds().size(); i++)
         currentFavor.getUserIds().remove(i);
-    CompletableFuture<Void> cancelFuture = getViewModel().cancelFavor(currentFavor, isRequested);
+    CompletableFuture<Void> cancelFuture = getViewModel().cancelFavor(currentFavor, isRequestedByCurrentUser);
     handleResult(cancelFuture, R.string.favor_cancel_success_msg);
   }
 
