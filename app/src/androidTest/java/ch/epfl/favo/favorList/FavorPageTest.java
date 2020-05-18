@@ -58,18 +58,18 @@ public class FavorPageTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
-      new ActivityTestRule<MainActivity>(MainActivity.class) {
-        @Override
-        protected void beforeActivityLaunched() {
-          DependencyFactory.setCurrentFirebaseUser(
-              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-        }
-      };
+          new ActivityTestRule<MainActivity>(MainActivity.class) {
+            @Override
+            protected void beforeActivityLaunched() {
+              DependencyFactory.setCurrentFirebaseUser(
+                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+              DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+            }
+          };
 
   @Rule
   public GrantPermissionRule permissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+          GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
   @Before
   public void setUp() {
@@ -87,7 +87,7 @@ public class FavorPageTest {
   }
 
   public static ViewAction withCustomConstraints(
-      final ViewAction action, final Matcher<View> constraints) {
+          final ViewAction action, final Matcher<View> constraints) {
     return new ViewAction() {
       @Override
       public Matcher<View> getConstraints() {
@@ -114,7 +114,7 @@ public class FavorPageTest {
 
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+            .check(matches(isDisplayed()));
 
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed()));
 
@@ -123,7 +123,7 @@ public class FavorPageTest {
     onView(withText(R.string.favor_no_active_favor)).check(matches(isDisplayed()));
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.archived_toggle)).check(matches(isDisplayed())).perform(click());
 
@@ -132,7 +132,7 @@ public class FavorPageTest {
     onView(withText(R.string.favor_no_archived_favor)).check(matches(isDisplayed()));
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.active_toggle)).perform(click());
   }
@@ -157,9 +157,9 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
@@ -167,7 +167,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     // wait to refresh
     Thread.sleep(2000);
@@ -209,6 +209,10 @@ public class FavorPageTest {
 //        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 //
 //    // wait to refresh
+
+  @Test
+  public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
+    // Click on favors tab
 //    Thread.sleep(2000);
 //
 //    // check favor is displayed in active favor list view
@@ -217,10 +221,6 @@ public class FavorPageTest {
 //    // check item menu and all the options are displayed
 //    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
 //  }
-
-  @Test
-  public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
-    // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
@@ -237,9 +237,9 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
@@ -252,7 +252,7 @@ public class FavorPageTest {
     pressBack();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(2000);
 
@@ -264,7 +264,7 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(2000);
 
@@ -291,9 +291,9 @@ public class FavorPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(4000); // wait for snackbar to hide
 
@@ -306,13 +306,13 @@ public class FavorPageTest {
     // Click on delete button
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     onView(withText(R.string.delete_favor))
-        .check(matches(withText(R.string.delete_favor)))
-        .perform(click());
+            .check(matches(withText(R.string.delete_favor)))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(2000);
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(2000);
 
@@ -324,11 +324,11 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(2000);
 
-    // check favor is not displayed in archived favor list view
+    // check favor is displayed in archived favor list view
     onView(withText(favor.getTitle())).check(doesNotExist());
   }
 
@@ -345,11 +345,11 @@ public class FavorPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // check query is successful and click on found item
-    onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
+    onView(withText(favor.getTitle())).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on back button twice
@@ -365,14 +365,14 @@ public class FavorPageTest {
 
     // type the title of fake favor
     onView(isAssignableFrom(EditText.class))
-        .perform(typeText("random words"), pressImeActionButton());
+            .perform(typeText("random words"), pressImeActionButton());
 
     Thread.sleep(2000);
 
     // check the tip text is displayed when query failed
     onView(withId(R.id.tip))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(R.string.query_failed)));
+            .check(matches(isDisplayed()))
+            .check(matches(withText(R.string.query_failed)));
   }
 
   @Test
@@ -393,7 +393,7 @@ public class FavorPageTest {
     Thread.sleep(1000);
 
     // check favor is displayed in active favor list view
-    onView(withText(favor.getDescription())).check(matches(isDisplayed()));
+    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
 
   private void requestFavorAndSearch() throws InterruptedException {
@@ -409,14 +409,14 @@ public class FavorPageTest {
     Favor favor = FakeItemFactory.getFavor();
 
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
+    onView(withId(R.id.details)).perform(typeText(favor.getTitle()));
 
     // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
