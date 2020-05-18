@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
 
@@ -73,5 +74,17 @@ public class FakeItemFactory {
       result.put(favor.getId(), favor);
     }
     return result;
+  }
+
+  public static Message getMessage() {
+    return new Message(
+        "testName",
+        "testUid",
+        Message.TEXT_MESSAGE_TYPE,
+        "testMessage",
+        null,
+        "testNotifId",
+        "testFavorId",
+        "true");
   }
 }

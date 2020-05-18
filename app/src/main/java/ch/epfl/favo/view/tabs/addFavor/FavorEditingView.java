@@ -40,8 +40,6 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -237,9 +235,12 @@ public class FavorEditingView extends Fragment {
                 favorStatus = FavorStatus.REQUESTED;
                 currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
                 // post to DB
-                CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-                postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-                postFavorFuture.exceptionally(onFailedResult(requireView()));
+                CompletableFuture<Void> postFavorFuture = getViewModel().requestFavor(currentFavor);
+                postFavorFuture.whenComplete(
+                    (aVoid, throwable) -> {
+                      if (throwable != null) onFailedResult(requireView(), throwable);
+                      else onSuccessfulRequest(requireView());
+                    });
                 // Show confirmation and minimize keyboard
                 if (DependencyFactory.isOfflineMode(requireContext())) {
                   CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
@@ -386,34 +387,27 @@ public class FavorEditingView extends Fragment {
             });
   }
 
-  private Consumer onSuccessfulRequest(View currentView) {
-    return o -> {
-      CommonTools.showSnackbar(
-          currentView,
-          getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
+  private void onSuccessfulRequest(View currentView) {
+    CommonTools.showSnackbar(
+        currentView, getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
 
-      // jump to favorPublished view
-      Bundle favorBundle = new Bundle();
-      favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
-      int action;
-      // if this favor restarts from an archived one, then prevent pressback from jumping to
-      // archived favor view.
-      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
-          || favorSource.equals(getString(R.string.restart_request)))
-        action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
-      else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
-      Navigation.findNavController(currentView).navigate(action, favorBundle);
-    };
+    // jump to favorPublished view
+    Bundle favorBundle = new Bundle();
+    favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+    int action;
+    // if this favor restarts from an archived one, then prevent pressback from jumping to
+    // archived favor view.
+    if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
+        || favorSource.equals(getString(R.string.restart_request)))
+      action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
+    else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
+    Navigation.findNavController(currentView).navigate(action, favorBundle);
   }
 
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      CommonTools.showSnackbar(
-          currentView,
-          getString(
-              CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
-      return null;
-    };
+  private void onFailedResult(View currentView, Throwable exception) {
+    CommonTools.showSnackbar(
+        currentView,
+        getString(CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
   }
 
   class onButtonClick implements View.OnClickListener {

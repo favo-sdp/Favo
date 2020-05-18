@@ -7,7 +7,7 @@
     android:paddingBottom="5dp">
 
     <LinearLayout
-        android:id="@+id/message"
+        android:id="@+id/message_lin_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"

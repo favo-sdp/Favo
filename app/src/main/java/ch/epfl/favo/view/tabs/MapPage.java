@@ -39,8 +39,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -256,10 +254,33 @@ public class MapPage extends Fragment
 
                           focusedFavor.setStatusIdToInt(FavorStatus.REQUESTED);
                           // post to DB
-                          CompletableFuture postFavorFuture =
+                          CompletableFuture<Void> postFavorFuture =
                               getViewModel().requestFavor(focusedFavor);
-                          postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-                          postFavorFuture.exceptionally(onFailedResult(requireView()));
+                          postFavorFuture.whenComplete(
+                              (aVoid, throwable) -> {
+                                if (throwable != null)
+                                  CommonTools.showSnackbar(
+                                      requireView(),
+                                      getString(
+                                          CommonTools.getSnackbarMessageForFailedRequest(
+                                              (CompletionException) throwable)));
+                                else {
+                                  CommonTools.showSnackbar(
+                                      requireView(),
+                                      getString(
+                                          CommonTools.getSnackbarMessageForRequestedFavor(
+                                              requireContext())));
+
+                                  // jump to favorPublished view
+                                  Bundle favorBundle = new Bundle();
+                                  favorBundle.putString(
+                                      CommonTools.FAVOR_ARGS, focusedFavor.getId());
+                                  Navigation.findNavController(requireView())
+                                      .navigate(
+                                          R.id.action_nav_map_to_favorPublishedView_via_RequestView,
+                                          favorBundle);
+                                }
+                              });
                         });
                   }
                   marker.showInfoWindow();
@@ -269,30 +290,6 @@ public class MapPage extends Fragment
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
-  }
-
-  private Consumer onSuccessfulRequest(View currentView) {
-    return o -> {
-      CommonTools.showSnackbar(
-          currentView,
-          getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
-
-      // jump to favorPublished view
-      Bundle favorBundle = new Bundle();
-      favorBundle.putString(CommonTools.FAVOR_ARGS, focusedFavor.getId());
-      Navigation.findNavController(currentView)
-          .navigate(R.id.action_nav_map_to_favorPublishedView_via_RequestView, favorBundle);
-    };
-  }
-
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      CommonTools.showSnackbar(
-          currentView,
-          getString(
-              CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
-      return null;
-    };
   }
 
   public IFavorViewModel getViewModel() {

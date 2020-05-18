@@ -1,5 +1,6 @@
 package ch.epfl.favo.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -7,11 +8,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.os.Build;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -27,12 +25,14 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.view.NonClickableToolbar;
-
+@SuppressLint("NewApi")
 public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
   public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
   public static final String FAVOR_SOURCE = "FAVOR_SOURCE";
   public static final String USER_ARGS = "USER_ARGS";
+  public static final String TEXT_MESSAGE_TYPE = "txt";
+  public static final String IMAGE_MESSAGE_TYPE = "img";
 
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();
@@ -65,7 +65,6 @@ public class CommonTools {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   static boolean isOffline(Context context) {
     ConnectivityManager connectivity =
         (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -91,7 +90,6 @@ public class CommonTools {
     return favorsFound;
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   public static int getSnackbarMessageForRequestedFavor(Context context) {
     if (DependencyFactory.isOfflineMode(context)) {
       return R.string.save_draft_message;

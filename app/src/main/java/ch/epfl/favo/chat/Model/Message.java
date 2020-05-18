@@ -1,4 +1,4 @@
-package ch.epfl.favo.chat;
+package ch.epfl.favo.chat.Model;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @IgnoreExtraProperties
-public class ChatModel {
+public class Message {
   private String mName;
   private String mMessage;
   private String mUid;
@@ -18,24 +18,39 @@ public class ChatModel {
   private String mFavorId;
   private Date mTimestamp;
   private String mIsFirstMsg;
+  private String mImagePath;
+  private String mMessageType;
 
-  public ChatModel() {
+  public Message() {
     // Needed for Firebase
   }
 
-  public ChatModel(
+  public Message(
       @Nullable String name,
-      @Nullable String message,
       @NonNull String uid,
+      @NonNull String messageType,
+      @Nullable String message,
+      @Nullable String imagePath,
       @NonNull String notifId,
       @NonNull String favorId,
       @NonNull String isFirstMsg) {
     mName = name;
-    mMessage = message;
     mUid = uid;
+    mMessageType = messageType;
+    mMessage = message;
+    mImagePath = imagePath;
     mNotifId = notifId;
     mFavorId = favorId;
     mIsFirstMsg = isFirstMsg;
+  }
+
+  public void setMessage(String message) {
+    mMessage = message;
+  }
+
+  @Nullable
+  public String getMessage() {
+    return mMessage;
   }
 
   @Nullable
@@ -45,15 +60,6 @@ public class ChatModel {
 
   public void setName(@Nullable String name) {
     mName = name;
-  }
-
-  @Nullable
-  public String getMessage() {
-    return mMessage;
-  }
-
-  public void setMessage(@Nullable String message) {
-    mMessage = message;
   }
 
   @NonNull
@@ -75,7 +81,7 @@ public class ChatModel {
   }
 
   @NonNull
-  public String getNotifId() {
+  String getNotifId() {
     return mNotifId;
   }
 
@@ -92,6 +98,15 @@ public class ChatModel {
     this.mIsFirstMsg = isFirstMsg;
   }
 
+  @NonNull
+  public String getMessageType() {
+    return mMessageType;
+  }
+
+  public void setMessageType(String messageType) {
+    mMessageType = messageType;
+  }
+
   @ServerTimestamp
   @Nullable
   public Date getTimestamp() {
@@ -102,14 +117,25 @@ public class ChatModel {
     mTimestamp = timestamp;
   }
 
+  @Nullable
+  public String getPicturePath() {
+    return mImagePath;
+  }
+
+  public void setPicturePath(String path) {
+    mImagePath = path;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    ChatModel chatModel = (ChatModel) o;
+    Message chatModel = (Message) o;
     return mName.equals(chatModel.mName)
-        && mMessage.equals(chatModel.mMessage)
         && mUid.equals(chatModel.mUid)
+        && mMessageType.equals(chatModel.mMessageType)
+        && mMessage.equals(chatModel.mMessage)
+        && mImagePath.equals(chatModel.mImagePath)
         && mNotifId.equals(chatModel.mNotifId)
         && mFavorId.equals(chatModel.mFavorId)
         && mTimestamp.equals(chatModel.mTimestamp)
@@ -118,7 +144,8 @@ public class ChatModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(mName, mMessage, mUid, mNotifId, mFavorId, mTimestamp, mIsFirstMsg);
+    return Objects.hash(
+        mName, mUid, mMessageType, mMessage, mImagePath, mNotifId, mFavorId, mIsFirstMsg);
   }
 
   @NonNull
@@ -131,6 +158,9 @@ public class ChatModel {
         + ", mMessage='"
         + mMessage
         + '\''
+        + ", mMessageType="
+        + mMessageType
+        + '\''
         + ", mUid='"
         + mUid
         + '\''
@@ -141,10 +171,13 @@ public class ChatModel {
         + mFavorId
         + '\''
         + ", mTimestamp="
-        + mTimestamp
+        + ((mTimestamp != null) ? mTimestamp.toString() : "")
+        + '\''
         + ", mIsFirstMsg='"
         + mIsFirstMsg
         + '\''
+        + ", mImagePath='"
+        + mImagePath
         + '}';
   }
 }

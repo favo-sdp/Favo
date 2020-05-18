@@ -95,4 +95,5 @@ public class PictureUtil {
         new TaskToFutureAdapter<>(downloadTask).getInstance();
     return downloadFuture.thenApply(BitmapConversionUtil::byteArrayToBitmap);
   }
+
 }
