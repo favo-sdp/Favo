@@ -193,8 +193,7 @@ public class FavorPageTest {
     Favor favor = FakeItemFactory.getFavor();
 
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
-    //
+
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
@@ -209,6 +208,7 @@ public class FavorPageTest {
 
     onView(withId(R.id.swipe_refresh_layout))
             .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+    getInstrumentation().waitForIdleSync();
 
     // Check the following elements are displayed
     onView(withId(R.id.item_title)).check(matches(isDisplayed()));
@@ -218,23 +218,20 @@ public class FavorPageTest {
 
     onView(withText(R.string.commit)).check(matches(isDisplayed()));
     onView(withText(R.string.view)).check(matches(isDisplayed())).perform(click());
-    pressBack();
-
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
+
+    pressBack();
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.cancel)).check(matches(isDisplayed())).perform(click());
 
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
 
     // Check the following elements are gone after the favor is cancelled
     onView(withId(R.id.swipe_refresh_layout))
             .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-    onView(withId(R.id.item_title)).check(matches(not(isDisplayed())));
-    onView(withId(R.id.item_requester)).check(matches(not(isDisplayed())));
-    onView(withId(R.id.item_coins)).check(matches(not(isDisplayed())));
-    onView(withId(R.id.item_menu_btn)).check(matches(not(isDisplayed())));
-
+    onView(withId(R.id.tip)).check(matches(isDisplayed()));
   }
 
   @Test
