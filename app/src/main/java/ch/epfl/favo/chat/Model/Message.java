@@ -19,7 +19,7 @@ public class Message {
   private Date mTimestamp;
   private String mIsFirstMsg;
   private String mImagePath;
-  private String mMessageType;
+  private int mMessageType;
 
   public Message() {
     // Needed for Firebase
@@ -28,7 +28,7 @@ public class Message {
   public Message(
       @Nullable String name,
       @NonNull String uid,
-      @NonNull String messageType,
+      @NonNull int messageType,
       @Nullable String message,
       @Nullable String imagePath,
       @NonNull String notifId,
@@ -99,11 +99,11 @@ public class Message {
   }
 
   @NonNull
-  public String getMessageType() {
+  public int getMessageType() {
     return mMessageType;
   }
 
-  public void setMessageType(String messageType) {
+  public void setMessageType(int messageType) {
     mMessageType = messageType;
   }
 
@@ -133,7 +133,7 @@ public class Message {
     Message chatModel = (Message) o;
     return mName.equals(chatModel.mName)
         && mUid.equals(chatModel.mUid)
-        && mMessageType.equals(chatModel.mMessageType)
+        && mMessageType == chatModel.mMessageType
         && mMessage.equals(chatModel.mMessage)
         && mImagePath.equals(chatModel.mImagePath)
         && mNotifId.equals(chatModel.mNotifId)

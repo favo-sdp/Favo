@@ -161,7 +161,7 @@ public class ChatPage extends Fragment {
     ((EditText) view.findViewById(R.id.messageEdit)).setText("");
   }
 
-  private Message generateMessageFromView(String messageType) {
+  private Message generateMessageFromView(int messageType) {
     String favorId = currentFavor.getId();
     String requesterNotifId = currentFavor.getRequesterNotifId();
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
@@ -208,7 +208,7 @@ public class ChatPage extends Fragment {
 
       @Override
       public int getItemViewType(int position) {
-        return (getItem(position).getMessageType().equals(CommonTools.TEXT_MESSAGE_TYPE))?0:1;
+        return getItem(position).getMessageType();
       }
 
       @NonNull
@@ -216,7 +216,7 @@ public class ChatPage extends Fragment {
       public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View messageView;
         MessageViewHolder viewHolder;
-        if (viewType==IMG_TYPE) {
+        if (viewType==CommonTools.IMAGE_MESSAGE_TYPE) {
           messageView =
               LayoutInflater.from(parent.getContext())
                   .inflate(R.layout.chat_image_message, parent, false);
