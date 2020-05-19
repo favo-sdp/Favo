@@ -49,6 +49,7 @@ import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static android.app.Activity.RESULT_OK;
@@ -195,10 +196,6 @@ public class FavorEditingView extends Fragment {
     if (!isCameraAvailable()) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
-
-    // Button: Access location
-    //    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
-    //    locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
   /**
@@ -215,7 +212,14 @@ public class FavorEditingView extends Fragment {
 
       getFavorFromView();
       CommonTools.hideSoftKeyboard(requireActivity());
-
+      Favor remoteFavor = getViewModel().getObservedFavor().getValue();
+      // used to augment count
+      int change =
+          (remoteFavor != null
+                  && remoteFavor.getId().equals(currentFavor.getId())
+                  && remoteFavor.getStatusId() == FavorStatus.REQUESTED.toInt())
+              ? 0
+              : 1;
       new AlertDialog.Builder(requireActivity())
           .setMessage(getText(R.string.set_location_message))
           .setPositiveButton(
@@ -226,8 +230,12 @@ public class FavorEditingView extends Fragment {
                 favorViewModel.setShowObservedFavor(true);
                 favorViewModel.setFavorValue(currentFavor);
                 // signal the destination is map view
+                Bundle arguments = new Bundle();
+                arguments.putInt(
+                    MapPage.LOCATION_ARGUMENT_KEY,
+                    (change == 1 ? MapPage.NEW_REQUEST : MapPage.EDIT_EXISTING_LOCATION));
                 findNavController(requireActivity(), R.id.nav_host_fragment)
-                    .navigate(R.id.action_favorEditingView_to_nav_map, null);
+                    .navigate(R.id.action_favorEditingView_to_nav_map, arguments);
               })
           .setNegativeButton(
               getText(R.string.set_location_no),
@@ -235,7 +243,8 @@ public class FavorEditingView extends Fragment {
                 favorStatus = FavorStatus.REQUESTED;
                 currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
                 // post to DB
-                CompletableFuture<Void> postFavorFuture = getViewModel().requestFavor(currentFavor);
+                CompletableFuture<Void> postFavorFuture =
+                    getViewModel().requestFavor(currentFavor, change);
                 postFavorFuture.whenComplete(
                     (aVoid, throwable) -> {
                       if (throwable != null) onFailedResult(requireView(), throwable);

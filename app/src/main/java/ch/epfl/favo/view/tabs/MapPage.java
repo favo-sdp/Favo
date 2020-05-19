@@ -59,6 +59,11 @@ public class MapPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
+  public static final String LOCATION_ARGUMENT_KEY = "LOCATION_ARGS";
+  public static final int NEW_REQUEST = 0;
+  public static final int EDIT_EXISTING_LOCATION = 1;
+  public static final int PROPOSE_lOCATION = 2;
+
   private IFavorViewModel favorViewModel;
   private View view;
   private GoogleMap mMap;
@@ -72,7 +77,7 @@ public class MapPage extends Fragment
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private static final int MAP_BOTTOM_PADDING = 140;
   private int defaultZoomLevel = 16;
-
+  private static int intentType;
   private boolean mLocationPermissionGranted = false;
   private boolean firstOpenApp = true;
   private ArrayList<Marker> newMarkers = new ArrayList<>();
@@ -84,11 +89,6 @@ public class MapPage extends Fragment
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-    // this is another, maybe better, way to get location, but cannot pass cirrus testing
-    // mFusedLocationProviderClient =
-    // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
-    // getLocation();
     getLocationPermission();
     view = inflater.inflate(R.layout.fragment_map, container, false);
     // setup offline map button
@@ -108,6 +108,7 @@ public class MapPage extends Fragment
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
+    if (getArguments() != null) intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
     return view;
   }
 
@@ -253,9 +254,10 @@ public class MapPage extends Fragment
                           focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
 
                           focusedFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+                          int change = (intentType == NEW_REQUEST) ? 1 : 0;
                           // post to DB
                           CompletableFuture<Void> postFavorFuture =
-                              getViewModel().requestFavor(focusedFavor);
+                              getViewModel().requestFavor(focusedFavor, change);
                           postFavorFuture.whenComplete(
                               (aVoid, throwable) -> {
                                 if (throwable != null)
@@ -270,7 +272,6 @@ public class MapPage extends Fragment
                                       getString(
                                           CommonTools.getSnackbarMessageForRequestedFavor(
                                               requireContext())));
-
                                   // jump to favorPublished view
                                   Bundle favorBundle = new Bundle();
                                   favorBundle.putString(

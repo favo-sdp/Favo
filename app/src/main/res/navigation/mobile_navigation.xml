@@ -195,7 +195,12 @@
         <action
             android:id="@+id/action_favorEditingView_to_nav_map"
             app:destination="@id/nav_map"
-            app:launchSingleTop="true" />
+            app:launchSingleTop="true">
+            <argument
+                android:name="LOCATION_ARGS"
+                android:defaultValue="0"
+                app:argType="integer"/>
+        </action>
     </fragment>
 
     <fragment
