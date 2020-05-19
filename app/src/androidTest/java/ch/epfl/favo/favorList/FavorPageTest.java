@@ -2,7 +2,6 @@ package ch.epfl.favo.favorList;
 
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -28,7 +27,6 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
@@ -53,7 +51,7 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -141,6 +139,7 @@ public class FavorPageTest {
     onView(withId(R.id.active_toggle)).perform(click());
 
     onView(withId(R.id.currentCoins)).check(matches(isDisplayed()));
+    onView(withId(R.id.currentCoins)).check(matches(withText(containsString("Current balance:"))));
   }
 
   @Test
