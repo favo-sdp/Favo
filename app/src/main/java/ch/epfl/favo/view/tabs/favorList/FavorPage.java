@@ -34,6 +34,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
@@ -51,6 +52,7 @@ public class FavorPage extends Fragment {
   private RadioGroup radioGroup;
   private RadioButton activeToggle;
   private RadioButton archivedToggle;
+  private TextView currentBalance;
 
   private RecyclerView mRecycler;
   private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -85,6 +87,8 @@ public class FavorPage extends Fragment {
     setHasOptionsMenu(true);
   }
 
+  @SuppressLint("SetTextI18n")
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -96,6 +100,14 @@ public class FavorPage extends Fragment {
     radioGroup = rootView.findViewById(R.id.radio_toggle);
     activeToggle = rootView.findViewById(R.id.active_toggle);
     archivedToggle = rootView.findViewById(R.id.archived_toggle);
+
+    UserUtil.getSingleInstance()
+            .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+            .thenAccept(
+                    user -> {
+                      currentBalance = requireActivity().findViewById(R.id.currentCoins);
+                      currentBalance.setText("Current balance: " + user.getBalance());
+                    });
 
     mRecycler = rootView.findViewById(R.id.paging_recycler);
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);

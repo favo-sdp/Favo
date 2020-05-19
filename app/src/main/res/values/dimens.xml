@@ -11,5 +11,5 @@
     <dimen name="margin_bottom_button">10dip</dimen>
     <dimen name="margin_accept_view">10dip</dimen>
 
-    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="toolbar_height">90dp</dimen>
 </resources>

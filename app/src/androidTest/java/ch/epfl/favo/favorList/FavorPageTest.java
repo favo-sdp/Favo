@@ -2,6 +2,7 @@ package ch.epfl.favo.favorList;
 
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -27,6 +28,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
@@ -137,6 +139,8 @@ public class FavorPageTest {
             .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.active_toggle)).perform(click());
+
+    onView(withId(R.id.currentCoins)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -180,34 +184,23 @@ public class FavorPageTest {
 
   @Test
   public void testItemMenu() throws InterruptedException {
-    // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(2000);
 
-    // Click on new favor tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Fill in text views with fake favor
     Favor favor = FakeItemFactory.getFavor();
-
     onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-
-    // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-    onView(withText(R.string.set_location_no))
-            .inRoot(isDialog())
-            .check(matches(isDisplayed()))
-            .perform(click());
+    onView(withText(R.string.set_location_no)).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
-    // Click on back button
-    pressBack();
-    getInstrumentation().waitForIdleSync();
 
-    onView(withId(R.id.swipe_refresh_layout))
-            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+    pressBack(); getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.swipe_refresh_layout)).perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
 
     // Check the following elements are displayed
@@ -219,18 +212,13 @@ public class FavorPageTest {
     onView(withText(R.string.commit)).check(matches(isDisplayed()));
     onView(withText(R.string.view)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-
-    pressBack();
-    getInstrumentation().waitForIdleSync();
+    pressBack(); getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.cancel)).check(matches(isDisplayed())).perform(click());
-
     getInstrumentation().waitForIdleSync();
 
-    // Check the following elements are gone after the favor is cancelled
-    onView(withId(R.id.swipe_refresh_layout))
-            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+    onView(withId(R.id.swipe_refresh_layout)).perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     onView(withId(R.id.tip)).check(matches(isDisplayed()));
   }
 
