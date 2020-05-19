@@ -92,15 +92,16 @@ public class NearbyFavorListTest {
     getInstrumentation().waitForIdleSync();
 
     // check query is successful and click on found item
-    onView(withText(favor.getTitle())).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.favor_list_item)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on back button
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
+
     // check active favors are displayed in active favor list view
-    onView(withId(R.id.tip)).check(matches(not(isDisplayed())));
+    onView(withId(R.id.nearby_tip)).check(matches(not(isDisplayed())));
     getInstrumentation().waitForIdleSync();
   }
 
