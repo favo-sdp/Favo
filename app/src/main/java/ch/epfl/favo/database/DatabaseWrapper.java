@@ -105,6 +105,7 @@ public class DatabaseWrapper {
         Math.toDegrees(
             radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
+        .whereEqualTo("statusId", 0)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
         .limit(50);

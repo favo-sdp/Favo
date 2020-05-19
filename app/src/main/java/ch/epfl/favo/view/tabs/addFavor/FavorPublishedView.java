@@ -57,10 +57,12 @@ public class FavorPublishedView extends Fragment {
   private NonClickableToolbar toolbar;
   private MenuItem cancelItem;
   private MenuItem editItem;
-  private MenuItem restartItem;
+  //private MenuItem restartItem;
   private MenuItem inviteItem;
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
+  private MenuItem reportItem;
+  private MenuItem reuseItem;
   private boolean isRequested;
   private FirebaseUser currentUser;
 
@@ -105,9 +107,11 @@ public class FavorPublishedView extends Fragment {
     cancelItem = menu.findItem(R.id.cancel_button);
     cancelCommitItem = menu.findItem(R.id.cancel_commit_button);
     editItem = menu.findItem(R.id.edit_button);
-    restartItem = menu.findItem(R.id.restart_button);
+    //restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
+    reuseItem = menu.findItem(R.id.reuse_button);
+    reportItem = menu.findItem(R.id.report_favor_button);
     if (favorStatus != null) updateAppBarMenuDisplay();
     super.onCreateOptionsMenu(menu, inflater);
   }
@@ -126,13 +130,15 @@ public class FavorPublishedView extends Fragment {
             || favorStatus == FavorStatus.COMPLETED_REQUESTER;
     cancelItem.setVisible(cancelVisible);
 
-    boolean restartVisible = currentFavor.getIsArchived() && isRequested;
-    restartItem.setVisible(restartVisible);
+    //boolean restartVisible = currentFavor.getIsArchived() && isRequested;
+    //restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
         currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
+    reportItem.setVisible(!isRequested);
+    reuseItem.setVisible(isRequested&&currentFavor.getIsArchived());
   }
 
   // handle button activities
@@ -300,6 +306,7 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
+      Log.d(TAG, currentUser.getDisplayName());
       ((TextView) requireView().findViewById(R.id.user_name)).setText(currentUser.getDisplayName());
     } else {
       UserUtil.getSingleInstance()
