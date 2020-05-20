@@ -75,6 +75,7 @@
     <string name="home">Home</string>
     <string name="favor_request_success_msg">Favor added successfully.</string>
     <string name="profile">Profile</string>
+    <string name="user_not_present_message">User account has been deleted</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>

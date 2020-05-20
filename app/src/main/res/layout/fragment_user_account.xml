@@ -14,9 +14,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:keepScreenOn="true"
+        android:indeterminate="true"
         android:progressTint="@color/material_green_500"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 
     <ScrollView
         android:layout_width="match_parent"
