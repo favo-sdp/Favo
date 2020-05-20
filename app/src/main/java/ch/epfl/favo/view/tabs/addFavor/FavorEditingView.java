@@ -114,7 +114,7 @@ public class FavorEditingView extends Fragment {
 
     mFavoCoinsView = rootView.findViewById(R.id.favor_reward);
 
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
             user ->

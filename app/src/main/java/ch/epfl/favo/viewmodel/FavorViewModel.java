@@ -122,12 +122,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .thenCompose(
             (aVoid) -> {
               // update user info
-              UserUtil.getSingleInstance()
+              DependencyFactory.getCurrentUserRepository()
                   .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
                   .thenAccept(
                       user -> {
                         user.setRequestedFavors(user.getRequestedFavors() + 1);
-                        UserUtil.getSingleInstance().updateUser(user);
+                        DependencyFactory.getCurrentUserRepository().updateUser(user);
                       });
               return getFavorRepository().requestFavor(tempFavor);
             });
