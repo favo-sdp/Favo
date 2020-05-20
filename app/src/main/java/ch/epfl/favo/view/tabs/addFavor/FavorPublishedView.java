@@ -325,7 +325,7 @@ public class FavorPublishedView extends Fragment {
       // display user name
       ((TextView) requireView().findViewById(R.id.user_name)).setText(currentUser.getDisplayName());
     } else {
-      UserUtil.getSingleInstance()
+      DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
           .thenAccept(
               user -> {
@@ -359,7 +359,7 @@ public class FavorPublishedView extends Fragment {
     ListView listView = requireView().findViewById(R.id.commit_user);
     for (String userId : currentFavor.getUserIds()) {
       if (!userId.equals(currentFavor.getRequesterId()))
-        UserUtil.getSingleInstance()
+        DependencyFactory.getCurrentUserRepository()
             .findUser(userId)
             .thenAccept(
                 user -> {
@@ -517,7 +517,7 @@ public class FavorPublishedView extends Fragment {
       otherUserId = currentFavor.getRequesterId();
     }
 
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(otherUserId)
         .thenAccept(
             user ->
@@ -527,7 +527,7 @@ public class FavorPublishedView extends Fragment {
                         getText(R.string.positive_feedback),
                         (dialogInterface, i) -> {
                           user.setLikes(user.getLikes() + 1);
-                          UserUtil.getSingleInstance().updateUser(user);
+                          DependencyFactory.getCurrentUserRepository().updateUser(user);
 
                           CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
                         })
@@ -535,7 +535,7 @@ public class FavorPublishedView extends Fragment {
                         getText(R.string.negative_feedback),
                         (dialogInterface, i) -> {
                           user.setDislikes(user.getDislikes() + 1);
-                          UserUtil.getSingleInstance().updateUser(user);
+                          DependencyFactory.getCurrentUserRepository().updateUser(user);
 
                           CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
                         })

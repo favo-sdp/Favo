@@ -50,7 +50,7 @@ public class UserAccountPage extends Fragment {
 
     displayUserDetails(new User(null, "", "", null, null, null));
 
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
             user -> {

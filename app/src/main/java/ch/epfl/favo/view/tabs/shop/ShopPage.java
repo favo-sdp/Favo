@@ -76,7 +76,7 @@ public class ShopPage extends Fragment {
 
     shopItems = OFFERS;
 
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
             user -> {

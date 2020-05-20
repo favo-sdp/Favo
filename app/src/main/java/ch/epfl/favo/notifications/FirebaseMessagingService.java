@@ -80,13 +80,13 @@ public class FirebaseMessagingService
   public void onNewToken(@NonNull String token) {
     // update user notification id
     if (DependencyFactory.getCurrentFirebaseUser() != null) {
-      UserUtil.getSingleInstance()
+      DependencyFactory.getCurrentUserRepository()
           .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
           .thenAccept(
               user -> {
                 if (user.getNotificationId() == null || !user.getNotificationId().equals(token)) {
                   user.setNotificationId(token);
-                  UserUtil.getSingleInstance().updateUser(user);
+                  DependencyFactory.getCurrentUserRepository().updateUser(user);
                 }
               });
     }

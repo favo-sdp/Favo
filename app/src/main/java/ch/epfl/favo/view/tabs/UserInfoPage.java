@@ -19,6 +19,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
+import ch.epfl.favo.util.DependencyFactory;
 
 public class UserInfoPage extends Fragment {
 
@@ -43,7 +44,7 @@ public class UserInfoPage extends Fragment {
 
     if (currentUser == null && getArguments() != null) {
       String userId = getArguments().getString("USER_ARGS");
-      UserUtil.getSingleInstance()
+      DependencyFactory.getCurrentUserRepository()
           .findUser(userId)
           .thenAccept(
               user -> {
