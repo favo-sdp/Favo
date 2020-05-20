@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
@@ -36,6 +38,7 @@ public class UserAccountPage extends Fragment {
 
   private View view;
   private IFavorViewModel viewModel;
+  private User currentUser;
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -58,15 +61,16 @@ public class UserAccountPage extends Fragment {
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
+
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .thenAccept(this::displayUserDetails);
+        .thenAccept(
+                user -> {
+                  currentUser = user;
+                  displayUserDetails(user);
+                });
 
     return view;
-  }
-
-  private IFavorViewModel getViewModel() {
-    return viewModel;
   }
 
   private void setupButtons() {
@@ -116,6 +120,7 @@ public class UserAccountPage extends Fragment {
         .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void deleteAccountClicked(View view) {
     new AlertDialog.Builder(requireActivity())
         .setMessage(getText(R.string.delete_account_alert))
@@ -124,10 +129,21 @@ public class UserAccountPage extends Fragment {
         .show();
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void deleteAccount() {
-    AuthUI.getInstance()
-        .delete(requireActivity())
-        .addOnCompleteListener(task -> onComplete(task, R.string.delete_account_failed));
+
+    view.findViewById(R.id.progress_loader).setVisibility(View.VISIBLE);
+
+    DependencyFactory.getCurrentUserRepository()
+        .deleteUser(currentUser)
+        .thenAccept(
+            aVoid ->
+                AuthUI.getInstance()
+                    .delete(requireActivity())
+                    .addOnCompleteListener(
+                        task -> onComplete(task, R.string.delete_account_failed)));
+
+    view.findViewById(R.id.progress_loader).setVisibility(View.GONE);
   }
 
   private void onComplete(@NonNull Task<Void> task, int errorMessage) {
