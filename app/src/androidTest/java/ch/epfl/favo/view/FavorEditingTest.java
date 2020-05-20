@@ -349,10 +349,8 @@ public class FavorEditingTest {
         "texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext";
     onView(withId(R.id.title_request_view)).perform(typeText(longString));
     onView(withId(R.id.details)).perform(typeText(longString));
-    onView(withId(R.id.favor_reward))
-        .perform(typeText(String.valueOf((int) fakeFavor.getReward())));
-    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
 
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
   }
 
