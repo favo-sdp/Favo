@@ -79,27 +79,7 @@ public class UserUtil implements IUserUtil {
 
   @Override
   public CompletableFuture<Void> deleteUser(User user) {
-    try {
-      deleteUserFavors(user);
-    } catch (ExecutionException | InterruptedException e) {
-      Log.e("UserUtils", "Error deleting user favors");
-    }
     return collection.removeDocument(user.getId());
-  }
-
-  private void deleteUserFavors(User user) throws ExecutionException, InterruptedException {
-    Tasks.await(
-            DependencyFactory.getCurrentFirestore()
-                .collection(DependencyFactory.getCurrentFavorCollection())
-                .whereArrayContains("userIds", user.getId())
-                .get())
-        .getDocuments()
-        .forEach(
-            documentSnapshot -> {
-              if (((List<String>) documentSnapshot.get("userIds")).size() == 1) {
-                documentSnapshot.getReference().delete();
-              }
-            });
   }
 
   /** @param id A FireBase Uid to search for in Users table. */

@@ -9,22 +9,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
@@ -32,12 +27,10 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 public class UserAccountPage extends Fragment {
 
   private View view;
-  private IFavorViewModel viewModel;
   private User currentUser;
 
   public UserAccountPage() {
@@ -57,18 +50,13 @@ public class UserAccountPage extends Fragment {
 
     displayUserDetails(new User(null, "Name", "Email", null, null, null));
 
-    viewModel =
-        (IFavorViewModel)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
-
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
-                user -> {
-                  currentUser = user;
-                  displayUserDetails(user);
-                });
+            user -> {
+              currentUser = user;
+              displayUserDetails(user);
+            });
 
     return view;
   }
@@ -117,7 +105,14 @@ public class UserAccountPage extends Fragment {
   private void signOut(View view) {
     AuthUI.getInstance()
         .signOut(requireActivity())
-        .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                startActivity(new Intent(getActivity(), SignInActivity.class));
+              } else {
+                CommonTools.showSnackbar(getView(), getString(R.string.sign_out_failed));
+              }
+            });
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
@@ -129,28 +124,22 @@ public class UserAccountPage extends Fragment {
         .show();
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void deleteAccount() {
 
     view.findViewById(R.id.progress_loader).setVisibility(View.VISIBLE);
 
-    DependencyFactory.getCurrentUserRepository()
-        .deleteUser(currentUser)
-        .thenAccept(
-            aVoid ->
-                AuthUI.getInstance()
-                    .delete(requireActivity())
-                    .addOnCompleteListener(
-                        task -> onComplete(task, R.string.delete_account_failed)));
+    AuthUI.getInstance()
+        .delete(requireActivity())
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
+                startActivity(new Intent(getActivity(), SignInActivity.class));
+              } else {
+                CommonTools.showSnackbar(getView(), getString(R.string.delete_account_failed));
+              }
+            });
 
     view.findViewById(R.id.progress_loader).setVisibility(View.GONE);
-  }
-
-  private void onComplete(@NonNull Task<Void> task, int errorMessage) {
-    if (task.isSuccessful()) {
-      startActivity(new Intent(getActivity(), SignInActivity.class));
-    } else {
-      CommonTools.showSnackbar(getView(), getString(errorMessage));
-    }
   }
 }
