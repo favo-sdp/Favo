@@ -41,7 +41,7 @@ public class SignInActivityInstrumentedTest {
       };
 
   @After
-  public void tearDown() throws ExecutionException, InterruptedException {
+  public void tearDown() throws InterruptedException {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentUserRepository(null);
