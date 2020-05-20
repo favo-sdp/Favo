@@ -57,30 +57,6 @@ public class UserInfoPage extends Fragment {
 
   @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons() {
-    //    ImageView likeButton = view.findViewById(R.id.like_button);
-    //    likeButton.setOnClickListener(
-    //        v -> {
-    //          currentUser.setLikes(currentUser.getLikes() + 1);
-    //          UserUtil.getSingleInstance()
-    //              .updateUser(currentUser)
-    //              .thenAccept(user -> displayUserData(currentUser));
-    //
-    //          likeButton.setImageResource(R.drawable.ic_like_colored_48dp);
-    //          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-    //        });
-    //
-    //    ImageView dislikeButton = view.findViewById(R.id.dislike_button);
-    //    dislikeButton.setOnClickListener(
-    //        v -> {
-    //          currentUser.setDislikes(currentUser.getDislikes() + 1);
-    //          UserUtil.getSingleInstance()
-    //              .updateUser(currentUser)
-    //              .thenAccept(user -> displayUserData(currentUser));
-    //
-    //          dislikeButton.setImageResource(R.drawable.ic_dislike_colored_48dp);
-    //          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-    //        });
-
     // should decide what to do with reported users
     Button reportUserButton = view.findViewById(R.id.report_user);
     reportUserButton.setOnClickListener(
