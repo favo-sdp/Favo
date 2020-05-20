@@ -55,7 +55,7 @@ public class UserUtilTest {
 
   @Test
   public void testPostUser() {
-    Assert.assertTrue(DependencyFactory.getCurrentUserRepository().postUser(getUser()).isDone());
+    Assert.assertTrue(UserUtil.getSingleInstance().postUser(getUser()).isDone());
   }
 
   @Test
