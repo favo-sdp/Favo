@@ -84,7 +84,7 @@ public class MockDatabaseWrapper<T extends Document> implements ICollectionWrapp
 
   @Override
   public DocumentReference getDocumentQuery(String key) {
-    return null;
+    return (DocumentReference) mockDocument;
   }
 
   @Override

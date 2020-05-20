@@ -273,15 +273,6 @@ public class FavorPublishedViewTest {
     mockDatabaseWrapper.setMockResult(testUser);
 
     onView(withId(R.id.user_name)).perform(click());
-
-    Thread.sleep(1000);
-
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-    Thread.sleep(1000);
-
-    pressBack();
-    onView(withId(R.id.user_profile_picture)).perform(click());
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 
   @Test
