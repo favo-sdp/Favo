@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -48,7 +49,7 @@ public class UserAccountPage extends Fragment {
 
     displayUserData(DependencyFactory.getCurrentFirebaseUser());
 
-    displayUserDetails(new User(null, "Name", "Email", null, null, null));
+    displayUserDetails(new User(null, "", "", null, null, null));
 
     UserUtil.getSingleInstance()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
@@ -126,7 +127,8 @@ public class UserAccountPage extends Fragment {
 
   private void deleteAccount() {
 
-    view.findViewById(R.id.progress_loader).setVisibility(View.VISIBLE);
+    ProgressBar progressBar = view.findViewById(R.id.progress_loader);
+    progressBar.setVisibility(View.VISIBLE);
 
     AuthUI.getInstance()
         .delete(requireActivity())
@@ -140,6 +142,6 @@ public class UserAccountPage extends Fragment {
               }
             });
 
-    view.findViewById(R.id.progress_loader).setVisibility(View.GONE);
+    view.findViewById(R.id.progress_loader).setVisibility(View.INVISIBLE);
   }
 }

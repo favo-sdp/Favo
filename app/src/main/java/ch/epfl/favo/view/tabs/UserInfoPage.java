@@ -39,7 +39,7 @@ public class UserInfoPage extends Fragment {
     ((MainActivity) requireActivity()).hideBottomNavigation();
     setupButtons();
 
-    displayUserData(new User(null, "Name", "Email", null, null, null));
+    displayUserData(new User(null, "", "", null, null, null));
 
     if (currentUser == null && getArguments() != null) {
       String userId = getArguments().getString("USER_ARGS");

@@ -26,6 +26,8 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -247,10 +249,7 @@ public class FavorPublishedView extends Fragment {
           break;
         case R.id.user_profile_picture:
         case R.id.user_name:
-          Bundle userBundle = new Bundle();
-          userBundle.putString(CommonTools.USER_ARGS, currentFavor.getRequesterId());
-          Navigation.findNavController(requireView())
-              .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+          tryMoveToUserInfoPage(currentFavor.getRequesterId());
           break;
         case R.id.location:
           favorViewModel.setShowObservedFavor(true);
@@ -259,6 +258,30 @@ public class FavorPublishedView extends Fragment {
           break;
       }
     }
+  }
+
+  private void tryMoveToUserInfoPage(String userId) {
+
+    // check if user exists
+    DocumentReference docIdRef =
+        DependencyFactory.getCurrentUserRepository().getCurrentUserReference(userId);
+
+    docIdRef
+        .get()
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null && document.exists()) {
+                  Bundle userBundle = new Bundle();
+                  userBundle.putString(CommonTools.USER_ARGS, userId);
+                  Navigation.findNavController(requireView())
+                      .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+                  return;
+                }
+              }
+              CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
+            });
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
@@ -357,10 +380,7 @@ public class FavorPublishedView extends Fragment {
                 if (item.getItemId() == R.id.accept_popup) {
                   acceptFavor(user);
                 } else if (item.getItemId() == R.id.profile_popup) {
-                  Bundle userBundle = new Bundle();
-                  userBundle.putString(CommonTools.USER_ARGS, user.getId());
-                  Navigation.findNavController(requireView())
-                      .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+                  tryMoveToUserInfoPage(user.getId());
                 }
                 return false;
               });
