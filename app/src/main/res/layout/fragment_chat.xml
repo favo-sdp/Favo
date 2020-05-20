@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_chat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".chat.ChatPage"
-    android:id="@+id/fragment_chat">
+    tools:context=".chat.ChatPage">
 
     <TextView
         android:id="@+id/emptyTextView"
@@ -24,9 +24,9 @@
         android:layout_above="@+id/footer"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/toolbar_height"
         android:clipToPadding="false"
         android:padding="16dp"
-        android:layout_marginTop="@dimen/toolbar_height"
         tools:listitem="@layout/chat_text_message" />
 
     <LinearLayout
@@ -38,35 +38,46 @@
         android:orientation="horizontal"
         android:paddingStart="8dp"
         android:paddingEnd="10dp">
+
         <LinearLayout
             android:id="@+id/message_footer"
             android:layout_width="0dp"
             android:layout_height="55dp"
+            android:layout_marginBottom="10dp"
             android:layout_weight="1"
             android:background="@drawable/custom_border"
-            android:elevation="1dp"
-            android:layout_marginBottom="10dp">
+            android:elevation="1dp">
+
             <ImageButton
                 android:id="@+id/send_image_button"
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_image_24dp"
-                android:background="@drawable/hamb_menu_button"/>
+                android:background="@android:color/white"
+                android:src="@drawable/ic_image_green_24dp" />
+
+            <ImageButton
+                android:id="@+id/share_location_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:background="@android:color/white"
+                android:src="@drawable/ic_location_on_24dp"/>
+
             <EditText
                 android:id="@+id/messageEdit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@android:color/white"
                 android:gravity="left"
                 android:hint="@string/hint_message"
                 android:imeOptions="actionDone"
                 android:importantForAutofill="no"
                 android:inputType="text"
-                android:layout_marginLeft="5dp"
-                tools:ignore="UnusedAttribute"
-                android:background="@android:color/white"/>
+                tools:ignore="UnusedAttribute" />
 
         </LinearLayout>
 

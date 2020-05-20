@@ -235,7 +235,7 @@ public class FavorEditingView extends Fragment {
                     MapPage.LOCATION_ARGUMENT_KEY,
                     (change == 1 ? MapPage.NEW_REQUEST : MapPage.EDIT_EXISTING_LOCATION));
                 findNavController(requireActivity(), R.id.nav_host_fragment)
-                    .navigate(R.id.action_favorEditingView_to_nav_map, arguments);
+                    .navigate(R.id.action_global_nav_map, arguments);
               })
           .setNegativeButton(
               getText(R.string.set_location_no),

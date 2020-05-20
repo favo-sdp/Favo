@@ -236,10 +236,8 @@ public class FavorPublishedView extends Fragment {
     public void onClick(View v) {
       switch (v.getId()) {
         case R.id.chat_button:
-          Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
           Navigation.findNavController(requireView())
-              .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
+              .navigate(R.id.action_nav_favorPublishedView_to_chatView);
           break;
         case R.id.commit_complete_button:
           if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();

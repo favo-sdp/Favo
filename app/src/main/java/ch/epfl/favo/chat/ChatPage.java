@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.auth.util.ui.ImeHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -47,7 +49,11 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
+import ch.epfl.favo.view.tabs.MapPage;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
+import static ch.epfl.favo.util.CommonTools.IMAGE_MESSAGE_TYPE;
+import static ch.epfl.favo.util.CommonTools.LOCATION_MESSAGE_TYPE;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
@@ -58,11 +64,13 @@ public class ChatPage extends Fragment {
   private View view;
   private RecyclerView recyclerView;
   private Favor currentFavor;
+  private IFavorViewModel viewModel;
 
   private static String FAVOR_ID = "favorId";
   private static String NOTIF_ID = "notifId";
   private static String USER_ID = "uid";
   private static int FILE_CHOOSER_RC = 1;
+  private LatLng locationForMessage;
 
   @Override
   public View onCreateView(
@@ -71,9 +79,13 @@ public class ChatPage extends Fragment {
     requireActivity()
         .getWindow()
         .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-
+    viewModel =
+        (IFavorViewModel)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
+    currentFavor = viewModel.getObservedFavor().getValue();
     if (getArguments() != null) {
-      currentFavor = getArguments().getParcelable(CommonTools.FAVOR_ARGS);
+      locationForMessage = (getArguments().getParcelable("LOCATION_ARGS"));
     }
     setupView();
 
@@ -86,10 +98,11 @@ public class ChatPage extends Fragment {
     ((MainActivity) requireActivity()).hideBottomNavigation();
 
     ImageButton sendMessageButton = view.findViewById(R.id.sendButton);
-
     sendMessageButton.setOnClickListener(v -> onSendClick());
     ImageButton sendPictureButton = view.findViewById(R.id.send_image_button);
     sendPictureButton.setOnClickListener(v -> onSendImageClick());
+    ImageButton shareLocationButton = view.findViewById(R.id.share_location_button);
+    shareLocationButton.setOnClickListener(v -> onShareLocationClick());
 
     LinearLayoutManager manager = new LinearLayoutManager(getContext());
     manager.setReverseLayout(true);
@@ -116,6 +129,37 @@ public class ChatPage extends Fragment {
     setupToolBar();
   }
 
+  private void onShareLocationClick() {
+    viewModel.setShowObservedFavor(true);
+    Bundle locationBundle = new Bundle();
+    locationBundle.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.PROPOSE_lOCATION);
+    Navigation.findNavController(requireView())
+        .navigate(R.id.action_global_nav_map, locationBundle);
+  }
+
+  private void shareLocationMessage() {
+    Message locationMessage = generateMessageFromView(LOCATION_MESSAGE_TYPE);
+    locationMessage.setPicturePath(
+        generateGoogleMapsPath(locationForMessage.latitude, locationForMessage.longitude));
+    onAddMessage(locationMessage)
+        .addOnFailureListener(
+            e -> CommonTools.showSnackbar(requireView(), "Failed uploading picture"));
+  }
+
+  private String generateGoogleMapsPath(double latitude, double longitude) {
+    return "https://maps.googleapis.com/maps/api/staticmap?center="
+        + latitude
+        + ","
+        + longitude
+        + "&zoom=15&markers=color:blue|"
+        + latitude
+        + ","
+        + longitude
+        + "&size=300x300&sensor=false"
+        + "&key="
+        + MainActivity.GOOGLE_API_KEY;
+  }
+
   private void onSendImageClick() {
     Intent imageIntent = new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(Intent.createChooser(imageIntent, "Select Image"), FILE_CHOOSER_RC);
@@ -128,6 +172,15 @@ public class ChatPage extends Fragment {
     Objects.requireNonNull(toolbar.getNavigationIcon())
         .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
     toolbar.setTitle(currentFavor.getTitle());
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    if (locationForMessage != null) {
+      shareLocationMessage();
+      locationForMessage = null; // reset its value
+    }
   }
 
   @Override
@@ -197,13 +250,10 @@ public class ChatPage extends Fragment {
   @NonNull
   private RecyclerView.Adapter createRecyclerAdapter(FirestoreRecyclerOptions<Message> options) {
     return new FirestoreRecyclerAdapter<Message, MessageViewHolder>(options) {
-      private int TEXT_TYPE = 0;
-      private int IMG_TYPE = 1;
 
       @Override
       public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-
       }
 
       @Override
@@ -216,7 +266,7 @@ public class ChatPage extends Fragment {
       public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View messageView;
         MessageViewHolder viewHolder;
-        if (viewType==CommonTools.IMAGE_MESSAGE_TYPE) {
+        if (viewType == IMAGE_MESSAGE_TYPE || viewType == LOCATION_MESSAGE_TYPE) {
           messageView =
               LayoutInflater.from(parent.getContext())
                   .inflate(R.layout.chat_image_message, parent, false);
@@ -285,7 +335,7 @@ public class ChatPage extends Fragment {
             .uploadPicture(selectedImage)
             .thenAccept(
                 remotePath -> {
-                  Message imageMessage = generateMessageFromView(CommonTools.IMAGE_MESSAGE_TYPE);
+                  Message imageMessage = generateMessageFromView(IMAGE_MESSAGE_TYPE);
                   imageMessage.setPicturePath(remotePath);
                   onAddMessage(imageMessage)
                       .addOnFailureListener(

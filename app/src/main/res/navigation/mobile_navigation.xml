@@ -8,7 +8,12 @@
         android:id="@+id/action_global_nav_map"
         app:destination="@id/nav_map"
         app:launchSingleTop="true"
-        app:popUpTo="@id/nav_map" />
+        app:popUpTo="@id/nav_map">
+        <argument
+            android:name="LOCATION_ARGS"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </action>
     <action
         android:id="@+id/action_global_favorPublishedView"
         app:destination="@id/favorPublishedView">
@@ -29,10 +34,10 @@
         android:id="@+id/action_global_nav_account"
         app:destination="@id/nav_account"
         app:launchSingleTop="true" />
-
     <action
         android:id="@+id/action_global_nav_share"
         app:destination="@id/nav_share" />
+
 
     <fragment
         android:id="@+id/nav_account"
@@ -78,6 +83,7 @@
                 app:argType="string" />
         </action>
 
+
     </fragment>
     <fragment
         android:id="@+id/nav_map"
@@ -103,6 +109,16 @@
                 android:name="FAVOR_SOURCE"
                 android:defaultValue="@null"
                 app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_nav_map_to_chatView"
+            app:destination="@id/chatView"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/chatView">
+            <argument
+                android:name="LOCATION_ARGS"
+                android:defaultValue="@null"
+                app:argType="com.google.android.gms.maps.model.LatLng" />
         </action>
         <action
             android:id="@+id/action_nav_map_to_favorPublishedView"
@@ -192,15 +208,6 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
-        <action
-            android:id="@+id/action_favorEditingView_to_nav_map"
-            app:destination="@id/nav_map"
-            app:launchSingleTop="true">
-            <argument
-                android:name="LOCATION_ARGS"
-                android:defaultValue="0"
-                app:argType="integer"/>
-        </action>
     </fragment>
 
     <fragment
@@ -211,12 +218,7 @@
 
         <action
             android:id="@+id/action_nav_favorPublishedView_to_chatView"
-            app:destination="@id/chatView">
-            <argument
-                android:name="FAVOR_ARGS"
-                android:defaultValue="@null"
-                app:argType="string" />
-        </action>
+            app:destination="@id/chatView" />
 
         <action
             android:id="@+id/action_nav_favorPublishedView_to_UserInfoPage"
@@ -241,4 +243,5 @@
         </action>
 
     </fragment>
+
 </navigation>

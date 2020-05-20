@@ -59,10 +59,12 @@ public class MapPage extends Fragment
     implements OnMapReadyCallback,
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.InfoWindowAdapter {
+
   public static final String LOCATION_ARGUMENT_KEY = "LOCATION_ARGS";
-  public static final int NEW_REQUEST = 0;
-  public static final int EDIT_EXISTING_LOCATION = 1;
-  public static final int PROPOSE_lOCATION = 2;
+  public static final int NEW_REQUEST = 1;
+  public static final int EDIT_EXISTING_LOCATION = 2;
+  public static final int PROPOSE_lOCATION = 3;
+  Button doneButton;
 
   private IFavorViewModel favorViewModel;
   private View view;
@@ -108,7 +110,9 @@ public class MapPage extends Fragment
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
-    if (getArguments() != null) intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
+    if (getArguments() != null) {
+      intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
+    }
     return view;
   }
 
@@ -135,6 +139,7 @@ public class MapPage extends Fragment
       CommonTools.showSnackbar(requireView(), e.getMessage());
       return;
     }
+    if (intentType != 0) setLimitedView();
     try {
       setupNearbyFavorsListener();
       setupFocusedFavorListen();
@@ -146,6 +151,37 @@ public class MapPage extends Fragment
     if (focusedFavor == null && firstOpenApp) {
       centerViewOnMyLocation();
       firstOpenApp = false;
+    }
+  }
+
+  private void setLimitedView() {
+    view.findViewById(R.id.toggle).setVisibility(View.GONE);
+    ((MainActivity) requireActivity()).hideBottomNavigation();
+
+    requireActivity().findViewById(R.id.hamburger_menu_button).setVisibility(View.GONE);
+
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    toolbar.setNavigationIcon(null);
+    toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
+    toolbar.setTitleTextColor(Color.WHITE);
+    doneButton = requireView().findViewById(R.id.button_location_from_request_view);
+    doneButton.setVisibility(View.VISIBLE);
+    switch (intentType) {
+      case NEW_REQUEST:
+        {
+          toolbar.setTitle("Request Favor");
+          break;
+        }
+      case EDIT_EXISTING_LOCATION:
+        {
+          toolbar.setTitle("Edit favor location");
+          break;
+        }
+      case PROPOSE_lOCATION:
+        {
+          toolbar.setTitle("Propose favor location");
+          break;
+        }
     }
   }
 
@@ -230,58 +266,12 @@ public class MapPage extends Fragment
                           .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
                   boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
                   Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
-                  // count new added marker on map
-                  if (isEdited) {
+                  if (isEdited || intentType == PROPOSE_lOCATION) {
                     newMarkers.add(marker);
-
-                    view.findViewById(R.id.toggle).setVisibility(View.GONE);
-                    ((MainActivity) requireActivity()).hideBottomNavigation();
-
-                    requireActivity()
-                        .findViewById(R.id.hamburger_menu_button)
-                        .setVisibility(View.GONE);
-
-                    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-                    toolbar.setNavigationIcon(null);
-
-                    Button doneButton =
-                        requireView().findViewById(R.id.button_location_from_request_view);
-                    doneButton.setVisibility(View.VISIBLE);
-
                     doneButton.setOnClickListener(
                         v -> {
-                          focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
-                          focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
-
-                          focusedFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-                          int change = (intentType == NEW_REQUEST) ? 1 : 0;
-                          // post to DB
-                          CompletableFuture<Void> postFavorFuture =
-                              getViewModel().requestFavor(focusedFavor, change);
-                          postFavorFuture.whenComplete(
-                              (aVoid, throwable) -> {
-                                if (throwable != null)
-                                  CommonTools.showSnackbar(
-                                      requireView(),
-                                      getString(
-                                          CommonTools.getSnackbarMessageForFailedRequest(
-                                              (CompletionException) throwable)));
-                                else {
-                                  CommonTools.showSnackbar(
-                                      requireView(),
-                                      getString(
-                                          CommonTools.getSnackbarMessageForRequestedFavor(
-                                              requireContext())));
-                                  // jump to favorPublished view
-                                  Bundle favorBundle = new Bundle();
-                                  favorBundle.putString(
-                                      CommonTools.FAVOR_ARGS, focusedFavor.getId());
-                                  Navigation.findNavController(requireView())
-                                      .navigate(
-                                          R.id.action_nav_map_to_favorPublishedView_via_RequestView,
-                                          favorBundle);
-                                }
-                              });
+                          if (intentType == PROPOSE_lOCATION) sendLocationToChat(marker);
+                          else if (isEdited) requestFavorOnMarkerLocation(marker);
                         });
                   }
                   marker.showInfoWindow();
@@ -291,6 +281,41 @@ public class MapPage extends Fragment
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
+  }
+
+  private void sendLocationToChat(Marker marker) {
+
+    Bundle chatBundle = new Bundle();
+    chatBundle.putParcelable("LOCATION_ARGS", marker.getPosition());
+    Navigation.findNavController(requireView())
+        .navigate(R.id.action_nav_map_to_chatView, chatBundle);
+  }
+
+  private void requestFavorOnMarkerLocation(Marker marker) {
+    focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
+    focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
+    int change = (intentType == NEW_REQUEST) ? 1 : 0;
+    // post to DB
+    CompletableFuture<Void> postFavorFuture = getViewModel().requestFavor(focusedFavor, change);
+    postFavorFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null)
+            CommonTools.showSnackbar(
+                requireView(),
+                getString(
+                    CommonTools.getSnackbarMessageForFailedRequest(
+                        (CompletionException) throwable)));
+          else {
+            CommonTools.showSnackbar(
+                requireView(),
+                getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
+            // jump to favorPublished view
+            Bundle favorBundle = new Bundle();
+            favorBundle.putString(CommonTools.FAVOR_ARGS, focusedFavor.getId());
+            Navigation.findNavController(requireView())
+                .navigate(R.id.action_nav_map_to_favorPublishedView_via_RequestView, favorBundle);
+          }
+        });
   }
 
   public IFavorViewModel getViewModel() {
@@ -471,6 +496,7 @@ public class MapPage extends Fragment
 
   @Override
   public void onInfoWindowClick(Marker marker) {
+    if (intentType != 0) return;
     List<Object> markerInfo = (List<Object>) marker.getTag();
     String favorId = markerInfo.get(0).toString();
     boolean isRequested = (boolean) markerInfo.get(1);

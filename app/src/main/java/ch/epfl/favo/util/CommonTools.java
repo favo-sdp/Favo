@@ -33,6 +33,7 @@ public class CommonTools {
   public static final String USER_ARGS = "USER_ARGS";
   public static final int TEXT_MESSAGE_TYPE = 0;
   public static final int IMAGE_MESSAGE_TYPE = 1;
+  public static final int LOCATION_MESSAGE_TYPE = 2;
 
   public static void showSnackbar(View view, String errorMessageRes) {
     Snackbar.make(view, errorMessageRes, Snackbar.LENGTH_LONG).show();

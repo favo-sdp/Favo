@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
   private static final String DEEP_LINK_QUERY_PARAMETER = "favorId";
   private static final String NOTIFICATION_PARAMETER = "FavorId";
+  public static String GOOGLE_API_KEY;
 
   private static final int[] NAVIGATION_ITEMS =
       new int[] {
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     setUpDeepLink();
 
     setContentView(R.layout.activity_main);
+    GOOGLE_API_KEY = getString(R.string.google_api_key);
 
     // Initialize Variables
     navigationView = findViewById(R.id.nav_view);
