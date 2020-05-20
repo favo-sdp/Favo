@@ -134,13 +134,15 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_signOut() {
+  public void testUserAlreadyLoggedIn_signOut() throws InterruptedException {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(R.id.sign_out)).perform(click());
+    Thread.sleep(5000);
+    onView(withText("Sign in with Google")).check(matches(isDisplayed()));
   }
 
   @Test

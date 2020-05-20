@@ -80,7 +80,7 @@ public class SignInActivity extends AppCompatActivity {
     AuthUI.SignInIntentBuilder builder =
         AuthUI.getInstance()
             .createSignInIntentBuilder()
-            .setIsSmartLockEnabled(!BuildConfig.DEBUG, true)
+            .setIsSmartLockEnabled(false, false)
             .setAvailableProviders(providers)
             .setLogo(R.drawable.logo)
             .setTheme(R.style.AppTheme);
