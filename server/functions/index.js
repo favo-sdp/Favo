@@ -15,7 +15,6 @@ const CANCELLED_REQUESTER_STATUS = 3;
 const CANCELLED_ACCEPTER_STATUS = 4;
 
 
-
 // function to calculate the distance between two points given their coordinates
 function distanceInKm(lon1, lat1, lon2, lat2) {
     var R = 6371; // Radius of the earth in km
@@ -218,8 +217,7 @@ exports.expireOldFavorsOnCreate = functions.firestore
                 if (snapshot.empty) {
                     console.log("Snapshot is empty")
                     return;
-                }
-                else {
+                } else {
                     let batch = db.batch();
                     var totalUpdateCount = 0;
                     var userUpdates = new Map(); //hashmap with user key and int value
@@ -234,26 +232,24 @@ exports.expireOldFavorsOnCreate = functions.firestore
                                 if (userUpdates.has(userId)) { //update count in map
                                     let newValue = userUpdates.get(userId) - 1;
                                     userUpdates.set(userId, newValue);
-                                }
-                                else { //insert user in map
+                                } else { //insert user in map
                                     totalUpdateCount++;
                                     if (totalUpdateCount > MAX_UPDATES)
                                         throw BreakException;
                                     userUpdates.set(userId, -1);
                                 }
                                 //console.log("updated");
-                                batch.update(doc.ref, { 'statusId': EXPIRED_STATUS, 'isArchived': true });
+                                batch.update(doc.ref, {'statusId': EXPIRED_STATUS, 'isArchived': true});
                             }
                         });
-                    }
-                    catch (e) {
+                    } catch (e) {
                         console.log("Reached max updates per transaction (20)");
                         if (e !== BreakException)
                             throw e;
                     } //very ugly way of breaking out of foreach loop
                     for (const [userId, updateCount] of userUpdates.entries()) {
                         var userRef = db.collection("/users").doc(userId);
-                        batch.update(userRef, { 'activeRequestingFavors': fieldValue.increment(updateCount) });
+                        batch.update(userRef, {'activeRequestingFavors': fieldValue.increment(updateCount)});
                     }
                     return batch.commit().then(() => console.log("Favors and users successfully updated"));
                 }
@@ -288,3 +284,47 @@ exports.sendNotificationOnNewChat = functions.firestore
         }
     });
 
+// delete all favors when a user is deleted
+exports.deleteFavorsOnUserDeletion = functions.firestore
+    .document('users/{userId}')
+    .onDelete((snap) => {
+
+        const deletedUserId = snap.data().userId;
+
+        // go through all the users
+        return db.collection('/favors').where('userIds', 'array-contains', deletedUserId).get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    const favor = doc.data();
+
+                    if (favor.userIds.length === 1) {
+                        doc.ref.delete().then(() => {
+                            console.log("Favor successfully deleted!");
+                        }).catch(function (error) {
+                            console.error("Error deleting favor: ", error);
+                        });
+                    }
+                });
+            })
+    });
+
+
+// delete all chats messages when a favor is deleted
+exports.deleteChatOnFavorDeletion = functions.firestore
+    .document('favors/{favorId}')
+    .onDelete((snap) => {
+
+        const deletedFavorId = snap.data().favorId;
+
+        // go through all the chat messages
+        return db.collection('/chats').where('favorId', '==', deletedFavorId).get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    doc.ref.delete().then(() => {
+                        console.log("Chat message successfully deleted!");
+                    }).catch(function (error) {
+                        console.error("Error deleting chat message: ", error);
+                    });
+                });
+            })
+    });
