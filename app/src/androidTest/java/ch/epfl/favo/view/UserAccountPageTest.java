@@ -134,14 +134,13 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_signOut() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_signOut() {
     DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(R.id.sign_out)).perform(click());
-    Thread.sleep(5000);
   }
 
   @Test
