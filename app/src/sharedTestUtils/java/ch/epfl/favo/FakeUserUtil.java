@@ -58,6 +58,12 @@ public class FakeUserUtil implements IUserUtil {
     return defaultResult();
   }
 
+  @Override
+  public CompletableFuture deleteUser(User user) {
+    if (isThrowingError) return failedCompletableFuture;
+    return successfulCompletableFuture;
+  }
+
   private boolean isFailedFindUser = false;
 
   public void setFindUserResult(User user) {
