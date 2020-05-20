@@ -8,6 +8,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -24,6 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.view.NonClickableToolbar;
@@ -105,5 +107,18 @@ public class CommonTools {
       return R.string.illegal_request_error;
     else
       return R.string.update_favor_error;
+  }
+
+  public static void handleException(Throwable throwable, View parentView, Context context, String TAG) {
+    Throwable cause =
+            (throwable.getCause() == null) ? new Exception(throwable) : throwable.getCause();
+    if (cause instanceof IllegalRequestException) {
+      CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.illegal_request_error));
+    } else if (cause instanceof IllegalAcceptException) {
+      CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.illegal_accept_error));
+    } else {
+      CommonTools.showSnackbar(parentView, context.getResources().getString(R.string.update_favor_error));
+    }
+    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 }

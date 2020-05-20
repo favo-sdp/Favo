@@ -10,12 +10,16 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import org.hamcrest.Matcher;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import java.util.concurrent.ExecutionException;
 
@@ -56,7 +60,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
-public class FavorPageTest {
+public class  FavorPageTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =

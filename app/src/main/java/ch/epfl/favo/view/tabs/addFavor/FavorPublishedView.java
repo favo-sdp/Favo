@@ -46,6 +46,7 @@ import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
+import static ch.epfl.favo.util.CommonTools.handleException;
 
 @SuppressLint("NewApi")
 public class FavorPublishedView extends Fragment {
@@ -471,7 +472,7 @@ public class FavorPublishedView extends Fragment {
   private void handleResult(CompletableFuture<Void> commitFuture, int successMessage) {
     commitFuture.whenComplete(
         (aVoid, throwable) -> {
-          if (throwable != null) handleException(throwable);
+          if (throwable != null) handleException(throwable, requireView(), requireContext(), TAG);
           else CommonTools.showSnackbar(requireView(), getString(successMessage));
         });
   }
@@ -530,19 +531,6 @@ public class FavorPublishedView extends Fragment {
         currentFavor.getUserIds().remove(i);
     CompletableFuture<Void> cancelFuture = getViewModel().cancelFavor(currentFavor, isRequestedByCurrentUser);
     handleResult(cancelFuture, R.string.favor_cancel_success_msg);
-  }
-
-  private void handleException(Throwable throwable) {
-    Throwable cause =
-        (throwable.getCause() == null) ? new Exception(throwable) : throwable.getCause();
-    if (cause instanceof IllegalRequestException) {
-      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
-    } else if (cause instanceof IllegalAcceptException) {
-      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
-    } else {
-      CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
-    }
-    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 
   private void deleteFavor() {

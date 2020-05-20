@@ -36,6 +36,8 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
+import static ch.epfl.favo.util.CommonTools.handleException;
+
 class FavorViewHolder extends RecyclerView.ViewHolder {
 
   private String TAG = "FavorViewHolder";
@@ -96,7 +98,14 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
           CompletableFuture cancelFuture = favorViewModel.cancelFavor(favor, isRequestedByCurrentUser);
           cancelFuture.thenAccept(o ->
                   CommonTools.showSnackbar(parentView, resources.getString(R.string.favor_cancel_success_msg_listView)));
-          cancelFuture.exceptionally(onFailedCancelOperation(parentView));
+          cancelFuture.exceptionally(ex -> {
+            if (((CompletionException) ex).getCause() instanceof IllegalRequestException)
+              CommonTools.showSnackbar(parentView, resources.getString(R.string.illegal_request_error));
+            else
+              CommonTools.showSnackbar(parentView, resources.getString(R.string.update_favor_error));
+            Log.e(TAG, Objects.requireNonNull(((Exception) ex).getMessage()));
+            return null;
+          });
           break;
         case R.id.item_menu_view:
           Bundle favorBundle = new Bundle();
@@ -108,37 +117,13 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
           assert !isRequestedByCurrentUser;
           favorViewModel.commitFavor(favor, false)
                   .whenComplete((aVoid, throwable) -> {
-                    if (throwable != null) handleException(throwable, parentView);
+                    if (throwable != null) handleException(throwable, parentView, context, TAG);
                     else CommonTools.showSnackbar(parentView, resources.getString(R.string.favor_respond_success_msg));
                   });
           break;
       }
       return false;
     });
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  private Function onFailedCancelOperation(View currentView) {
-    return (exception) -> {
-      if (((CompletionException) exception).getCause() instanceof IllegalRequestException)
-        CommonTools.showSnackbar(currentView, resources.getString(R.string.illegal_request_error));
-      else CommonTools.showSnackbar(currentView, resources.getString(R.string.update_favor_error));
-      Log.e(TAG, Objects.requireNonNull(((Exception) exception).getMessage()));
-      return null;
-    };
-  }
-
-  private void handleException(Throwable throwable, View parentView) {
-    Throwable cause =
-            (throwable.getCause() == null) ? new Exception(throwable) : throwable.getCause();
-    if (cause instanceof IllegalRequestException) {
-      CommonTools.showSnackbar(parentView, resources.getString(R.string.illegal_request_error));
-    } else if (cause instanceof IllegalAcceptException) {
-      CommonTools.showSnackbar(parentView, resources.getString(R.string.illegal_accept_error));
-    } else {
-      CommonTools.showSnackbar(parentView, resources.getString(R.string.update_favor_error));
-    }
-    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
