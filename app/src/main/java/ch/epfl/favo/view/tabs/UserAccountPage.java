@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
@@ -126,10 +125,6 @@ public class UserAccountPage extends Fragment {
   }
 
   private void deleteAccount() {
-
-    ProgressBar progressBar = view.findViewById(R.id.progress_loader);
-    progressBar.setVisibility(View.VISIBLE);
-
     AuthUI.getInstance()
         .delete(requireActivity())
         .addOnCompleteListener(
@@ -141,7 +136,5 @@ public class UserAccountPage extends Fragment {
                 CommonTools.showSnackbar(getView(), getString(R.string.delete_account_failed));
               }
             });
-
-    view.findViewById(R.id.progress_loader).setVisibility(View.INVISIBLE);
   }
 }
