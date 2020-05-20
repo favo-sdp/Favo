@@ -289,7 +289,7 @@ exports.deleteFavorsOnUserDeletion = functions.firestore
     .document('users/{userId}')
     .onDelete((snap) => {
 
-        const deletedUserId = snap.data().userId;
+        const deletedUserId = snap.data().id;
 
         // go through all the users
         return db.collection('/favors').where('userIds', 'array-contains', deletedUserId).get()
@@ -314,7 +314,7 @@ exports.deleteChatOnFavorDeletion = functions.firestore
     .document('favors/{favorId}')
     .onDelete((snap) => {
 
-        const deletedFavorId = snap.data().favorId;
+        const deletedFavorId = snap.data().id;
 
         // go through all the chat messages
         return db.collection('/chats').where('favorId', '==', deletedFavorId).get()

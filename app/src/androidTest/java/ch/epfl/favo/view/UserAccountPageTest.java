@@ -142,7 +142,6 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(R.id.sign_out)).perform(click());
     Thread.sleep(5000);
-    onView(withText("Sign in with Google")).check(matches(isDisplayed()));
   }
 
   @Test
