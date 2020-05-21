@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -130,17 +132,35 @@ public class ChatPage extends Fragment {
   }
 
   private void onShareLocationClick() {
-    viewModel.setShowObservedFavor(true);
-    Bundle locationBundle = new Bundle();
-    locationBundle.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.PROPOSE_lOCATION);
-    Navigation.findNavController(requireView())
-        .navigate(R.id.action_global_nav_map, locationBundle);
+    new AlertDialog.Builder(requireActivity())
+        .setMessage(getText(R.string.share_location_message))
+        .setPositiveButton(
+            R.string.share_location_propose,
+            (dialog, which) -> {
+              viewModel.setShowObservedFavor(false);
+              Bundle locationBundle = new Bundle();
+              locationBundle.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.SHARE_LOCATION);
+              Navigation.findNavController(requireView())
+                  .navigate(R.id.action_chatView_to_nav_map, locationBundle);
+            })
+        .setNegativeButton(
+            R.string.share_location_current,
+            (dialog, which) -> {
+              Location currentLoc =
+                  DependencyFactory.getCurrentGpsTracker(requireActivity().getApplicationContext())
+                      .getLocation();
+              locationForMessage = new LatLng(currentLoc.getLatitude(), currentLoc.getLongitude());
+              shareLocationMessage(locationForMessage);
+            })
+        .show();
   }
 
-  private void shareLocationMessage() {
+  private void shareLocationMessage(LatLng locationForMessage) {
     Message locationMessage = generateMessageFromView(LOCATION_MESSAGE_TYPE);
     locationMessage.setPicturePath(
         generateGoogleMapsPath(locationForMessage.latitude, locationForMessage.longitude));
+    locationMessage.setLongitude(String.valueOf(locationForMessage.longitude));
+    locationMessage.setLatitude(String.valueOf(locationForMessage.latitude));
     onAddMessage(locationMessage)
         .addOnFailureListener(
             e -> CommonTools.showSnackbar(requireView(), "Failed uploading picture"));
@@ -178,7 +198,7 @@ public class ChatPage extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     if (locationForMessage != null) {
-      shareLocationMessage();
+      shareLocationMessage(locationForMessage);
       locationForMessage = null; // reset its value
     }
   }
@@ -230,7 +250,9 @@ public class ChatPage extends Fragment {
         null,
         requesterNotifId,
         favorId,
-        isFirstMsg);
+        isFirstMsg,
+        null,
+        null); // do we want to store location for all messages?
   }
 
   private FirestoreRecyclerOptions<Message> getFirestoreRecyclerOptions() {
@@ -252,11 +274,6 @@ public class ChatPage extends Fragment {
     return new FirestoreRecyclerAdapter<Message, MessageViewHolder>(options) {
 
       @Override
-      public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        super.onBindViewHolder(holder, position);
-      }
-
-      @Override
       public int getItemViewType(int position) {
         return getItem(position).getMessageType();
       }
@@ -266,6 +283,7 @@ public class ChatPage extends Fragment {
       public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View messageView;
         MessageViewHolder viewHolder;
+
         if (viewType == IMAGE_MESSAGE_TYPE || viewType == LOCATION_MESSAGE_TYPE) {
           messageView =
               LayoutInflater.from(parent.getContext())
@@ -277,19 +295,31 @@ public class ChatPage extends Fragment {
                   .inflate(R.layout.chat_text_message, parent, false);
           viewHolder = new TextMessageViewHolder(messageView);
         }
-
-        messageView.setOnClickListener(
-            v -> {
-              int itemPosition = recyclerView.getChildLayoutPosition(v);
-              Message model = getItem(itemPosition);
-
-              Bundle userBundle = new Bundle();
-              userBundle.putString("USER_ARGS", model.getUid());
-              Navigation.findNavController(requireView())
-                  .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
-            });
+        if (viewType == LOCATION_MESSAGE_TYPE)
+          messageView.setOnClickListener(this::navigateToMapPage);
+        else messageView.setOnClickListener(this::navigateToUserPage);
 
         return viewHolder;
+      }
+
+      private void navigateToMapPage(View v) {
+        int itemPosition = recyclerView.getChildLayoutPosition(v);
+        Message model = getItem(itemPosition);
+        Bundle mapBundle = new Bundle();
+        mapBundle.putString("LATITUDE_ARGS", model.getLatitude());
+        mapBundle.putString("LONGITUDE_ARGS", model.getLongitude());
+        mapBundle.putInt("LOCATION_ARGS", MapPage.OBSERVE_LOCATION);
+        Navigation.findNavController(requireView()).navigate(R.id.action_global_nav_map, mapBundle);
+      }
+
+      public void navigateToUserPage(View v) {
+        int itemPosition = recyclerView.getChildLayoutPosition(v);
+        Message model = getItem(itemPosition);
+
+        Bundle userBundle = new Bundle();
+        userBundle.putString("USER_ARGS", model.getUid());
+        Navigation.findNavController(requireView())
+            .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
       }
 
       @Override

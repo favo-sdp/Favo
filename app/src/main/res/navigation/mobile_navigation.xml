@@ -7,8 +7,7 @@
     <action
         android:id="@+id/action_global_nav_map"
         app:destination="@id/nav_map"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/nav_map">
+        app:launchSingleTop="true">
         <argument
             android:name="LOCATION_ARGS"
             android:defaultValue="0"
@@ -74,11 +73,29 @@
         android:name="ch.epfl.favo.chat.ChatPage"
         android:label="Chat">
 
+
         <action
             android:id="@+id/action_nav_chatView_to_UserInfoPage"
             app:destination="@id/userInfoView">
             <argument
                 android:name="USER_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_chatView_to_nav_map"
+            app:destination="@id/nav_map"
+            app:launchSingleTop="true">
+            <argument
+                android:name="LOCATION_ARGS"
+                android:defaultValue="0"
+                app:argType="integer" />
+            <argument
+                android:name="LONGITUDE_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+            <argument
+                android:name="LATITUDE_ARGS"
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>

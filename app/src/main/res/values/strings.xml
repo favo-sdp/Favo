@@ -32,8 +32,8 @@
     <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <string name="download_offline_map">https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&amp;hl=en</string>
-    <string name="hint_drag_marker">Hold on marker to drag</string>
-    <string name="hint_click_window">Click window to request favor</string>
+    <string name="hint_drag_marker">Drag me</string>
+    <string name="hint_click_window">Long press marker to drag</string>
     <string name="default_radius">10 Km</string>
     <string name="setting_disabled">disabled</string>
 
@@ -200,4 +200,8 @@
     <string name="set_location_yes">Yes, take me to the map</string>
     <string name="set_location_no">No, my current position is fine</string>
     <string name="done_from_request_view">Done</string>
+
+    <string name="share_location_message">Would you like to propose a new location or share your current location?</string>
+    <string name="share_location_propose">I\'d like to share a new location</string>
+    <string name="share_location_current">Share my current location</string>
 </resources>

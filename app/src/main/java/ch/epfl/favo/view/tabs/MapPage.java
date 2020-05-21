@@ -50,6 +50,8 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
+import static java.lang.Double.parseDouble;
+
 /**
  * View will contain a map and a favor request pop-up. It is implemented using the {@link Fragment}
  * subclass.
@@ -63,7 +65,10 @@ public class MapPage extends Fragment
   public static final String LOCATION_ARGUMENT_KEY = "LOCATION_ARGS";
   public static final int NEW_REQUEST = 1;
   public static final int EDIT_EXISTING_LOCATION = 2;
-  public static final int PROPOSE_lOCATION = 3;
+  public static final int SHARE_LOCATION = 3;
+  public static final int OBSERVE_LOCATION = 4;
+  private String latitudeFromChat;
+  private String longitudeFromChat;
   Button doneButton;
 
   private IFavorViewModel favorViewModel;
@@ -110,9 +115,6 @@ public class MapPage extends Fragment
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
     if (mapFragment != null && mLocationPermissionGranted) mapFragment.getMapAsync(this);
-    if (getArguments() != null) {
-      intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
-    }
     return view;
   }
 
@@ -122,7 +124,7 @@ public class MapPage extends Fragment
     if (setting.equals(getString(R.string.setting_disabled)))
       setting = getString(R.string.default_radius);
     // split the radius setting string pattern, like "10 Km"
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+    radiusThreshold = parseDouble(setting.split(" ")[0]);
     defaultZoomLevel = notificationRadiusToZoomLevel(radiusThreshold);
 
     mMap = googleMap;
@@ -139,19 +141,57 @@ public class MapPage extends Fragment
       CommonTools.showSnackbar(requireView(), e.getMessage());
       return;
     }
-    if (intentType != 0) setLimitedView();
+    if (getArguments() != null) {
+      intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
+      latitudeFromChat = getArguments().getString("LATITUDE_ARGS");
+      longitudeFromChat = getArguments().getString("LONGITUDE_ARGS");
+    }
+
+    if (intentType != 0) { // if intent is to edit, request, share, or observe
+      setLimitedView();
+    }
     try {
-      setupNearbyFavorsListener();
-      setupFocusedFavorListen();
+      // only when the app is firstly opened, center on my location,
+      // otherwise just return where I left before
+      if (!getViewModel().isShowObservedFavor() && intentType != 0) //
+      {
+        boolean isMarkerEditable = intentType != OBSERVE_LOCATION;
+        Marker marker = drawMarkerAndFocusOnLocation(isMarkerEditable);
+        doneButton.setOnClickListener(
+                v -> {
+                  if (intentType == SHARE_LOCATION) sendLocationToChat(marker);
+                  else Navigation.findNavController(requireView())
+                      .navigate(R.id.action_nav_map_to_chatView);
+                });
+
+      } else { // intent is to edit or request
+        setupNearbyFavorsListener();
+        setupFocusedFavorListen();
+        if (focusedFavor == null && firstOpenApp) {
+          centerViewOnMyLocation();
+          firstOpenApp = false;
+        }
+      }
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
-    // only when the app is firstly opened, center on my location,
-    // otherwise just return where I left before
-    if (focusedFavor == null && firstOpenApp) {
-      centerViewOnMyLocation();
-      firstOpenApp = false;
-    }
+  }
+
+  public Marker drawMarkerAndFocusOnLocation(boolean isEditable) {
+    String markerTitle = isEditable ? getString(R.string.hint_drag_marker) : "";
+    String markerDescription = isEditable ? getString(R.string.hint_click_window) : "";
+    double selectedLongitude =
+        (longitudeFromChat != null) ? parseDouble(longitudeFromChat) : mLocation.getLongitude();
+    double selectedLatitude =
+        (latitudeFromChat != null) ? parseDouble(latitudeFromChat) : mLocation.getLatitude();
+    LatLng markerLocation = new LatLng(selectedLatitude, selectedLongitude);
+    float markerColor = BitmapDescriptorFactory.HUE_GREEN;
+
+    Marker marker =
+        createMarker(markerLocation, markerColor, markerTitle, markerDescription, isEditable);
+    newMarkers.add(marker);
+    focusViewOnLatLng(markerLocation, true);
+    return marker;
   }
 
   private void setLimitedView() {
@@ -177,9 +217,14 @@ public class MapPage extends Fragment
           toolbar.setTitle("Edit favor location");
           break;
         }
-      case PROPOSE_lOCATION:
+      case SHARE_LOCATION:
         {
-          toolbar.setTitle("Propose favor location");
+          toolbar.setTitle("Share favor location");
+          break;
+        }
+      case OBSERVE_LOCATION:
+        {
+          toolbar.setTitle("Observe location");
           break;
         }
     }
@@ -221,6 +266,7 @@ public class MapPage extends Fragment
   private class LongClick implements GoogleMap.OnMapLongClickListener {
     @Override
     public void onMapLongClick(LatLng latLng) {
+      if (intentType != 0) return;
       // at most one new marker is allowed
       if (newMarkers.size() != 0) {
         for (Marker m : newMarkers) m.remove();
@@ -266,13 +312,9 @@ public class MapPage extends Fragment
                           .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
                   boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
                   Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
-                  if (isEdited || intentType == PROPOSE_lOCATION) {
+                  if (isEdited) {
                     newMarkers.add(marker);
-                    doneButton.setOnClickListener(
-                        v -> {
-                          if (intentType == PROPOSE_lOCATION) sendLocationToChat(marker);
-                          else if (isEdited) requestFavorOnMarkerLocation(marker);
-                        });
+                    doneButton.setOnClickListener(v -> requestFavorOnMarkerLocation(marker));
                   }
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation(), true);
@@ -335,13 +377,7 @@ public class MapPage extends Fragment
         isEdited && favor.getDescription().equals("")
             ? getString(R.string.hint_click_window)
             : favor.getDescription();
-    Marker marker =
-        mMap.addMarker(
-            new MarkerOptions()
-                .position(latLng)
-                .title(markerTitle)
-                .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                .snippet(markerDescription));
+    Marker marker = createMarker(latLng, markerColor, markerTitle, markerDescription, isEdited);
     marker.setTag(
         new ArrayList<Object>() {
           {
@@ -349,14 +385,35 @@ public class MapPage extends Fragment
             add(isRequested);
           }
         });
-    if (isEdited) marker.setDraggable(true);
+    return marker;
+  }
+
+  private Marker createMarker(
+      LatLng latLng,
+      float markerColor,
+      String markerTitle,
+      String markerDescription,
+      boolean isDraggable) {
+    Marker marker =
+        mMap.addMarker(
+            new MarkerOptions()
+                .position(latLng)
+                .title(markerTitle)
+                .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                .snippet(markerDescription));
+    marker.setDraggable(isDraggable);
+    if (isDraggable) marker.showInfoWindow();
     return marker;
   }
 
   private void focusViewOnLocation(Location location, boolean animate) {
     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
-    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, defaultZoomLevel));
+    focusViewOnLatLng(latLng, animate);
+  }
+
+  private void focusViewOnLatLng(LatLng location, boolean animate) {
+    if (animate) mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, defaultZoomLevel));
+    else mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, defaultZoomLevel));
   }
 
   private void onOfflineMapClick(View view) {
@@ -509,7 +566,7 @@ public class MapPage extends Fragment
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     } else {
-      if (focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
+      if (focusedFavor == null || focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
         Navigation.findNavController(view)
             .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);

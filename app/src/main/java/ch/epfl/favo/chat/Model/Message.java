@@ -20,6 +20,8 @@ public class Message {
   private String mIsFirstMsg;
   private String mImagePath;
   private int mMessageType;
+  private String mLatitude;
+  private String mLongitude;
 
   public Message() {
     // Needed for Firebase
@@ -33,7 +35,9 @@ public class Message {
       @Nullable String imagePath,
       @NonNull String notifId,
       @NonNull String favorId,
-      @NonNull String isFirstMsg) {
+      @NonNull String isFirstMsg,
+      @Nullable String latitude,
+      @Nullable String longitude) {
     mName = name;
     mUid = uid;
     mMessageType = messageType;
@@ -42,6 +46,9 @@ public class Message {
     mNotifId = notifId;
     mFavorId = favorId;
     mIsFirstMsg = isFirstMsg;
+    mTimestamp = new Date();
+    mLatitude = latitude;
+    mLongitude = longitude;
   }
 
   public void setMessage(String message) {
@@ -126,6 +133,24 @@ public class Message {
     mImagePath = path;
   }
 
+  @Nullable
+  public String getLatitude() {
+    return mLatitude;
+  }
+
+  public void setLatitude(String latitude) {
+    mLatitude = latitude;
+  }
+
+  @Nullable
+  public String getLongitude() {
+    return mLongitude;
+  }
+
+  public void setLongitude(String longitude) {
+    mLongitude = longitude;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -178,6 +203,13 @@ public class Message {
         + '\''
         + ", mImagePath='"
         + mImagePath
+        + '\''
+        + ", mLatitude='"
+        + mLatitude
+        + '\''
+        + ", mLongitude='"
+        + mLongitude
+        + '\''
         + '}';
   }
 }
