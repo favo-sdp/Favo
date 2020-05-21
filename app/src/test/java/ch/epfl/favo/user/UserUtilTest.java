@@ -101,6 +101,15 @@ public class UserUtilTest {
   }
 
   @Test
+  public void testRemoveUser() {
+    Mockito.doReturn(successfulFuture)
+            .when(mockCollectionWrapper)
+            .removeDocument(anyString());
+    UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
+    Assert.assertTrue(UserUtil.getSingleInstance().deleteUser(getUser()).isDone());
+  }
+
+  @Test
   public void testFindUser() {
     // check successful result
     User fakeUser = getUser();
