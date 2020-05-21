@@ -1,5 +1,6 @@
 package ch.epfl.favo.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -49,7 +50,7 @@ public class CommonTools {
   }
 
   public static String convertTime(Date time) {
-    Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
+    @SuppressLint("SimpleDateFormat") Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
     return format.format(time);
   }
 
@@ -60,6 +61,7 @@ public class CommonTools {
   public static void hideSoftKeyboard(Activity activity) {
     final InputMethodManager inputMethodManager =
         (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    assert inputMethodManager != null;
     if (inputMethodManager.isActive()) {
       if (activity.getCurrentFocus() != null) {
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);

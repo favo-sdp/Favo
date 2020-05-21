@@ -36,6 +36,7 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
+import static ch.epfl.favo.util.CommonTools.getSnackbarMessageForFailedRequest;
 import static ch.epfl.favo.util.CommonTools.handleException;
 
 class FavorViewHolder extends RecyclerView.ViewHolder {
@@ -99,10 +100,8 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
           cancelFuture.thenAccept(o ->
                   CommonTools.showSnackbar(parentView, resources.getString(R.string.favor_cancel_success_msg_listView)));
           cancelFuture.exceptionally(ex -> {
-            if (((CompletionException) ex).getCause() instanceof IllegalRequestException)
-              CommonTools.showSnackbar(parentView, resources.getString(R.string.illegal_request_error));
-            else
-              CommonTools.showSnackbar(parentView, resources.getString(R.string.update_favor_error));
+            CommonTools.showSnackbar(parentView, resources.getString(
+                    getSnackbarMessageForFailedRequest((CompletionException) ex)));
             Log.e(TAG, Objects.requireNonNull(((Exception) ex).getMessage()));
             return null;
           });
@@ -113,7 +112,8 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
           Navigation.findNavController((Activity) context, R.id.nav_host_fragment)
                   .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
           break;
-//        case R.id.item_menu_commit:
+        case R.id.item_menu_commit:
+          break;
 //          assert !isRequestedByCurrentUser;
 //          favorViewModel.commitFavor(favor, false)
 //                  .whenComplete((aVoid, throwable) -> {
@@ -140,13 +140,13 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
       mRequesterView.setText(currentUser.getDisplayName() + " - ");
     } else {
       UserUtil.getSingleInstance().findUser(favor.getRequesterId())
-              .thenAccept(user -> {
-                String name = user.getName();
-                if (name == null || name.equals(""))
-                  mRequesterView.setText(CommonTools.emailToName(user.getEmail()) + " - ");
-                else
-                  mRequesterView.setText(name + " - ");
-              });
+        .thenAccept(user -> {
+          String name = user.getName();
+          if (name == null || name.equals(""))
+            mRequesterView.setText(CommonTools.emailToName(user.getEmail()) + " - ");
+          else
+            mRequesterView.setText(name + " - ");
+        });
     }
 
   }
