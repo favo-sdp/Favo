@@ -8,13 +8,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.concurrent.ExecutionException;
-
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static ch.epfl.favo.TestConstants.EMAIL;
@@ -31,8 +30,7 @@ public class SignInActivityInstrumentedTest {
       new ActivityTestRule<SignInActivity>(SignInActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          if (new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER) == null)
-            throw new RuntimeException("56fsd");
+          new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER);
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
@@ -41,7 +39,7 @@ public class SignInActivityInstrumentedTest {
       };
 
   @After
-  public void tearDown() throws InterruptedException {
+  public void tearDown() {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentUserRepository(null);
@@ -49,9 +47,12 @@ public class SignInActivityInstrumentedTest {
 
   @Test
   public void testSignInFlow() throws Throwable {
-    // DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI,
-    // PROVIDER));
     handleSignInResponse(RESULT_OK);
+  }
+
+  @Test
+  public void testSignInFlowWhenResultNotSuccessful() throws Throwable {
+    handleSignInResponse(RESULT_CANCELED);
   }
 
   @Test
@@ -70,9 +71,6 @@ public class SignInActivityInstrumentedTest {
     fakeUserUtil.setThrowResult(new RuntimeException());
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
-    // check fail snackbar shows TODO: Figure out how to show snackbar
-    //    onView(withId(com.google.android.material.R.id.snackbar_text))
-    //            .check(matches(withText(R.string.fui_error_unknown)));
   }
 
   private void handleSignInResponse(int result) throws Throwable {
