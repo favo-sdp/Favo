@@ -113,14 +113,14 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
           Navigation.findNavController((Activity) context, R.id.nav_host_fragment)
                   .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
           break;
-        case R.id.item_menu_commit:
-          assert !isRequestedByCurrentUser;
-          favorViewModel.commitFavor(favor, false)
-                  .whenComplete((aVoid, throwable) -> {
-                    if (throwable != null) handleException(throwable, parentView, context, TAG);
-                    else CommonTools.showSnackbar(parentView, resources.getString(R.string.favor_respond_success_msg));
-                  });
-          break;
+//        case R.id.item_menu_commit:
+//          assert !isRequestedByCurrentUser;
+//          favorViewModel.commitFavor(favor, false)
+//                  .whenComplete((aVoid, throwable) -> {
+//                    if (throwable != null) handleException(throwable, parentView, context, TAG);
+//                    else CommonTools.showSnackbar(parentView, resources.getString(R.string.favor_respond_success_msg));
+//                  });
+//          break;
       }
       return false;
     });
