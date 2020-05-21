@@ -11,12 +11,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
@@ -24,7 +26,6 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -105,17 +106,9 @@ public class UserAccountPage extends Fragment {
   private void signOut(View view) {
     AuthUI.getInstance()
         .signOut(requireActivity())
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                startActivity(new Intent(getActivity(), SignInActivity.class));
-              } else {
-                CommonTools.showSnackbar(getView(), getString(R.string.sign_out_failed));
-              }
-            });
+        .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void deleteAccountClicked(View view) {
     new AlertDialog.Builder(requireActivity())
         .setMessage(getText(R.string.delete_account_alert))
@@ -127,14 +120,17 @@ public class UserAccountPage extends Fragment {
   private void deleteAccount() {
     AuthUI.getInstance()
         .delete(requireActivity())
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
-                startActivity(new Intent(getActivity(), SignInActivity.class));
-              } else {
-                CommonTools.showSnackbar(getView(), getString(R.string.delete_account_failed));
-              }
-            });
+        .addOnCompleteListener(task -> onComplete(task, R.string.delete_account_failed));
+  }
+
+  private void onComplete(@NonNull Task<Void> task, int errorMessage) {
+    if (task.isSuccessful()) {
+      if (errorMessage == R.string.delete_account_failed) {
+        DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
+      }
+      startActivity(new Intent(getActivity(), SignInActivity.class));
+    } else {
+      CommonTools.showSnackbar(getView(), getString(errorMessage));
+    }
   }
 }
