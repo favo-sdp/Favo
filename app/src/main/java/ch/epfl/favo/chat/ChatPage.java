@@ -134,24 +134,25 @@ public class ChatPage extends Fragment {
     String requesterNotifId = currentFavor.getRequesterNotifId();
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
-//    boolean isFirstMsg = false;
-//    CollectionReference chat = FirebaseFirestore.getInstance().collection("chat");
-//    Query query = chat.whereEqualTo(FAVOR_ID, favorId)
-//            .whereEqualTo(NOTIF_ID, requesterNotifId)
-//            .whereEqualTo(USER_ID, responderUserId);
-//
-//    query.get().addOnCompleteListener(task -> {
-//      if (task.isSuccessful()) {
-//        for (QueryDocumentSnapshot document : task.getResult()) {
-//          Log.d(TAG, document.getId() + " => " + document.getData());
-//        }
-//      } else {
-//        Log.d(TAG, "Error getting documents: ", task.getException());
-//      }
-//    });
+    //    boolean isFirstMsg = false;
+    //    CollectionReference chat = FirebaseFirestore.getInstance().collection("chat");
+    //    Query query = chat.whereEqualTo(FAVOR_ID, favorId)
+    //            .whereEqualTo(NOTIF_ID, requesterNotifId)
+    //            .whereEqualTo(USER_ID, responderUserId);
+    //
+    //    query.get().addOnCompleteListener(task -> {
+    //      if (task.isSuccessful()) {
+    //        for (QueryDocumentSnapshot document : task.getResult()) {
+    //          Log.d(TAG, document.getId() + " => " + document.getData());
+    //        }
+    //      } else {
+    //        Log.d(TAG, "Error getting documents: ", task.getException());
+    //      }
+    //    });
 
     // If the empty message view is visible, then this is the first message.
-    String isFirstMsg = String.valueOf(view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
+    String isFirstMsg =
+        String.valueOf(view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
 
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     onAddMessage(

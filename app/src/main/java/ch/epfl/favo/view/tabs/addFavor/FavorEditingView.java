@@ -48,7 +48,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;

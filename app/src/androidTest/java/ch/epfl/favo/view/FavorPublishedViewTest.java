@@ -11,9 +11,7 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -28,14 +26,12 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.TaskToFutureAdapter;
 import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -263,7 +259,8 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound() throws InterruptedException {
+  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound()
+      throws InterruptedException {
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
