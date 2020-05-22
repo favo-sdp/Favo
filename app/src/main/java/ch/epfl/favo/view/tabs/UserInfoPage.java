@@ -17,7 +17,6 @@ import java.util.Objects;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -56,7 +55,6 @@ public class UserInfoPage extends Fragment {
     return view;
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   private void setupButtons() {
     // should decide what to do with reported users
     Button reportUserButton = view.findViewById(R.id.report_user);
