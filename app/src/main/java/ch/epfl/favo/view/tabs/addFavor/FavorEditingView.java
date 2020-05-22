@@ -210,11 +210,7 @@ public class FavorEditingView extends Fragment {
    * and updates view so that favor is editable.
    */
   private void requestFavor() {
-
-    if (mTitleView.getText().toString().length() > TITLE_MAX_LENGTH
-        || mDescriptionView.getText().toString().length() > DESCRIPTION_MAX_LENGTH) {
-      CommonTools.showSnackbar(requireView(), getString(R.string.fields_limit_exceeded_message));
-    } else {
+    if (isInputValid()) {
       getFavorFromView();
       CommonTools.hideSoftKeyboard(requireActivity());
       Favor remoteFavor = getViewModel().getObservedFavor().getValue();
@@ -262,6 +258,19 @@ public class FavorEditingView extends Fragment {
               })
           .show();
     }
+  }
+
+  private boolean isInputValid() {
+    boolean valid = true;
+    if (mTitleView.getText().toString().isEmpty())
+      CommonTools.showSnackbar(requireView(), getString(R.string.title_required_message));
+    valid = false;
+    if (mTitleView.getText().toString().length() > TITLE_MAX_LENGTH
+        || mDescriptionView.getText().toString().length() > DESCRIPTION_MAX_LENGTH) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.fields_limit_exceeded_message));
+      valid = false;
+    }
+    return valid;
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
