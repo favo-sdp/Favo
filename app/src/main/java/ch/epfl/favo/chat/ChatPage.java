@@ -54,6 +54,7 @@ import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static ch.epfl.favo.util.CommonTools.IMAGE_MESSAGE_TYPE;
 import static ch.epfl.favo.util.CommonTools.LOCATION_MESSAGE_TYPE;
+import static ch.epfl.favo.util.CommonTools.TEXT_MESSAGE_TYPE;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
@@ -99,13 +100,7 @@ public class ChatPage extends Fragment {
   private void setupView() {
 
     ((MainActivity) requireActivity()).hideBottomNavigation();
-
-    ImageButton sendMessageButton = view.findViewById(R.id.sendButton);
-    sendMessageButton.setOnClickListener(v -> onSendClick());
-    ImageButton sendPictureButton = view.findViewById(R.id.send_image_button);
-    sendPictureButton.setOnClickListener(v -> onSendImageClick());
-    ImageButton shareLocationButton = view.findViewById(R.id.share_location_button);
-    shareLocationButton.setOnClickListener(v -> onShareLocationClick());
+    setupButtons();
 
     LinearLayoutManager manager = new LinearLayoutManager(getContext());
     manager.setReverseLayout(true);
@@ -130,6 +125,15 @@ public class ChatPage extends Fragment {
 
     ImeHelper.setImeOnDoneListener(view.findViewById(R.id.messageEdit), this::onSendClick);
     setupToolBar();
+  }
+
+  private void setupButtons() {
+    ImageButton sendMessageButton = view.findViewById(R.id.sendButton);
+    sendMessageButton.setOnClickListener(v -> onSendClick());
+    ImageButton sendPictureButton = view.findViewById(R.id.send_image_button);
+    sendPictureButton.setOnClickListener(v -> onSendImageClick());
+    ImageButton shareLocationButton = view.findViewById(R.id.share_location_button);
+    shareLocationButton.setOnClickListener(v -> onShareLocationClick());
   }
 
   private void onShareLocationClick() {
@@ -267,17 +271,18 @@ public class ChatPage extends Fragment {
         View messageView;
         MessageViewHolder viewHolder;
 
-        if (viewType == IMAGE_MESSAGE_TYPE || viewType == LOCATION_MESSAGE_TYPE) {
-          messageView =
-              LayoutInflater.from(parent.getContext())
-                  .inflate(R.layout.chat_image_message, parent, false);
-          viewHolder = new ImageMessageViewHolder(messageView);
-        } else { // Text message
+        if (viewType == TEXT_MESSAGE_TYPE) {
           messageView =
               LayoutInflater.from(parent.getContext())
                   .inflate(R.layout.chat_text_message, parent, false);
           viewHolder = new TextMessageViewHolder(messageView);
+        } else { // Image or location
+          messageView =
+              LayoutInflater.from(parent.getContext())
+                  .inflate(R.layout.chat_image_message, parent, false);
+          viewHolder = new ImageMessageViewHolder(messageView);
         }
+
         if (viewType == LOCATION_MESSAGE_TYPE)
           messageView.setOnClickListener(this::navigateToMapPage);
         else messageView.setOnClickListener(this::navigateToUserPage);
@@ -295,7 +300,7 @@ public class ChatPage extends Fragment {
         Navigation.findNavController(requireView()).navigate(R.id.action_global_nav_map, mapBundle);
       }
 
-      public void navigateToUserPage(View v) {
+      private void navigateToUserPage(View v) {
         int itemPosition = recyclerView.getChildLayoutPosition(v);
         Message model = getItem(itemPosition);
 

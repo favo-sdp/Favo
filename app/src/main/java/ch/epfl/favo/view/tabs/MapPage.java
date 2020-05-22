@@ -200,13 +200,17 @@ public class MapPage extends Fragment
     ((MainActivity) requireActivity()).hideBottomNavigation();
 
     requireActivity().findViewById(R.id.hamburger_menu_button).setVisibility(View.GONE);
+    doneButton = requireView().findViewById(R.id.button_location_from_request_view);
+    doneButton.setVisibility(View.VISIBLE);
+    setupToolbar(intentType);
+  }
 
+  private void setupToolbar(int intentType) {
     Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     toolbar.setNavigationIcon(null);
     toolbar.setBackgroundColor(getResources().getColor(R.color.material_green_500));
     toolbar.setTitleTextColor(Color.WHITE);
-    doneButton = requireView().findViewById(R.id.button_location_from_request_view);
-    doneButton.setVisibility(View.VISIBLE);
+
     switch (intentType) {
       case NEW_REQUEST:
         {
@@ -560,18 +564,20 @@ public class MapPage extends Fragment
     boolean isRequested = (boolean) markerInfo.get(1);
     Bundle favorBundle = new Bundle();
     if (isRequested && focusedFavor.getStatusId() == FavorStatus.EDIT.toInt()) {
-      focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
-      focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
-      favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
-      favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_map));
+      navigateToEditPage(marker, favorBundle);
+    } else if (focusedFavor == null || focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
+      favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
       Navigation.findNavController(view)
-          .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
-    } else {
-      if (focusedFavor == null || focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
-        favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
-        Navigation.findNavController(view)
-            .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
-      }
+          .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
     }
+  }
+
+  private void navigateToEditPage(Marker marker, Bundle favorBundle) {
+    focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
+    focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
+    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
+    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_map));
+    Navigation.findNavController(view)
+        .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
   }
 }
