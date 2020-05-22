@@ -282,12 +282,16 @@ public class ChatPageTest {
     // share current location
     onView(withId(R.id.share_location_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+
     onView(withText(R.string.share_location_propose))
         .check(matches(isDisplayed()))
         .perform(click());
-    pressBack();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.layout.fragment_chat)).check(matches(isDisplayed()));
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
+    pressBack();
+
+
+
   }
 
   private Uri saveMockPicture(Bitmap bm, ChatPage chatPage) {
