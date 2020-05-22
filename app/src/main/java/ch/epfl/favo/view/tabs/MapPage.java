@@ -481,12 +481,11 @@ public class MapPage extends Fragment
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
     } else {
-      // TODO: This line throws an exception and crashes the app when viewing favor on mapview
-      //if (focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
+      if (focusedFavor.getStatusId() != FavorStatus.EDIT.toInt()) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
         Navigation.findNavController(view)
             .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
-      //}
+      }
     }
   }
 }

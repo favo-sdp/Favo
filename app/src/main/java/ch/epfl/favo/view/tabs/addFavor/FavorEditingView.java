@@ -268,8 +268,6 @@ public class FavorEditingView extends Fragment {
     String desc = mDescriptionView.getText().toString();
     String rewardString = mFavoCoinsView.getText().toString();
 
-    System.out.println(rewardString);
-
     double reward = 0;
     if (!rewardString.equals("")) {
       reward = Double.parseDouble(rewardString);

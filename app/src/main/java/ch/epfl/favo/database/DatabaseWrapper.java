@@ -59,7 +59,6 @@ public class DatabaseWrapper {
 
   public static <T extends Document> CompletableFuture<Void> addDocument(
       T document, String collection) {
-    System.out.println("for some reason it is not updating this method");
     Task<Void> postTask = getDocumentQuery(document.getId(), collection).set(document);
     return new TaskToFutureAdapter<>(postTask).getInstance();
   }

@@ -26,6 +26,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -85,8 +86,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    * @param activeFavorsCountChange Relative to actual amount
    * @return
    */
-
-  // add something to here to settle reward for both users if the reward is not 0
   private CompletableFuture<Void> updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
     return changeUserActiveFavorCount(currentUserId, isRequested, activeFavorsCountChange)
