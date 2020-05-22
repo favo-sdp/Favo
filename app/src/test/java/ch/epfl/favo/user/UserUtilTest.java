@@ -86,7 +86,7 @@ public class UserUtilTest {
     Assert.assertTrue(
         UserUtil.getSingleInstance()
             .changeActiveFavorCount(
-                FakeItemFactory.getFirebaseUser().getUid(), false, User.MAX_ACCEPTING_FAVORS, 1)
+                FakeItemFactory.getFirebaseUser().getUid(), false, User.MAX_ACCEPTING_FAVORS)
             .isDone());
     Assert.assertTrue(
         UserUtil.getSingleInstance()
