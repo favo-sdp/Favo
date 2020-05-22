@@ -57,7 +57,7 @@ public class FavorPublishedView extends Fragment {
   private NonClickableToolbar toolbar;
   private MenuItem cancelItem;
   private MenuItem editItem;
-  //private MenuItem restartItem;
+  private MenuItem restartItem;
   private MenuItem inviteItem;
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
@@ -107,7 +107,7 @@ public class FavorPublishedView extends Fragment {
     cancelItem = menu.findItem(R.id.cancel_button);
     cancelCommitItem = menu.findItem(R.id.cancel_commit_button);
     editItem = menu.findItem(R.id.edit_button);
-    //restartItem = menu.findItem(R.id.restart_button);
+    // restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
     reuseItem = menu.findItem(R.id.reuse_button);
@@ -130,15 +130,15 @@ public class FavorPublishedView extends Fragment {
             || favorStatus == FavorStatus.COMPLETED_REQUESTER;
     cancelItem.setVisible(cancelVisible);
 
-    //boolean restartVisible = currentFavor.getIsArchived() && isRequested;
-    //restartItem.setVisible(restartVisible);
+    // boolean restartVisible = currentFavor.getIsArchived() && isRequested;
+    restartItem.setVisible(currentFavor.getIsArchived() && isRequested);
 
     deleteItem.setVisible(
         currentFavor.getIsArchived() && isRequested && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequested && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
     reportItem.setVisible(!isRequested);
-    reuseItem.setVisible(isRequested&&currentFavor.getIsArchived());
+    reuseItem.setVisible(isRequested);
   }
 
   // handle button activities
@@ -318,9 +318,8 @@ public class FavorPublishedView extends Fragment {
     }
   }
 
-  private void displayName(String name, String email){
-    if (name == null || name.equals(""))
-      name = CommonTools.emailToName(email);
+  private void displayName(String name, String email) {
+    if (name == null || name.equals("")) name = CommonTools.emailToName(email);
     ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
   }
 

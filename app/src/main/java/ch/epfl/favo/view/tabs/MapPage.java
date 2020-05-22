@@ -81,10 +81,8 @@ public class MapPage extends Fragment
   private ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
-          add(
-              R.raw
-                  .google_map_style_standard); // index 0 is reserved for default style, we never
-                                               // use it.
+          add(R.raw.google_map_style_standard); // index 0 is reserved for default style, we never
+          // use it.
           add(R.raw.google_map_style_silver);
           add(R.raw.google_map_style_night);
         }
@@ -143,7 +141,9 @@ public class MapPage extends Fragment
 
     // set map style from user preference
     String map_mode = UserSettings.getMapStyle(requireContext());
+    if (map_mode.equals("")) map_mode = "0";
     Integer map_mode_idx = Integer.valueOf(map_mode);
+    Log.d("mapdf_d", map_mode + " df " + map_mode_idx);
     MapStyleOptions mapStyleOptions =
         MapStyleOptions.loadRawResourceStyle(getContext(), mapStyles.get(map_mode_idx));
     googleMap.setMapStyle(mapStyleOptions);
@@ -411,7 +411,8 @@ public class MapPage extends Fragment
       ArrayList tagArray = (ArrayList) marker.getTag();
       tagArray.set(2, false);
     }
-    Toast.makeText(requireContext(), "you have visited all nearby favors", Toast.LENGTH_SHORT).show();
+    Toast.makeText(requireContext(), "you have visited all nearby favors", Toast.LENGTH_SHORT)
+        .show();
   }
 
   private void setupNearbyFavorsListener() {

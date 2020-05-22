@@ -343,8 +343,7 @@ public class FavorEditingTest {
 
   @Test
   public void testCanReportFavor() throws Throwable {
-    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
-    requestFavor();
+    fakeViewModel = (FakeViewModel) launchFragment(fakeFavor).getViewModel();
 
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
