@@ -32,6 +32,9 @@ public class UserUtil implements IUserUtil {
   private static ICollectionWrapper<User> collection =
       DependencyFactory.getCurrentCollectionWrapper("users", User.class);
 
+  public void updateCollectionWrapper(ICollectionWrapper<User> newWrapper) {
+    collection = newWrapper;
+  }
   // Private constructor
   private UserUtil() {}
 

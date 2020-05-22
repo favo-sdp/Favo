@@ -165,8 +165,6 @@ public class ChatPage extends Fragment {
     chatUtil.addChatMessage(locationMessage).exceptionally(this::handleException);
   }
 
-
-
   private void onSendImageClick() {
     Intent imageIntent = new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT);
     startActivityForResult(Intent.createChooser(imageIntent, "Select Image"), FILE_CHOOSER_RC);
@@ -178,7 +176,7 @@ public class ChatPage extends Fragment {
     toolbar.setTitleTextColor(Color.WHITE);
     Objects.requireNonNull(toolbar.getNavigationIcon())
         .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
-    toolbar.setTitle(currentFavor.getTitle());
+    toolbar.setTitle(currentFavor != null ? currentFavor.getTitle() : "Favor Title");
   }
 
   @Override
@@ -303,6 +301,7 @@ public class ChatPage extends Fragment {
 
         Bundle userBundle = new Bundle();
         userBundle.putString("USER_ARGS", model.getUid());
+        CommonTools.hideSoftKeyboard(requireActivity());
         Navigation.findNavController(requireView())
             .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
       }

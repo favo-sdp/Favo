@@ -33,6 +33,7 @@ import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 import ch.epfl.favo.view.MockGpsTracker;
@@ -57,8 +58,8 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static ch.epfl.favo.TestUtils.childAtPosition;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.anyDouble;
 
 public class ChatPageTest {
@@ -198,11 +199,12 @@ public class ChatPageTest {
   @Test
   public void testClickOnMessageNavigateToUserInfoPage() throws InterruptedException {
 
-    String message = "Fake message";
+    String message = "l";
     typeMessage(message);
-
+    Thread.sleep(1000);
     onView(withId(R.id.messageEdit)).perform(pressImeActionButton());
-
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     User testUser =
         new User(
             TestConstants.USER_ID,
@@ -212,22 +214,20 @@ public class ChatPageTest {
             null,
             null);
 
-    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
+    UserUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+            Thread.sleep(3000);
+                ViewInteraction recyclerView =
+                    onView(
+                        allOf(
+                            withId(R.id.messagesList),
+                            childAtPosition(withClassName(is("android.widget.RelativeLayout")),
+     1)));
 
-    ViewInteraction recyclerView =
-        onView(
-            allOf(
-                withId(R.id.messagesList),
-                childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
-
-    Thread.sleep(1000);
-
-    recyclerView.perform(actionOnItemAtPosition(0, click()));
-
-    Thread.sleep(1000);
-
+        recyclerView.perform(actionOnItemAtPosition(0, click()));
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(3000);
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 
@@ -286,6 +286,7 @@ public class ChatPageTest {
         .check(matches(isDisplayed()))
         .perform(click());
     pressBack();
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.layout.fragment_chat)).check(matches(isDisplayed()));
   }
 

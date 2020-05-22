@@ -55,13 +55,14 @@
                 android:layout_gravity="center"
                 android:background="@android:color/white"
                 android:src="@drawable/ic_image_green_24dp" />
+
             <ImageButton
                 android:id="@+id/share_location_button"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:background="@android:color/white"
-                android:src="@drawable/ic_location_on_24dp"/>
+                android:src="@drawable/ic_location_on_24dp" />
 
             <EditText
                 android:id="@+id/messageEdit"
