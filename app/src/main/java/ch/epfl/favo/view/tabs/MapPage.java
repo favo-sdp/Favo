@@ -158,11 +158,12 @@ public class MapPage extends Fragment
         boolean isMarkerEditable = intentType != OBSERVE_LOCATION;
         Marker marker = drawMarkerAndFocusOnLocation(isMarkerEditable);
         doneButton.setOnClickListener(
-                v -> {
-                  if (intentType == SHARE_LOCATION) sendLocationToChat(marker);
-                  else Navigation.findNavController(requireView())
-                      .navigate(R.id.action_nav_map_to_chatView);
-                });
+            v -> {
+              if (intentType == SHARE_LOCATION) sendLocationToChat(marker);
+              else
+                Navigation.findNavController(requireView())
+                    .navigate(R.id.action_nav_map_to_chatView);
+            });
 
       } else { // intent is to edit or request
         setupNearbyFavorsListener();

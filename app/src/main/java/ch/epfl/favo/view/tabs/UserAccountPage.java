@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -27,15 +26,13 @@ import java.util.Objects;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 public class UserAccountPage extends Fragment {
 
   private View view;
-  private IFavorViewModel viewModel;
+  private User currentUser;
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -52,21 +49,17 @@ public class UserAccountPage extends Fragment {
 
     displayUserData(DependencyFactory.getCurrentFirebaseUser());
 
-    displayUserDetails(new User(null, "Name", "Email", null, null, null));
+    displayUserDetails(new User(null, "", "", null, null, null));
 
-    viewModel =
-        (IFavorViewModel)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .thenAccept(this::displayUserDetails);
+        .thenAccept(
+            user -> {
+              currentUser = user;
+              displayUserDetails(user);
+            });
 
     return view;
-  }
-
-  private IFavorViewModel getViewModel() {
-    return viewModel;
   }
 
   private void setupButtons() {
@@ -132,6 +125,9 @@ public class UserAccountPage extends Fragment {
 
   private void onComplete(@NonNull Task<Void> task, int errorMessage) {
     if (task.isSuccessful()) {
+      if (errorMessage == R.string.delete_account_failed) {
+        DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
+      }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
       CommonTools.showSnackbar(getView(), getString(errorMessage));

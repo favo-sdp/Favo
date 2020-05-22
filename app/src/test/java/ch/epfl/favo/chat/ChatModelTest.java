@@ -37,12 +37,22 @@ public class ChatModelTest {
     model = FakeItemFactory.getMessage(id);
     model.setTimestamp(timestamp);
   }
+
   @Test
-  public void testConstructors(){
+  public void testConstructors() {
     Message oneMessage = new Message();
     oneMessage.setName(MESSAGE_USER_NAME);
-    Message secondMessage = new Message(MESSAGE_USER_NAME,MESSAGE_USER_ID,0,MESSAGE_VALUE,MESSAGE_IMAGE_PATH,MESSAGE_NOTIF_ID,FAVOR_ID,MESSAGE_IS_FIRST_MESSAGE);
-    assertEquals(oneMessage.getName(),secondMessage.getName());
+    Message secondMessage =
+        new Message(
+            MESSAGE_USER_NAME,
+            MESSAGE_USER_ID,
+            0,
+            MESSAGE_VALUE,
+            MESSAGE_IMAGE_PATH,
+            MESSAGE_NOTIF_ID,
+            FAVOR_ID,
+            MESSAGE_IS_FIRST_MESSAGE);
+    assertEquals(oneMessage.getName(), secondMessage.getName());
   }
 
   @Test

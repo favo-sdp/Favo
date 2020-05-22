@@ -11,6 +11,8 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
+import com.google.firebase.firestore.DocumentReference;
+
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +26,6 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
@@ -258,30 +259,14 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testClickOnRequesterTextNavigateToUserInfoPage() throws InterruptedException {
-    User testUser =
-        new User(
-            TestConstants.USER_ID,
-            TestConstants.NAME,
-            TestConstants.EMAIL,
-            TestConstants.DEVICE_ID,
-            null,
-            null);
-
+  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound()
+      throws InterruptedException {
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
-    mockDatabaseWrapper.setMockDocument(testUser);
-    mockDatabaseWrapper.setMockResult(testUser);
+    DocumentReference documentReference = Mockito.mock(DocumentReference.class);
+    mockDatabaseWrapper.setMockDocumentReference(documentReference);
 
     onView(withId(R.id.user_name)).perform(click());
-
-    Thread.sleep(1000);
-
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
-    Thread.sleep(1000);
-
-    pressBack();
-    onView(withId(R.id.user_profile_picture)).perform(click());
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+    onView(withId(R.id.fragment_favor_published)).check(matches(isDisplayed()));
   }
 
   @Test

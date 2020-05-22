@@ -79,14 +79,16 @@ public class FirebaseMessagingService
   @Override
   public void onNewToken(@NonNull String token) {
     // update user notification id
-    UserUtil.getSingleInstance()
-        .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .thenAccept(
-            user -> {
-              if (user.getNotificationId() == null || !user.getNotificationId().equals(token)) {
-                user.setNotificationId(token);
-                UserUtil.getSingleInstance().updateUser(user);
-              }
-            });
+    if (DependencyFactory.getCurrentFirebaseUser() != null) {
+      UserUtil.getSingleInstance()
+          .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+          .thenAccept(
+              user -> {
+                if (user.getNotificationId() == null || !user.getNotificationId().equals(token)) {
+                  user.setNotificationId(token);
+                  UserUtil.getSingleInstance().updateUser(user);
+                }
+              });
+    }
   }
 }

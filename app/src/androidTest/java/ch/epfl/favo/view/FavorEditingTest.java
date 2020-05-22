@@ -330,7 +330,7 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testCantCreateFavorWithoutTitle() throws Throwable {
+  public void testCannotCreateFavorWithoutTitle() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
 
     onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
@@ -338,6 +338,19 @@ public class FavorEditingTest {
         .perform(typeText(String.valueOf((int) fakeFavor.getReward())));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
 
+    onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testCannotCreateFavorWithLimitsExceeded() throws Throwable {
+    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
+
+    String longString =
+        "texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext";
+    onView(withId(R.id.title_request_view)).perform(typeText(longString));
+    onView(withId(R.id.details)).perform(typeText(longString));
+
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
   }
 

@@ -41,6 +41,10 @@ public class MockDatabaseWrapper<T extends Document> implements ICollectionWrapp
     }
   }
 
+  public void setMockDocumentReference(DocumentReference document) {
+    this.mockDocumentReference = document;
+  }
+
   public void setMockDocument(T document) {
     this.mockDocument = document;
   }
@@ -84,7 +88,7 @@ public class MockDatabaseWrapper<T extends Document> implements ICollectionWrapp
 
   @Override
   public DocumentReference getDocumentQuery(String key) {
-    return null;
+    return mockDocumentReference;
   }
 
   @Override

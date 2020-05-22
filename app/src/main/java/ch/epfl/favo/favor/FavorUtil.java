@@ -26,7 +26,7 @@ public class FavorUtil {
   private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static ICollectionWrapper<Favor> collection =
-          DependencyFactory.getCurrentCollectionWrapper(
+      DependencyFactory.getCurrentCollectionWrapper(
           DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
   // Private Constructor
@@ -91,14 +91,14 @@ public class FavorUtil {
 
   public Query getNearbyFavors(Location loc, Double radius) {
     double longDif =
-            Math.toDegrees(
-                    radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
+        Math.toDegrees(
+            radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return collection
-            .getReference()
-            .whereEqualTo("isArchived",false)
-            .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
-            .whereLessThan("location.longitude", loc.getLongitude() + longDif)
-            .limit(50);
+        .getReference()
+        .whereEqualTo("isArchived", false)
+        .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
+        .whereLessThan("location.longitude", loc.getLongitude() + longDif)
+        .limit(50);
   }
 
   /**
@@ -140,7 +140,6 @@ public class FavorUtil {
     throw new NotImplementedException();
   }
 
-
   /**
    * Update the Favor photo url and update the database to match if not done already
    *
@@ -156,9 +155,9 @@ public class FavorUtil {
 
   public Query getAllUserFavors(String userId) {
     return collection
-            .getReference()
-            .orderBy("title", Query.Direction.ASCENDING)
-            .orderBy("postedTime", Query.Direction.DESCENDING)
-            .whereArrayContains("userIds", userId);
+        .getReference()
+        .orderBy("title", Query.Direction.ASCENDING)
+        .orderBy("postedTime", Query.Direction.DESCENDING)
+        .whereArrayContains("userIds", userId);
   }
 }
