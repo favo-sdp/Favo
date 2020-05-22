@@ -28,6 +28,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -68,7 +69,10 @@ public class DatabaseWrapperTest {
     // setup for testing getAllDocumentsLongitudeLatitudeBounded()
     Query query = Mockito.mock(Query.class);
     Mockito.doReturn(query)
-        .when(mockCollectionReference)
+            .when(mockCollectionReference)
+            .whereEqualTo(anyString(), anyInt());
+    Mockito.doReturn(query)
+        .when(query)
         .whereGreaterThan(anyString(), anyDouble());
     Mockito.doReturn(query).when(query).whereLessThan(anyString(), anyDouble());
     Mockito.doReturn(query).when(query).limit(anyLong());

@@ -306,19 +306,22 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      Log.d(TAG, currentUser.getDisplayName());
-      ((TextView) requireView().findViewById(R.id.user_name)).setText(currentUser.getDisplayName());
+      Log.d(TAG, currentUser.getDisplayName() + " check getDisplayName()");
+      displayName(currentUser.getDisplayName(), currentUser.getEmail());
     } else {
       UserUtil.getSingleInstance()
           .findUser(favor.getRequesterId())
           .thenAccept(
               user -> {
-                String name = user.getName();
-                if (name == null || name.equals(""))
-                  name = CommonTools.emailToName(user.getEmail());
-                ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
+                displayName(user.getName(), user.getEmail());
               });
     }
+  }
+
+  private void displayName(String name, String email){
+    if (name == null || name.equals(""))
+      name = CommonTools.emailToName(email);
+    ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
   }
 
   private void setupImageView(View rootView, Favor favor) {

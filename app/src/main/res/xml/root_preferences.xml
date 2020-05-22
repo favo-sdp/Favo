@@ -40,6 +40,18 @@
             app:summary="@string/notification_chat_summary"
             app:title="@string/notification_chat_title" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Dispaly">
+    <ListPreference
+        app:defaultValue="0"
+        app:dependency="notifications_new"
+        app:entries="@array/map_style"
+        app:entryValues="@array/map_style_idx"
+        app:key="map_style"
+        app:title="map style"
+        app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/help_header">
         <Preference
             android:key="help"

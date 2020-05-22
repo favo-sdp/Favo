@@ -32,12 +32,11 @@
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:ellipsize="end"
-            android:singleLine="true"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textColor="#ff000000"
             android:textSize="14dp"
             android:textStyle="bold" />
@@ -45,10 +44,10 @@
 
         <TextView
             android:id="@+id/snippet"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="1"
             android:singleLine="true"
             android:textColor="#ff7f7f7f"
             android:textSize="14dp" />
