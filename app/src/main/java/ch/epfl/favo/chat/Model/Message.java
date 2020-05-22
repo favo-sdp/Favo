@@ -46,6 +46,32 @@ public class Message implements Document {
   }
 
   public Message(
+      @NonNull String id,
+      @Nullable String name,
+      @NonNull String uid,
+      @NonNull int messageType,
+      @Nullable String message,
+      @Nullable String imagePath,
+      @NonNull String notifId,
+      @NonNull String favorId,
+      @NonNull String isFirstMsg,
+      @Nullable String latitude,
+      @Nullable String longitude) {
+    this(
+        name,
+        uid,
+        messageType,
+        message,
+        imagePath,
+        notifId,
+        favorId,
+        isFirstMsg,
+        latitude,
+        longitude);
+    mId = id;
+  }
+
+  public Message(
       @Nullable String name,
       @NonNull String uid,
       @NonNull int messageType,
@@ -57,17 +83,19 @@ public class Message implements Document {
       @Nullable String latitude,
       @Nullable String longitude) {
     mId = DatabaseWrapper.generateRandomId();
-    mName = name;
-    mUid = uid;
-    mMessageType = messageType;
-    mMessage = message;
-    mImagePath = imagePath;
-    mNotifId = notifId;
-    mFavorId = favorId;
-    mIsFirstMsg = isFirstMsg;
+    setName(name);
+    setUid(uid);
+    setMessageType(messageType);
+    setMessage(message);
+    setPicturePath(imagePath);
+    setNotifId(notifId);
+    setFavorId(favorId);
+    setIsFirstMsg(isFirstMsg);
+
     mTimestamp = new Date();
-    mLatitude = latitude;
-    mLongitude = longitude;
+    setTimestamp(mTimestamp);
+    setLatitude(latitude);
+    setLongitude(longitude);
   }
 
   public Message(
@@ -119,7 +147,7 @@ public class Message implements Document {
   }
 
   @NonNull
-  String getNotifId() {
+  public String getNotifId() {
     return mNotifId;
   }
 
@@ -211,7 +239,7 @@ public class Message implements Document {
         + "mId='"
         + mId
         + '\''
-        + "mName='"
+        + ", mName='"
         + mName
         + '\''
         + ", mMessage='"

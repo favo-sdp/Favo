@@ -186,7 +186,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
   } // check what happens if updateFavorFoto fails
 
-
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
     String url = favor.getPictureUrl();

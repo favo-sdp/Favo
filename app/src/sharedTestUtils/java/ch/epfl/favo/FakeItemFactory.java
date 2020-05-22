@@ -77,17 +77,19 @@ public class FakeItemFactory {
     return result;
   }
 
-  public static Message getMessage() {
+  public static Message getMessage(String id) {
     return new Message(
-        "testName",
-        "testUid",
+        id,
+        TestConstants.MESSAGE_USER_NAME,
+        TestConstants.MESSAGE_USER_ID,
         CommonTools.TEXT_MESSAGE_TYPE,
-        "testMessage",
-        "testImagePath",
-        "testNotifId",
-        "testFavorId",
-        "isFirstMsg",
-        "1.234",
-        "1.1");
+        TestConstants.MESSAGE_VALUE,
+        TestConstants.MESSAGE_IMAGE_PATH,
+        TestConstants.MESSAGE_NOTIF_ID,
+        TestConstants.FAVOR_ID,
+        TestConstants.MESSAGE_IS_FIRST_MESSAGE,
+        TestConstants.MESSAGE_LATITUDE,
+        TestConstants.MESSAGE_LONGITUDE);
   }
+
 }

@@ -224,7 +224,7 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testRequestFavorFlow() throws InterruptedException {
+  public void testRequestFavorFlow() {
     // Click on fav list tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();

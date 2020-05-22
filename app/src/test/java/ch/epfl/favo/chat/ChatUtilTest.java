@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
@@ -35,7 +36,7 @@ public class ChatUtilTest {
 
   @Test
   public void addChatMessage() {
-    chatUtil.addChatMessage(FakeItemFactory.getMessage());
+    chatUtil.addChatMessage(FakeItemFactory.getMessage(TestConstants.MESSAGE_ID));
   }
 
   @Test
