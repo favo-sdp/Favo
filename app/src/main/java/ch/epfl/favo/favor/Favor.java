@@ -322,6 +322,4 @@ public class Favor implements Parcelable, Document, Cloneable {
         && (this.pictureUrl == null && other.pictureUrl == null
             || (this.pictureUrl.equals(other.pictureUrl)));
   }
-
-
 }

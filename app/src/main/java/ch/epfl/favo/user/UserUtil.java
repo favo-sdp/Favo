@@ -73,6 +73,11 @@ public class UserUtil implements IUserUtil {
     return collection.updateDocument(user.getId(), user.toMap());
   }
 
+  @Override
+  public CompletableFuture<Void> deleteUser(User user) {
+    return collection.removeDocument(user.getId());
+  }
+
   /** @param id A FireBase Uid to search for in Users table. */
   @Override
   public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {

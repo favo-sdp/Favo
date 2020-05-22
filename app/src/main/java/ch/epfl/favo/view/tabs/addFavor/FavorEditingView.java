@@ -48,7 +48,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
@@ -63,6 +62,9 @@ public class FavorEditingView extends Fragment {
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
+
+  private static final int TITLE_MAX_LENGTH = 30;
+  private static final int DESCRIPTION_MAX_LENGTH = 100;
 
   private IFavorViewModel favorViewModel;
 
@@ -99,14 +101,19 @@ public class FavorEditingView extends Fragment {
     currentUser = DependencyFactory.getCurrentFirebaseUser();
 
     mTitleView = rootView.findViewById(R.id.title_request_view);
+    mTitleView.setHint(getString(R.string.favor_title_hint, TITLE_MAX_LENGTH));
+
     mDescriptionView = rootView.findViewById(R.id.details);
+    mDescriptionView.setHint(getString(R.string.favor_details_hint, DESCRIPTION_MAX_LENGTH));
+
     setupView(rootView);
+
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
 
     mFavoCoinsView = rootView.findViewById(R.id.favor_reward);
 
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
             user ->
@@ -208,44 +215,48 @@ public class FavorEditingView extends Fragment {
    * and updates view so that favor is editable.
    */
   private void requestFavor() {
-    // update currentFavor
 
-    EditText titleElem = requireView().findViewById(R.id.title_request_view);
-    if (titleElem.getText().toString().equals("")) {
+    if (mTitleView.getText().toString().equals("")) {
       CommonTools.showSnackbar(requireView(), getString(R.string.title_required_message));
     } else {
 
-      getFavorFromView();
-      CommonTools.hideSoftKeyboard(requireActivity());
+      if (mTitleView.getText().toString().length() > TITLE_MAX_LENGTH
+          || mDescriptionView.getText().toString().length() > DESCRIPTION_MAX_LENGTH) {
+        CommonTools.showSnackbar(requireView(), getString(R.string.fields_limit_exceeded_message));
+      } else {
 
-      new AlertDialog.Builder(requireActivity())
-          .setMessage(getText(R.string.set_location_message))
-          .setPositiveButton(
-              getText(R.string.set_location_yes),
-              (dialogInterface, i) -> {
-                getFavorFromView();
-                CommonTools.hideSoftKeyboard(requireActivity());
-                favorViewModel.setShowObservedFavor(true);
-                favorViewModel.setFavorValue(currentFavor);
-                // signal the destination is map view
-                findNavController(requireActivity(), R.id.nav_host_fragment)
-                    .navigate(R.id.action_favorEditingView_to_nav_map, null);
-              })
-          .setNegativeButton(
-              getText(R.string.set_location_no),
-              (dialogInterface, i) -> {
-                favorStatus = FavorStatus.REQUESTED;
-                currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-                // post to DB
-                CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-                postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-                postFavorFuture.exceptionally(onFailedResult(requireView()));
-                // Show confirmation and minimize keyboard
-                if (DependencyFactory.isOfflineMode(requireContext())) {
-                  CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
-                }
-              })
-          .show();
+        getFavorFromView();
+        CommonTools.hideSoftKeyboard(requireActivity());
+
+        new AlertDialog.Builder(requireActivity())
+            .setMessage(getText(R.string.set_location_message))
+            .setPositiveButton(
+                getText(R.string.set_location_yes),
+                (dialogInterface, i) -> {
+                  getFavorFromView();
+                  CommonTools.hideSoftKeyboard(requireActivity());
+                  favorViewModel.setShowObservedFavor(true);
+                  favorViewModel.setFavorValue(currentFavor);
+                  // signal the destination is map view
+                  findNavController(requireActivity(), R.id.nav_host_fragment)
+                      .navigate(R.id.action_favorEditingView_to_nav_map, null);
+                })
+            .setNegativeButton(
+                getText(R.string.set_location_no),
+                (dialogInterface, i) -> {
+                  favorStatus = FavorStatus.REQUESTED;
+                  currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+                  // post to DB
+                  CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
+                  postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
+                  postFavorFuture.exceptionally(onFailedResult(requireView()));
+                  // Show confirmation and minimize keyboard
+                  if (DependencyFactory.isOfflineMode(requireContext())) {
+                    CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+                  }
+                })
+            .show();
+      }
     }
   }
 

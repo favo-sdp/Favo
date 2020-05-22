@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.gps.IGpsTracker;
@@ -80,7 +79,7 @@ public class SignInActivity extends AppCompatActivity {
     AuthUI.SignInIntentBuilder builder =
         AuthUI.getInstance()
             .createSignInIntentBuilder()
-            .setIsSmartLockEnabled(!BuildConfig.DEBUG, true)
+            .setIsSmartLockEnabled(false, false)
             .setAvailableProviders(providers)
             .setLogo(R.drawable.logo)
             .setTheme(R.style.AppTheme);

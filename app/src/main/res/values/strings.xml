@@ -38,9 +38,9 @@
     <string name="setting_disabled">disabled</string>
 
     <!-- TAB 2 (David) -->
-    <string name="favor_title_hint">What\'s up? (ex: Need a bike pump)</string>
+    <string name="favor_title_hint">What do you need? - Max. length = %d</string>
     <string name="favor_img_content_desc">Descriptive image</string>
-    <string name="favor_details_hint">Add more details? (ex: Had a flat tire!)</string>
+    <string name="favor_details_hint">Add more details - Max. length = %d</string>
     <string name="favor_payment_hint">Add payment (Default: free favor)</string>
     <string name="favor_location_hint">Add location</string>
     <string name="favor_confirm_button">Request Favor</string>
@@ -75,6 +75,7 @@
     <string name="home">Home</string>
     <string name="favor_request_success_msg">Favor added successfully.</string>
     <string name="profile">Profile</string>
+    <string name="user_not_present_message">User account has been deleted</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
@@ -190,6 +191,8 @@
     <string name="favor_source_publishedFavor">publishedFavor</string>
     <string name="request_page_title">New favor</string>
     <string name="title_required_message">Title must be set to request a favor</string>
+    <string name="fields_limit_exceeded_message">All fields must respect the required limits</string>
+
     <string name="report_favor_message">Favor has been reported! Thanks for your help</string>
     <string name="report_favor_text">Report</string>
     <string name="optional_text">Optional</string>
