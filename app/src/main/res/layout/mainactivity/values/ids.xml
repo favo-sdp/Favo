@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="favor_reward" type="id" />
+    <item name="button_location_from_request_view" type="id" />
+</resources>

@@ -118,4 +118,20 @@ public class UserUtil implements IUserUtil {
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
   }
+
+  public CompletableFuture<Void> settleTransaction(String accepterId, String requesterId, double reward) {
+    return findUser(accepterId)
+            .thenCompose(
+                    (accepter) -> {
+                      accepter.setBalance(accepter.getBalance() + reward);
+                        findUser(requesterId)
+                              .thenCompose(
+                                      (requester) -> {
+                                        requester.setBalance(requester.getBalance() - reward);
+                                        return updateUser(requester);
+                                      });
+                      return updateUser(accepter);
+                    });
+
+  }
 }

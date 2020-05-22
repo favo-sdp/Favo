@@ -491,10 +491,13 @@ public class FavorPublishedView extends Fragment {
 
   private void reviewFavorExperience() {
     String otherUserId;
+    Double reward;
     if (currentFavor.getRequesterId().equals(DependencyFactory.getCurrentFirebaseUser().getUid())) {
       otherUserId = currentFavor.getAccepterId();
+      reward = currentFavor.getReward();
     } else {
       otherUserId = currentFavor.getRequesterId();
+      reward = -currentFavor.getReward();
     }
 
     UserUtil.getSingleInstance()
@@ -507,6 +510,7 @@ public class FavorPublishedView extends Fragment {
                         getText(R.string.positive_feedback),
                         (dialogInterface, i) -> {
                           user.setLikes(user.getLikes() + 1);
+                          user.setBalance(user.getBalance() + reward);
                           UserUtil.getSingleInstance().updateUser(user);
 
                           CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
@@ -515,6 +519,7 @@ public class FavorPublishedView extends Fragment {
                         getText(R.string.negative_feedback),
                         (dialogInterface, i) -> {
                           user.setDislikes(user.getDislikes() + 1);
+                          user.setBalance(user.getBalance() + reward);
                           UserUtil.getSingleInstance().updateUser(user);
 
                           CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));

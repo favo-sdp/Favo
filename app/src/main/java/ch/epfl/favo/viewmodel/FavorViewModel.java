@@ -86,6 +86,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    * @param activeFavorsCountChange Relative to actual amount
    * @return
    */
+
+  // add something to here to settle reward for both users if the reward is not 0
   private CompletableFuture<Void> updateFavorForCurrentUser(
       Favor favor, boolean isRequested, int activeFavorsCountChange) {
     return changeUserActiveFavorCount(currentUserId, isRequested, activeFavorsCountChange)
@@ -151,6 +153,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   public CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
+    List<String> userIds = tempFavor.getUserIds();
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
         || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
@@ -159,7 +162,9 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException("Wrong Status");
     }
-    return updateFavorForCurrentUser(tempFavor, isRequested, -1);
+
+    return updateFavorForCurrentUser(tempFavor, isRequested, -1)
+      .thenCompose((aVoid -> UserUtil.getSingleInstance().settleTransaction(userIds.get(0), userIds.get(1), tempFavor.getReward())));
   }
 
   /**

@@ -12,11 +12,13 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -57,6 +59,7 @@ public class DatabaseWrapper {
 
   public static <T extends Document> CompletableFuture<Void> addDocument(
       T document, String collection) {
+    System.out.println("for some reason it is not updating this method");
     Task<Void> postTask = getDocumentQuery(document.getId(), collection).set(document);
     return new TaskToFutureAdapter<>(postTask).getInstance();
   }
