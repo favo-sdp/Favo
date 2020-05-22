@@ -3,21 +3,17 @@ package ch.epfl.favo.user;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;

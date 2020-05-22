@@ -21,5 +21,4 @@ public interface IUserUtil {
   CompletableFuture retrieveUserRegistrationToken(User user);
 
   DocumentReference getCurrentUserReference(String userId);
-
 }
