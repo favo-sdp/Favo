@@ -252,6 +252,7 @@ public class FavorPublishedViewTest {
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_complete_success_msg)));
