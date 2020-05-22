@@ -7,6 +7,7 @@ import java.util.Date;
 
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.chat.Model.Message;
+import ch.epfl.favo.util.CommonTools;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -29,7 +30,7 @@ public class ChatModelTest {
         new Message(
             "testName",
             "testUid",
-            Message.TEXT_MESSAGE_TYPE,
+            CommonTools.TEXT_MESSAGE_TYPE,
             "testMessage",
             "imagePath",
             "testNotifId",
@@ -50,7 +51,7 @@ public class ChatModelTest {
         new Message(
             "testName",
             "fadsfa",
-            Message.TEXT_MESSAGE_TYPE,
+            CommonTools.TEXT_MESSAGE_TYPE,
             "testMessage",
             "imagePath",
             "testNotifId",

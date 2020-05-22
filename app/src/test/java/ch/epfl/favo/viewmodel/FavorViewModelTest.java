@@ -90,7 +90,7 @@ public class FavorViewModelTest {
 
   @Test
   public void testRepositoryBehaviourIsUnchangedOnPostFavor() {
-    Assert.assertTrue(viewModel.requestFavor(FakeItemFactory.getFavor()).isDone());
+    Assert.assertTrue(viewModel.requestFavor(FakeItemFactory.getFavor(), 1).isDone());
     // Assert.assertEquals(successfulResult,viewModel.requestFavor(FakeItemFactory.getFavor()));
   }
 
@@ -100,14 +100,14 @@ public class FavorViewModelTest {
         .when(userRepository)
         .changeActiveFavorCount(anyString(), anyBoolean(), anyInt());
     Assert.assertTrue(
-        viewModel.requestFavor(FakeItemFactory.getFavor()).isCompletedExceptionally());
+        viewModel.requestFavor(FakeItemFactory.getFavor(), 1).isCompletedExceptionally());
   }
 
   @Test
   public void testRepositoryDoesNotThrowErrorOnRepositoryPostFavorFailedResult() {
     Mockito.doReturn(failedResult).when(favorRepository).requestFavor(any(Favor.class));
     CompletableFuture<Void> voidCompletableFuture =
-        viewModel.requestFavor(FakeItemFactory.getFavor());
+        viewModel.requestFavor(FakeItemFactory.getFavor(), 1);
     voidCompletableFuture.whenComplete(
         (aVoid, throwable) -> Assert.assertTrue(throwable.getCause() instanceof RuntimeException));
   }

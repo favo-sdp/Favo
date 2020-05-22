@@ -10,6 +10,7 @@ import java.util.Map;
 import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.util.CommonTools;
 
 public class FakeItemFactory {
 
@@ -80,11 +81,13 @@ public class FakeItemFactory {
     return new Message(
         "testName",
         "testUid",
-        Message.TEXT_MESSAGE_TYPE,
+        CommonTools.TEXT_MESSAGE_TYPE,
         "testMessage",
-        null,
+        "testImagePath",
         "testNotifId",
         "testFavorId",
-        "true");
+        "isFirstMsg",
+        "1.234",
+        "1.1");
   }
 }

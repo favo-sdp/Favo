@@ -21,6 +21,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.cache.CacheUtil;
+import ch.epfl.favo.chat.ChatUtil;
+import ch.epfl.favo.chat.IChatUtil;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
@@ -44,7 +46,8 @@ public class DependencyFactory {
   private static FavorUtil currentFavorRepository;
   private static IUserUtil currentUserRepository;
   private static FirebaseInstanceId currentFirebaseInstanceId;
-  private static PictureUtil currentPictureUtility;
+  private static IPictureUtil currentPictureUtility;
+  private static IChatUtil currentChatUtility;
   private static FirebaseStorage currentFirebaseStorage;
   private static CacheUtil currentCacheUtility;
 
@@ -197,7 +200,7 @@ public class DependencyFactory {
     return FirebaseInstanceId.getInstance();
   }
 
-  public static PictureUtil getCurrentPictureUtility() {
+  public static IPictureUtil getCurrentPictureUtility() {
     if (currentPictureUtility != null) return currentPictureUtility;
     return PictureUtil.getInstance();
   }
@@ -213,7 +216,7 @@ public class DependencyFactory {
   }
 
   @VisibleForTesting
-  public static void setCurrentPictureUtility(PictureUtil pictureUtil) {
+  public static void setCurrentPictureUtility(IPictureUtil pictureUtil) {
     currentPictureUtility = pictureUtil;
   }
 
@@ -225,5 +228,14 @@ public class DependencyFactory {
   @VisibleForTesting
   public static void setCurrentCacheUtility(CacheUtil cacheUtil) {
     currentCacheUtility = cacheUtil;
+  }
+
+  @VisibleForTesting
+  public static void setCurrentChatUtility(IChatUtil chatUtil) {
+    currentChatUtility = chatUtil;
+  }
+
+  public static IChatUtil getCurrentChatUtility() {
+    return (currentChatUtility != null) ? currentChatUtility : ChatUtil.getSingleInstance();
   }
 }

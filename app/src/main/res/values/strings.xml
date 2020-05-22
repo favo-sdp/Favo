@@ -115,7 +115,7 @@
 
     <string name="notification_chat_title">Enable chat notifications</string>
     <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
-
+    <string name="error_send_msg_chat">Error sending message</string>
     <!-- Help preferences -->
     <string name="error_database_sync">Failed fetching data</string>
     <string name="help_title">Send feedback</string>

@@ -27,7 +27,7 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.PictureUtil;
+import ch.epfl.favo.util.IPictureUtil;
 
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
@@ -59,7 +59,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return DependencyFactory.getCurrentUserRepository();
   }
 
-  private PictureUtil getPictureUtility() {
+  private IPictureUtil getPictureUtility() {
     return DependencyFactory.getCurrentPictureUtility();
   }
 
@@ -108,6 +108,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public CompletableFuture<Void> requestFavor(final Favor favor, int change) {
     Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
+    setFavorValue(tempFavor);
     // if the favor has been observed, then this is during edit flow, do not add 1.
     return changeUserActiveFavorCount(
             currentUserId,
@@ -184,6 +185,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
     pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
   } // check what happens if updateFavorFoto fails
+
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) {

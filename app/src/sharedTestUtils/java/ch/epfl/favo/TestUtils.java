@@ -79,6 +79,8 @@ public class TestUtils {
             && parentMatcher.matches(parent)
             && view.equals(((ViewGroup) parent).getChildAt(position));
       }
+
     };
+
   }
 }

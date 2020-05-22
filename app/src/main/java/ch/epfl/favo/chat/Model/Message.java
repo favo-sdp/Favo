@@ -7,21 +7,39 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import ch.epfl.favo.database.DatabaseWrapper;
+import ch.epfl.favo.database.Document;
+
 @IgnoreExtraProperties
-public class Message {
+public class Message implements Document {
+  private String mId;
+  public static final String ID = "id";
   private String mName;
+  public static final String NAME = "name";
   private String mMessage;
+  public static final String MESSAGE = "message";
   private String mUid;
+  public static final String UID = "uId";
   private String mNotifId;
+  public static final String NOTIF_ID = "notifId";
   private String mFavorId;
+  public static final String FAVOR_ID = "favorId";
   private Date mTimestamp;
+  public static final String TIME_STAMP = "timeStamp";
   private String mIsFirstMsg;
+  public static final String IS_FIRST_MESSAGE = "isFirstMsg";
   private String mImagePath;
+  public static final String IMAGE_PATH = "imagePath";
   private int mMessageType;
+  public static final String MESSAGE_TYPE = "messageType";
   private String mLatitude;
+  public static final String LATITUDE = "latitude";
   private String mLongitude;
+  public static final String LONGITUDE = "longitude";
 
   public Message() {
     // Needed for Firebase
@@ -38,6 +56,7 @@ public class Message {
       @NonNull String isFirstMsg,
       @Nullable String latitude,
       @Nullable String longitude) {
+    mId = DatabaseWrapper.generateRandomId();
     mName = name;
     mUid = uid;
     mMessageType = messageType;
@@ -49,6 +68,18 @@ public class Message {
     mTimestamp = new Date();
     mLatitude = latitude;
     mLongitude = longitude;
+  }
+
+  public Message(
+      @Nullable String name,
+      @NonNull String uid,
+      @NonNull int messageType,
+      @Nullable String message,
+      @Nullable String imagePath,
+      @NonNull String notifId,
+      @NonNull String favorId,
+      @NonNull String isFirstMsg) {
+    this(name, uid, messageType, message, imagePath, notifId, favorId, isFirstMsg, null, null);
   }
 
   public void setMessage(String message) {
@@ -177,6 +208,9 @@ public class Message {
   @Override
   public String toString() {
     return "Chat{"
+        + "mId='"
+        + mId
+        + '\''
         + "mName='"
         + mName
         + '\''
@@ -211,5 +245,30 @@ public class Message {
         + mLongitude
         + '\''
         + '}';
+  }
+
+  @Override
+  public String getId() {
+    return mId;
+  }
+
+  @Override
+  public Map<String, Object> toMap() {
+    return new HashMap<String, Object>() {
+      {
+        put(ID, mId);
+        put(NAME, mName);
+        put(MESSAGE_TYPE, mMessageType);
+        put(MESSAGE, mMessage);
+        put(UID, mUid);
+        put(NOTIF_ID, mNotifId);
+        put(FAVOR_ID, mFavorId);
+        put(TIME_STAMP, mTimestamp);
+        put(IS_FIRST_MESSAGE, mIsFirstMsg);
+        put(IMAGE_PATH, mImagePath);
+        put(LATITUDE, mLatitude);
+        put(LONGITUDE, mLongitude);
+      }
+    };
   }
 }

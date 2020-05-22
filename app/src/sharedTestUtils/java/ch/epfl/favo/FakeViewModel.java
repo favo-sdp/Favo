@@ -43,7 +43,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture<Void> requestFavor(Favor favor) {
+  public CompletableFuture<Void> requestFavor(Favor favor, int change) {
 
     if (isThrowingError) return failedResult;
     observedFavorResult.setValue(favor);

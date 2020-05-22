@@ -11,13 +11,13 @@ import android.graphics.PorterDuffColorFilter;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,8 +33,6 @@ import com.firebase.ui.auth.util.ui.ImeHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -50,7 +48,7 @@ import ch.epfl.favo.chat.ViewHolder.TextMessageViewHolder;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.PictureUtil;
+import ch.epfl.favo.util.IPictureUtil;
 import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -73,6 +71,8 @@ public class ChatPage extends Fragment {
   private static String USER_ID = "uid";
   private static int FILE_CHOOSER_RC = 1;
   private LatLng locationForMessage;
+  private IPictureUtil pictureUtil;
+  private IChatUtil chatUtil;
 
   @Override
   public View onCreateView(
@@ -90,7 +90,8 @@ public class ChatPage extends Fragment {
       locationForMessage = (getArguments().getParcelable("LOCATION_ARGS"));
     }
     setupView();
-
+    pictureUtil = DependencyFactory.getCurrentPictureUtility();
+    chatUtil = DependencyFactory.getCurrentChatUtility();
     return view;
   }
 
@@ -158,27 +159,13 @@ public class ChatPage extends Fragment {
   private void shareLocationMessage(LatLng locationForMessage) {
     Message locationMessage = generateMessageFromView(LOCATION_MESSAGE_TYPE);
     locationMessage.setPicturePath(
-        generateGoogleMapsPath(locationForMessage.latitude, locationForMessage.longitude));
+        chatUtil.generateGoogleMapsPath(locationForMessage.latitude, locationForMessage.longitude));
     locationMessage.setLongitude(String.valueOf(locationForMessage.longitude));
     locationMessage.setLatitude(String.valueOf(locationForMessage.latitude));
-    onAddMessage(locationMessage)
-        .addOnFailureListener(
-            e -> CommonTools.showSnackbar(requireView(), "Failed uploading picture"));
+    chatUtil.addChatMessage(locationMessage).exceptionally(this::handleException);
   }
 
-  private String generateGoogleMapsPath(double latitude, double longitude) {
-    return "https://maps.googleapis.com/maps/api/staticmap?center="
-        + latitude
-        + ","
-        + longitude
-        + "&zoom=15&markers=color:blue|"
-        + latitude
-        + ","
-        + longitude
-        + "&size=300x300&sensor=false"
-        + "&key="
-        + MainActivity.GOOGLE_API_KEY;
-  }
+
 
   private void onSendImageClick() {
     Intent imageIntent = new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT);
@@ -230,7 +217,7 @@ public class ChatPage extends Fragment {
    */
   private void onSendClick() {
     Message message = generateMessageFromView(CommonTools.TEXT_MESSAGE_TYPE);
-    onAddMessage(message);
+    chatUtil.addChatMessage(message).exceptionally(this::handleException);
     ((EditText) view.findViewById(R.id.messageEdit)).setText("");
   }
 
@@ -250,9 +237,7 @@ public class ChatPage extends Fragment {
         null,
         requesterNotifId,
         favorId,
-        isFirstMsg,
-        null,
-        null); // do we want to store location for all messages?
+        isFirstMsg); // do we want to store location for all messages?
   }
 
   private FirestoreRecyclerOptions<Message> getFirestoreRecyclerOptions() {
@@ -336,20 +321,6 @@ public class ChatPage extends Fragment {
     };
   }
 
-  private Task<DocumentReference> onAddMessage(@NonNull Message message) {
-    return FirebaseFirestore.getInstance()
-        .collection("chats")
-        .add(message)
-        .addOnFailureListener(
-            requireActivity(),
-            e ->
-                Toast.makeText(
-                        getContext(),
-                        "Failed to send message. Check your internet connection.",
-                        Toast.LENGTH_SHORT)
-                    .show());
-  }
-
   @Override
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     if (requestCode == FILE_CHOOSER_RC
@@ -361,19 +332,23 @@ public class ChatPage extends Fragment {
         Bitmap selectedImage =
             ImageDecoder.decodeBitmap(
                 ImageDecoder.createSource(requireActivity().getContentResolver(), imagePath));
-        PictureUtil.getInstance()
+        pictureUtil
             .uploadPicture(selectedImage)
             .thenAccept(
                 remotePath -> {
                   Message imageMessage = generateMessageFromView(IMAGE_MESSAGE_TYPE);
                   imageMessage.setPicturePath(remotePath);
-                  onAddMessage(imageMessage)
-                      .addOnFailureListener(
-                          e -> CommonTools.showSnackbar(requireView(), "Failed uploading picture"));
+                  chatUtil.addChatMessage(imageMessage).exceptionally(this::handleException);
                 });
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
+  }
+
+  private Void handleException(Throwable throwable) {
+    CommonTools.showSnackbar(requireView(), getString(R.string.error_send_msg_chat));
+    Log.e(TAG, throwable.toString());
+    return null;
   }
 }
