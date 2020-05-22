@@ -26,7 +26,6 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
 
@@ -113,6 +112,9 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     int change = 1;
     if (getObservedFavor().getValue() != null
         && favor.getId().equals(getObservedFavor().getValue().getId())) change = 0;
+
+    IUserUtil userUtil = DependencyFactory.getCurrentUserRepository();
+
     return changeUserActiveFavorCount(
             currentUserId,
             true,
@@ -120,12 +122,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .thenCompose(
             (aVoid) -> {
               // update user info
-              DependencyFactory.getCurrentUserRepository()
+              userUtil
                   .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
                   .thenAccept(
                       user -> {
                         user.setRequestedFavors(user.getRequestedFavors() + 1);
-                        DependencyFactory.getCurrentUserRepository().updateUser(user);
+                        userUtil.updateUser(user);
                       });
               return getFavorRepository().requestFavor(tempFavor);
             });
