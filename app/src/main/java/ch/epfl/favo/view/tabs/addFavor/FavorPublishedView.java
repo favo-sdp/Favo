@@ -107,7 +107,7 @@ public class FavorPublishedView extends Fragment {
     cancelItem = menu.findItem(R.id.cancel_button);
     cancelCommitItem = menu.findItem(R.id.cancel_commit_button);
     editItem = menu.findItem(R.id.edit_button);
-    // restartItem = menu.findItem(R.id.restart_button);
+    restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
     reuseItem = menu.findItem(R.id.reuse_button);

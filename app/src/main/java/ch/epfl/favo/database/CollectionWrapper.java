@@ -1,6 +1,7 @@
 package ch.epfl.favo.database;
 
 import android.location.Location;
+import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
@@ -36,6 +37,7 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
 
   @Override
   public CompletableFuture<T> getDocument(String key) {
+    Log.d("fuck", " ouddfdffdft");
     return DatabaseWrapper.getDocument(key, cls, collection);
   }
 

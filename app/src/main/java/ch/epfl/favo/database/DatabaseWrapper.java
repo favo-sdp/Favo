@@ -2,6 +2,7 @@ package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -78,11 +79,21 @@ public class DatabaseWrapper {
     Task<DocumentSnapshot> getTask = getDocumentQuery(key, collection).get();
     CompletableFuture<DocumentSnapshot> getFuture =
         new TaskToFutureAdapter<>(getTask).getInstance();
+    Log.d("fuck", key + " in db " + collection);
+    Log.d("fuck", (getFuture==null) + " null?");
+    assert getFuture != null;
     return getFuture.thenApply(
         documentSnapshot -> {
+          Log.d("fuck", "inside " + (documentSnapshot==null));
+          assert documentSnapshot != null;
+          Log.d("fuck", "finish " + documentSnapshot.exists());
           if (documentSnapshot.exists()) {
+            Log.d("fuck", "really in db");
+            Log.d("fuck", documentSnapshot + " f " + cls);
+            Log.d("fuck", documentSnapshot.toObject(cls) + " get document");
             return documentSnapshot.toObject(cls);
           } else {
+            Log.d("fuck", "not in db");
             throw new RuntimeException(String.format("Document %s does not exist ", key));
           }
         });

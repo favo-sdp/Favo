@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -56,11 +57,14 @@ public class UserUtil implements IUserUtil {
   @Override
   public CompletableFuture<Void> changeActiveFavorCount(
       String userId, boolean isRequested, int change) {
+    Log.d("fuck", " oudfdfdfdft");
     return findUser(userId)
         .thenCompose(
             (user) -> {
+              Log.d("fuck", " oudfdft");
               if (isRequested) {
                 user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
+                Log.d("fuck", " ouddfdffdft");
               } else {
                 user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
               }
@@ -76,6 +80,7 @@ public class UserUtil implements IUserUtil {
   /** @param id A FireBase Uid to search for in Users table. */
   @Override
   public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
+    Log.d("fuck", id + " id ");
     return collection.getDocument(id);
   }
 

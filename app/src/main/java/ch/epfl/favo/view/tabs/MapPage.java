@@ -289,7 +289,7 @@ public class MapPage extends Fragment
                           CompletableFuture postFavorFuture =
                               getViewModel().requestFavor(focusedFavor);
                           postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-                          postFavorFuture.exceptionally(onFailedResult(requireView()));
+                         //postFavorFuture.exceptionally(onFailedResult(requireView()));
                         });
                   }
                   marker.showInfoWindow();
@@ -317,6 +317,7 @@ public class MapPage extends Fragment
 
   private Function onFailedResult(View currentView) {
     return (exception) -> {
+      Log.d("dfdd", ((RuntimeException)exception).getMessage());
       CommonTools.showSnackbar(
           currentView,
           getString(
@@ -392,11 +393,8 @@ public class MapPage extends Fragment
   }
 
   private void onLookThroughClick(View view) {
-    Log.d("dfdf", favorsAroundMe.size() + "size");
-
     for (Marker marker : favorsAroundMe.values()) {
       ArrayList tagArray = (ArrayList) marker.getTag();
-      Log.d("dfdf", tagArray.size() + " df size");
       boolean visited = (boolean) tagArray.get(2);
       if (!visited) {
         tagArray.set(2, true);
