@@ -37,7 +37,6 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
 
   @Override
   public CompletableFuture<T> getDocument(String key) {
-    Log.d("fuck", " ouddfdffdft");
     return DatabaseWrapper.getDocument(key, cls, collection);
   }
 

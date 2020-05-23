@@ -74,7 +74,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
    */
   private CompletableFuture<Void> changeUserActiveFavorCount(
       String userId, boolean isRequested, int change) {
-    Log.d("fuck", DependencyFactory.getCurrentFirebaseUser().getUid() + " outsssz");
     return getUserRepository().changeActiveFavorCount(userId, isRequested, change);
   }
 
@@ -114,20 +113,17 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     int change = 1;
     if (getObservedFavor().getValue() != null
         && favor.getId().equals(getObservedFavor().getValue().getId())) change = 0;
-    Log.d(TAG, DependencyFactory.getCurrentFirebaseUser().getUid() + " outer");
     return changeUserActiveFavorCount(
             currentUserId,
             true,
             change) // if user can request favor then post it in the favor collection
         .thenCompose(
             (aVoid) -> {
-              Log.d(TAG, DependencyFactory.getCurrentFirebaseUser().getUid() + " out");
               // update user info
               UserUtil.getSingleInstance()
                   .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
                   .thenAccept(
                       user -> {
-                        Log.d(TAG, DependencyFactory.getCurrentFirebaseUser().getUid() + " run ");
                         user.setRequestedFavors(user.getRequestedFavors() + 1);
                         UserUtil.getSingleInstance().updateUser(user);
                       });

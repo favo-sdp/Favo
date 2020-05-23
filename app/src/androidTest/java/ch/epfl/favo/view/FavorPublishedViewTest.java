@@ -176,6 +176,15 @@ public class FavorPublishedViewTest {
   }
 
   @Test
+  public void testCanReportFavor() throws Throwable {
+
+    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
+    onView(withText(R.string.report_favor_text)).check(matches(isDisplayed())).perform(click());
+  }
+
+  @Test
   public void testAcceptFlow() throws Throwable {
     // click accept button
     // Thread.sleep(2000);

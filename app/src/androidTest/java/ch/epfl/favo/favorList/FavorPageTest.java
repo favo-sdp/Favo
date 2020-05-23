@@ -105,7 +105,7 @@ public class FavorPageTest {
       }
     };
   }
-/*
+
   @Test
   public void testFavorPageElements() {
     // click on favors tab
@@ -271,7 +271,7 @@ public class FavorPageTest {
     // check favor is displayed in archived favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
   }
-*/
+
   @Test
   public void testDeletedFavorUpdatesListView() throws InterruptedException {
     // Click on favors tab
@@ -295,26 +295,28 @@ public class FavorPageTest {
         .check(matches(isDisplayed()))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(4000); // wait for snackbar to hide
+    Thread.sleep(1000); // wait for snackbar to hide
 
     // Click on cancel button
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     onView(withText(R.string.cancel_request)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(222000);
+    Thread.sleep(1000);
 
     // Click on delete button
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+    Thread.sleep(1000);
+
     onView(withText(R.string.delete_favor))
         .check(matches(withText(R.string.delete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
+    Thread.sleep(1000);
 
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
-    Thread.sleep(2000);
+    Thread.sleep(1000);
 
     // Check favor is not displayed in active list
     onView(withText(favor.getTitle())).check(doesNotExist());
@@ -326,12 +328,12 @@ public class FavorPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
-    Thread.sleep(2000);
+    Thread.sleep(1000);
 
     // check favor is displayed in archived favor list view
     onView(withText(favor.getTitle())).check(doesNotExist());
   }
-/*
+
   @Test
   public void testSearchViewFound() throws InterruptedException {
 
@@ -431,5 +433,5 @@ public class FavorPageTest {
 
     // check item is displayed
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
-  }*/
+  }
 }
