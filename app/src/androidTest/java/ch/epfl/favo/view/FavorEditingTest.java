@@ -330,7 +330,7 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testCantCreateFavorWithoutTitle() throws Throwable {
+  public void testCannotCreateFavorWithoutTitle() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
 
     onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
@@ -341,6 +341,28 @@ public class FavorEditingTest {
     onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
   }
 
+  @Test
+  public void testCannotCreateFavorWithLimitsExceeded() throws Throwable {
+    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
+
+    String longString =
+        "texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext";
+    onView(withId(R.id.title_request_view)).perform(typeText(longString));
+    onView(withId(R.id.details)).perform(typeText(longString));
+
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testCanReportFavor() throws Throwable {
+    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
+    requestFavor();
+
+    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+    getInstrumentation().waitForIdleSync();
+    onView(withText(R.string.report_favor_text)).check(matches(isDisplayed())).perform(click());
+  }
 
   @Test
   public void testFavorGotAcceptedDuringEdit() throws Throwable {
