@@ -30,6 +30,7 @@ import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
@@ -246,7 +247,7 @@ public class FavorPublishedViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
-    Thread.sleep(4000);
+    Thread.sleep(2000);
 
     onView(withId(R.id.commit_complete_button))
         .check(matches(withText(R.string.complete_favor)))
@@ -260,12 +261,11 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound()
-      throws InterruptedException {
-    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound() {
+
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
-
+    UserUtil.getSingleInstance().updateCollectionWrapper((mockDatabaseWrapper));
     onView(withId(R.id.user_name)).perform(click());
     onView(withId(R.id.fragment_favor_published)).check(matches(isDisplayed()));
   }
