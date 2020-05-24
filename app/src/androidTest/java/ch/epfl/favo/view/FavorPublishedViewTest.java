@@ -226,7 +226,6 @@ public class FavorPublishedViewTest {
   @Test
   public void testCompleteFlowByAccepter() throws Throwable {
     // accept favor
-    fakeFavor = FakeItemFactory.getFavor();
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
