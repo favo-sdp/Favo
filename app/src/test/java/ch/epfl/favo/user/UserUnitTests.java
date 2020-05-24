@@ -19,6 +19,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -77,6 +78,7 @@ public class UserUnitTests {
     String temporaryNotificationId = "temporaryNotificationId";
     String temporaryDeviceId = "temporaryDeviceId";
     FavoLocation newLoc = new FavoLocation();
+    String testName = "newName";
 
     user.setActiveAcceptingFavors(activeAcceptingFavors);
     user.setActiveRequestingFavors(activeRequestingFavors);
@@ -90,6 +92,7 @@ public class UserUnitTests {
     user.setDislikes(testNum);
     user.setBalance(newBalance);
     user.setProfilePicUrl(pictureUrl);
+    user.setName(testName);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
@@ -102,6 +105,7 @@ public class UserUnitTests {
     assertEquals(testNum, user.getDislikes());
     assertEquals((int) newBalance, (int) user.getBalance());
     assertEquals(pictureUrl, user.getPictureUrl());
+    assertEquals(testName, user.getName());
   }
 
   @Test

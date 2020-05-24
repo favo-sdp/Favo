@@ -149,7 +149,7 @@ public class SignInActivity extends AppCompatActivity {
       CompletableFuture<User> userFuture = getCurrentUserUtil().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Add/update user info depending on db status
-      CompletableFuture<Void> editUserFuture = userFuture.thenAccept(editDeviceId(deviceId));
+      CompletableFuture<Void> editUserFuture = userFuture.thenAccept(editDeviceIdUserName(deviceId));
       CompletableFuture<Void> newUserFuture =
           userFuture
               .exceptionally(
@@ -168,18 +168,25 @@ public class SignInActivity extends AppCompatActivity {
   }
 
   private Consumer<User> postNewUser() {
-    return (user) ->
+    return (user) -> {
+        if(user.getName() == null || user.getName().equals(""))
+          user.setName(CommonTools.emailToName(user.getEmail()));
         getCurrentUserUtil()
             .postUser(user)
             .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
+    };
   }
 
-  private Consumer<User> editDeviceId(String deviceId) {
+  private Consumer<User> editDeviceIdUserName(String deviceId) {
     return (user) -> { // user is not null
       if (!deviceId.equals(user.getDeviceId())) {
         user.setDeviceId(deviceId);
         getCurrentUserUtil().updateUser(user);
-      } else CompletableFuture.supplyAsync(() -> null);
+      } else if (user.getName()==null || user.getName().equals("")){
+        user.setName(CommonTools.emailToName(user.getEmail()));
+        getCurrentUserUtil().updateUser(user);
+      }
+      else CompletableFuture.supplyAsync(() -> null);
     };
   }
 }

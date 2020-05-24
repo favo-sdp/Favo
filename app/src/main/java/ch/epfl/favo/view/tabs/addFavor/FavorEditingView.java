@@ -236,7 +236,6 @@ public class FavorEditingView extends Fragment {
               (dialogInterface, i) -> {
                 favorStatus = FavorStatus.REQUESTED;
                 currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-                Log.d(TAG, currentFavor.getId() + " id");
                 // post to DB
                 CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
                 postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
@@ -409,7 +408,7 @@ public class FavorEditingView extends Fragment {
 
   private Function onFailedResult(View currentView) {
     return (exception) -> {
-      Log.d(TAG, ((RuntimeException)exception).toString());
+      Log.d(TAG, ((RuntimeException) exception).toString());
       CommonTools.showSnackbar(
           currentView,
           getString(

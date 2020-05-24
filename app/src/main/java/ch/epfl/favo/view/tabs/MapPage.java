@@ -90,7 +90,10 @@ public class MapPage extends Fragment
 
   private boolean mLocationPermissionGranted = false;
   private boolean firstOpenApp = true;
-  private ArrayList<Marker> newMarkers = new ArrayList<>();
+  private FloatingActionButton lookThroughBtn;
+  private RadioButton nearbyFavorListToggle;
+  private FloatingActionButton offlineBtn;
+  private ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
     // Required empty public constructor
@@ -105,23 +108,21 @@ public class MapPage extends Fragment
     // LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
     // getLocation();
 
-    // check if different computer share same resource ID
-    //    if (R.drawable.logo != 2131230957) throw new RuntimeException("Id not equal");
     getLocationPermission();
     view = inflater.inflate(R.layout.fragment_map, container, false);
     // setup offline map button
-    FloatingActionButton button = view.findViewById(R.id.offline_map_button);
-    button.setOnClickListener(this::onOfflineMapClick);
+    offlineBtn = view.findViewById(R.id.offline_map_button);
+    offlineBtn.setOnClickListener(this::onOfflineMapClick);
 
-    if (DependencyFactory.isOfflineMode(requireContext())) button.setVisibility(View.VISIBLE);
-    else button.setVisibility(View.INVISIBLE);
+    if (DependencyFactory.isOfflineMode(requireContext())) offlineBtn.setVisibility(View.VISIBLE);
+    else offlineBtn.setVisibility(View.INVISIBLE);
     favorViewModel =
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     // setup toggle between map and nearby list
-    RadioButton toggle = view.findViewById(R.id.list_switch);
-    toggle.setOnClickListener(this::onToggleClick);
+    nearbyFavorListToggle = view.findViewById(R.id.list_switch);
+    nearbyFavorListToggle.setOnClickListener(this::onToggleClick);
 
     SupportMapFragment mapFragment =
         (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
@@ -137,13 +138,12 @@ public class MapPage extends Fragment
       setting = getString(R.string.default_radius);
     // split the radius setting string pattern, like "10 Km"
     radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
-    defaultZoomLevel = notificationRadiusToZoomLevel(radiusThreshold);
+    defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference
     String map_mode = UserSettings.getMapStyle(requireContext());
     if (map_mode.equals("")) map_mode = "0";
     Integer map_mode_idx = Integer.valueOf(map_mode);
-    Log.d("mapdf_d", map_mode + " df " + map_mode_idx);
     MapStyleOptions mapStyleOptions =
         MapStyleOptions.loadRawResourceStyle(getContext(), mapStyles.get(map_mode_idx));
     googleMap.setMapStyle(mapStyleOptions);
@@ -157,6 +157,9 @@ public class MapPage extends Fragment
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
 
+    lookThroughBtn = view.findViewById(R.id.look_through_btn);
+    lookThroughBtn.setOnClickListener(this::onLookThroughClick);
+
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     } catch (Exception e) {
@@ -166,9 +169,6 @@ public class MapPage extends Fragment
     try {
       setupNearbyFavorsListener();
       setupFocusedFavorListen();
-      // set button when nearby favors are ready
-      FloatingActionButton look_through = view.findViewById(R.id.look_through_btn);
-      look_through.setOnClickListener(this::onLookThroughClick);
     } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
     }
@@ -180,24 +180,6 @@ public class MapPage extends Fragment
     }
   }
 
-  public int notificationRadiusToZoomLevel(double radius) {
-    int level;
-    int r = (int) radius;
-    switch (r) {
-      case 1:
-        level = 16;
-        break;
-      case 5:
-        level = 14;
-        break;
-      case 10:
-        level = 13;
-        break;
-      default: // 25
-        level = 11;
-    }
-    return level;
-  }
 
   private class MarkerDrag implements GoogleMap.OnMarkerDragListener {
 
@@ -217,29 +199,25 @@ public class MapPage extends Fragment
     @Override
     public void onMapLongClick(LatLng latLng) {
       // at most one new marker is allowed
-      if (newMarkers.size() != 0) {
-        for (Marker m : newMarkers) m.remove();
-        newMarkers.clear();
+      if (existAddedNewMarkers.size() != 0) {
+        for (Marker m : existAddedNewMarkers) m.remove();
+        existAddedNewMarkers.clear();
       }
       FavoLocation loc = new FavoLocation(mLocation);
       loc.setLatitude(latLng.latitude);
       loc.setLongitude(latLng.longitude);
-
-      if (focusedFavor == null) {
-
-        focusedFavor =
-            new Favor(
-                "",
-                " ",
-                DependencyFactory.getCurrentFirebaseUser().getUid(),
-                loc,
-                FavorStatus.EDIT,
-                0);
-      }
+      focusedFavor =
+          new Favor(
+              "",
+              " ",
+              DependencyFactory.getCurrentFirebaseUser().getUid(),
+              loc,
+              FavorStatus.EDIT,
+              0);
 
       Marker mk = drawFavorMarker(focusedFavor, true, true);
       mk.showInfoWindow();
-      newMarkers.add(mk);
+      existAddedNewMarkers.add(mk);
       mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
     }
   }
@@ -261,44 +239,47 @@ public class MapPage extends Fragment
                           .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
                   boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
                   Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
-                  // count new added marker on map
-                  if (isEdited) {
-                    newMarkers.add(marker);
-
-                    view.findViewById(R.id.toggle).setVisibility(View.GONE);
-                    ((MainActivity) requireActivity()).hideBottomNavigation();
-
-                    requireActivity()
-                        .findViewById(R.id.hamburger_menu_button)
-                        .setVisibility(View.GONE);
-
-                    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
-                    toolbar.setNavigationIcon(null);
-
-                    Button doneButton =
-                        requireView().findViewById(R.id.button_location_from_request_view);
-                    doneButton.setVisibility(View.VISIBLE);
-
-                    doneButton.setOnClickListener(
-                        v -> {
-                          focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
-                          focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
-
-                          focusedFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-                          // post to DB
-                          CompletableFuture postFavorFuture =
-                              getViewModel().requestFavor(focusedFavor);
-                          postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-                         //postFavorFuture.exceptionally(onFailedResult(requireView()));
-                        });
-                  }
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation(), true);
+                  hideButton();
+
+                  if (isEdited) setupDoneButton(marker);
                 }
               } catch (Exception e) {
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
             });
+  }
+
+  private void hideButton() {
+    requireView().findViewById(R.id.toggle).setVisibility(View.GONE);
+
+    ((MainActivity) requireActivity()).hideBottomNavigation();
+
+    requireActivity().findViewById(R.id.hamburger_menu_button).setVisibility(View.GONE);
+    lookThroughBtn.setVisibility(View.INVISIBLE);
+
+    Toolbar toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
+    toolbar.setNavigationIcon(null);
+
+    mMap.setOnMapLongClickListener(null);
+  }
+
+  private void setupDoneButton(Marker marker) {
+    Button doneButton = requireView().findViewById(R.id.button_location_from_request_view);
+    doneButton.setVisibility(View.VISIBLE);
+
+    doneButton.setOnClickListener(
+        v -> {
+          focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
+          focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
+
+          focusedFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+          // post to DB
+          CompletableFuture postFavorFuture = getViewModel().requestFavor(focusedFavor);
+          postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
+          postFavorFuture.exceptionally(onFailedResult(requireView()));
+        });
   }
 
   private Consumer onSuccessfulRequest(View currentView) {
@@ -317,7 +298,6 @@ public class MapPage extends Fragment
 
   private Function onFailedResult(View currentView) {
     return (exception) -> {
-      Log.d("dfdd", ((RuntimeException)exception).getMessage());
       CommonTools.showSnackbar(
           currentView,
           getString(

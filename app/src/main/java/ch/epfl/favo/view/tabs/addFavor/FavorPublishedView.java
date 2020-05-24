@@ -306,7 +306,6 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      Log.d(TAG, currentUser.getDisplayName() + " check getDisplayName()");
       displayName(currentUser.getDisplayName(), currentUser.getEmail());
     } else {
       UserUtil.getSingleInstance()

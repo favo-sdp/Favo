@@ -99,13 +99,4 @@ public class GpsUnitTests extends FragmentActivity {
     Intent intent = mock(Intent.class);
     assertNull(gpsTracker.onBind(intent));
   }
-
-  @Test
-  public void RadiusToZoomLevelTest() {
-    MapPage mapPage = new MapPage();
-    assertEquals(16, mapPage.notificationRadiusToZoomLevel(1));
-    assertEquals(14, mapPage.notificationRadiusToZoomLevel(5));
-    assertEquals(13, mapPage.notificationRadiusToZoomLevel(10));
-    assertEquals(11, mapPage.notificationRadiusToZoomLevel(25));
-  }
 }
