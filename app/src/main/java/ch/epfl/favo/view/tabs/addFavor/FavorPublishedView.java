@@ -223,7 +223,7 @@ public class FavorPublishedView extends Fragment {
     Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
     ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
-    TextView userName = rootView.findViewById(R.id.user_name);
+    TextView userName = rootView.findViewById(R.id.user_name_published_view);
 
     locationAccessBtn.setOnClickListener(new onButtonClick());
     commitAndCompleteBtn.setOnClickListener(new onButtonClick());
@@ -320,7 +320,7 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      ((TextView) requireView().findViewById(R.id.user_name)).setText(currentUser.getDisplayName());
+      ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(currentUser.getDisplayName());
     } else {
       DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
@@ -329,7 +329,7 @@ public class FavorPublishedView extends Fragment {
                 String name = user.getName();
                 if (name == null || name.equals(""))
                   name = CommonTools.emailToName(user.getEmail());
-                ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
+                ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
               });
     }
   }

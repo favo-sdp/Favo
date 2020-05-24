@@ -236,11 +236,12 @@ public class FavorPublishedViewTest {
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
-    Thread.sleep(2000);
+    Thread.sleep(500);
 
     // If completed firstly by requester, then click complete button
     fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
@@ -266,7 +267,7 @@ public class FavorPublishedViewTest {
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
     UserUtil.getSingleInstance().updateCollectionWrapper((mockDatabaseWrapper));
-    onView(withId(R.id.user_name)).perform(click());
+    onView(withId(R.id.user_name_published_view)).perform(click());
     onView(withId(R.id.fragment_favor_published)).check(matches(isDisplayed()));
   }
 

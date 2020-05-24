@@ -47,7 +47,7 @@
                             app:srcCompat="@drawable/ic_anon_user_48dp" />
 
                         <TextView
-                            android:id="@+id/user_name"
+                            android:id="@+id/user_name_published_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="User"
