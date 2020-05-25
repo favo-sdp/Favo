@@ -17,6 +17,8 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 
+import static ch.epfl.favo.util.CommonTools.getUserName;
+
 public class FavorAdapter extends ArrayAdapter<Favor> {
 
   public FavorAdapter(Context context, ArrayList<Favor> favors) {
@@ -29,32 +31,26 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     // Get the data item for this position
     Favor favor = getItem(position);
     assert favor != null;
+
     // Check if an existing view is being reused, otherwise inflate the view
     if (convertView == null) {
       convertView =
           LayoutInflater.from(getContext()).inflate(R.layout.favor_list_item, parent, false);
     }
+
     // Lookup view for data population
     TextView favorTitle = convertView.findViewById(R.id.item_title);
     TextView favorRequester = convertView.findViewById(R.id.item_requester);
     TextView favorCoins = convertView.findViewById(R.id.item_coins);
-//    TextView favorDesc = convertView.findViewById(R.id.item_desc);
+
     // Populate the data into the template view using the data object
     assert favor.getTitle() != null;
-    assert favor.getDescription() != null;
+    assert favor.getRequesterId() != null;
+
     favorTitle.setText(favor.getTitle());
     favorCoins.setText(favor.getReward() + " coins");
     UserUtil.getSingleInstance().findUser(favor.getRequesterId())
-      .thenAccept(user -> {
-        String name = user.getName();
-        if (name == null || name.equals(""))
-          favorRequester.setText(CommonTools.emailToName(user.getEmail()) + " - ");
-        else
-          favorRequester.setText(name + " - ");
-      });
-
-//    favorDesc.setText(favor.getDescription());
-    // Return the completed view to render on screen
+      .thenAccept(user -> favorRequester.setText(getUserName(user)));
     return convertView;
   }
 }

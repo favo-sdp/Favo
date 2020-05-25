@@ -37,6 +37,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static ch.epfl.favo.util.CommonTools.getSnackbarMessageForFailedRequest;
+import static ch.epfl.favo.util.CommonTools.getUserName;
 import static ch.epfl.favo.util.CommonTools.handleException;
 
 class FavorViewHolder extends RecyclerView.ViewHolder {
@@ -128,15 +129,8 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
       mRequesterView.setText(currentUser.getDisplayName() + " - ");
     } else {
       UserUtil.getSingleInstance().findUser(favor.getRequesterId())
-        .thenAccept(user -> {
-          String name = user.getName();
-          if (name == null || name.equals(""))
-            mRequesterView.setText(CommonTools.emailToName(user.getEmail()) + " - ");
-          else
-            mRequesterView.setText(name + " - ");
-        });
+        .thenAccept(user -> mRequesterView.setText(getUserName(user)));
     }
-
   }
 
   /* Code for edit:
