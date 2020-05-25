@@ -320,7 +320,8 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(currentUser.getDisplayName());
+      ((TextView) requireView().findViewById(R.id.user_name_published_view))
+          .setText(currentUser.getDisplayName());
     } else {
       DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
@@ -329,7 +330,8 @@ public class FavorPublishedView extends Fragment {
                 String name = user.getName();
                 if (name == null || name.equals(""))
                   name = CommonTools.emailToName(user.getEmail());
-                ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
+                ((TextView) requireView().findViewById(R.id.user_name_published_view))
+                    .setText(name);
               });
     }
   }

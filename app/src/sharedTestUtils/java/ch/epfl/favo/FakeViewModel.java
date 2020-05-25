@@ -61,14 +61,15 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public CompletableFuture<Void> completeFavor(Favor favor, boolean isRequested) {
+    Favor favorCopy = new Favor(favor);
     if (isThrowingError) return failedResult;
     if (favor.getStatusId() == FavorStatus.COMPLETED_REQUESTER.toInt()
         || favor.getStatusId() == FavorStatus.COMPLETED_ACCEPTER.toInt())
-      favor.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
+      favorCopy.setStatusIdToInt(FavorStatus.SUCCESSFULLY_COMPLETED);
     else
-      favor.setStatusIdToInt(
+      favorCopy.setStatusIdToInt(
           isRequested ? FavorStatus.COMPLETED_REQUESTER : FavorStatus.COMPLETED_ACCEPTER);
-    observedFavorResult.setValue(favor);
+    observedFavorResult.setValue(favorCopy);
     return getSuccessfulCompletableFuture();
   }
 
