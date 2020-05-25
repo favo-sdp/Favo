@@ -26,6 +26,7 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
@@ -83,6 +84,7 @@ public class FavorPublishedViewTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentViewModelClass(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentUserRepository(null);
   }
 
   public FavorPublishedView launchFragment(Favor favor) throws Throwable {
@@ -181,7 +183,7 @@ public class FavorPublishedViewTest {
   public void testAcceptFlow() throws Throwable {
     // click accept button
     // Thread.sleep(2000);
-    onView(withId(R.id.commit_complete_button)).perform(click());
+    onView(withId(R.id.commit_complete_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -191,6 +193,7 @@ public class FavorPublishedViewTest {
     checkToolbar(FavorStatus.REQUESTED.toString());
 
     fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
 
@@ -227,6 +230,7 @@ public class FavorPublishedViewTest {
   public void testCompleteFlowByAccepter() throws Throwable {
     // accept favor
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    fakeFavor.setAccepterId(TestConstants.USER_ID);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
     // complete firstly by accepter
@@ -234,26 +238,30 @@ public class FavorPublishedViewTest {
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
+    Thread.sleep(500);
     //    // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
   }
+
   @Test
   public void testSuccessfullyCompleteFlow() throws Throwable {
     fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
+    fakeFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
-    Thread.sleep(500);
+
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
+    Thread.sleep(2000);
     onView(withId(R.id.commit_complete_button))
-            .check(matches(withText(R.string.complete_favor)))
-            .perform(click());
-    Thread.sleep(500);
+        .check(matches(withText(R.string.complete_favor)))
+        .perform(click());
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
     checkCompletedSuccessfullyView();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.favor_complete_success_msg)));
+        .check(matches(withText(R.string.favor_complete_success_msg)));
   }
 
   @Test

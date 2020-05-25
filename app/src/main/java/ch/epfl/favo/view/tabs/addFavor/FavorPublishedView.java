@@ -505,7 +505,7 @@ public class FavorPublishedView extends Fragment {
     handleResult(completeFuture, R.string.favor_complete_success_msg);
 
     // review favor
-    reviewFavorExperience();
+    completeFuture.thenAccept((aVoid) -> reviewFavorExperience());
   }
 
   private void reviewFavorExperience() {
@@ -519,26 +519,28 @@ public class FavorPublishedView extends Fragment {
     DependencyFactory.getCurrentUserRepository()
         .findUser(otherUserId)
         .thenAccept(
-            user ->
-                new AlertDialog.Builder(requireActivity())
-                    .setMessage(getText(R.string.feedback_description))
-                    .setPositiveButton(
-                        getText(R.string.positive_feedback),
-                        (dialogInterface, i) -> {
-                          user.setLikes(user.getLikes() + 1);
-                          DependencyFactory.getCurrentUserRepository().updateUser(user);
+            user -> {
+              if (user == null) return;
+              new AlertDialog.Builder(requireActivity())
+                  .setMessage(getText(R.string.feedback_description))
+                  .setPositiveButton(
+                      getText(R.string.positive_feedback),
+                      (dialogInterface, i) -> {
+                        user.setLikes(user.getLikes() + 1);
+                        DependencyFactory.getCurrentUserRepository().updateUser(user);
 
-                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                        })
-                    .setNegativeButton(
-                        getText(R.string.negative_feedback),
-                        (dialogInterface, i) -> {
-                          user.setDislikes(user.getDislikes() + 1);
-                          DependencyFactory.getCurrentUserRepository().updateUser(user);
+                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                      })
+                  .setNegativeButton(
+                      getText(R.string.negative_feedback),
+                      (dialogInterface, i) -> {
+                        user.setDislikes(user.getDislikes() + 1);
+                        DependencyFactory.getCurrentUserRepository().updateUser(user);
 
-                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                        })
-                    .show());
+                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                      })
+                  .show();
+            });
   }
 
   private void cancelFavor() {
