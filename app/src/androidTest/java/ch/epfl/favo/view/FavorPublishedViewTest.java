@@ -228,6 +228,7 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testCompleteFlowByAccepter() throws Throwable {
+    UserUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     // accept favor
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     fakeFavor.setAccepterId(TestConstants.USER_ID);
@@ -240,9 +241,10 @@ public class FavorPublishedViewTest {
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     //    // check snackbar shows
-//    onView(withId(com.google.android.material.R.id.snackbar_text))
-//        .check(matches(withText(R.string.favor_complete_success_msg)));
-//    checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_complete_success_msg)));
+    checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
+
   }
 
   @Test
