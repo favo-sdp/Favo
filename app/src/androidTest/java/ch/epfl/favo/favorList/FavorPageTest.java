@@ -209,7 +209,6 @@ public class  FavorPageTest {
     onView(withId(R.id.item_coins)).check(matches(isDisplayed()));
     onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
 
-    onView(withText(R.string.commit)).check(matches(isDisplayed()));
     onView(withText(R.string.view)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     pressBack(); getInstrumentation().waitForIdleSync();
