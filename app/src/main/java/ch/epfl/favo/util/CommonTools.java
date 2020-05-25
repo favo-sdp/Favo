@@ -107,8 +107,7 @@ public class CommonTools {
   public static int getSnackbarMessageForFailedRequest(CompletionException exception) {
     if (exception.getCause() instanceof IllegalRequestException)
       return R.string.illegal_request_error;
-    else
-      return R.string.update_favor_error;
+    else return R.string.update_favor_error;
   }
 
   public static void handleException(Throwable throwable, View parentView, Context context, String TAG) {

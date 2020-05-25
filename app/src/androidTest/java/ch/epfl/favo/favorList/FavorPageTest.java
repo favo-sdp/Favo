@@ -228,48 +228,9 @@ public class  FavorPageTest {
   }
 
 
-//  @Test
-//  public void testItemMenuCommit() throws InterruptedException {
-//    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
-//    getInstrumentation().waitForIdleSync();
-//    Thread.sleep(2000);
-//
-//    onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
-//    getInstrumentation().waitForIdleSync();
-//
-//    Favor favor = FakeItemFactory.getFavor();
-//    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-//    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
-//    onView(withText(R.string.set_location_no)).inRoot(isDialog()).check(matches(isDisplayed())).perform(click());
-//    getInstrumentation().waitForIdleSync();
-//    Thread.sleep(1000);
-//
-//    pressBack(); getInstrumentation().waitForIdleSync();
-//
-//    onView(withId(R.id.swipe_refresh_layout)).perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-//    getInstrumentation().waitForIdleSync();
-//
-//    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUserII("UID"));
-//    onView(withId(R.id.swipe_refresh_layout)).perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-//    getInstrumentation().waitForIdleSync();
-//
-//    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
-//
-//    getInstrumentation().waitForIdleSync();
-//    onView(withText(R.string.commit)).check(matches(isDisplayed()));
-//  }
-
   @Test
   public void testFavorCancelUpdatesActiveAndArchivedListView() throws InterruptedException {
     // Click on favors tab
-//    Thread.sleep(2000);
-//
-//    // check favor is displayed in active favor list view
-//    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
-//
-//    // check item menu and all the options are displayed
-//    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
-//  }
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 

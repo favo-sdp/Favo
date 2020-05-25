@@ -48,8 +48,12 @@ public class UserUtilTest {
     Query orderByResult = Mockito.mock(Query.class);
     Query arrayContainsResult = Mockito.mock(Query.class);
     Mockito.doReturn(mockCollectionReference).when(mockCollectionWrapper).getReference();
-    Mockito.doReturn(arrayContainsResult).when(orderByResult).whereArrayContains(anyString(),Mockito.any());
-    Mockito.doReturn(orderByResult).when(mockCollectionReference).orderBy(anyString(),Mockito.any(Query.Direction.class));
+    Mockito.doReturn(arrayContainsResult)
+        .when(orderByResult)
+        .whereArrayContains(anyString(), Mockito.any());
+    Mockito.doReturn(orderByResult)
+        .when(mockCollectionReference)
+        .orderBy(anyString(), Mockito.any(Query.Direction.class));
     DependencyFactory.setCurrentCollectionWrapper(mockCollectionWrapper);
   }
 
@@ -101,6 +105,13 @@ public class UserUtilTest {
   }
 
   @Test
+  public void testRemoveUser() {
+    Mockito.doReturn(successfulFuture).when(mockCollectionWrapper).removeDocument(anyString());
+    UserUtil.getSingleInstance().setCollectionWrapper(mockCollectionWrapper);
+    Assert.assertTrue(UserUtil.getSingleInstance().deleteUser(getUser()).isDone());
+  }
+
+  @Test
   public void testFindUser() {
     // check successful result
     User fakeUser = getUser();
@@ -149,9 +160,9 @@ public class UserUtilTest {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirebaseNotificationInstanceId(null);
   }
+
   @Test
-  public void testUserReference(){
+  public void testUserReference() {
     UserUtil.getSingleInstance().getCurrentUserReference("randomId");
   }
-
 }

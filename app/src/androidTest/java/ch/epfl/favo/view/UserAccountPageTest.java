@@ -87,7 +87,7 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData() {
 
     // set mock user
     DependencyFactory.setCurrentFirebaseUser(
