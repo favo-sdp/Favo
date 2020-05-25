@@ -355,16 +355,6 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testCanReportFavor() throws Throwable {
-    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
-    requestFavor();
-
-    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-    getInstrumentation().waitForIdleSync();
-    onView(withText(R.string.report_favor_text)).check(matches(isDisplayed())).perform(click());
-  }
-
-  @Test
   public void testFavorGotAcceptedDuringEdit() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
     requestFavor();
