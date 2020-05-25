@@ -1,16 +1,21 @@
 package ch.epfl.favo.view.tabs.favorList;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+
 import java.util.ArrayList;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.util.CommonTools;
 
 public class FavorAdapter extends ArrayAdapter<Favor> {
 
@@ -18,6 +23,7 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     super(context, 0, favors);
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     // Get the data item for this position
@@ -30,11 +36,23 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     }
     // Lookup view for data population
     TextView favorTitle = convertView.findViewById(R.id.item_title);
+    TextView favorRequester = convertView.findViewById(R.id.item_requester);
+    TextView favorCoins = convertView.findViewById(R.id.item_coins);
 //    TextView favorDesc = convertView.findViewById(R.id.item_desc);
     // Populate the data into the template view using the data object
     assert favor.getTitle() != null;
     assert favor.getDescription() != null;
     favorTitle.setText(favor.getTitle());
+    favorCoins.setText(favor.getReward() + " coins");
+    UserUtil.getSingleInstance().findUser(favor.getRequesterId())
+      .thenAccept(user -> {
+        String name = user.getName();
+        if (name == null || name.equals(""))
+          favorRequester.setText(CommonTools.emailToName(user.getEmail()) + " - ");
+        else
+          favorRequester.setText(name + " - ");
+      });
+
 //    favorDesc.setText(favor.getDescription());
     // Return the completed view to render on screen
     return convertView;

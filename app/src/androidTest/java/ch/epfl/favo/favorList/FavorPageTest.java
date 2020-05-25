@@ -10,21 +10,16 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
 
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
 import org.hamcrest.Matcher;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeFirebaseUser;
-import ch.epfl.favo.FakeFirebaseUserII;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.MainActivity;

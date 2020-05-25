@@ -10,9 +10,4 @@
         android:id="@+id/item_menu_cancel"
         android:title="@string/cancel" />
 
-    <item
-        android:id="@+id/item_menu_commit"
-        android:title="@string/commit" />
-
-
 </menu>

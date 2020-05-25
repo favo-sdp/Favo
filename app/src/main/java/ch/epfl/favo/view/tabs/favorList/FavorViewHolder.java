@@ -81,9 +81,6 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
 
       // display "commit" option if the favor is requested by the current user.
       boolean isRequestedByCurrentUser = currentUser.getUid().equals(favor.getRequesterId());
-      if (isRequestedByCurrentUser)
-        popup.getMenu().findItem(R.id.item_menu_commit).setEnabled(false);
-
       setMenuItemClickListener(context, favor, isRequestedByCurrentUser, parentView);
       popup.show();
     });
@@ -112,15 +109,6 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
           Navigation.findNavController((Activity) context, R.id.nav_host_fragment)
                   .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
           break;
-        case R.id.item_menu_commit:
-          break;
-//          assert !isRequestedByCurrentUser;
-//          favorViewModel.commitFavor(favor, false)
-//                  .whenComplete((aVoid, throwable) -> {
-//                    if (throwable != null) handleException(throwable, parentView, context, TAG);
-//                    else CommonTools.showSnackbar(parentView, resources.getString(R.string.favor_respond_success_msg));
-//                  });
-//          break;
       }
       return false;
     });
