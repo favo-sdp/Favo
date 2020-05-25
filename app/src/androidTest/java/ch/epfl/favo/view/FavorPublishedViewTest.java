@@ -235,14 +235,13 @@ public class FavorPublishedViewTest {
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500);
-    // check snackbar shows
 
-    checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
+
+    Thread.sleep(2000);
+    // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
             .check(matches(withText(R.string.favor_complete_success_msg)));
-    Thread.sleep(500);
-
+    checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
     // If completed firstly by requester, then click complete button
     fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
@@ -256,8 +255,8 @@ public class FavorPublishedViewTest {
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     // check snackbar shows
-//    onView(withId(com.google.android.material.R.id.snackbar_text))
-//        .check(matches(withText(R.string.favor_complete_success_msg)));
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedSuccessfullyView();
   }
 
