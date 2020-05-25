@@ -60,7 +60,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public CompletableFuture<Void> completeFavor(Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested) {
     Favor favorCopy = new Favor(favor);
     if (isThrowingError) return failedResult;
     if (favor.getStatusId() == FavorStatus.COMPLETED_REQUESTER.toInt()
