@@ -239,8 +239,8 @@ public class FavorPublishedViewTest {
     // check snackbar shows
 
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
-//    onView(withId(com.google.android.material.R.id.snackbar_text))
-//            .check(matches(withText(R.string.favor_complete_success_msg)));
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.favor_complete_success_msg)));
     Thread.sleep(500);
 
     // If completed firstly by requester, then click complete button
@@ -248,7 +248,7 @@ public class FavorPublishedViewTest {
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     getInstrumentation().waitForIdleSync();
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
-    Thread.sleep(2000);
+    Thread.sleep(3000);
 
     onView(withId(R.id.commit_complete_button))
         .check(matches(withText(R.string.complete_favor)))
