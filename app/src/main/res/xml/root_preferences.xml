@@ -41,7 +41,7 @@
             app:title="@string/notification_chat_title" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Dispaly">
+    <PreferenceCategory android:title="Display">
     <ListPreference
         app:defaultValue="0"
         app:dependency="notifications_new"

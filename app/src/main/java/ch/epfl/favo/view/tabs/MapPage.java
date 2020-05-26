@@ -389,7 +389,7 @@ public class MapPage extends Fragment
       ArrayList tagArray = (ArrayList) marker.getTag();
       tagArray.set(2, false);
     }
-    Toast.makeText(requireContext(), "you have visited all nearby favors", Toast.LENGTH_SHORT)
+    Toast.makeText(requireContext(), getString(R.string.finish_visit_marker), Toast.LENGTH_SHORT)
         .show();
   }
 
