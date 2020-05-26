@@ -40,4 +40,15 @@ public class TestConstants {
 
   // Test collection constant
   public static final String TEST_COLLECTION = "favors-test";
+
+  // Message constants
+  public static final String MESSAGE_ID = "testId";
+  public static final String MESSAGE_USER_NAME = "testName";
+  public static final String MESSAGE_VALUE = "testMessage";
+  public static final String MESSAGE_IMAGE_PATH = "testImagePath";
+  public static final String MESSAGE_NOTIF_ID = "testNotifId";
+  public static final String MESSAGE_USER_ID = "testUid";
+  public static final String MESSAGE_IS_FIRST_MESSAGE = "true";
+  public static final String MESSAGE_LATITUDE = "1.23";
+  public static final String MESSAGE_LONGITUDE = "1.25";
 }

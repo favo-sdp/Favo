@@ -26,10 +26,12 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
@@ -82,6 +84,7 @@ public class FavorPublishedViewTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentViewModelClass(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentUserRepository(null);
   }
 
   public FavorPublishedView launchFragment(Favor favor) throws Throwable {
@@ -180,7 +183,7 @@ public class FavorPublishedViewTest {
   public void testAcceptFlow() throws Throwable {
     // click accept button
     // Thread.sleep(2000);
-    onView(withId(R.id.commit_complete_button)).perform(click());
+    onView(withId(R.id.commit_complete_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
@@ -190,6 +193,7 @@ public class FavorPublishedViewTest {
     checkToolbar(FavorStatus.REQUESTED.toString());
 
     fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
 
@@ -224,48 +228,51 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testCompleteFlowByAccepter() throws Throwable {
+    UserUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
     // accept favor
-    fakeFavor = FakeItemFactory.getFavor();
     fakeFavor.setStatusIdToInt(FavorStatus.ACCEPTED);
+    fakeFavor.setAccepterId(TestConstants.USER_ID);
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
     checkCompletedOrAcceptedView(FavorStatus.ACCEPTED);
-
     // complete firstly by accepter
     onView(withId(R.id.commit_complete_button))
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    // check snackbar shows
+    Thread.sleep(500);
+    //    // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
-    Thread.sleep(2000);
 
-    // If completed firstly by requester, then click complete button
+  }
+
+  @Test
+  public void testSuccessfullyCompleteFlow() throws Throwable {
     fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
+    fakeFavor.setAccepterId(DependencyFactory.getCurrentFirebaseUser().getUid());
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(fakeFavor));
-    getInstrumentation().waitForIdleSync();
-    checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
-    Thread.sleep(4000);
 
+    checkCompletedOrAcceptedView(FavorStatus.COMPLETED_REQUESTER);
+    Thread.sleep(2000);
     onView(withId(R.id.commit_complete_button))
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
+    checkCompletedSuccessfullyView();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
         .check(matches(withText(R.string.favor_complete_success_msg)));
-    checkCompletedSuccessfullyView();
   }
 
   @Test
-  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound()
-      throws InterruptedException {
-    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+  public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound() {
+
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
-
-    onView(withId(R.id.user_name)).perform(click());
+    UserUtil.getSingleInstance().updateCollectionWrapper((mockDatabaseWrapper));
+    onView(withId(R.id.user_name_published_view)).perform(click());
     onView(withId(R.id.fragment_favor_published)).check(matches(isDisplayed()));
   }
 

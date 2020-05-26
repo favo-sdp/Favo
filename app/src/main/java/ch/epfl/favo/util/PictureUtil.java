@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.database.DatabaseWrapper;
 
 @SuppressLint("NewApi")
-public class PictureUtil {
+public class PictureUtil implements IPictureUtil {
 
   private static PictureUtil INSTANCE = null;
   private static final String TAG = "PictureUtil";
@@ -26,15 +26,15 @@ public class PictureUtil {
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
   private final FirebaseStorage storage;
 
-  private PictureUtil() {
-    storage = DependencyFactory.getCurrentFirebaseStorage();
+  public static PictureUtil getInstance() {
+    if (PictureUtil.INSTANCE == null) {
+      PictureUtil.INSTANCE = new PictureUtil();
+    }
+    return PictureUtil.INSTANCE;
   }
 
-  public static PictureUtil getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new PictureUtil();
-    }
-    return INSTANCE;
+  private PictureUtil() {
+    storage = DependencyFactory.getCurrentFirebaseStorage();
   }
 
   private static FirebaseStorage getStorage() {
@@ -47,6 +47,7 @@ public class PictureUtil {
    * @param picture to be uploaded to Firebase Cloud Storage
    * @return CompletableFuture of the resulting url
    */
+  @Override
   public CompletableFuture<String> uploadPicture(Bitmap picture) {
     InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
     StorageReference storageRef =
@@ -69,6 +70,7 @@ public class PictureUtil {
     return urlFuture.thenApply(Uri::toString);
   }
 
+  @Override
   public CompletableFuture<Void> deletePicture(@NonNull String imagePath) {
     String pictureId = getPictureIdFromPath(imagePath);
     Task<Void> deleteTask = getStorage().getReference().child(pictureId).delete();
@@ -88,6 +90,7 @@ public class PictureUtil {
    * @param pictureUrl url of the picture
    * @return CompletableFuture of the picture represented as a Bitmap
    */
+  @Override
   public CompletableFuture<Bitmap> downloadPicture(String pictureUrl) {
     Task<byte[]> downloadTask =
         getStorage().getReferenceFromUrl(pictureUrl).getBytes(TEN_MEGABYTES);

@@ -40,8 +40,6 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
@@ -50,6 +48,7 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static android.app.Activity.RESULT_OK;
@@ -204,10 +203,6 @@ public class FavorEditingView extends Fragment {
     if (!isCameraAvailable()) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
-
-    // Button: Access location
-    //    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
-    //    locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
   /**
@@ -215,49 +210,67 @@ public class FavorEditingView extends Fragment {
    * and updates view so that favor is editable.
    */
   private void requestFavor() {
+    if (!isInputValid()) return;
+    getFavorFromView();
+    CommonTools.hideSoftKeyboard(requireActivity());
+    Favor remoteFavor = getViewModel().getObservedFavor().getValue();
+    // used to augment count
+    int change =
+        (remoteFavor != null
+                && remoteFavor.getId().equals(currentFavor.getId())
+                && remoteFavor.getStatusId() == FavorStatus.REQUESTED.toInt())
+            ? 0
+            : 1;
+    new AlertDialog.Builder(requireActivity())
+        .setMessage(getText(R.string.set_location_message))
+        .setPositiveButton(
+            getText(R.string.set_location_yes),
+            (dialogInterface, i) -> {
+              getFavorFromView();
+              CommonTools.hideSoftKeyboard(requireActivity());
+              favorViewModel.setShowObservedFavor(true);
+              favorViewModel.setFavorValue(currentFavor);
+              // signal the destination is map view
+              Bundle arguments = new Bundle();
+              arguments.putInt(
+                  MapPage.LOCATION_ARGUMENT_KEY,
+                  (change == 1 ? MapPage.NEW_REQUEST : MapPage.EDIT_EXISTING_LOCATION));
+              findNavController(requireActivity(), R.id.nav_host_fragment)
+                  .navigate(R.id.action_global_nav_map, arguments);
+            })
+        .setNegativeButton(
+            getText(R.string.set_location_no),
+            (dialogInterface, i) -> {
+              favorStatus = FavorStatus.REQUESTED;
+              currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+              // post to DB
+              CompletableFuture<Void> postFavorFuture =
+                  getViewModel().requestFavor(currentFavor, change);
+              postFavorFuture.whenComplete(
+                  (aVoid, throwable) -> {
+                    if (throwable != null) onFailedResult(requireView(), throwable);
+                    else onSuccessfulRequest(requireView());
+                  });
+              // Show confirmation and minimize keyboard
+              if (DependencyFactory.isOfflineMode(requireContext())) {
+                CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+              }
+            })
+        .show();
+  }
 
-    if (mTitleView.getText().toString().equals("")) {
+  private boolean isInputValid() {
+    boolean valid = true;
+    if (mTitleView.getText().toString().isEmpty()) {
       CommonTools.showSnackbar(requireView(), getString(R.string.title_required_message));
-    } else {
-
-      if (mTitleView.getText().toString().length() > TITLE_MAX_LENGTH
-          || mDescriptionView.getText().toString().length() > DESCRIPTION_MAX_LENGTH) {
-        CommonTools.showSnackbar(requireView(), getString(R.string.fields_limit_exceeded_message));
-      } else {
-
-        getFavorFromView();
-        CommonTools.hideSoftKeyboard(requireActivity());
-
-        new AlertDialog.Builder(requireActivity())
-            .setMessage(getText(R.string.set_location_message))
-            .setPositiveButton(
-                getText(R.string.set_location_yes),
-                (dialogInterface, i) -> {
-                  getFavorFromView();
-                  CommonTools.hideSoftKeyboard(requireActivity());
-                  favorViewModel.setShowObservedFavor(true);
-                  favorViewModel.setFavorValue(currentFavor);
-                  // signal the destination is map view
-                  findNavController(requireActivity(), R.id.nav_host_fragment)
-                      .navigate(R.id.action_favorEditingView_to_nav_map, null);
-                })
-            .setNegativeButton(
-                getText(R.string.set_location_no),
-                (dialogInterface, i) -> {
-                  favorStatus = FavorStatus.REQUESTED;
-                  currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-                  // post to DB
-                  CompletableFuture postFavorFuture = getViewModel().requestFavor(currentFavor);
-                  postFavorFuture.thenAccept(onSuccessfulRequest(requireView()));
-                  postFavorFuture.exceptionally(onFailedResult(requireView()));
-                  // Show confirmation and minimize keyboard
-                  if (DependencyFactory.isOfflineMode(requireContext())) {
-                    CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
-                  }
-                })
-            .show();
-      }
+      valid = false;
     }
+    if (mTitleView.getText().toString().length() > TITLE_MAX_LENGTH
+        || mDescriptionView.getText().toString().length() > DESCRIPTION_MAX_LENGTH) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.fields_limit_exceeded_message));
+      valid = false;
+    }
+    return valid;
   }
 
   /** Extracts favor data from and assigns it to currentFavor. */
@@ -397,34 +410,27 @@ public class FavorEditingView extends Fragment {
             });
   }
 
-  private Consumer onSuccessfulRequest(View currentView) {
-    return o -> {
-      CommonTools.showSnackbar(
-          currentView,
-          getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
+  private void onSuccessfulRequest(View currentView) {
+    CommonTools.showSnackbar(
+        currentView, getString(CommonTools.getSnackbarMessageForRequestedFavor(requireContext())));
 
-      // jump to favorPublished view
-      Bundle favorBundle = new Bundle();
-      favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
-      int action;
-      // if this favor restarts from an archived one, then prevent pressback from jumping to
-      // archived favor view.
-      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
-          || favorSource.equals(getString(R.string.restart_request)))
-        action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
-      else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
-      Navigation.findNavController(currentView).navigate(action, favorBundle);
-    };
+    // jump to favorPublished view
+    Bundle favorBundle = new Bundle();
+    favorBundle.putString(CommonTools.FAVOR_ARGS, currentFavor.getId());
+    int action;
+    // if this favor restarts from an archived one, then prevent pressback from jumping to
+    // archived favor view.
+    if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
+        || favorSource.equals(getString(R.string.restart_request)))
+      action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
+    else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
+    Navigation.findNavController(currentView).navigate(action, favorBundle);
   }
 
-  private Function onFailedResult(View currentView) {
-    return (exception) -> {
-      CommonTools.showSnackbar(
-          currentView,
-          getString(
-              CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
-      return null;
-    };
+  private void onFailedResult(View currentView, Throwable exception) {
+    CommonTools.showSnackbar(
+        currentView,
+        getString(CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
   }
 
   class onButtonClick implements View.OnClickListener {

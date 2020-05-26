@@ -224,7 +224,7 @@ public class FavorPublishedView extends Fragment {
     Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
     ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
-    TextView userName = rootView.findViewById(R.id.user_name);
+    TextView userName = rootView.findViewById(R.id.user_name_published_view);
 
     locationAccessBtn.setOnClickListener(new onButtonClick());
     commitAndCompleteBtn.setOnClickListener(new onButtonClick());
@@ -238,10 +238,8 @@ public class FavorPublishedView extends Fragment {
     public void onClick(View v) {
       switch (v.getId()) {
         case R.id.chat_button:
-          Bundle favorBundle = new Bundle();
-          favorBundle.putParcelable("FAVOR_ARGS", currentFavor);
           Navigation.findNavController(requireView())
-              .navigate(R.id.action_nav_favorPublishedView_to_chatView, favorBundle);
+              .navigate(R.id.action_nav_favorPublishedView_to_chatView);
           break;
         case R.id.commit_complete_button:
           if (currentFavor.getStatusId() == FavorStatus.REQUESTED.toInt()) commitFavor();
@@ -324,7 +322,8 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      ((TextView) requireView().findViewById(R.id.user_name)).setText(currentUser.getDisplayName());
+      ((TextView) requireView().findViewById(R.id.user_name_published_view))
+          .setText(currentUser.getDisplayName());
     } else {
       DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
@@ -333,7 +332,8 @@ public class FavorPublishedView extends Fragment {
                 String name = user.getName();
                 if (name == null || name.equals(""))
                   name = CommonTools.emailToName(user.getEmail());
-                ((TextView) requireView().findViewById(R.id.user_name)).setText(name);
+                ((TextView) requireView().findViewById(R.id.user_name_published_view))
+                    .setText(name);
               });
     }
   }
@@ -507,7 +507,7 @@ public class FavorPublishedView extends Fragment {
     handleResult(completeFuture, R.string.favor_complete_success_msg);
 
     // review favor
-    reviewFavorExperience();
+    completeFuture.thenAccept((aVoid) -> reviewFavorExperience());
   }
 
   private void reviewFavorExperience() {
@@ -521,26 +521,28 @@ public class FavorPublishedView extends Fragment {
     DependencyFactory.getCurrentUserRepository()
         .findUser(otherUserId)
         .thenAccept(
-            user ->
-                new AlertDialog.Builder(requireActivity())
-                    .setMessage(getText(R.string.feedback_description))
-                    .setPositiveButton(
-                        getText(R.string.positive_feedback),
-                        (dialogInterface, i) -> {
-                          user.setLikes(user.getLikes() + 1);
-                          DependencyFactory.getCurrentUserRepository().updateUser(user);
+            user -> {
+              if (user == null) return;
+              new AlertDialog.Builder(requireActivity())
+                  .setMessage(getText(R.string.feedback_description))
+                  .setPositiveButton(
+                      getText(R.string.positive_feedback),
+                      (dialogInterface, i) -> {
+                        user.setLikes(user.getLikes() + 1);
+                        DependencyFactory.getCurrentUserRepository().updateUser(user);
 
-                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                        })
-                    .setNegativeButton(
-                        getText(R.string.negative_feedback),
-                        (dialogInterface, i) -> {
-                          user.setDislikes(user.getDislikes() + 1);
-                          DependencyFactory.getCurrentUserRepository().updateUser(user);
+                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                      })
+                  .setNegativeButton(
+                      getText(R.string.negative_feedback),
+                      (dialogInterface, i) -> {
+                        user.setDislikes(user.getDislikes() + 1);
+                        DependencyFactory.getCurrentUserRepository().updateUser(user);
 
-                          CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                        })
-                    .show());
+                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+                      })
+                  .show();
+            });
   }
 
   private void cancelFavor() {

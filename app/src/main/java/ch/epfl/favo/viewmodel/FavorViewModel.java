@@ -27,7 +27,7 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.PictureUtil;
+import ch.epfl.favo.util.IPictureUtil;
 
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
@@ -59,7 +59,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return DependencyFactory.getCurrentUserRepository();
   }
 
-  private PictureUtil getPictureUtility() {
+  private IPictureUtil getPictureUtility() {
     return DependencyFactory.getCurrentPictureUtility();
   }
 
@@ -105,32 +105,16 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   // save address to firebase
   @Override
-  public CompletableFuture<Void> requestFavor(Favor favor) {
+  public CompletableFuture<Void> requestFavor(final Favor favor, int change) {
     Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
+    setFavorValue(tempFavor);
     // if the favor has been observed, then this is during edit flow, do not add 1.
-    int change = 1;
-    if (getObservedFavor().getValue() != null
-        && favor.getId().equals(getObservedFavor().getValue().getId())) change = 0;
-
-    IUserUtil userUtil = DependencyFactory.getCurrentUserRepository();
-
     return changeUserActiveFavorCount(
             currentUserId,
             true,
             change) // if user can request favor then post it in the favor collection
-        .thenCompose(
-            (aVoid) -> {
-              // update user info
-              userUtil
-                  .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-                  .thenAccept(
-                      user -> {
-                        user.setRequestedFavors(user.getRequestedFavors() + 1);
-                        userUtil.updateUser(user);
-                      });
-              return getFavorRepository().requestFavor(tempFavor);
-            });
+        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
