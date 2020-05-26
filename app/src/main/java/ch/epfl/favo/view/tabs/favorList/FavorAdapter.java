@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.UserUtil;
-import ch.epfl.favo.util.CommonTools;
 
 import static ch.epfl.favo.util.CommonTools.getUserName;
 
@@ -49,8 +48,9 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
 
     favorTitle.setText(favor.getTitle());
     favorCoins.setText(favor.getReward() + " coins");
-    UserUtil.getSingleInstance().findUser(favor.getRequesterId())
-      .thenAccept(user -> favorRequester.setText(getUserName(user)));
+    UserUtil.getSingleInstance()
+        .findUser(favor.getRequesterId())
+        .thenAccept(user -> favorRequester.setText(getUserName(user)));
     return convertView;
   }
 }
