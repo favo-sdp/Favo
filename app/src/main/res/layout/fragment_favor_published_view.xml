@@ -47,12 +47,12 @@
                             app:srcCompat="@drawable/ic_anon_user_48dp" />
 
                         <TextView
-                            android:id="@+id/user_name"
+                            android:id="@+id/user_name_published_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="User"
                             android:maxLines="1"
                             android:padding="5dp"
+                            android:text="User"
                             android:textColor="@android:color/holo_green_dark"
                             android:textSize="18sp"
                             android:textStyle="bold" />

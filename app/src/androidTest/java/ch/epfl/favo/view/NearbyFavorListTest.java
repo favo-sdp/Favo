@@ -40,6 +40,7 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
@@ -91,15 +92,16 @@ public class NearbyFavorListTest {
     getInstrumentation().waitForIdleSync();
 
     // check query is successful and click on found item
-    onView(withText(favor.getDescription())).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.favor_list_item)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // Click on back button
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
+
     // check active favors are displayed in active favor list view
-    onView(withText(favor.getDescription())).check(matches(isDisplayed()));
+    onView(withId(R.id.nearby_tip)).check(matches(not(isDisplayed())));
     getInstrumentation().waitForIdleSync();
   }
 
@@ -119,14 +121,14 @@ public class NearbyFavorListTest {
     onView(withId(R.id.nearby_tip))
         .check(matches(isDisplayed()))
         .check(matches(withText(R.string.query_failed)));
-    onView(withText(favor.getDescription())).check(doesNotExist());
+    onView(withText(favor.getTitle())).check(doesNotExist());
 
     // Click on back button
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
     // check active favors are displayed in active favor list view
-    onView(withText(favor.getDescription())).check(matches(isDisplayed()));
+    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
     getInstrumentation().waitForIdleSync();
   }
 

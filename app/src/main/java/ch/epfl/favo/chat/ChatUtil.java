@@ -1,0 +1,40 @@
+package ch.epfl.favo.chat;
+
+import java.util.concurrent.CompletableFuture;
+
+import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.chat.Model.Message;
+import ch.epfl.favo.database.ICollectionWrapper;
+import ch.epfl.favo.util.DependencyFactory;
+
+public class ChatUtil implements IChatUtil {
+  private static final ChatUtil SINGLE_INSTANCE = new ChatUtil();
+  private static ICollectionWrapper<Message> collection =
+      DependencyFactory.getCurrentCollectionWrapper("chats", Message.class);
+
+  public static ChatUtil getSingleInstance() {
+    return SINGLE_INSTANCE;
+  }
+  // Private Constructor
+  private ChatUtil() {}
+
+  @Override
+  public CompletableFuture<Void> addChatMessage(Message message){
+    return collection.addDocument(message);
+  }
+  @Override
+  public String generateGoogleMapsPath(double latitude, double longitude) {
+    return "https://maps.googleapis.com/maps/api/staticmap?center="
+            + latitude
+            + ","
+            + longitude
+            + "&zoom=15&markers=color:blue|"
+            + latitude
+            + ","
+            + longitude
+            + "&size=300x300&sensor=false"
+            + "&key="
+            + MainActivity.GOOGLE_API_KEY;
+  }
+
+}

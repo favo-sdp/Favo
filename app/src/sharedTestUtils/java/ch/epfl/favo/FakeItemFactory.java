@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.util.CommonTools;
 
 public class FakeItemFactory {
 
@@ -74,4 +76,20 @@ public class FakeItemFactory {
     }
     return result;
   }
+
+  public static Message getMessage(String id) {
+    return new Message(
+        id,
+        TestConstants.MESSAGE_USER_NAME,
+        TestConstants.MESSAGE_USER_ID,
+        CommonTools.TEXT_MESSAGE_TYPE,
+        TestConstants.MESSAGE_VALUE,
+        TestConstants.MESSAGE_IMAGE_PATH,
+        TestConstants.MESSAGE_NOTIF_ID,
+        TestConstants.FAVOR_ID,
+        TestConstants.MESSAGE_IS_FIRST_MESSAGE,
+        TestConstants.MESSAGE_LATITUDE,
+        TestConstants.MESSAGE_LONGITUDE);
+  }
+
 }

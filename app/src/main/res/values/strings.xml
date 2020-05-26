@@ -32,10 +32,14 @@
     <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <string name="download_offline_map">https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&amp;hl=en</string>
-    <string name="hint_drag_marker">Drag marker to desired location</string>
-    <string name="hint_click_window">Click window to request favor</string>
+    <string name="hint_drag_marker">Drag me</string>
+    <string name="hint_click_window">Long press marker to drag</string>
     <string name="default_radius">10 Km</string>
     <string name="setting_disabled">disabled</string>
+    <string name="map_request_favor">Select Favor Location</string>
+    <string name="map_edit_favor_loc">Edit Favor Location</string>
+    <string name="map_share_loc">Share Favor Location</string>
+    <string name="map_observe_loc">Observe Location</string>
 
     <!-- TAB 2 (David) -->
     <string name="favor_title_hint">What do you need? - Max. length = %d</string>
@@ -117,7 +121,7 @@
 
     <string name="notification_chat_title">Enable chat notifications</string>
     <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
-
+    <string name="error_send_msg_chat">Error sending message</string>
     <!-- Help preferences -->
     <string name="error_database_sync">Failed fetching data</string>
     <string name="help_title">Send feedback</string>
@@ -129,6 +133,7 @@
     <string name="confirm_favor_edit">Confirm Update</string>
     <string name="delete_favor">Delete Request</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
+    <string name="favor_cancel_success_msg_listView">Favor successfully cancelled. Swipe down to refresh</string>
     <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="favor_complete_success_msg">Favor successfully completed</string>
     <string name="chat_message_detail_view">Start a chat</string>
@@ -204,4 +209,13 @@
     <string name="set_location_yes">Yes, take me to the map</string>
     <string name="set_location_no">No, my current position is fine</string>
     <string name="done_from_request_view">Done</string>
+    <!--Chat Share location -->
+    <string name="share_location_message">Would you like to propose a new location or share your current location?</string>
+    <string name="share_location_propose">I\'d like to share a new location</string>
+    <string name="share_location_current">Share my current location</string>
+    <!-- List item menu -->
+    <string name="edit">Edit</string>
+    <string name="view">View</string>
+    <string name="cancel">Cancel</string>
+    <string name="commit">Commit</string>
 </resources>
