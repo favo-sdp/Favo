@@ -8,8 +8,12 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -22,9 +26,12 @@ import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.view.NonClickableToolbar;
+
 @SuppressLint("NewApi")
 public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
@@ -48,6 +55,7 @@ public class CommonTools {
   }
 
   public static String convertTime(Date time) {
+    @SuppressLint("SimpleDateFormat")
     Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
     return format.format(time);
   }
@@ -59,6 +67,7 @@ public class CommonTools {
   public static void hideSoftKeyboard(Activity activity) {
     final InputMethodManager inputMethodManager =
         (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+    assert inputMethodManager != null;
     if (inputMethodManager.isActive()) {
       if (activity.getCurrentFocus() != null) {
         inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
@@ -103,5 +112,29 @@ public class CommonTools {
     if (exception.getCause() instanceof IllegalRequestException)
       return R.string.illegal_request_error;
     else return R.string.update_favor_error;
+  }
+
+  public static void handleException(
+      Throwable throwable, View parentView, Context context, String TAG) {
+    Throwable cause =
+        (throwable.getCause() == null) ? new Exception(throwable) : throwable.getCause();
+    if (cause instanceof IllegalRequestException) {
+      CommonTools.showSnackbar(
+          parentView, context.getResources().getString(R.string.illegal_request_error));
+    } else if (cause instanceof IllegalAcceptException) {
+      CommonTools.showSnackbar(
+          parentView, context.getResources().getString(R.string.illegal_accept_error));
+    } else {
+      CommonTools.showSnackbar(
+          parentView, context.getResources().getString(R.string.update_favor_error));
+    }
+    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.N)
+  public static String getUserName(User user) {
+    String name = user.getName();
+    if (name == null || name.equals("")) return (CommonTools.emailToName(user.getEmail()) + " - ");
+    else return (name + " - ");
   }
 }
