@@ -36,6 +36,10 @@
     <string name="hint_click_window">Long press marker to drag</string>
     <string name="default_radius">10 Km</string>
     <string name="setting_disabled">disabled</string>
+    <string name="map_request_favor">Select Favor Location</string>
+    <string name="map_edit_favor_loc">Edit Favor Location</string>
+    <string name="map_share_loc">Share Favor Location</string>
+    <string name="map_observe_loc">Observe Location</string>
 
     <!-- TAB 2 (David) -->
     <string name="favor_title_hint">What do you need? - Max. length = %d</string>

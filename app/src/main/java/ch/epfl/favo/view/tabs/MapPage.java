@@ -141,15 +141,6 @@ public class MapPage extends Fragment
       CommonTools.showSnackbar(requireView(), e.getMessage());
       return;
     }
-    if (getArguments() != null) {
-      intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
-      latitudeFromChat = getArguments().getString("LATITUDE_ARGS");
-      longitudeFromChat = getArguments().getString("LONGITUDE_ARGS");
-    }
-
-    if (intentType != 0) { // if intent is to edit, request, share, or observe
-      setLimitedView();
-    }
     try {
       // only when the app is firstly opened, center on my location,
       // otherwise just return where I left before
@@ -214,24 +205,42 @@ public class MapPage extends Fragment
     switch (intentType) {
       case NEW_REQUEST:
         {
-          toolbar.setTitle("Request Favor");
+          toolbar.setTitle(R.string.map_request_favor);
           break;
         }
       case EDIT_EXISTING_LOCATION:
         {
-          toolbar.setTitle("Edit favor location");
+          toolbar.setTitle(R.string.map_edit_favor_loc);
           break;
         }
       case SHARE_LOCATION:
         {
-          toolbar.setTitle("Share favor location");
+          toolbar.setTitle(R.string.map_share_loc);
           break;
         }
       case OBSERVE_LOCATION:
         {
-          toolbar.setTitle("Observe location");
+          toolbar.setTitle(R.string.map_observe_loc);
           break;
         }
+    }
+  }
+
+  public void setFocusedFavor(Favor favor) {
+    focusedFavor = favor;
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    if (getArguments() != null) {
+      intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
+      latitudeFromChat = getArguments().getString("LATITUDE_ARGS");
+      longitudeFromChat = getArguments().getString("LONGITUDE_ARGS");
+    }
+
+    if (intentType != 0) { // if intent is to edit, request, share, or observe
+      setLimitedView();
     }
   }
 
@@ -265,7 +274,9 @@ public class MapPage extends Fragment
     }
 
     @Override
-    public void onMarkerDragEnd(Marker marker) {}
+    public void onMarkerDragEnd(Marker marker) {
+      if (intentType == SHARE_LOCATION) sendLocationToChat(newMarkers.get(0));
+    }
   }
 
   private class LongClick implements GoogleMap.OnMapLongClickListener {
@@ -310,7 +321,7 @@ public class MapPage extends Fragment
               try {
                 if (favor != null && favorViewModel.isShowObservedFavor()) {
                   favorViewModel.setShowObservedFavor(false);
-                  focusedFavor = favor;
+                  setFocusedFavor(favor);
                   boolean isRequested = // check if favor is requested
                       favor
                           .getRequesterId()
@@ -319,7 +330,8 @@ public class MapPage extends Fragment
                   Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
                   if (isEdited) {
                     newMarkers.add(marker);
-                    doneButton.setOnClickListener(v -> requestFavorOnMarkerLocation(marker));
+                    doneButton.setOnClickListener(
+                        v -> requestFavorOnMarkerLocation(newMarkers.get(0)));
                   }
                   marker.showInfoWindow();
                   focusViewOnLocation(focusedFavor.getLocation(), true);
