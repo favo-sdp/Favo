@@ -12,6 +12,7 @@ import ch.epfl.favo.database.Document;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.util.CommonTools;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -153,6 +154,8 @@ public class User implements Document {
   public String getName() {
     return name;
   }
+
+  public void setName(String name) { this.name = name; }
 
   public String getEmail() {
     return email;

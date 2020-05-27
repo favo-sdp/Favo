@@ -64,6 +64,25 @@ public class CommonTools {
     return email.split("@")[0].replace(".", " ");
   }
 
+  public static int notificationRadiusToZoomLevel(double radius) {
+    int level;
+    int r = (int) radius;
+    switch (r) {
+      case 1:
+        level = 16;
+        break;
+      case 5:
+        level = 14;
+        break;
+      case 10:
+        level = 13;
+        break;
+      default: // 25
+        level = 11;
+    }
+    return level;
+  }
+
   public static void hideSoftKeyboard(Activity activity) {
     final InputMethodManager inputMethodManager =
         (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);

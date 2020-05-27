@@ -63,6 +63,8 @@ public class FavorPublishedView extends Fragment {
   private MenuItem inviteItem;
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
+  private MenuItem reportItem;
+  private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
   private FirebaseUser currentUser;
 
@@ -110,6 +112,8 @@ public class FavorPublishedView extends Fragment {
     restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
+    reuseItem = menu.findItem(R.id.reuse_button);
+    reportItem = menu.findItem(R.id.report_favor_button);
     if (favorStatus != null) updateAppBarMenuDisplay();
     super.onCreateOptionsMenu(menu, inflater);
   }
@@ -135,6 +139,8 @@ public class FavorPublishedView extends Fragment {
         currentFavor.getIsArchived() && isRequestedByCurrentUser && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequestedByCurrentUser && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
+    reportItem.setVisible(!isRequestedByCurrentUser);
+    reuseItem.setVisible(isRequestedByCurrentUser);
   }
 
   // handle button activities
@@ -190,7 +196,7 @@ public class FavorPublishedView extends Fragment {
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
+                //Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 showBottomBar(false);
               }
@@ -246,7 +252,7 @@ public class FavorPublishedView extends Fragment {
           else completeFavor();
           break;
         case R.id.user_profile_picture:
-        case R.id.user_name:
+        case R.id.user_name_published_view:
           tryMoveToUserInfoPage(currentFavor.getRequesterId());
           break;
         case R.id.location:
@@ -322,20 +328,20 @@ public class FavorPublishedView extends Fragment {
             .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      ((TextView) requireView().findViewById(R.id.user_name_published_view))
-          .setText(currentUser.getDisplayName());
+      displayName(currentUser.getDisplayName(), currentUser.getEmail());
     } else {
       DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
           .thenAccept(
               user -> {
-                String name = user.getName();
-                if (name == null || name.equals(""))
-                  name = CommonTools.emailToName(user.getEmail());
-                ((TextView) requireView().findViewById(R.id.user_name_published_view))
-                    .setText(name);
+                displayName(user.getName(), user.getEmail());
               });
     }
+  }
+
+  private void displayName(String name, String email) {
+    if (name == null || name.equals("")) name = CommonTools.emailToName(email);
+    ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
   }
 
   private void setupImageView(View rootView, Favor favor) {

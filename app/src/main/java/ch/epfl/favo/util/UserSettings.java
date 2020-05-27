@@ -16,6 +16,12 @@ public class UserSettings {
     return "disabled";
   }
 
+  public static String getMapStyle(Context context) {
+    if (getPreferenceNotifNew(context))
+      return CacheUtil.getInstance().getValueFromCacheStr(context, "map_style");
+    return "disabled";
+  }
+
   public static Boolean getPreferenceNotifChat(Context context) {
     return CacheUtil.getInstance().getValueFromCacheBool(context, "notifications_chat");
   }

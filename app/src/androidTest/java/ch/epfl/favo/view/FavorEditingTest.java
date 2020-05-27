@@ -290,25 +290,25 @@ public class FavorEditingTest {
     Thread.sleep(1000);
 
     // choose one committed user, click accept
-    /*onData(anything())
-        .inAdapterView(withId(R.id.commit_user))
-        .atPosition(0)
-        .check(matches(isDisplayed()))
-        .perform(click());
-    Thread.sleep(1000);
-    onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
+    //onData(anything())
+    //    .inAdapterView(withId(R.id.commit_user))
+    //    .atPosition(0)
+    //    .check(matches(isDisplayed()))
+    //    .perform(click());
+   // Thread.sleep(1000);
+   // onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
 
     // check view become accepted
-    onView(withId(R.id.commit_complete_button))
-        .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
+   // onView(withId(R.id.commit_complete_button))
+   //     .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
+   // onView(withId(R.id.toolbar_main_activity))
+   //     .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
     // check accept is gone , and click user profile
-    Thread.sleep(1000);
-    onView(withText("commit")).check(matches(isDisplayed())).perform(click());
-    Thread.sleep(1000);
-    onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));*/
+   // Thread.sleep(1000);
+   // onView(withText("commit")).check(matches(isDisplayed())).perform(click());
+   //Thread.sleep(1000);
+   // onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
+   // onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -352,16 +352,6 @@ public class FavorEditingTest {
 
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void testCanReportFavor() throws Throwable {
-    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
-    requestFavor();
-
-    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-    getInstrumentation().waitForIdleSync();
-    onView(withText(R.string.report_favor_text)).check(matches(isDisplayed())).perform(click());
   }
 
   @Test

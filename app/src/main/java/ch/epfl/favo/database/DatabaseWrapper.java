@@ -2,6 +2,7 @@ package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -78,8 +79,10 @@ public class DatabaseWrapper {
     Task<DocumentSnapshot> getTask = getDocumentQuery(key, collection).get();
     CompletableFuture<DocumentSnapshot> getFuture =
         new TaskToFutureAdapter<>(getTask).getInstance();
+    assert getFuture != null;
     return getFuture.thenApply(
         documentSnapshot -> {
+          assert documentSnapshot != null;
           if (documentSnapshot.exists()) {
             return documentSnapshot.toObject(cls);
           } else {
@@ -105,6 +108,7 @@ public class DatabaseWrapper {
         Math.toDegrees(
             radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return getCollectionReference(collection)
+        .whereEqualTo("statusId", 0)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
         .whereLessThan("location.longitude", loc.getLongitude() + longDif)
         .limit(50);

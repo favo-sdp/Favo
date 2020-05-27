@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import ch.epfl.favo.database.DatabaseWrapper;
+import ch.epfl.favo.view.tabs.MapPage;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -29,5 +30,14 @@ public class CommonToolsTests {
     assertEquals(ID_LENGTH, id1.length());
     assertEquals(ID_LENGTH, id2.length());
     assertNotEquals(id1, id2);
+  }
+
+  @Test
+  public void RadiusToZoomLevelTest() {
+    MapPage mapPage = new MapPage();
+    assertEquals(16, CommonTools.notificationRadiusToZoomLevel(1));
+    assertEquals(14, CommonTools.notificationRadiusToZoomLevel(5));
+    assertEquals(13, CommonTools.notificationRadiusToZoomLevel(10));
+    assertEquals(11, CommonTools.notificationRadiusToZoomLevel(25));
   }
 }
