@@ -10,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.concurrent.CompletableFuture;
+
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.R;

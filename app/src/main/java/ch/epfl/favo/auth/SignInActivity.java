@@ -30,6 +30,7 @@ import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.TaskToFutureAdapter;
 
 @SuppressLint("NewApi")
 public class SignInActivity extends AppCompatActivity {
@@ -53,18 +54,14 @@ public class SignInActivity extends AppCompatActivity {
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
       // update user name if firebase user has no name
-      if(user.getDisplayName() == null || user.getDisplayName().equals("")){
-        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+      if (user.getDisplayName() == null || user.getDisplayName().equals("")) {
+        UserProfileChangeRequest profileUpdates =
+            new UserProfileChangeRequest.Builder()
                 .setDisplayName(CommonTools.emailToName(user.getEmail()))
                 // TODO: update user profile photoUri
                 // .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
                 .build();
-        user.updateProfile(profileUpdates)
-                .addOnCompleteListener(task -> {
-                  if (task.isSuccessful()) {
-                    Log.d(TAG, "User profile update.");
-                  }
-                });
+        user.updateProfile(profileUpdates);
       }
       // Already signed-in
       startMainActivity();
@@ -162,10 +159,12 @@ public class SignInActivity extends AppCompatActivity {
       // Lookup user with Firebase Id in Db to extract details
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
+
       CompletableFuture<User> userFuture = getCurrentUserUtil().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Add/update user info depending on db status
-      CompletableFuture<Void> editUserFuture = userFuture.thenAccept(editDeviceIdUserName(deviceId));
+      CompletableFuture<Void> editUserFuture =
+          userFuture.thenAccept(editDeviceIdUserName(deviceId));
       CompletableFuture<Void> newUserFuture =
           userFuture
               .exceptionally(
@@ -185,11 +184,11 @@ public class SignInActivity extends AppCompatActivity {
 
   private Consumer<User> postNewUser() {
     return (user) -> {
-        if(user.getName() == null || user.getName().equals(""))
-          user.setName(CommonTools.emailToName(user.getEmail()));
-        getCurrentUserUtil()
-            .postUser(user)
-            .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
+      if (user.getName() == null || user.getName().equals(""))
+        user.setName(CommonTools.emailToName(user.getEmail()));
+      getCurrentUserUtil()
+          .postUser(user)
+          .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
     };
   }
 
@@ -198,11 +197,10 @@ public class SignInActivity extends AppCompatActivity {
       if (!deviceId.equals(user.getDeviceId())) {
         user.setDeviceId(deviceId);
         getCurrentUserUtil().updateUser(user);
-      } else if (user.getName()==null || user.getName().equals("")){
+      } else if (user.getName() == null || user.getName().equals("")) {
         user.setName(CommonTools.emailToName(user.getEmail()));
         getCurrentUserUtil().updateUser(user);
-      }
-      else CompletableFuture.supplyAsync(() -> null);
+      } else CompletableFuture.supplyAsync(() -> null);
     };
   }
 }
