@@ -98,6 +98,9 @@
 
     <!-- Account Preferences -->
     <string name="username_title">Username</string>
+    <string name="display_name_title">Display Name</string>
+    <string name="name_change_dialog_positive">SAVE</string>
+    <string name="name_change_dialog_negative">CANCEL</string>
 
     <!-- Notification Preferences -->
     <string name="notification_title">Enable new favor notifications</string>
@@ -166,6 +169,8 @@
     <string name="feedback_description">Rate your experience with this user to help others</string>
     <string name="positive_feedback">All good!</string>
     <string name="negative_feedback">Bad experience</string>
+    <string name="change_name_dialog_title">Change Display Name</string>
+    <string name="change_profile_picture_dialog_title">Change Profile Picture</string>
 
 
     <!-- Shop Page -->

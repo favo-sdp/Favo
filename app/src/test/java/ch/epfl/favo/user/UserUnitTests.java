@@ -89,7 +89,7 @@ public class UserUnitTests {
     user.setLikes(testNum);
     user.setDislikes(testNum);
     user.setBalance(newBalance);
-    user.setProfilePicUrl(pictureUrl);
+    user.setProfilePictureUrl(pictureUrl);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
@@ -101,7 +101,7 @@ public class UserUnitTests {
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
     assertEquals((int) newBalance, (int) user.getBalance());
-    assertEquals(pictureUrl, user.getPictureUrl());
+    assertEquals(pictureUrl, user.getProfilePictureUrl());
   }
 
   @Test
