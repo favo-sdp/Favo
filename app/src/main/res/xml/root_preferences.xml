@@ -44,7 +44,6 @@
     <PreferenceCategory android:title="Display">
     <ListPreference
         app:defaultValue="0"
-        app:dependency="notifications_new"
         app:entries="@array/map_style"
         app:entryValues="@array/map_style_idx"
         app:key="map_style"

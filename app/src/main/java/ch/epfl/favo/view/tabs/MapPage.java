@@ -145,8 +145,7 @@ public class MapPage extends Fragment
 
     // set map style from user preference
     String map_mode = UserSettings.getMapStyle(requireContext());
-    if (map_mode.equals("")) map_mode = "0";
-    Integer map_mode_idx = Integer.valueOf(map_mode);
+    int map_mode_idx = Integer.parseInt(map_mode);
     MapStyleOptions mapStyleOptions =
         MapStyleOptions.loadRawResourceStyle(getContext(), mapStyles.get(map_mode_idx));
     googleMap.setMapStyle(mapStyleOptions);
