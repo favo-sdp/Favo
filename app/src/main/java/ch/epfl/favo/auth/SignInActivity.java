@@ -11,8 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +52,20 @@ public class SignInActivity extends AppCompatActivity {
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
+      // update user name if firebase user has no name
+      if(user.getDisplayName() == null || user.getDisplayName().equals("")){
+        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                .setDisplayName(CommonTools.emailToName(user.getEmail()))
+                // TODO: update user profile photoUri
+                // .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
+                .build();
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(task -> {
+                  if (task.isSuccessful()) {
+                    Log.d(TAG, "User profile update.");
+                  }
+                });
+      }
       // Already signed-in
       startMainActivity();
       return;
