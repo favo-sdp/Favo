@@ -61,15 +61,13 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 public class ChatPage extends Fragment {
 
   private static String TAG = "ChatPage";
+  private  static final String DEFAULT_TOOLBAR_TITLE = "Favor Title";
 
   private View view;
   private RecyclerView recyclerView;
   private Favor currentFavor;
   private IFavorViewModel viewModel;
 
-  private static String FAVOR_ID = "favorId";
-  private static String NOTIF_ID = "notifId";
-  private static String USER_ID = "uid";
   private static int FILE_CHOOSER_RC = 1;
   private LatLng locationForMessage;
   private IPictureUtil pictureUtil;
@@ -88,7 +86,7 @@ public class ChatPage extends Fragment {
                 .get(DependencyFactory.getCurrentViewModelClass());
     currentFavor = viewModel.getObservedFavor().getValue();
     if (getArguments() != null) {
-      locationForMessage = (getArguments().getParcelable("LOCATION_ARGS"));
+      locationForMessage = (getArguments().getParcelable(MapPage.LOCATION_ARGUMENT_KEY));
     }
     setupView();
     pictureUtil = DependencyFactory.getCurrentPictureUtility();
@@ -180,7 +178,7 @@ public class ChatPage extends Fragment {
     toolbar.setTitleTextColor(Color.WHITE);
     Objects.requireNonNull(toolbar.getNavigationIcon())
         .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
-    toolbar.setTitle(currentFavor != null ? currentFavor.getTitle() : "Favor Title");
+    toolbar.setTitle(currentFavor != null ? currentFavor.getTitle() : DEFAULT_TOOLBAR_TITLE);
   }
 
   @Override
@@ -294,9 +292,9 @@ public class ChatPage extends Fragment {
         int itemPosition = recyclerView.getChildLayoutPosition(v);
         Message model = getItem(itemPosition);
         Bundle mapBundle = new Bundle();
-        mapBundle.putString("LATITUDE_ARGS", model.getLatitude());
-        mapBundle.putString("LONGITUDE_ARGS", model.getLongitude());
-        mapBundle.putInt("LOCATION_ARGS", MapPage.OBSERVE_LOCATION);
+        mapBundle.putString(MapPage.LATITUDE_ARGUMENT_KEY, model.getLatitude());
+        mapBundle.putString(MapPage.LONGITUDE_ARGUMENT_KEY, model.getLongitude());
+        mapBundle.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.OBSERVE_LOCATION);
         Navigation.findNavController(requireView()).navigate(R.id.action_global_nav_map, mapBundle);
       }
 
@@ -305,7 +303,7 @@ public class ChatPage extends Fragment {
         Message model = getItem(itemPosition);
 
         Bundle userBundle = new Bundle();
-        userBundle.putString("USER_ARGS", model.getUid());
+        userBundle.putString(CommonTools.USER_ARGS, model.getUid());
         CommonTools.hideSoftKeyboard(requireActivity());
         Navigation.findNavController(requireView())
             .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);

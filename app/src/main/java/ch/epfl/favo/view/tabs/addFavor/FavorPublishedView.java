@@ -52,6 +52,9 @@ import static ch.epfl.favo.util.CommonTools.handleException;
 @SuppressLint("NewApi")
 public class FavorPublishedView extends Fragment {
   private static String TAG = "FavorPublishedView";
+  private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
+  private static final String FAOV_DOMAIN = "https://favoapp.page.link</string>";
+  private static final String PACKAGE_NAME ="ch.epfl.favo";
   private FavorStatus favorStatus;
   private Favor currentFavor;
   private Button commitAndCompleteBtn;
@@ -204,16 +207,15 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void onShareClicked() {
-    Uri baseUrl = Uri.parse(getString(R.string.favoapp_url) + currentFavor.getId());
-    String domain = getString(R.string.favoapp_domain);
+    Uri baseUrl = Uri.parse(APP_URL_PREFIX + currentFavor.getId());
 
     DynamicLink link =
         FirebaseDynamicLinks.getInstance()
             .createDynamicLink()
             .setLink(baseUrl)
-            .setDomainUriPrefix(domain)
+            .setDomainUriPrefix(FAOV_DOMAIN)
             .setAndroidParameters(
-                new DynamicLink.AndroidParameters.Builder(getString(R.string.favo_package_name))
+                new DynamicLink.AndroidParameters.Builder(PACKAGE_NAME)
                     .build())
             .setSocialMetaTagParameters(
                 new DynamicLink.SocialMetaTagParameters.Builder()
@@ -293,7 +295,7 @@ public class FavorPublishedView extends Fragment {
     String timeStr = CommonTools.convertTime(favor.getPostedTime());
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
-    String favoCoinStr = "Worth " + (int) favor.getReward() + " coins";
+    String favoCoinStr = String.format(getString(R.string.favor_worth), (int)favor.getReward());
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
@@ -451,7 +453,7 @@ public class FavorPublishedView extends Fragment {
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
     favorBundle.putString(
-        CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_publishedFavor));
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -468,7 +470,7 @@ public class FavorPublishedView extends Fragment {
             currentFavor.getReward(),
             currentFavor.getPictureUrl());
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_floatButton));
+    favorBundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -479,7 +481,7 @@ public class FavorPublishedView extends Fragment {
     newFavor.updateToOther(currentFavor);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.restart_request));
+    favorBundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }

@@ -40,6 +40,9 @@
     <string name="map_edit_favor_loc">Edit Favor Location</string>
     <string name="map_share_loc">Share Favor Location</string>
     <string name="map_observe_loc">Observe Location</string>
+    <string name="no_position_permission_tip">Please grant location permission</string>>
+    <string name="no_position_found_tip">We cannot fetch your location, please try later</string>
+    <string name="report_unknown_error">Unknown error during fetching location</string>
 
     <!-- TAB 2 (David) -->
     <string name="favor_title_hint">What do you need? - Max. length = %d</string>
@@ -80,6 +83,7 @@
     <string name="favor_request_success_msg">Favor added successfully.</string>
     <string name="profile">Profile</string>
     <string name="user_not_present_message">User account has been deleted</string>
+    <string name="favor_worth">worth %d coin(s)</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
@@ -130,7 +134,6 @@
     <string name="edit_favor">Edit</string>
     <string name="reuse_favor">Reuse</string>
     <string name="cancel_request">Cancel</string>
-    <string name="confirm_favor_edit">Confirm Update</string>
     <string name="delete_favor">Delete Request</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
     <string name="favor_cancel_success_msg_listView">Favor successfully cancelled. Swipe down to refresh</string>
@@ -144,13 +147,11 @@
     <string name="restart_request">Re-enable</string>
     <string name="fail_edit_favor_request_view">Cannot edit favor</string>
     <string name="complete_favor">Complete</string>
-    <string name="wait_complete">Wait</string>
-    <string name="favor_accepted_by_oneself">you cannot accept favor posted by yourself</string>
     <string name="old_favor_accepted_by_others">Someone commit your unmodified favor</string>
     <string name="old_favor_cancelled_by_others">Someone cancel committing your unmodified favor</string>
     <string name="committed_helpers">Potential helpers"</string>
     <string name="cancel_commit">Cancel commit</string>
-    <string name="commit_favor">commit</string>
+    <string name="commit_favor">Commit</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>
@@ -187,14 +188,8 @@
     <!-- Invite option -->
     <string name="invite_text">Invite</string>
     <string name="share_tip_checkout_favor">Check out this favor in the Favo App!</string>
-    <string name="favoapp_url">https://www.favoapp.com/?favorId=</string>
-    <string name="favoapp_domain">https://favoapp.page.link</string>
-    <string name="favo_package_name">ch.epfl.favo</string>
 
     <!-- FavorEditting Page-->
-    <string name="favor_source_map">map</string>
-    <string name="favor_source_floatButton">floatButton</string>
-    <string name="favor_source_publishedFavor">publishedFavor</string>
     <string name="request_page_title">New favor</string>
     <string name="title_required_message">Title must be set to request a favor</string>
     <string name="fields_limit_exceeded_message">All fields must respect the required limits</string>
