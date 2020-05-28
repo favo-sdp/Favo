@@ -295,7 +295,7 @@ public class FavorPublishedView extends Fragment {
     String timeStr = CommonTools.convertTime(favor.getPostedTime());
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
-    String favoCoinStr = String.format(getString(R.string.favor_worth), (int)favor.getReward());
+    String favoCoinStr = String.format(getString(R.string.favor_worth), favor.getReward());
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
