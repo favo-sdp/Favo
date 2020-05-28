@@ -6,8 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
@@ -24,33 +26,33 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     super(context, 0, favors);
   }
 
+  @NonNull
   @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
-  public View getView(int position, View convertView, ViewGroup parent) {
-    // Get the data item for this position
+  public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+
     Favor favor = getItem(position);
     assert favor != null;
 
-    // Check if an existing view is being reused, otherwise inflate the view
     if (convertView == null) {
-      convertView =
-          LayoutInflater.from(getContext()).inflate(R.layout.favor_list_item, parent, false);
+      convertView = LayoutInflater.from(getContext())
+              .inflate(R.layout.favor_list_item, parent, false);
     }
 
-    // Lookup view for data population
     TextView favorTitle = convertView.findViewById(R.id.item_title);
-    TextView favorRequester = convertView.findViewById(R.id.item_requester);
-    TextView favorCoins = convertView.findViewById(R.id.item_coins);
-
-    // Populate the data into the template view using the data object
-    assert favor.getTitle() != null;
-    assert favor.getRequesterId() != null;
-
     favorTitle.setText(favor.getTitle());
-    favorCoins.setText(favor.getReward() + " coins");
+
+    TextView favorRequester = convertView.findViewById(R.id.item_requester);
     UserUtil.getSingleInstance()
-        .findUser(favor.getRequesterId())
-        .thenAccept(user -> favorRequester.setText(getUserName(user)));
+            .findUser(favor.getRequesterId())
+            .thenAccept(user -> favorRequester.setText(getUserName(user)));
+
+    TextView favorCoins = convertView.findViewById(R.id.item_coins);
+    favorCoins.setText(getContext().getResources().getString(R.string.num_coins, favor.getReward()));
+
+    ImageView favorIcon = convertView.findViewById(R.id.item_icon);
+    // Todo: load requester profile picture (@Daniel)
+
     return convertView;
   }
 }

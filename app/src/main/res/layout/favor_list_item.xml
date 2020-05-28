@@ -68,18 +68,13 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/item_menu_btn"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/item_menu_chat_button"
+        android:layout_marginTop="4dp"
+        android:layout_width="46dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:paddingTop="6pt"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:text="&#8942;"
-        android:textAppearance="?android:textAppearanceLarge"
-        tools:ignore="RtlSymmetry" />
+        android:backgroundTint="#ffff"
+        android:drawableEnd="@drawable/ic_chat_24dp" />
 
 </RelativeLayout>
