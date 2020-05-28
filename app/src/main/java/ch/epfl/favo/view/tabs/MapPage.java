@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,12 +45,15 @@ import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.exception.NoPermissionGrantedException;
+import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.UserSettings;
+import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static java.lang.Double.parseDouble;
@@ -67,13 +69,15 @@ public class MapPage extends Fragment
         GoogleMap.InfoWindowAdapter {
 
   public static final String LOCATION_ARGUMENT_KEY = "LOCATION_ARGS";
+  public static final String LATITUDE_ARGUMENT_KEY = "LATITUDE_ARGS";
+  public static final String LONGITUDE_ARGUMENT_KEY = "LONGITUDE_ARGS";
   public static final int NEW_REQUEST = 1;
   public static final int EDIT_EXISTING_LOCATION = 2;
   public static final int SHARE_LOCATION = 3;
   public static final int OBSERVE_LOCATION = 4;
   private String latitudeFromChat;
   private String longitudeFromChat;
-  Button doneButton;
+  private Button doneButton;
 
   private IFavorViewModel favorViewModel;
   private View view;
@@ -84,15 +88,12 @@ public class MapPage extends Fragment
   private Favor focusedFavor;
   private double radiusThreshold;
 
-  // private FusedLocationProviderClient mFusedLocationProviderClient;
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-  private static final int MAP_BOTTOM_PADDING = 140;
   private int defaultZoomLevel = 16;
   private ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
-          add(R.raw.google_map_style_standard); // index 0 is reserved for default style, we never
-          // use it.
+          add(R.raw.google_map_style_standard);
           add(R.raw.google_map_style_silver);
           add(R.raw.google_map_style_night);
         }
@@ -145,8 +146,7 @@ public class MapPage extends Fragment
 
     // set map style from user preference
     String map_mode = UserSettings.getMapStyle(requireContext());
-    if (map_mode.equals("") || map_mode.equals("disabled")) map_mode = "0";
-    Integer map_mode_idx = Integer.valueOf(map_mode);
+    int map_mode_idx = Integer.parseInt(map_mode);
     MapStyleOptions mapStyleOptions =
         MapStyleOptions.loadRawResourceStyle(getContext(), mapStyles.get(map_mode_idx));
     googleMap.setMapStyle(mapStyleOptions);
@@ -157,7 +157,6 @@ public class MapPage extends Fragment
     mMap.setMyLocationEnabled(true);
     mMap.setInfoWindowAdapter(this);
     mMap.setOnInfoWindowClickListener(this);
-    mMap.setPadding(0, 0, 0, MAP_BOTTOM_PADDING);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
 
@@ -166,8 +165,14 @@ public class MapPage extends Fragment
 
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
-    } catch (Exception e) {
-      CommonTools.showSnackbar(requireView(), e.getMessage());
+    } catch (NoPermissionGrantedException e) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.no_position_permission_tip));
+      return;
+    } catch (NoPositionFoundException e){
+      CommonTools.showSnackbar(requireView(), getString(R.string.no_position_found_tip));
+      return;
+    } catch (Exception e){
+      CommonTools.showSnackbar(requireView(), getString(R.string.report_unknown_error));
       return;
     }
     try {
@@ -264,8 +269,8 @@ public class MapPage extends Fragment
     super.onStart();
     if (getArguments() != null) {
       intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
-      latitudeFromChat = getArguments().getString("LATITUDE_ARGS");
-      longitudeFromChat = getArguments().getString("LONGITUDE_ARGS");
+      latitudeFromChat = getArguments().getString(LATITUDE_ARGUMENT_KEY);
+      longitudeFromChat = getArguments().getString(LONGITUDE_ARGUMENT_KEY);
     }
 
     if (intentType != 0) { // if intent is to edit, request, share, or observe
@@ -352,7 +357,7 @@ public class MapPage extends Fragment
   private void sendLocationToChat(Marker marker) {
 
     Bundle chatBundle = new Bundle();
-    chatBundle.putParcelable("LOCATION_ARGS", marker.getPosition());
+    chatBundle.putParcelable(LOCATION_ARGUMENT_KEY, marker.getPosition());
     Navigation.findNavController(requireView())
         .navigate(R.id.action_nav_map_to_chatView, chatBundle);
   }
@@ -542,37 +547,6 @@ public class MapPage extends Fragment
     }
   }
 
-  /* // this is the android recommended way to get location, but cannot pass cirrus testing
-
-      private void checkPlayServices() {
-        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-        int resultCode = gApi.isGooglePlayServicesAvailable(getActivity());
-        if (resultCode != ConnectionResult.SUCCESS) {
-          gApi.makeGooglePlayServicesAvailable(getActivity());
-        }
-      }
-
-      public void getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
-        getLocationPermission();
-        if (mLocationPermissionGranted) {
-          LocationRequest fragment_favor_published_view = new LocationRequest();
-          fragment_favor_published_view.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-          fragment_favor_published_view.setInterval(15 * 60 * 1000);
-          fragment_favor_published_view.setMaxWaitTime(30 * 60 * 1000);
-          Task<Location> locationResult = mFusedLocationProviderClient.getLastLocation();
-          locationResult.addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
-            @Override
-            public void onComplete(@NonNull Task<Location> task) {
-              if (task.isSuccessful()) {
-                // Set the map's camera position to the current location of the device.
-                mLocation = task.getResult();
-                GpsTracker.setLastKnownLocation(mLocation);
-              }
-            }
-          });
-        }
-      }
-  */
 
   @Override
   public View getInfoWindow(Marker marker) {
@@ -620,7 +594,7 @@ public class MapPage extends Fragment
     focusedFavor.getLocation().setLatitude(marker.getPosition().latitude);
     focusedFavor.getLocation().setLongitude(marker.getPosition().longitude);
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, focusedFavor);
-    favorBundle.putString(CommonTools.FAVOR_SOURCE, getString(R.string.favor_source_map));
+    favorBundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_MAP);
     Navigation.findNavController(view)
         .navigate(R.id.action_nav_map_to_favorEditingView, favorBundle);
   }

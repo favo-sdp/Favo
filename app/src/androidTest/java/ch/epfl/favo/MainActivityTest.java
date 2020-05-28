@@ -40,7 +40,7 @@ import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-
+  private static final String MAP_DESCRIPTION = "Map";
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -65,18 +65,21 @@ public class MainActivityTest {
   @Test
   public void testMapViewIsLaunched() {
     // Click on map tab
-    onView(allOf(withId(R.id.nav_map), withContentDescription("Map")))
+    onView(allOf(withId(R.id.nav_map), withContentDescription(R.string.title_map)))
         .check(matches(isDisplayed()))
         .perform(click());
     getInstrumentation().waitForIdleSync();
     // Check that the current fragment is the map tab
-    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
+    onView(allOf(withId(R.id.fragment_map), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
   }
 
   @Test
   public void testFavorListViewIsLaunched() {
     // Click on favors tab
-    onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
+    onView(allOf(withId(R.id.nav_favorList), withContentDescription(R.string.title_favors)))
+        .check(matches(isDisplayed()))
+        .perform(click());
     getInstrumentation().waitForIdleSync();
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
@@ -86,7 +89,7 @@ public class MainActivityTest {
   @Test
   public void testMenuDrawerCanBeLaunchedFromMapView() {
     // Click on map tab
-    onView(allOf(withId(R.id.nav_map), withContentDescription("Map")))
+    onView(allOf(withId(R.id.nav_map), withContentDescription(R.string.title_map)))
         .check(matches(isDisplayed()))
         .perform(click());
     getInstrumentation().waitForIdleSync();
@@ -102,11 +105,13 @@ public class MainActivityTest {
     pressBack();
     // press back can hide menu
     onView(withId(R.id.nav_view)).check(matches(not(isDisplayed())));
+    onView(allOf(withId(R.id.fragment_map), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
   }
 
   @Test
   public void testMenuDrawerCanBeLaunchedFromFavorsView() {
-    // Click on map tab
+    // Click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
@@ -117,6 +122,12 @@ public class MainActivityTest {
 
     // check that menu drawer is displayed
     onView(withId(R.id.nav_view)).check(matches(isDisplayed()));
+
+    pressBack();
+    // press back can hide menu
+    onView(withId(R.id.nav_view)).check(matches(not(isDisplayed())));
+    onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
   }
 
   @Test
@@ -131,7 +142,7 @@ public class MainActivityTest {
     onView(withId(nav_account)).perform(click());
 
     getInstrumentation().waitForIdleSync();
-    // check that tab 2 is indeed opened
+    // check that account tab is indeed opened
     onView(allOf(withId(R.id.user_account_fragment), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
   }
@@ -144,11 +155,11 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    // Click on account icon
+    // Click on shop icon
     onView(withId(nav_shop)).perform(click());
 
     getInstrumentation().waitForIdleSync();
-    // check that tab 2 is indeed opened
+    // check that shop tab is indeed opened
     onView(allOf(withId(R.id.shop_fragment), withParent(withId(R.id.nav_host_fragment))))
         .check(matches(isDisplayed()));
 
@@ -162,6 +173,9 @@ public class MainActivityTest {
             Matchers.allOf(
                 withId(R.id.shop_items_list), childAtPosition(withId(R.id.shop_fragment), 1)));
     recyclerView.check(matches(isDisplayed())).perform(actionOnItemAtPosition(0, click()));
+    getInstrumentation().waitForIdleSync();
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.shop_pay_message)));
   }
 
   @Test
@@ -172,7 +186,7 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    // Click on account icon
+    // Click on setting icon
     onView(withId(R.id.nav_settings)).perform(click());
 
     getInstrumentation().waitForIdleSync();
@@ -188,7 +202,7 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    // Click on account icon
+    // Click on about icon
     onView(withId(nav_about)).perform(click());
 
     getInstrumentation().waitForIdleSync();
@@ -209,11 +223,13 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
     // check that share intent is indeed opened
-    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
+    onView(allOf(withId(android.R.id.title), withText(R.string.share), isDisplayed()));
 
-    // click back button
+    // click back button and return to previous page
     UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     mDevice.pressBack();
+
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -224,13 +240,17 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    onView(allOf(withId(R.id.nav_map), withContentDescription(not("Map"))))
+    onView(allOf(withId(R.id.nav_map), withContentDescription(not(MAP_DESCRIPTION))))
         .check(matches(isDisplayed()))
         .perform(click());
 
     getInstrumentation().waitForIdleSync();
-    // check that tab 2 is indeed opened
-    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
+
+    // check that we're back on the main page
+    onView(allOf(withId(R.id.fragment_map), withParent(withId(R.id.nav_host_fragment))))
+            .check(matches(isDisplayed()));
+    onView(allOf(withId(R.id.nav_map), withContentDescription(R.string.title_map)))
+            .check(matches(isDisplayed()));
   }
 
   @Test
@@ -251,34 +271,8 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
 
     // check that we're back on the main page
-    onView(allOf(withId(R.id.nav_map), withContentDescription("Map")))
+    onView(allOf(withId(R.id.nav_map), withContentDescription(R.string.title_map)))
         .check(matches(isDisplayed()));
-  }
-
-  @Test
-  public void testShareIntent() {
-
-    // Click on menu tab
-    onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-
-    getInstrumentation().waitForIdleSync();
-
-    // click share
-    onView(withId(R.id.nav_share)).perform(click());
-
-    getInstrumentation().waitForIdleSync();
-
-    // check that share intent is indeed opened
-    onView(allOf(withId(android.R.id.title), withText("Share"), isDisplayed()));
-
-    // click back button
-    UiDevice mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    mDevice.pressBack();
-
-    getInstrumentation().waitForIdleSync();
-
-    // check that we're back on the main page
-    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
