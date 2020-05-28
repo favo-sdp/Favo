@@ -12,6 +12,9 @@ const ACCEPTED_STATUS = 1;
 const EXPIRED_STATUS = 2;
 const CANCELLED_REQUESTER_STATUS = 3;
 const CANCELLED_ACCEPTER_STATUS = 4;
+const SUCCESSFULLY_COMPLETED_STATUS = 5;
+const COMPLETED_REQUESTER_STATUS = 6;
+const COMPLETED_ACCEPTER_STATUS = 7;
 
 
 // function to calculate the distance between two points given their coordinates
@@ -26,14 +29,14 @@ function distanceInKm(lon1, lat1, lon2, lat2) {
     return R * c;
 }
 
-function sendMulticastMessage(message, usersIds) {
+function sendMulticastMessage(message) {
     return admin.messaging().sendMulticast(message)
         .then((response) => {
             if (response.failureCount > 0) {
                 var failedTokens = [];
                 response.responses.forEach((resp, idx) => {
                     if (!resp.success) {
-                        failedTokens.push(usersIds[idx]);
+                        failedTokens.push(message.tokens[idx]);
                     }
                 });
 
@@ -42,6 +45,28 @@ function sendMulticastMessage(message, usersIds) {
                 }
             }
         });
+}
+
+function sendMessageToUsers(notification, userIds) {
+
+    // go through all the userIds of the favor
+    userIds.forEach(function (id) {
+
+        // get user notification id
+        db.collection('/users').where('id', '==', id).get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    const user = doc.data();
+                    const notificationId = user.notificationId;
+                    //console.log('user', user.name);
+                    notification.tokens.push(notificationId);
+                });
+
+                console.log('user', notification.tokens);
+
+                return sendMulticastMessage(notification);
+            })
+    });
 }
 
 // send new favor notification to users in the area
@@ -85,7 +110,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                     var latUser = user.location.latitude;
                     var longUser = user.location.longitude;
                     var distance = distanceInKm(longFav, latFav, longUser, latUser);
-                    if (distance < maxDistance && user.id !== posterId) {
+                    if (distance < maxDistance && user.id !== posterId && user.activeAcceptingFavors === 0 && user.activeRequestingFavors === 0) {
                         usersIds.push(user.notificationId)
                     }
                 });
@@ -100,101 +125,115 @@ exports.sendNotificationOnUpdate = functions.firestore
     .document('/favors/{favorId}')
     .onUpdate((change) => {
 
-        const oldFavor = change.before.data();
-        const updatedFavor = change.after.data();
-        const oldStatus = oldFavor.statusId;
-        const newStatus = updatedFavor.statusId;
+            const oldFavor = change.before.data();
+            const updatedFavor = change.after.data();
+            const oldStatus = oldFavor.statusId;
+            const newStatus = updatedFavor.statusId;
 
-        const favorTitle = updatedFavor.title;
+            const favorTitle = updatedFavor.title;
+            const userIds = updatedFavor.userIds;
 
-        const userIds = updatedFavor.userIds;
-
-        if (userIds === null) {
-            return;
-        }
-
-        // that's always present
-        const requesterId = userIds[0];
-
-        // get accepterId, if it exists
-        var accepterId = "";
-        if (userIds.length > 1) {
-            accepterId = userIds[1];
-        }
-
-        var titleToSend = "";
-        var userReceiver = "";
-
-        // send notification if new status
-        if (oldStatus !== newStatus) {
-
-            //console.log('Status has changed');
-
-            // favor has been accepted, send notification to requester
-            if (newStatus === ACCEPTED_STATUS) {
-                //console.log('Favor has been accepted');
-                titleToSend = "Favor " + favorTitle + " has been accepted";
-                userReceiver = accepterId;
+            if (userIds === null) {
+                return;
             }
 
-            // favor has been cancelled by requester, send notification to accepter, if it exists
-            if (newStatus === CANCELLED_REQUESTER_STATUS) {
-                //console.log('Favor has been cancelled by the requester');
-                titleToSend = "Favor " + favorTitle + " has been cancelled by the requester";
-                userReceiver = accepterId;
+            // get requesterId, that's always present
+            const requesterId = userIds[0];
+
+            // get accepterId, if it exists
+            var accepterId = "";
+            if (userIds.length > 1) {
+                accepterId = userIds[1];
             }
-
-            // favor has been cancelled by accepter, send notification to requester
-            if (newStatus === CANCELLED_ACCEPTER_STATUS) {
-                //console.log('Favor has been cancelled by the accepter');
-                titleToSend = "Favor " + favorTitle + " has been cancelled by the accepter";
-                userReceiver = requesterId;
-            }
-
-        } else { // if status is not different and no other users have committed, there must have been an update of some other field, so notify the accepter
-            //console.log('Favor has changed');
-
-            if (oldFavor.userIds.length === userIds.length) {
-                titleToSend = "Favor " + favorTitle + " has been modified";
-                userReceiver = accepterId;
-            }
-        }
-
-        // console.log('Title ', titleToSend);
-        // console.log('Receiver ', userReceiver);
-
-        if (userReceiver !== "") {
 
             var receivers = [];
+            var titleToSend = "";
 
-            // prepare message
-            const message = {
-                data: {
-                    FavorId: updatedFavor.id,
-                },
-                notification: {
-                    title: titleToSend,
-                    body: 'Click to check out the post details',
-                },
+            // send notification in case of new status
+            if (oldStatus !== newStatus) {
 
-                tokens: receivers
-            };
+                //console.log('Status has changed');
 
-            return db.collection('/users').where("id", "==", userReceiver).get()
-                .then((snapshot) => {
-                    snapshot.forEach((doc) => {
-                        var user = doc.data();
-                        receivers.push(user.notificationId);
+                // user has been accepted for favor, send notification to accepter
+                if (newStatus === ACCEPTED_STATUS) {
+                    //console.log('Favor has been accepted');
+                    titleToSend = "You have been accepted for favor " + favorTitle;
+                    receivers = [accepterId];
+                }
 
-                        //console.log('One matching user', user.id);
-                    });
+                // favor has been cancelled by requester, send notification to accepter, if it exists
+                if (newStatus === CANCELLED_REQUESTER_STATUS) {
+                    //console.log('Favor has been cancelled by the requester');
+                    titleToSend = "Favor " + favorTitle + " has been cancelled by the requester";
+                    receivers = [accepterId];
+                }
 
-                    //console.log('Users found: ', receivers);
+                // favor has been cancelled by accepter, send notification to requester
+                if (newStatus === CANCELLED_ACCEPTER_STATUS) {
+                    //console.log('Favor has been cancelled by the accepter');
+                    titleToSend = "Favor " + favorTitle + " has been cancelled by the accepter";
+                    receivers = [requesterId];
+                }
 
-                    return sendMulticastMessage(message, receivers);
-                });
+                // favor has been completed by accepter, send notification to requester
+                if (newStatus === COMPLETED_ACCEPTER_STATUS) {
+                    titleToSend = "Favor " + favorTitle + " has been completed by the accepter";
+                    receivers = [requesterId];
+                }
+
+                // favor has been completed by requester, send notification to accepter
+                if (newStatus === COMPLETED_REQUESTER_STATUS) {
+                    //console.log('Favor has been cancelled by the accepter');
+                    titleToSend = "Favor " + favorTitle + " has been marked as completed by the requester";
+                    receivers = [accepterId];
+                }
+
+                // favor has been successfully completed, send notification to both requester and accepter
+                if (newStatus === SUCCESSFULLY_COMPLETED_STATUS) {
+                    titleToSend = "Favor " + favorTitle + " has been successfully completed";
+                    receivers = [requesterId, accepterId];
+                }
+
+            } else {
+
+                // if no user committed, the favor has changed
+                if (oldFavor.userIds.length === userIds.length) {
+                    titleToSend = "Favor " + favorTitle + " has been modified";
+                    receivers = userIds;
+                    receivers.shift();
+                } else {
+
+                    if (oldFavor.userIds.length < userIds.length) {
+                        titleToSend = "A user committed to favor " + favorTitle;
+                    } else {
+                        titleToSend = "A user cancelled their commit to favor " + favorTitle;
+                    }
+
+                    // take all the users except the requester (first one in the list)
+                    receivers = [requesterId];
+                }
+            }
+
+            console.log('receivers:', receivers);
+
+            if (receivers !== []) {
+                // prepare message
+                var message = {
+                    data: {
+                        FavorId: updatedFavor.id,
+                    },
+                    notification: {
+                        title: titleToSend,
+                        body: 'Click to check out the post details',
+                    },
+
+                    tokens: []
+                };
+
+                sendMessageToUsers(message, receivers)
+            }
         }
-    });
+    );
 
 
 exports.expireOldFavorsOnCreate = functions.firestore
@@ -270,11 +309,9 @@ exports.sendNotificationOnNewChat = functions.firestore
             .then((snapshot) => {
                 snapshot.forEach((doc) => {
                     var favor = doc.data();
-                    const userIds = favor.userIds;
+                    var userIds = favor.userIds;
 
-                    var receivers = [];
-
-                    const notification = {
+                    var notification = {
                         data: {
                             FavorId: favorId,
                         },
@@ -282,31 +319,11 @@ exports.sendNotificationOnNewChat = functions.firestore
                             title: 'New message in the chat of favor ' + favor.title,
                             body: 'Click to check out the post details',
                         },
-                        tokens: receivers
+                        tokens: []
                     };
 
-                    console.log('favor', message);
-
-                    // go through all the userIds of the favor
-                    userIds.forEach(function(id) {
-                        if (senderId !== id) {
-
-                            // get user notification id
-                            db.collection('/users').where('id', '==', id).get()
-                                .then((snapshot) => {
-                                    snapshot.forEach((doc) => {
-                                        const user = doc.data();
-                                        const notificationId = user.notificationId;
-
-                                        console.log('user', user.name);
-
-                                        receivers.push(notificationId);
-                                    });
-
-                                    return sendMulticastMessage(notification, receivers);
-                                })
-                        }
-                    });
+                    userIds.splice(userIds.indexOf(senderId), 1)
+                    sendMessageToUsers(notification, userIds)
                 });
             })
     });
