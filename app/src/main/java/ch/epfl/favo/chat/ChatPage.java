@@ -91,10 +91,11 @@ public class ChatPage extends Fragment {
     viewModel.getObservedFavor().observe(
             getViewLifecycleOwner(),
             favor -> {
-              if (favor != null)
+              if (favor != null) {
                 currentFavor = favor;
-              setupToolBar();
-              attachRecyclerViewAdapter();
+                setupToolBar();
+                attachRecyclerViewAdapter();
+              }
             });
 
     if (getArguments() != null) {
