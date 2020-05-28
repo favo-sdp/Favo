@@ -65,6 +65,12 @@ public class FavorEditingView extends Fragment {
   private static final int TITLE_MAX_LENGTH = 30;
   private static final int DESCRIPTION_MAX_LENGTH = 100;
 
+  public static final String CAMERA_DATA_KEY = "data";
+  public static final String FAVOR_SOURCE_KEY = "FAVOR_SOURCE";
+  public static final String FAVOR_SOURCE_MAP = "map";
+  public static final String FAVOR_SOURCE_GLOBAL = "global";
+  public static final String FAVOR_SOURCE_PUBLISHED = "published";
+
   private IFavorViewModel favorViewModel;
 
   private FavorStatus favorStatus;
@@ -129,13 +135,13 @@ public class FavorEditingView extends Fragment {
 
     if (getArguments() != null) {
       currentFavor = getArguments().getParcelable(CommonTools.FAVOR_VALUE_ARGS);
-      favorSource = getArguments().getString(CommonTools.FAVOR_SOURCE);
+      favorSource = getArguments().getString(FAVOR_SOURCE_KEY);
       currentFavor.setStatusIdToInt(FavorStatus.EDIT);
       displayFavorInfo(rootView);
-      if (favorSource.equals(getString(R.string.favor_source_publishedFavor))) {
+      if (favorSource.equals(FAVOR_SOURCE_PUBLISHED)) {
         setupFavorListener(rootView, currentFavor.getId());
       }
-    } else favorSource = getString(R.string.favor_source_floatButton);
+    } else favorSource = FAVOR_SOURCE_GLOBAL;
     return rootView;
   }
 
@@ -289,7 +295,7 @@ public class FavorEditingView extends Fragment {
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
     // if a favor is initiated from map, then override the current location
     // with location got from map( already saved in currentFavor )
-    if (favorSource.equals(getString(R.string.favor_source_map))) {
+    if (favorSource.equals(FAVOR_SOURCE_MAP)) {
       loc.setLongitude(currentFavor.getLocation().getLongitude());
       loc.setLatitude(currentFavor.getLocation().getLatitude());
     }
@@ -386,7 +392,7 @@ public class FavorEditingView extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-          Bitmap imageBitmap = (Bitmap) extras.get("data");
+          Bitmap imageBitmap = (Bitmap) extras.get(CAMERA_DATA_KEY);
           mImageView.setImageBitmap(imageBitmap);
           break;
         }
@@ -420,8 +426,7 @@ public class FavorEditingView extends Fragment {
     int action;
     // if this favor restarts from an archived one, then prevent pressback from jumping to
     // archived favor view.
-    if (favorSource.equals(getString(R.string.favor_source_publishedFavor))
-        || favorSource.equals(getString(R.string.restart_request)))
+    if (favorSource.equals(FAVOR_SOURCE_PUBLISHED))
       action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
     else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
     Navigation.findNavController(currentView).navigate(action, favorBundle);
