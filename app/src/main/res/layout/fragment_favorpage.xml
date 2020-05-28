@@ -84,17 +84,4 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@id/swipe_refresh_layout" />
 
-    <TextView
-        android:id="@+id/currentCoins"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/radio_toggle"
-        app:layout_constraintBottom_toTopOf="@id/swipe_refresh_layout"
-        android:textSize="16sp"
-        android:text="Current balance:"
-        android:drawableEnd="@drawable/favo_coin_icon"
-        android:drawablePadding="10dp"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

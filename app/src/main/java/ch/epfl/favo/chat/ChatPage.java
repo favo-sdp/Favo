@@ -60,17 +60,14 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 @SuppressLint("NewApi")
 public class ChatPage extends Fragment {
 
-  private static String TAG = "ChatPage";
+  private static final String TAG = "ChatPage";
 
   private View view;
   private RecyclerView recyclerView;
   private Favor currentFavor;
   private IFavorViewModel viewModel;
 
-  private static String FAVOR_ID = "favorId";
-  private static String NOTIF_ID = "notifId";
-  private static String USER_ID = "uid";
-  private static int FILE_CHOOSER_RC = 1;
+  private static final int FILE_CHOOSER_RC = 1;
   private LatLng locationForMessage;
   private IPictureUtil pictureUtil;
   private IChatUtil chatUtil;
@@ -225,11 +222,7 @@ public class ChatPage extends Fragment {
 
   private Message generateMessageFromView(int messageType) {
     String favorId = currentFavor.getId();
-    String requesterNotifId = currentFavor.getRequesterNotifId();
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
-    // If the empty message view is visible, then this is the first message.
-    String isFirstMsg =
-        String.valueOf(view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     return new Message(
         DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
@@ -237,9 +230,7 @@ public class ChatPage extends Fragment {
         messageType,
         mMessageEdit.getText().toString(),
         null,
-        requesterNotifId,
-        favorId,
-        isFirstMsg); // do we want to store location for all messages?
+        favorId); // do we want to store location for all messages?
   }
 
   private FirestoreRecyclerOptions<Message> getFirestoreRecyclerOptions() {

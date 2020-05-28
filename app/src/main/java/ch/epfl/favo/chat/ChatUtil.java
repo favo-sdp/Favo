@@ -9,7 +9,7 @@ import ch.epfl.favo.util.DependencyFactory;
 
 public class ChatUtil implements IChatUtil {
   private static final ChatUtil SINGLE_INSTANCE = new ChatUtil();
-  private static ICollectionWrapper<Message> collection =
+  private static ICollectionWrapper collection =
       DependencyFactory.getCurrentCollectionWrapper("chats", Message.class);
 
   public static ChatUtil getSingleInstance() {

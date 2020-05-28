@@ -25,17 +25,6 @@ public class FakeItemFactory {
         TestConstants.REWARD);
   }
 
-  public static Favor getFavorForRequester() {
-    return new Favor(
-        TestConstants.FAVOR_ID,
-        TestConstants.TITLE,
-        TestConstants.DESCRIPTION,
-        TestConstants.USER_ID,
-        TestConstants.LOCATION,
-        TestConstants.FAVOR_STATUS.toInt(),
-        TestConstants.REWARD);
-  }
-
   public static Favor getFavorWithUrl() {
     Favor favor = getFavor();
     favor.setPictureUrl(TestConstants.PICTURE_URL);
@@ -68,7 +57,7 @@ public class FakeItemFactory {
     };
   }
 
-  public static Map<String, Favor> getFavorListMap() {
+  static Map<String, Favor> getFavorListMap() {
     List<Favor> favorList = getFavorList();
     Map<String, Favor> result = new HashMap<>(favorList.size());
     for (Favor favor : favorList) {
@@ -85,9 +74,7 @@ public class FakeItemFactory {
         CommonTools.TEXT_MESSAGE_TYPE,
         TestConstants.MESSAGE_VALUE,
         TestConstants.MESSAGE_IMAGE_PATH,
-        TestConstants.MESSAGE_NOTIF_ID,
         TestConstants.FAVOR_ID,
-        TestConstants.MESSAGE_IS_FIRST_MESSAGE,
         TestConstants.MESSAGE_LATITUDE,
         TestConstants.MESSAGE_LONGITUDE);
   }

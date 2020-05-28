@@ -1,6 +1,5 @@
 // The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 const functions = require('firebase-functions');
-const firestore = require('firebase-admin');
 
 const admin = require('firebase-admin');
 admin.initializeApp();
@@ -42,7 +41,6 @@ function sendMulticastMessage(message, usersIds) {
                     return console.log('List of tokens that caused failures: ' + failedTokens);
                 }
             }
-            return
         });
 }
 
@@ -92,8 +90,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                     }
                 });
 
-                sendMulticastMessage(message, usersIds);
-                return;
+                return sendMulticastMessage(message, usersIds);
             })
     });
 
@@ -137,7 +134,7 @@ exports.sendNotificationOnUpdate = functions.firestore
             if (newStatus === ACCEPTED_STATUS) {
                 //console.log('Favor has been accepted');
                 titleToSend = "Favor " + favorTitle + " has been accepted";
-                userReceiver = requesterId;
+                userReceiver = accepterId;
             }
 
             // favor has been cancelled by requester, send notification to accepter, if it exists
@@ -154,11 +151,13 @@ exports.sendNotificationOnUpdate = functions.firestore
                 userReceiver = requesterId;
             }
 
-        } else { // if status is not different, there must have been an update of some other field, so notify the accepter
+        } else { // if status is not different and no other users have committed, there must have been an update of some other field, so notify the accepter
             //console.log('Favor has changed');
 
-            titleToSend = "Favor " + favorTitle + " has been modified";
-            userReceiver = accepterId;
+            if (oldFavor.userIds.length === userIds.length) {
+                titleToSend = "Favor " + favorTitle + " has been modified";
+                userReceiver = accepterId;
+            }
         }
 
         // console.log('Title ', titleToSend);
@@ -192,8 +191,7 @@ exports.sendNotificationOnUpdate = functions.firestore
 
                     //console.log('Users found: ', receivers);
 
-                    sendMulticastMessage(message, receivers);
-                    return;
+                    return sendMulticastMessage(message, receivers);
                 });
         }
     });
@@ -201,7 +199,7 @@ exports.sendNotificationOnUpdate = functions.firestore
 
 exports.expireOldFavorsOnCreate = functions.firestore
     .document('favors/{favorId}')
-    .onCreate((change) => {
+    .onCreate(() => {
 
         const TIME_IN_DAYS = 1;
         const MAX_UPDATES = 20;
@@ -216,7 +214,6 @@ exports.expireOldFavorsOnCreate = functions.firestore
             .then(snapshot => {
                 if (snapshot.empty) {
                     console.log("Snapshot is empty")
-                    return;
                 } else {
                     let batch = db.batch();
                     var totalUpdateCount = 0;
@@ -263,25 +260,55 @@ exports.expireOldFavorsOnCreate = functions.firestore
 // send new favor notification to users on updates
 exports.sendNotificationOnNewChat = functions.firestore
     .document('/chats/{chatId}')
-    .onCreate((snap, context) => {
-        const isFirstMsg = snap.data().isFirstMsg;
-        if (isFirstMsg === "true") {
-            const titleToSend = "You've got a new message";
-            const favorId = snap.data().favorId;
-            const receivers = [snap.data().notifId];
-            const message = {
-                data: {
-                    FavorId: favorId,
-                },
-                notification: {
-                    title: titleToSend,
-                    body: 'Click to check out the chat message',
-                },
-                tokens: receivers
-            };
-            return sendMulticastMessage(message, receivers);
+    .onCreate((snap) => {
+        const message = snap.data();
+        const senderId = message.uid;
+        const favorId = message.favorId;
 
-        }
+        // find favor with selected favorId
+        return db.collection('/favors').where('id', '==', favorId).get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    var favor = doc.data();
+                    const userIds = favor.userIds;
+
+                    var receivers = [];
+
+                    const notification = {
+                        data: {
+                            FavorId: favorId,
+                        },
+                        notification: {
+                            title: 'New message in the chat of favor ' + favor.title,
+                            body: 'Click to check out the post details',
+                        },
+                        tokens: receivers
+                    };
+
+                    console.log('favor', message);
+
+                    // go through all the userIds of the favor
+                    userIds.forEach(function(id) {
+                        if (senderId !== id) {
+
+                            // get user notification id
+                            db.collection('/users').where('id', '==', id).get()
+                                .then((snapshot) => {
+                                    snapshot.forEach((doc) => {
+                                        const user = doc.data();
+                                        const notificationId = user.notificationId;
+
+                                        console.log('user', user.name);
+
+                                        receivers.push(notificationId);
+                                    });
+
+                                    return sendMulticastMessage(notification, receivers);
+                                })
+                        }
+                    });
+                });
+            })
     });
 
 // delete all favors when a user is deleted
