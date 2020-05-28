@@ -117,7 +117,7 @@ public class MapPageTest {
 
   @Test
   public void testNewRequestView() throws Throwable {
-
+    launchMapFragment(MapPage.NEW_REQUEST);
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     onView(withId(R.id.toolbar_main_activity))
