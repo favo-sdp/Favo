@@ -36,6 +36,7 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
+import ch.epfl.favo.view.tabs.addFavor.FavorPublishedView;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -110,7 +111,7 @@ public class FavorEditingTest {
     if (favor != null) {
       Bundle bundle = new Bundle();
       bundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, favor);
-      bundle.putString(CommonTools.FAVOR_SOURCE, "publishedFavor");
+      bundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView, bundle));
     } else {
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView));
@@ -129,7 +130,7 @@ public class FavorEditingTest {
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Intent intent = new Intent();
-    intent.putExtra("data", bm);
+    intent.putExtra(FavorEditingView.CAMERA_DATA_KEY, bm);
     runOnUiThread(() -> currentFragment.onActivityResult(2, RESULT_OK, intent));
 
     getInstrumentation().waitForIdleSync();

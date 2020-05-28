@@ -41,9 +41,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 
 @RunWith(AndroidJUnit4.class)
 public class MapPageTest {
-  private FakeViewModel fakeViewModel;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
-  private Favor focusedFavor;
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -119,9 +117,7 @@ public class MapPageTest {
 
   @Test
   public void testNewRequestView() throws Throwable {
-
-    focusedFavor = FakeItemFactory.getFavor();
-    MapPage mapPage = launchMapFragment(MapPage.NEW_REQUEST);
+    launchMapFragment(MapPage.NEW_REQUEST);
     getInstrumentation().waitForIdleSync();
     Thread.sleep(500);
     onView(withId(R.id.toolbar_main_activity))
