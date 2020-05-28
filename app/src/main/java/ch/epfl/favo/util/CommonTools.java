@@ -36,7 +36,6 @@ import ch.epfl.favo.view.NonClickableToolbar;
 public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
   public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
-  public static final String FAVOR_SOURCE = "FAVOR_SOURCE";
   public static final String USER_ARGS = "USER_ARGS";
   public static final int TEXT_MESSAGE_TYPE = 0;
   public static final int IMAGE_MESSAGE_TYPE = 1;
