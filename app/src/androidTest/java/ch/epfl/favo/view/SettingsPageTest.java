@@ -92,10 +92,10 @@ public class SettingsPageTest {
     // enable switch
     clickPreference(R.string.notification_title);
 
-    // set radius
-    clickPreference(R.string.notification_radius_title);
-
-    onView(withText(String.valueOf((int) TestConstants.NOTIFICATION_RADIUS))).perform(click());
+//    // set radius
+//    clickPreference(R.string.notification_radius_title);
+//
+//    onView(withText(String.valueOf((int) TestConstants.NOTIFICATION_RADIUS))).perform(click());
 
     // disable switch
     clickPreference(R.string.notification_title);
