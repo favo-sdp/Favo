@@ -51,7 +51,6 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -137,9 +136,6 @@ public class  FavorPageTest {
             .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.active_toggle)).perform(click());
-
-    onView(withId(R.id.currentCoins)).check(matches(isDisplayed()));
-    onView(withId(R.id.currentCoins)).check(matches(withText(containsString("Current balance:"))));
   }
 
 

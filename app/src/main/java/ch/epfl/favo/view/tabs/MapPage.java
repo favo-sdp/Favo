@@ -138,19 +138,25 @@ public class MapPage extends Fragment
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
 
-    String valueSetting = CacheUtil.getInstance()
+    String radiusSetting =
+        CacheUtil.getInstance()
             .getValueFromCacheStr(
-                    requireContext(), getString(R.string.radius_notifications_setting_key));
+                requireContext(), getString(R.string.radius_notifications_setting_key));
     double radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
-    if (!valueSetting.equals("")) {
-      radiusThreshold = Integer.parseInt(valueSetting);
+    if (!radiusSetting.equals("")) {
+      radiusThreshold = Integer.parseInt(radiusSetting);
     }
     defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference
-    int map_mode_idx =
-            Integer.parseInt(CacheUtil.getInstance()
-            .getValueFromCacheStr(requireContext(), getString(R.string.map_style_key)));
+    String mapStyleSetting =
+        CacheUtil.getInstance()
+            .getValueFromCacheStr(requireContext(), getString(R.string.map_style_key));
+    int map_mode_idx = Integer.parseInt(getString(R.string.map_style_default_value));
+    if (!mapStyleSetting.equals("")) {
+      map_mode_idx = Integer.parseInt(mapStyleSetting);
+    }
+
     MapStyleOptions mapStyleOptions =
         MapStyleOptions.loadRawResourceStyle(requireContext(), mapStyles.get(map_mode_idx));
     googleMap.setMapStyle(mapStyleOptions);

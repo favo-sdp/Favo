@@ -75,7 +75,7 @@ public class FirebaseMessagingServiceTest {
 
     Bundle bundle = generateBundle();
     FirebaseMessagingService.showNotification(
-        mainActivityTestRule.getActivity(), new RemoteMessage(bundle), "Default channel id");
+        mainActivityTestRule.getActivity(), new RemoteMessage(bundle), FirebaseMessagingService.CHANNEL_NAME);
 
     // WORKS LOCALLY, NOT ON TRAVIS... BUT WORKS ON CIRRUS :)
     UiDevice device = UiDevice.getInstance(getInstrumentation());

@@ -156,6 +156,7 @@ public class FavorUtil {
   public Query getAllUserFavors(String userId) {
     return collection
         .getReference()
+        .orderBy("title", Query.Direction.ASCENDING)
         .orderBy("postedTime", Query.Direction.DESCENDING)
         .whereArrayContains("userIds", userId);
   }
