@@ -6,7 +6,6 @@ admin.initializeApp();
 var db = admin.firestore();
 
 // global constants
-const maxDistance = 100.0; // in km
 const REQUESTED_STATUS = 0;
 const ACCEPTED_STATUS = 1;
 const EXPIRED_STATUS = 2;
@@ -16,6 +15,8 @@ const SUCCESSFULLY_COMPLETED_STATUS = 5;
 const COMPLETED_REQUESTER_STATUS = 6;
 const COMPLETED_ACCEPTER_STATUS = 7;
 
+const CHAT_TYPE = "chat";
+const UPDATE_TYPE = "update";
 
 // function to calculate the distance between two points given their coordinates
 function distanceInKm(lon1, lat1, lon2, lat2) {
@@ -47,7 +48,7 @@ function sendMulticastMessage(message) {
         });
 }
 
-function sendMessageToUsers(notification, userIds) {
+function sendMessageToUsers(notification, userIds, type) {
 
     // go through all the userIds of the favor
     userIds.forEach(function (id) {
@@ -59,7 +60,10 @@ function sendMessageToUsers(notification, userIds) {
                     const user = doc.data();
                     const notificationId = user.notificationId;
                     //console.log('user', user.name);
-                    notification.tokens.push(notificationId);
+
+                    if ((type === UPDATE_TYPE && user.updateNotifications) || (type === CHAT_TYPE && user.chatNotifications)) {
+                        notification.tokens.push(notificationId);
+                    }
                 });
 
                 console.log('user', notification.tokens);
@@ -110,7 +114,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                     var latUser = user.location.latitude;
                     var longUser = user.location.longitude;
                     var distance = distanceInKm(longFav, latFav, longUser, latUser);
-                    if (distance < maxDistance && user.id !== posterId && user.activeAcceptingFavors === 0 && user.activeRequestingFavors === 0) {
+                    if (distance < user.notificationRadius && user.id !== posterId && user.activeAcceptingFavors === 0 && user.activeRequestingFavors === 0) {
                         usersIds.push(user.notificationId)
                     }
                 });
@@ -230,7 +234,7 @@ exports.sendNotificationOnUpdate = functions.firestore
                     tokens: []
                 };
 
-                sendMessageToUsers(message, receivers)
+                sendMessageToUsers(message, receivers, UPDATE_TYPE)
             }
         }
     );
@@ -323,7 +327,7 @@ exports.sendNotificationOnNewChat = functions.firestore
                     };
 
                     userIds.splice(userIds.indexOf(senderId), 1)
-                    sendMessageToUsers(notification, userIds)
+                    sendMessageToUsers(notification, userIds, CHAT_TYPE)
                 });
             })
     });

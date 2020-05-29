@@ -34,7 +34,7 @@
     <string name="download_offline_map">https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&amp;hl=en</string>
     <string name="hint_drag_marker">Drag me</string>
     <string name="hint_click_window">Long press marker to drag</string>
-    <string name="default_radius">10 Km</string>
+    <string name="default_radius">10</string>
     <string name="setting_disabled">disabled</string>
     <string name="map_request_favor">Select Favor Location</string>
     <string name="map_edit_favor_loc">Edit Favor Location</string>
@@ -111,20 +111,25 @@
 
     <!-- Notification Preferences -->
     <string name="notification_title">Enable new favor notifications</string>
-    <string name="notification_summary">Be notified when new favors are posted in the area</string>
-    <string name="notification_radius_title">Notifications radius</string>
-
-    <string name="notification_delete_title">Enable delete notifications</string>
-    <string name="notification_delete_summary">Be notified when favors that you joined are deleted</string>
+    <string name="notification_summary">Be notified when new favors are posted in the area within a certain radius</string>
+    <string name="notification_radius_title">Notifications radius in kilometers</string>
 
     <string name="notification_update_title">Enable updates notifications</string>
-    <string name="notification_update_summary">Be notified when the poster modifies a favor you joined</string>
-
-    <string name="notification_join_title">Enable join notification</string>
-    <string name="notification_join_summary">Be notified when a user joins a favor you posted</string>
+    <string name="notification_update_summary">Be notified when there is an update on a favor you created or committed</string>
 
     <string name="notification_chat_title">Enable chat notifications</string>
-    <string name="notification_chat_summary">Be notified when someone writes a messages in a chat of the posts you joined or created</string>
+    <string name="notification_chat_summary">Be notified when someone writes a message in a chat of a favor created or committed</string>
+
+    <string name="map_style_default_value">0</string>
+    <string name="map_style_title">Map style</string>
+
+    <string name="nearbyFavors_notifications_setting_key">nearbyFavors_notifications_setting_key</string>
+    <string name="radius_notifications_setting_key">radius_notifications_setting_key</string>
+    <string name="update_notifications_setting_key">update_notifications_setting_key</string>
+    <string name="chat_notifications_setting_key">chat_notifications_setting_key</string>
+    <string name="map_style_key">map_style</string>
+
+
     <string name="error_send_msg_chat">Error sending message</string>
     <!-- Help preferences -->
     <string name="error_database_sync">Failed fetching data</string>

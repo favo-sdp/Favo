@@ -12,7 +12,6 @@ import ch.epfl.favo.database.Document;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.util.CommonTools;
 
 /**
  * This class contains all the relevant information about users TODO: It should implement parcelable
@@ -39,6 +38,9 @@ public class User implements Document {
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";
   public static final String BALANCE = "balance";
+  public static final String NOTIFICATION_RADIUS = "notificationRadius";
+  public static final String CHAT_NOTIFICATIONS = "chatNotifications";
+  public static final String UPDATE_NOTIFICATIONS = "updateNotifications";
 
   private String id;
   private String name;
@@ -55,6 +57,9 @@ public class User implements Document {
   private int likes;
   private int dislikes;
   private double balance;
+  private double notificationRadius;
+  private boolean chatNotifications;
+  private boolean updateNotifications;
   private String profilePicUrl;
 
   public User() {
@@ -66,6 +71,9 @@ public class User implements Document {
     this.dislikes = 0;
     this.completedFavors = 0;
     this.balance = 10.0;
+    this.notificationRadius = 10.0;
+    this.updateNotifications = true;
+    this.chatNotifications = true;
   }
 
   public User(Map<String, Object> map) {
@@ -84,6 +92,9 @@ public class User implements Document {
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
     this.balance = (double) map.get(BALANCE);
+    this.notificationRadius = (double) map.get(NOTIFICATION_RADIUS);
+    this.chatNotifications = (boolean) map.get(CHAT_NOTIFICATIONS);
+    this.updateNotifications = (boolean) map.get(UPDATE_NOTIFICATIONS);
   }
 
   public User(
@@ -108,6 +119,9 @@ public class User implements Document {
     this.dislikes = 0;
     this.completedFavors = 0;
     this.balance = 10.0;
+    this.notificationRadius = 10.0;
+    this.updateNotifications = true;
+    this.chatNotifications = true;
   }
 
   public User(FirebaseUser firebaseUser, String deviceId, Location location) {
@@ -147,6 +161,9 @@ public class User implements Document {
         put(LIKES, likes);
         put(DISLIKES, dislikes);
         put(BALANCE, balance);
+        put(NOTIFICATION_RADIUS, notificationRadius);
+        put(CHAT_NOTIFICATIONS, chatNotifications);
+        put(UPDATE_NOTIFICATIONS, updateNotifications);
       }
     };
   }
@@ -155,7 +172,9 @@ public class User implements Document {
     return name;
   }
 
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public String getEmail() {
     return email;
@@ -272,5 +291,29 @@ public class User implements Document {
 
   public void setDislikes(int dislikes) {
     this.dislikes = dislikes;
+  }
+
+  public double getNotificationRadius() {
+    return notificationRadius;
+  }
+
+  public boolean isChatNotifications() {
+    return chatNotifications;
+  }
+
+  public boolean isUpdateNotifications() {
+    return updateNotifications;
+  }
+
+  public void setNotificationRadius(double notificationRadius) {
+    this.notificationRadius = notificationRadius;
+  }
+
+  public void setChatNotifications(boolean chatNotifications) {
+    this.chatNotifications = chatNotifications;
+  }
+
+  public void setUpdateNotifications(boolean updateNotifications) {
+    this.updateNotifications = updateNotifications;
   }
 }
