@@ -48,7 +48,7 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
             .thenAccept(user -> favorRequester.setText(getUserName(user)));
 
     TextView favorCoins = convertView.findViewById(R.id.item_coins);
-    favorCoins.setText(getContext().getResources().getString(R.string.num_coins, favor.getReward()));
+    favorCoins.setText(getContext().getResources().getString(R.string.num_coins, (int) favor.getReward()));
 
     ImageView favorIcon = convertView.findViewById(R.id.item_icon);
     // Todo: load requester profile picture (@Daniel)
