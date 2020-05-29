@@ -15,12 +15,10 @@ public class TestConstants {
   public static final String DEVICE_ID = "23a48d9hj";
   public static final String EMAIL = "test@example.com";
   public static final String NAME = "Test Testerson";
-  public static final String USERNAME = "testerson123";
   public static final String PROVIDER = "test provider";
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
-  public static final double NOTIFICATION_RADIUS = 25.0;
+  public static final double NOTIFICATION_RADIUS = 1.0;
   public static final boolean DEFAULT_NOTIFICATION_PREFERENCE = false;
-
 
   // Favor related test constants
   public static final String TITLE = "fake test title";
@@ -28,8 +26,6 @@ public class TestConstants {
   public static final String REQUESTER_ID = DatabaseWrapper.generateRandomId();
   public static final FavoLocation LOCATION = new FavoLocation(PROVIDER);
   public static final Date BIRTHDAY = new Date(0);
-  public static final double RADIUS = 134.56;
-  public static final double LATITUDE = 46.5, LONGITUDE = 6.6;
   public static final double REWARD = 3;
   public static final FavorStatus FAVOR_STATUS = FavorStatus.REQUESTED;
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
@@ -49,9 +45,7 @@ public class TestConstants {
   public static final String MESSAGE_USER_NAME = "testName";
   public static final String MESSAGE_VALUE = "testMessage";
   public static final String MESSAGE_IMAGE_PATH = "testImagePath";
-  public static final String MESSAGE_NOTIF_ID = "testNotifId";
   public static final String MESSAGE_USER_ID = "testUid";
-  public static final String MESSAGE_IS_FIRST_MESSAGE = "true";
   public static final String MESSAGE_LATITUDE = "1.23";
   public static final String MESSAGE_LONGITUDE = "1.25";
 }
