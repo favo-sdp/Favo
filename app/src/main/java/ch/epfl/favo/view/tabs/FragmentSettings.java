@@ -74,14 +74,14 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     updatePreference.setOnPreferenceChangeListener(
         (preference, newValue) -> {
-          currentUser.setUpdateNotifications(Boolean.parseBoolean((String) newValue));
+          currentUser.setUpdateNotifications((boolean) newValue);
           DependencyFactory.getCurrentUserRepository().updateUser(currentUser);
           return true;
         });
 
     chatPreference.setOnPreferenceChangeListener(
         (preference, newValue) -> {
-          currentUser.setChatNotifications(Boolean.parseBoolean((String) newValue));
+          currentUser.setChatNotifications((boolean) newValue);
           DependencyFactory.getCurrentUserRepository().updateUser(currentUser);
           return true;
         });

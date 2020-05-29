@@ -18,6 +18,9 @@ public class TestConstants {
   public static final String USERNAME = "testerson123";
   public static final String PROVIDER = "test provider";
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
+  public static final double NOTIFICATION_RADIUS = 25.0;
+  public static final boolean DEFAULT_NOTIFICATION_PREFERENCE = false;
+
 
   // Favor related test constants
   public static final String TITLE = "fake test title";

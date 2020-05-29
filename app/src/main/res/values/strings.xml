@@ -115,7 +115,7 @@
     <string name="username_title">Username</string>
 
     <!-- Notification Preferences -->
-    <string name="notification_title">Enable new favor notifications</string>
+    <string name="notification_title">Enable nearby favor notifications</string>
     <string name="notification_summary">Be notified when new favors are posted in the area within a certain radius</string>
     <string name="notification_radius_title">Notifications radius in kilometers</string>
 
