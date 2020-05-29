@@ -34,6 +34,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
@@ -85,7 +86,6 @@ public class FavorPage extends Fragment {
     setHasOptionsMenu(true);
   }
 
-  @SuppressLint("SetTextI18n")
   @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
@@ -106,8 +106,10 @@ public class FavorPage extends Fragment {
         FavorUtil.getSingleInstance()
             .getAllUserFavors(DependencyFactory.getCurrentFirebaseUser().getUid());
 
-    activeFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", false));
-    archiveFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", true));
+    activeFavorsOptions =
+        createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, false));
+    archiveFavorsOptions =
+        createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, true));
 
     // setup methods
     setupSwitchButtons();
@@ -183,7 +185,7 @@ public class FavorPage extends Fragment {
                 Favor favor = doc.toObject(Favor.class);
                 if (favor != null) {
                   Bundle favorBundle = new Bundle();
-                  favorBundle.putString("FAVOR_ARGS", favor.getId());
+                  favorBundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
                   Navigation.findNavController(requireView())
                       .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
                 }
@@ -213,12 +215,10 @@ public class FavorPage extends Fragment {
           case ERROR:
             Toast.makeText(
                     getContext(),
-                    "An error occurred. Check your internet connection.",
+                    getString(R.string.favors_retrieval_failed_message),
                     Toast.LENGTH_SHORT)
                 .show();
 
-            // remove this to repeat toast every time
-            // retry();
             break;
         }
       }
@@ -261,7 +261,7 @@ public class FavorPage extends Fragment {
     MenuItem searchMenuItem = menu.findItem(R.id.search_item);
     searchView = (SearchView) searchMenuItem.getActionView();
     searchView.setIconifiedByDefault(true);
-    searchView.setQueryHint("Enter search");
+    searchView.setQueryHint(getString(R.string.query_hint));
 
     setOnMenuItemActions(searchMenuItem);
     setOnQueryTextListeners();
@@ -298,8 +298,8 @@ public class FavorPage extends Fragment {
             } else {
               query =
                   baseQuery
-                      .whereGreaterThanOrEqualTo("title", newText)
-                      .whereLessThanOrEqualTo("title", newText + END_CODE);
+                      .whereGreaterThanOrEqualTo(Favor.TITLE, newText)
+                      .whereLessThanOrEqualTo(Favor.TITLE, newText + END_CODE);
             }
 
             lastQuery = newText;
@@ -325,7 +325,7 @@ public class FavorPage extends Fragment {
               query = baseQuery;
               lastQuery = "";
             } else {
-              query = baseQuery.whereEqualTo("title", lastQuery);
+              query = baseQuery.whereEqualTo(Favor.TITLE, lastQuery);
             }
 
             displayFavorList(createFirestorePagingOptions(query));

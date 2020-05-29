@@ -19,28 +19,28 @@ import ch.epfl.favo.gps.FavoLocation;
  */
 public class User implements Document {
 
-  public static final int MAX_ACCEPTING_FAVORS = 1;
-  public static final int MAX_REQUESTING_FAVORS = 5;
+  static final int MAX_ACCEPTING_FAVORS = 1;
+  static final int MAX_REQUESTING_FAVORS = 5;
 
   // String constants for Map conversion
-  public static final String ID = "id";
+  static final String ID = "id";
   public static final String NAME = "name";
   public static final String EMAIL = "email";
-  public static final String DEVICE_ID = "deviceId";
-  public static final String NOTIFICATION_ID = "notificationId";
-  public static final String BIRTH_DATE = "birthDate";
-  public static final String LOCATION = "location";
-  public static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
-  public static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
-  public static final String REQUESTED_FAVORS = "requestedFavors";
-  public static final String ACCEPTED_FAVORS = "acceptedFavors";
-  public static final String COMPLETED_FAVORS = "completedFavors";
-  public static final String LIKES = "likes";
-  public static final String DISLIKES = "dislikes";
-  public static final String BALANCE = "balance";
-  public static final String NOTIFICATION_RADIUS = "notificationRadius";
-  public static final String CHAT_NOTIFICATIONS = "chatNotifications";
-  public static final String UPDATE_NOTIFICATIONS = "updateNotifications";
+  private static final String DEVICE_ID = "deviceId";
+  static final String NOTIFICATION_ID = "notificationId";
+  static final String BIRTH_DATE = "birthDate";
+  static final String LOCATION = "location";
+  static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
+  static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
+  private static final String REQUESTED_FAVORS = "requestedFavors";
+  private static final String ACCEPTED_FAVORS = "acceptedFavors";
+  private static final String COMPLETED_FAVORS = "completedFavors";
+  private static final String LIKES = "likes";
+  private static final String DISLIKES = "dislikes";
+  private static final String BALANCE = "balance";
+  private static final String NOTIFICATION_RADIUS = "notificationRadius";
+  private static final String CHAT_NOTIFICATIONS = "chatNotifications";
+  private static final String UPDATE_NOTIFICATIONS = "updateNotifications";
 
   private String id;
   private String name;
@@ -192,7 +192,7 @@ public class User implements Document {
     return balance;
   }
 
-  public Date getBirthDate() {
+  Date getBirthDate() {
     return birthDate;
   }
 
@@ -200,29 +200,29 @@ public class User implements Document {
     return location;
   }
 
-  public int getActiveAcceptingFavors() {
+  int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
   }
 
-  public int getActiveRequestingFavors() {
+  int getActiveRequestingFavors() {
     return activeRequestingFavors;
   }
 
-  public String getPictureUrl() {
+  String getPictureUrl() {
     return profilePicUrl;
   }
 
-  public void setProfilePicUrl(String url) {
+  void setProfilePicUrl(String url) {
     profilePicUrl = url;
   }
 
-  public void setActiveAcceptingFavors(int totalAcceptingFavors) {
+  void setActiveAcceptingFavors(int totalAcceptingFavors) {
     if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
       throw new IllegalAcceptException("Cannot accept");
     this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
-  public void setActiveRequestingFavors(int totalRequestingFavors) {
+  void setActiveRequestingFavors(int totalRequestingFavors) {
     if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
       throw new IllegalRequestException("Cannot request");
     this.activeRequestingFavors = totalRequestingFavors;
@@ -232,7 +232,7 @@ public class User implements Document {
     this.notificationId = notificationId;
   }
 
-  public void setBalance(Double balance) {
+  void setBalance(Double balance) {
     this.balance = balance;
   }
 
@@ -257,7 +257,7 @@ public class User implements Document {
     return requestedFavors;
   }
 
-  public void setRequestedFavors(int requestedFavors) {
+  void setRequestedFavors(int requestedFavors) {
     this.requestedFavors = requestedFavors;
   }
 
@@ -273,7 +273,7 @@ public class User implements Document {
     return completedFavors;
   }
 
-  public void setCompletedFavors(int completedFavors) {
+  void setCompletedFavors(int completedFavors) {
     this.completedFavors = completedFavors;
   }
 

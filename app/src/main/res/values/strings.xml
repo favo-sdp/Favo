@@ -70,6 +70,11 @@
     <string name="searchView_title">Search View</string>
     <string name="query_failed"> No results found</string>
     <string name="empty"> </string>
+    <string name="query_hint">Enter search</string>
+
+    <string name="favors_retrieval_failed_message">An error occurred. Check your internet connection</string>
+    <string name="select_image_text">Select Image</string>
+
 
     <!--Nearby Favor View -->
     <string name="favor_no_nearby_favor">There are no favors around you</string>

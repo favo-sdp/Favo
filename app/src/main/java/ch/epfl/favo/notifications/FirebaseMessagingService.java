@@ -27,15 +27,22 @@ import ch.epfl.favo.util.DependencyFactory;
 public class FirebaseMessagingService
     extends com.google.firebase.messaging.FirebaseMessagingService {
 
-  public static String CHANNEL_NAME = "Default channel name";
+  public static final String CHANNEL_NAME = "Default channel name";
+  public static final String FAVOR_NOTIFICATION_KEY = "FavorId";
 
-  // show notification received
+  /**
+   * Create and show notification to the user with the specified parameters
+   *
+   * @param context: application context
+   * @param notification: RemoteMessage received through Firebase Cloud Messaging
+   * @param channelId: id of the notification channel
+   */
   public static void showNotification(
       Context context, RemoteMessage notification, String channelId) {
 
     Intent intent = new Intent(context, MainActivity.class);
     // add favor id as an argument to main activity
-    intent.putExtra("FavorId", notification.getData().get("FavorId"));
+    intent.putExtra(FAVOR_NOTIFICATION_KEY, notification.getData().get(FAVOR_NOTIFICATION_KEY));
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
     PendingIntent pendingIntent =
@@ -46,7 +53,7 @@ public class FirebaseMessagingService
     NotificationCompat.Builder notificationBuilder =
         new NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.logo)
-            .setContentTitle(notification.getNotification().getTitle())
+            .setContentTitle(Objects.requireNonNull(notification.getNotification()).getTitle())
             .setContentText(notification.getNotification().getBody())
             .setAutoCancel(true)
             .setSound(defaultSoundUri)

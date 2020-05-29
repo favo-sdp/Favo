@@ -27,7 +27,7 @@ public class Message implements Document {
   private String mFavorId;
   public static final String FAVOR_ID = "favorId";
   private Date mTimestamp;
-  public static final String TIME_STAMP = "timeStamp";
+  public static final String TIME_STAMP = "timestamp";
   private String mImagePath;
   public static final String IMAGE_PATH = "imagePath";
   private int mMessageType;
@@ -51,15 +51,7 @@ public class Message implements Document {
       @NonNull String favorId,
       @Nullable String latitude,
       @Nullable String longitude) {
-    this(
-        name,
-        uid,
-        messageType,
-        message,
-        imagePath,
-        favorId,
-        latitude,
-        longitude);
+    this(name, uid, messageType, message, imagePath, favorId, latitude, longitude);
     mId = id;
   }
 
@@ -182,21 +174,31 @@ public class Message implements Document {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Message message = (Message) o;
-    return mMessageType == message.mMessageType &&
-            mId.equals(message.mId) &&
-            mName.equals(message.mName) &&
-            mMessage.equals(message.mMessage) &&
-            mUid.equals(message.mUid) &&
-            mFavorId.equals(message.mFavorId) &&
-            mTimestamp.equals(message.mTimestamp) &&
-            Objects.equals(mImagePath, message.mImagePath) &&
-            Objects.equals(mLatitude, message.mLatitude) &&
-            Objects.equals(mLongitude, message.mLongitude);
+    return mMessageType == message.mMessageType
+        && mId.equals(message.mId)
+        && mName.equals(message.mName)
+        && mMessage.equals(message.mMessage)
+        && mUid.equals(message.mUid)
+        && mFavorId.equals(message.mFavorId)
+        && mTimestamp.equals(message.mTimestamp)
+        && Objects.equals(mImagePath, message.mImagePath)
+        && Objects.equals(mLatitude, message.mLatitude)
+        && Objects.equals(mLongitude, message.mLongitude);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(mId, mName, mMessage, mUid, mFavorId, mTimestamp, mImagePath, mMessageType, mLatitude, mLongitude);
+    return Objects.hash(
+        mId,
+        mName,
+        mMessage,
+        mUid,
+        mFavorId,
+        mTimestamp,
+        mImagePath,
+        mMessageType,
+        mLatitude,
+        mLongitude);
   }
 
   @NonNull
