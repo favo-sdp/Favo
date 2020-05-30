@@ -145,7 +145,9 @@ public class MapPage extends Fragment
     defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference
+
     String map_mode = UserSettings.getMapStyle(requireContext());
+    if( map_mode == null || map_mode.equals("")) map_mode = "0";
     int map_mode_idx = Integer.parseInt(map_mode);
     MapStyleOptions mapStyleOptions =
         MapStyleOptions.loadRawResourceStyle(getContext(), mapStyles.get(map_mode_idx));
@@ -168,10 +170,10 @@ public class MapPage extends Fragment
     } catch (NoPermissionGrantedException e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.no_position_permission_tip));
       return;
-    } catch (NoPositionFoundException e){
+    } catch (NoPositionFoundException e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.no_position_found_tip));
       return;
-    } catch (Exception e){
+    } catch (Exception e) {
       CommonTools.showSnackbar(requireView(), getString(R.string.report_unknown_error));
       return;
     }
@@ -192,8 +194,8 @@ public class MapPage extends Fragment
         setupNearbyFavorsListener();
         setupFocusedFavorListen();
         if (focusedFavor == null && firstOpenApp) {
-            // only when the app is firstly opened, center on my location,
-            // otherwise just return where I left before
+          // only when the app is firstly opened, center on my location,
+          // otherwise just return where I left before
           centerViewOnMyLocation();
           firstOpenApp = false;
         }
@@ -278,7 +280,6 @@ public class MapPage extends Fragment
     }
   }
 
-
   private class MarkerDrag implements GoogleMap.OnMarkerDragListener {
 
     @Override
@@ -331,23 +332,23 @@ public class MapPage extends Fragment
             getViewLifecycleOwner(),
             favor -> {
               try {
-                  if (favor != null && favorViewModel.isShowObservedFavor()) {
-                      favorViewModel.setShowObservedFavor(false);
-                      setFocusedFavor(favor);
-                      boolean isRequested = // check if favor is requested
-                              favor
-                                      .getRequesterId()
-                                      .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
-                    boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
-                    Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
-                    if (isEdited) {
-                      existAddedNewMarkers.add(marker);
-                      doneButton.setOnClickListener(
-                              v -> requestFavorOnMarkerLocation(existAddedNewMarkers.get(0)));
-                    }
-                    marker.showInfoWindow();
-                    focusViewOnLocation(focusedFavor.getLocation(), true);
+                if (favor != null && favorViewModel.isShowObservedFavor()) {
+                  favorViewModel.setShowObservedFavor(false);
+                  setFocusedFavor(favor);
+                  boolean isRequested = // check if favor is requested
+                      favor
+                          .getRequesterId()
+                          .equals(DependencyFactory.getCurrentFirebaseUser().getUid());
+                  boolean isEdited = focusedFavor.getStatusId() == FavorStatus.EDIT.toInt();
+                  Marker marker = drawFavorMarker(focusedFavor, isRequested, isEdited);
+                  if (isEdited) {
+                    existAddedNewMarkers.add(marker);
+                    doneButton.setOnClickListener(
+                        v -> requestFavorOnMarkerLocation(existAddedNewMarkers.get(0)));
                   }
+                  marker.showInfoWindow();
+                  focusViewOnLocation(focusedFavor.getLocation(), true);
+                }
               } catch (Exception e) {
                 CommonTools.showSnackbar(requireView(), getString(R.string.error_database_sync));
               }
@@ -546,7 +547,6 @@ public class MapPage extends Fragment
       }
     }
   }
-
 
   @Override
   public View getInfoWindow(Marker marker) {
