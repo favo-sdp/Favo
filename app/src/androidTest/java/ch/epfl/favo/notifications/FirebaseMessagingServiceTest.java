@@ -25,11 +25,17 @@ import java.util.UUID;
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
+import ch.epfl.favo.R;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.FAVOR_ID;
@@ -71,13 +77,14 @@ public class FirebaseMessagingServiceTest {
   }
 
   @Test
-  public void testNotifications() {
+  public void testNotifications() throws InterruptedException {
 
     Bundle bundle = generateBundle();
     FirebaseMessagingService.showNotification(
-        mainActivityTestRule.getActivity(), new RemoteMessage(bundle), FirebaseMessagingService.CHANNEL_NAME);
+        mainActivityTestRule.getActivity(),
+        new RemoteMessage(bundle),
+        FirebaseMessagingService.CHANNEL_NAME);
 
-    // WORKS LOCALLY, NOT ON TRAVIS... BUT WORKS ON CIRRUS :)
     UiDevice device = UiDevice.getInstance(getInstrumentation());
     device.openNotification();
 
@@ -88,8 +95,9 @@ public class FirebaseMessagingServiceTest {
     assertEquals(NOTIFICATION_BODY, text.getText());
     title.click();
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(2000);
     // check that tab 2 is indeed opened
-    // onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   private Bundle generateBundle() {

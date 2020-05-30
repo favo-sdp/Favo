@@ -44,7 +44,7 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
-public class FavorPage extends Fragment {
+public class MyFavorsPage extends Fragment {
 
   private View rootView;
   private TextView tipTextView;
@@ -76,7 +76,7 @@ public class FavorPage extends Fragment {
 
   private Query baseQuery;
 
-  public FavorPage() {
+  public MyFavorsPage() {
     // Required empty public constructor
   }
 

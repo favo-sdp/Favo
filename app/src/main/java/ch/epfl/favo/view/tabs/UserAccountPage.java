@@ -29,6 +29,8 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
+import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
+
 public class UserAccountPage extends Fragment {
 
   private View view;
@@ -126,7 +128,10 @@ public class UserAccountPage extends Fragment {
   private void onComplete(@NonNull Task<Void> task, int errorMessage) {
     if (task.isSuccessful()) {
       if (errorMessage == R.string.delete_account_failed) {
+        // remove user data from database
         DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
+        // remove user preferences from cache
+        getDefaultSharedPreferences(requireContext()).edit().clear().apply();
       }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {

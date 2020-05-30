@@ -78,5 +78,4 @@ public class FakeItemFactory {
         TestConstants.MESSAGE_LATITUDE,
         TestConstants.MESSAGE_LONGITUDE);
   }
-
 }

@@ -187,7 +187,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_favorList"
-        android:name="ch.epfl.favo.view.tabs.favorList.FavorPage"
+        android:name="ch.epfl.favo.view.tabs.favorList.MyFavorsPage"
         android:label="FavorView"
         tools:layout="@layout/fragment_favorpage">
         <action

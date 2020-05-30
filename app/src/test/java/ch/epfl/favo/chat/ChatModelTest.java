@@ -42,12 +42,7 @@ public class ChatModelTest {
     oneMessage.setName(MESSAGE_USER_NAME);
     Message secondMessage =
         new Message(
-            MESSAGE_USER_NAME,
-            MESSAGE_USER_ID,
-            0,
-            MESSAGE_VALUE,
-            MESSAGE_IMAGE_PATH,
-            FAVOR_ID);
+            MESSAGE_USER_NAME, MESSAGE_USER_ID, 0, MESSAGE_VALUE, MESSAGE_IMAGE_PATH, FAVOR_ID);
     assertEquals(oneMessage.getName(), secondMessage.getName());
   }
 

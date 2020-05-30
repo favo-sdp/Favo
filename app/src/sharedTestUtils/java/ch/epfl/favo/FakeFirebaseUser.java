@@ -152,7 +152,7 @@ public class FakeFirebaseUser extends FirebaseUser {
   }
 
   @Override
-  public Task updateProfile(UserProfileChangeRequest userProfileChangeRequest){
+  public Task updateProfile(UserProfileChangeRequest userProfileChangeRequest) {
     return null;
   }
 }

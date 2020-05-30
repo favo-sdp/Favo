@@ -21,7 +21,9 @@ import ch.epfl.favo.util.DependencyFactory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
@@ -92,13 +94,10 @@ public class SettingsPageTest {
     // enable switch
     clickPreference(R.string.notification_title);
 
-//    // set radius
-//    clickPreference(R.string.notification_radius_title);
-//
-//    onView(withText(String.valueOf((int) TestConstants.NOTIFICATION_RADIUS))).perform(click());
-
     // disable switch
     clickPreference(R.string.notification_title);
+
+    onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -110,6 +109,8 @@ public class SettingsPageTest {
 
     // disable switch
     clickPreference(R.string.notification_chat_title);
+
+    onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -121,6 +122,8 @@ public class SettingsPageTest {
 
     // disable switch
     clickPreference(R.string.notification_update_title);
+
+    onView(withId(androidx.preference.R.id.recycler_view)).check(matches(isDisplayed()));
   }
 
   private void clickPreference(int resId) {

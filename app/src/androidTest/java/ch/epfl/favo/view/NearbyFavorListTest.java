@@ -99,7 +99,6 @@ public class NearbyFavorListTest {
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-
     // check active favors are displayed in active favor list view
     onView(withId(R.id.nearby_tip)).check(matches(not(isDisplayed())));
     getInstrumentation().waitForIdleSync();

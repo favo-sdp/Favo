@@ -217,15 +217,14 @@ public class ChatPageTest {
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
     UserUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
-            Thread.sleep(3000);
-                ViewInteraction recyclerView =
-                    onView(
-                        allOf(
-                            withId(R.id.messagesList),
-                            childAtPosition(withClassName(is("android.widget.RelativeLayout")),
-     1)));
+    Thread.sleep(3000);
+    ViewInteraction recyclerView =
+        onView(
+            allOf(
+                withId(R.id.messagesList),
+                childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
 
-        recyclerView.perform(actionOnItemAtPosition(0, click()));
+    recyclerView.perform(actionOnItemAtPosition(0, click()));
     getInstrumentation().waitForIdleSync();
     Thread.sleep(3000);
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
@@ -289,9 +288,6 @@ public class ChatPageTest {
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
     pressBack();
-
-
-
   }
 
   private Uri saveMockPicture(Bitmap bm, ChatPage chatPage) {
