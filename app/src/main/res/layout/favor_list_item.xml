@@ -38,9 +38,10 @@
             android:textAppearance="?attr/textAppearanceListItem"
             android:lines="1"
             android:maxLines="1"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginStart="50dp"
+            android:maxWidth="500dp"
             android:text="Title" />
 
         <LinearLayout
@@ -74,7 +75,8 @@
         android:layout_width="46dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:backgroundTint="#ffff"
+        android:background="@android:color/transparent"
+        android:elevation="10dp"
         android:drawableEnd="@drawable/ic_chat_24dp" />
 
 </RelativeLayout>
