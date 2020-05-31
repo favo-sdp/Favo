@@ -8,7 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
@@ -25,20 +24,17 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.function.Function;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalAcceptException;
-import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static ch.epfl.favo.util.CommonTools.getSnackbarMessageForFailedRequest;
 import static ch.epfl.favo.util.CommonTools.getUserName;
-import static ch.epfl.favo.util.CommonTools.handleException;
 
 class FavorViewHolder extends RecyclerView.ViewHolder {
 
@@ -47,7 +43,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
   private TextView mTitleView;
   private TextView mRequesterView;
   private TextView mRewardView;
-  private ImageView mRequesterIconView;
+  private CircleImageView mRequesterIconView;
   private TextView buttonViewOption;
   private IFavorViewModel favorViewModel;
 

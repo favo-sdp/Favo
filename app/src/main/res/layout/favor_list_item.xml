@@ -12,15 +12,17 @@
     android:paddingStart="?attr/listPreferredItemPaddingStart"
     android:paddingEnd="?attr/listPreferredItemPaddingEnd">
 
-    <ImageView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/item_icon"
-        app:srcCompat="@drawable/ic_anon_user_48dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_marginTop="6dp"
         android:layout_marginStart="0dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:src="@drawable/ic_anon_user_48dp"
+        app:civ_border_width="2dp"
         android:gravity="start"
-        android:contentDescription="REQUESTER_ICON" />
+        app:civ_border_color="@color/fui_transparent"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -2,9 +2,7 @@ package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,8 +35,6 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalAcceptException;
-import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;
@@ -47,6 +42,7 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import static androidx.navigation.Navigation.findNavController;
 import static ch.epfl.favo.util.CommonTools.handleException;
@@ -56,7 +52,7 @@ public class FavorPublishedView extends Fragment {
   private static String TAG = "FavorPublishedView";
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
   private static final String FAOV_DOMAIN = "https://favoapp.page.link</string>";
-  private static final String PACKAGE_NAME ="ch.epfl.favo";
+  private static final String PACKAGE_NAME = "ch.epfl.favo";
   private FavorStatus favorStatus;
   private Favor currentFavor;
   private Button commitAndCompleteBtn;
@@ -64,14 +60,13 @@ public class FavorPublishedView extends Fragment {
   private NonClickableToolbar toolbar;
   private MenuItem cancelItem;
   private MenuItem editItem;
-  private MenuItem restartItem;
+  // private MenuItem restartItem;
   private MenuItem inviteItem;
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
   private MenuItem reportItem;
   private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
-  private boolean isImageFitToScreen;
   private ImageView imageView;
   private FirebaseUser currentUser;
 
@@ -116,7 +111,7 @@ public class FavorPublishedView extends Fragment {
     cancelItem = menu.findItem(R.id.cancel_button);
     cancelCommitItem = menu.findItem(R.id.cancel_commit_button);
     editItem = menu.findItem(R.id.edit_button);
-    restartItem = menu.findItem(R.id.restart_button);
+    // restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
     reuseItem = menu.findItem(R.id.reuse_button);
@@ -140,10 +135,12 @@ public class FavorPublishedView extends Fragment {
     cancelItem.setVisible(cancelVisible);
 
     boolean restartVisible = currentFavor.getIsArchived() && isRequestedByCurrentUser;
-    //restartItem.setVisible(restartVisible);
+    // restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
-        currentFavor.getIsArchived() && isRequestedByCurrentUser && currentFavor.getAccepterId() == null);
+        currentFavor.getIsArchived()
+            && isRequestedByCurrentUser
+            && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequestedByCurrentUser && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
     reportItem.setVisible(!isRequestedByCurrentUser);
@@ -203,7 +200,7 @@ public class FavorPublishedView extends Fragment {
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
-                //Log.d(TAG, e.getMessage());
+                // Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 showBottomBar(false);
               }
@@ -218,9 +215,7 @@ public class FavorPublishedView extends Fragment {
             .createDynamicLink()
             .setLink(baseUrl)
             .setDomainUriPrefix(FAOV_DOMAIN)
-            .setAndroidParameters(
-                new DynamicLink.AndroidParameters.Builder(PACKAGE_NAME)
-                    .build())
+            .setAndroidParameters(new DynamicLink.AndroidParameters.Builder(PACKAGE_NAME).build())
             .setSocialMetaTagParameters(
                 new DynamicLink.SocialMetaTagParameters.Builder()
                     .setTitle("Favor " + currentFavor.getTitle())
@@ -235,7 +230,7 @@ public class FavorPublishedView extends Fragment {
     commitAndCompleteBtn = rootView.findViewById(R.id.commit_complete_button);
     Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
-    ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
+    CircleImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name_published_view);
 
     locationAccessBtn.setOnClickListener(new onButtonClick());
@@ -270,7 +265,6 @@ public class FavorPublishedView extends Fragment {
     }
   }
 
-
   private void tryMoveToUserInfoPage(String userId) {
 
     // check if user exists
@@ -304,10 +298,9 @@ public class FavorPublishedView extends Fragment {
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
-    if(descriptionStr==null || descriptionStr.equals(""))
+    if (descriptionStr == null || descriptionStr.equals(""))
       rootView.findViewById(R.id.description).setVisibility(View.GONE);
-    else
-      setupTextView(rootView, R.id.description, descriptionStr);
+    else setupTextView(rootView, R.id.description, descriptionStr);
 
     isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getUid());
     favorStatus = verifyFavorHasBeenAccepted(favor);
@@ -335,7 +328,7 @@ public class FavorPublishedView extends Fragment {
         Glide.with(this)
             .load(currentUser.getPhotoUrl())
             .fitCenter()
-            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
+            .into((CircleImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
       displayName(currentUser.getDisplayName(), currentUser.getEmail());
@@ -477,7 +470,8 @@ public class FavorPublishedView extends Fragment {
             currentFavor.getReward(),
             currentFavor.getPictureUrl());
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+    favorBundle.putString(
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -488,7 +482,8 @@ public class FavorPublishedView extends Fragment {
     newFavor.updateToOther(currentFavor);
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+    favorBundle.putString(
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -565,7 +560,8 @@ public class FavorPublishedView extends Fragment {
     if (favorStatus == FavorStatus.REQUESTED)
       for (int i = 1; i < currentFavor.getUserIds().size(); i++)
         currentFavor.getUserIds().remove(i);
-    CompletableFuture<Void> cancelFuture = getViewModel().cancelFavor(currentFavor, isRequestedByCurrentUser);
+    CompletableFuture<Void> cancelFuture =
+        getViewModel().cancelFavor(currentFavor, isRequestedByCurrentUser);
     handleResult(cancelFuture, R.string.favor_cancel_success_msg);
   }
 
