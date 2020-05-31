@@ -318,9 +318,9 @@ public class FavorEditingView extends Fragment {
   /** Called when camera button is clicked Method calls camera intent. */
   private void takePicture() {
     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-      != PackageManager.PERMISSION_GRANTED) {
+        != PackageManager.PERMISSION_GRANTED) {
       requireActivity()
-        .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
+          .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
 
@@ -332,11 +332,10 @@ public class FavorEditingView extends Fragment {
 
   private boolean isCameraAvailable() {
     boolean hasCamera =
-      requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+        requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     int numberOfCameras = Camera.getNumberOfCameras();
     return (hasCamera && numberOfCameras != 0);
   }
-
   /**
    * This method is called when external intents are used to load data on view.
    *
