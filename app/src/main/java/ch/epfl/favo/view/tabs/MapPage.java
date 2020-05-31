@@ -178,7 +178,7 @@ public class MapPage extends Fragment
       return;
     }
     try {
-      if (!getViewModel().isShowObservedFavor() && intentType != 0) //
+      if (!getViewModel().showsObservedFavor() && intentType != 0) //
       {
         boolean isMarkerEditable = intentType != OBSERVE_LOCATION;
         drawMarkerAndFocusOnLocation(isMarkerEditable);
@@ -332,7 +332,7 @@ public class MapPage extends Fragment
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null && favorViewModel.isShowObservedFavor()) {
+                if (favor != null && favorViewModel.showsObservedFavor()) {
                   favorViewModel.setShowObservedFavor(false);
                   setFocusedFavor(favor);
                   boolean isRequested = // check if favor is requested

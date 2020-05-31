@@ -21,7 +21,7 @@ public interface IFavorViewModel {
   CompletableFuture<Void> requestFavor(final Favor favor, int change);
 
   // Upload/download pictures
-  void uploadOrUpdatePicture(Favor favor, Bitmap picture);
+  CompletableFuture<Void> uploadOrUpdatePicture(Favor favor, Bitmap picture);
 
   CompletableFuture<Void> commitFavor(Favor favor, boolean isCancelled);
 
@@ -47,7 +47,7 @@ public interface IFavorViewModel {
 
   void setShowObservedFavor(Boolean show);
 
-  boolean isShowObservedFavor();
+  boolean showsObservedFavor();
 
   // Save/load pictures
   void savePictureToLocal(Context context, Favor favor, Bitmap picture);

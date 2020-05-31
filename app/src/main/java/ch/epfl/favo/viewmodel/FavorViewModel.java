@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.favor.IFavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
@@ -49,9 +49,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
-  private FavorUtil getFavorRepository() {
+  private IFavorUtil getFavorRepository() {
     return DependencyFactory.getCurrentFavorRepository();
   }
 
@@ -120,17 +119,17 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
                 getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, 1));
   }
 
-  public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> cancelFavor(Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
     tempFavor.setStatusIdToInt(cancelledStatus);
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
-    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
+    if (tempFavor.getStatusId() == REQUESTED.toInt()) tempFavor.setAccepterId("");
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    for (int i = 1; i < favor.getUserIds().size(); i++) {
+    for (int i = 1; i < tempFavor.getUserIds().size(); i++) {
       int commitUser = i;
-      resultFuture.thenCompose(
+      resultFuture = resultFuture.thenCompose(
           aVoid ->
               changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
     }
@@ -187,10 +186,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   // Upload/download pictures
   @Override
-  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
+  public CompletableFuture<Void> uploadOrUpdatePicture(Favor favor, Bitmap picture) {
     CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
-    pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
-  } // check what happens if updateFavorFoto fails
+    return pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
+  }
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
@@ -213,7 +212,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     if (activeFavorsAroundMe.getValue() == null
         || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
       getFavorRepository()
-          .getNearbyFavors(loc, radiusInKm)
+          .getLongitudeBoundedFavorsAroundMe(loc, radiusInKm)
           .addSnapshotListener(
               MetadataChanges.EXCLUDE,
               (queryDocumentSnapshots, e) ->
@@ -260,7 +259,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    // setFavorValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
@@ -306,7 +304,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public boolean isShowObservedFavor() {
+  public boolean showsObservedFavor() {
     return showFavor;
   }
 }
