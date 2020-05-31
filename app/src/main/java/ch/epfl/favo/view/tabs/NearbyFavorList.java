@@ -139,7 +139,7 @@ public class NearbyFavorList extends Fragment {
   }
 
   /**
-   *
+   * Display the list of favors specified by the argument, or display an tip string.
    * @param favors: a map of [favor_id, favor] to be displayed
    * @param textId: ID of the string to be displayed by tipTextView when favor list is empty
    */
