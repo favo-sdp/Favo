@@ -14,11 +14,13 @@ public interface IUserUtil {
 
   CompletableFuture<Void> updateUser(User user);
 
+  CompletableFuture<Void> incrementFieldForUser(String userId, String field,int change);
+
   CompletableFuture<Void> deleteUser(User user);
 
   CompletableFuture<User> findUser(String id) throws Resources.NotFoundException;
 
   CompletableFuture retrieveUserRegistrationToken(User user);
 
-  DocumentReference getCurrentUserReference(String userId);
+  DocumentReference getUserReference(String userId);
 }

@@ -168,7 +168,10 @@ public class SignInActivity extends AppCompatActivity {
                   throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()))
               .thenCompose(
                   (Function<User, CompletionStage<User>>)
-                      user -> (user != null) ? postNewUserFuture(user) : CompletableFuture.supplyAsync(()->null));
+                      user ->
+                          (user != null)
+                              ? postNewUserFuture(user)
+                              : CompletableFuture.supplyAsync(() -> null));
       loginFuture
           .thenAccept(user -> startMainActivity())
           .exceptionally(
@@ -181,7 +184,7 @@ public class SignInActivity extends AppCompatActivity {
               });
     }
   }
-
+  //Returs null but need to use raw type to use chain this future
   private CompletableFuture postNewUserFuture(User user) {
     if (user.getName() == null || user.getName().equals(""))
       user.setName(CommonTools.emailToName(user.getEmail()));

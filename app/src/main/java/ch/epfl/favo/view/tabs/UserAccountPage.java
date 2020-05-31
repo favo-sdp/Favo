@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class UserAccountPage extends Fragment {
 
   private View view;
   private User currentUser;
+  private String TAG = "UserAccountPage";
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -130,6 +132,7 @@ public class UserAccountPage extends Fragment {
       }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
+      Log.e(TAG, task.getException().toString());
       CommonTools.showSnackbar(getView(), getString(errorMessage));
     }
   }

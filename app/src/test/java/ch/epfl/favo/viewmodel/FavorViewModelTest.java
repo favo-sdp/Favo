@@ -74,7 +74,7 @@ public class FavorViewModelTest {
   }
 
   private void setupReturns() {
-    Mockito.doReturn(documentReference).when(userRepository).getCurrentUserReference(anyString());
+    Mockito.doReturn(documentReference).when(userRepository).getUserReference(anyString());
     Mockito.doReturn(successfulResult).when(pictureUtility).deletePicture(Mockito.anyString());
     Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
     Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
@@ -262,5 +262,11 @@ public class FavorViewModelTest {
   @Test
   public void testIsShowObservedFavor() {
     viewModel.isShowObservedFavor();
+  }
+
+  @Test
+  public void testCommitFavor(){
+    Assert.assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(),false).isDone());
+    Assert.assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(),true).isDone());
   }
 }

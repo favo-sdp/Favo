@@ -6,6 +6,7 @@ import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -77,6 +78,12 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
+  public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
+    Task<Void> updateTask = getUserReference(userId).update(field, FieldValue.increment(change));
+    return new TaskToFutureAdapter<>(updateTask).getInstance();
+  }
+
+  @Override
   public CompletableFuture<Void> deleteUser(User user) {
     return collection.removeDocument(user.getId());
   }
@@ -88,9 +95,10 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
-  public DocumentReference getCurrentUserReference(String userId) {
+  public DocumentReference getUserReference(String userId) {
     return collection.getDocumentQuery(userId);
   }
+
 
   /**
    * Returns all the favors that are active in a given radius.

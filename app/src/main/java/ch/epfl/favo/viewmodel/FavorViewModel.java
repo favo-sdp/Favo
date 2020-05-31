@@ -114,7 +114,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             currentUserId,
             true,
             change) // if user can request favor then post it in the favor collection
-        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor));
+        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor))
+        .thenCompose(
+            avoid ->
+                getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, 1));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
@@ -145,7 +148,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException("Wrong Status");
     }
-    return updateFavorForCurrentUser(tempFavor, isRequested, -1);
+    return updateFavorForCurrentUser(tempFavor, isRequested, -1)
+        .thenCompose(
+            aVoid ->
+                getUserRepository().incrementFieldForUser(currentUserId, User.COMPLETED_FAVORS, 1));
   }
 
   /**

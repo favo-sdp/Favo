@@ -3,10 +3,12 @@ package ch.epfl.favo.user;
 import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +17,14 @@ import org.mockito.Mockito;
 import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.Document;
 import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.FakeItemFactory.getUser;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -43,18 +47,30 @@ public class UserUtilTest {
         .updateDocument(anyString(), Mockito.anyMap());
     Mockito.doReturn(successfulFuture)
         .when(mockCollectionWrapper)
-        .addDocument(Mockito.any(Document.class));
+        .addDocument(any(Document.class));
     Query mockCollectionReference = Mockito.mock(Query.class);
+
     Query orderByResult = Mockito.mock(Query.class);
     Query arrayContainsResult = Mockito.mock(Query.class);
     Mockito.doReturn(mockCollectionReference).when(mockCollectionWrapper).getReference();
     Mockito.doReturn(arrayContainsResult)
         .when(orderByResult)
-        .whereArrayContains(anyString(), Mockito.any());
+        .whereArrayContains(anyString(), any());
     Mockito.doReturn(orderByResult)
         .when(mockCollectionReference)
-        .orderBy(anyString(), Mockito.any(Query.Direction.class));
+        .orderBy(anyString(), any(Query.Direction.class));
+    DocumentReference mockUserReference = Mockito.mock(DocumentReference.class);
+    Task mockTask = Mockito.mock(Task.class);
+    Mockito.doReturn(mockTask).when(mockUserReference).update(anyString(),any());
+    Mockito.doReturn(mockUserReference).when(mockCollectionWrapper).getDocumentQuery(anyString());
     DependencyFactory.setCurrentCollectionWrapper(mockCollectionWrapper);
+    DependencyFactory.setCurrentCompletableFuture(successfulFuture);
+  }
+  @After
+  public void tearDown(){
+    DependencyFactory.setCurrentCompletableFuture(null);
+    DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentFirebaseUser(null);
   }
 
   @Test
@@ -163,6 +179,12 @@ public class UserUtilTest {
 
   @Test
   public void testUserReference() {
-    UserUtil.getSingleInstance().getCurrentUserReference("randomId");
+    UserUtil.getSingleInstance().getUserReference("randomId");
+  }
+
+  @Test
+  public void testIncrementFieldForUser() {
+    Assert.assertTrue(UserUtil.getSingleInstance()
+        .incrementFieldForUser(TestConstants.USER_ID, User.ACCEPTED_FAVORS, 1).isDone());
   }
 }
