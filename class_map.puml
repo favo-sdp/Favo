@@ -23,7 +23,7 @@ class NearbyFavorList{
 List view
 of favors around
 }
-class FavorPage{
+class MyFavorsPage{
 contains users
 active/archived favors
 }
@@ -63,14 +63,14 @@ NearbyFavorList-left->MapPage
 NearbyFavorList-down->FavorViewModel:Observes
 FavorRequestView-down->FavorViewModel:Gets data
 FavorDetailView-down->FavorViewModel:Gets data
-MainActivity-up->FavorPage
+MainActivity-up->MyFavorsPage
 MainActivity-up->FragmentAbout:Controls
 MainActivity-up->FragmentSettings
 MainActivity-up->MapPage
 MainActivity-up->UserAccountPage
 MainActivity-up->ShopPage
-FavorPage-up->FavorRequestView:see own favor
-FavorPage-up->FavorDetailView:see others favor
+MyFavorsPage-up->FavorRequestView:see own favor
+MyFavorsPage-up->FavorDetailView:see others favor
 UserInfoPage-down->UserUtil:Sees user data
 UserAccountPage-down->UserUtil
 FavorRequestView-up->ChatPage

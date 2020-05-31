@@ -114,7 +114,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                     var latUser = user.location.latitude;
                     var longUser = user.location.longitude;
                     var distance = distanceInKm(longFav, latFav, longUser, latUser);
-                    if (distance < user.notificationRadius && user.id !== posterId && user.activeAcceptingFavors === 0 && user.activeRequestingFavors === 0) {
+                    if (distance < user.notificationRadius && user.id !== posterId && user.activeAcceptingFavors === 0) {
                         usersIds.push(user.notificationId)
                     }
                 });
