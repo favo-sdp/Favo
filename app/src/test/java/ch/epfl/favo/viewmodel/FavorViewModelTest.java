@@ -265,8 +265,8 @@ public class FavorViewModelTest {
   }
 
   @Test
-  public void testCommitFavor(){
-    Assert.assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(),false).isDone());
-    Assert.assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(),true).isDone());
+  public void testCommitFavor() {
+    Assert.assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), false).isDone());
+    Assert.assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), true).isDone());
   }
 }
