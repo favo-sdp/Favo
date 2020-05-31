@@ -169,6 +169,7 @@
     <string name="feedback_description">Rate your experience with this user to help others</string>
     <string name="positive_feedback">All good!</string>
     <string name="negative_feedback">Bad experience</string>
+    <string name="edit_profile_dialog_title">Change Display Name</string>
 
 
     <!-- Shop Page -->

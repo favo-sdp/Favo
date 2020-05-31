@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/change_name_dialog_title"
+        android:text="@string/edit_profile_dialog_title"
         android:textStyle="bold"
         android:textColor="@color/material_purple_a700"
         android:textAppearance="?android:attr/textAppearanceMedium" />
