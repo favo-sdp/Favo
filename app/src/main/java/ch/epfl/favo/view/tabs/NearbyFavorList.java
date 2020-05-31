@@ -32,19 +32,22 @@ import ch.epfl.favo.viewmodel.IFavorViewModel;
 import static androidx.navigation.Navigation.findNavController;
 
 /**
- * View will contain list of favors requested in the past. The list will contain clickable items
+ * View will contain list of favors requested by users nearby. The list will contain clickable items
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
 public class NearbyFavorList extends Fragment {
 
-  private TextView tipTextView;
+  private View rootView;
   private ListView listView;
+  private TextView tipTextView;
+
   private SearchView searchView;
   private MenuItem searchMenuItem;
-  private View rootView;
+
   private Map<String, Favor> favorsFound = new HashMap<>();
   private Map<String, Favor> nearbyFavors;
+
   private IFavorViewModel viewModel;
 
   public NearbyFavorList() {
@@ -86,20 +89,20 @@ public class NearbyFavorList extends Fragment {
     setupNearbyFavorsListener();
   }
 
-  private void
-      setupNearbyFavorsListener() { // TODO: figure out a way to share view model without using main
+  // TODO: figure out a way to share view model without using main
+  private void setupNearbyFavorsListener() {
     getViewModel()
-        .getFavorsAroundMe()
-        .observe(
-            getViewLifecycleOwner(),
-            stringFavorMap -> {
-              try {
-                nearbyFavors = stringFavorMap;
-                displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
-              } catch (Exception e) {
-                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
-              }
-            });
+      .getFavorsAroundMe()
+      .observe(
+          getViewLifecycleOwner(),
+          stringFavorMap -> {
+            try {
+              nearbyFavors = stringFavorMap;
+              displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
+            } catch (Exception e) {
+              CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
+            }
+          });
   }
 
   public IFavorViewModel getViewModel() {
@@ -135,6 +138,11 @@ public class NearbyFavorList extends Fragment {
     displayFavorList(nearbyFavors, R.string.empty);
   }
 
+  /**
+   *
+   * @param favors: a map of [favor_id, favor] to be displayed
+   * @param textId: ID of the string to be displayed by tipTextView when favor list is empty
+   */
   private void displayFavorList(Map<String, Favor> favors, int textId) {
     if (favors.isEmpty()) {
       tipTextView.setText(getString(textId));
@@ -177,6 +185,13 @@ public class NearbyFavorList extends Fragment {
     }
   }
 
+  /**
+   * Set up onItemClickListener for list items.
+   * Specifically, when a favor item is clicked,
+   * 1. High the soft keyboard.
+   * 2. Extract the favor object and put it inside a bundle with key CommonTools.FAVOR_ARGS
+   * 3. Navigate to favorPublishView with this bundle.
+   */
   private void setupListView() {
     listView.setOnItemClickListener(
         (parent, view, position, id) -> {
@@ -189,9 +204,12 @@ public class NearbyFavorList extends Fragment {
         });
   }
 
+  /**
+   * Ensure click on the view will hide keyboard
+   * @param view: clicking on this view will hide the soft keyboard
+   */
   @SuppressLint("ClickableViewAccessibility")
   private void setupView(View view) {
-    // ensure click on view will hide keyboard
     view.findViewById(R.id.constraint_layout_nearby_favor_view)
         .setOnTouchListener(
             (v, event) -> {
