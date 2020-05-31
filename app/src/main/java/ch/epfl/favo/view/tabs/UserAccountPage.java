@@ -2,8 +2,6 @@ package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
@@ -25,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
@@ -33,21 +29,13 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.addFavor.PictureUploadButtons;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
-
-import static android.app.Activity.RESULT_OK;
 
 @SuppressLint("NewApi")
 public class UserAccountPage extends Fragment {
 
-  private static final int PICK_IMAGE_REQUEST = 1;
-  private static final int USE_CAMERA_REQUEST = 2;
-
   private View view;
   private IFavorViewModel viewModel;
-
-  private ImageView profilePictureInput;
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -92,15 +80,12 @@ public class UserAccountPage extends Fragment {
   }
 
   private void setupEditProfileDialog(LayoutInflater inflater, User user) {
+    Button editProfileButton = view.findViewById(R.id.edit_profile);
     View profileHolderView = view.findViewById(R.id.user_profile_holder);
     TextView displayNameView = view.findViewById(R.id.user_name);
-    ImageView profilePictureView = view.findViewById(R.id.user_profile_picture);
 
     View dialogView = inflater.inflate(R.layout.edit_profile_details_dialog, null);
     final EditText displayNameInput = dialogView.findViewById(R.id.change_name_dialog_user_input);
-    profilePictureInput = dialogView.findViewById(R.id.new_profile_picture);
-
-    PictureUploadButtons.getInstance().setupButtons(requireContext(), requireActivity(), dialogView);
 
     AlertDialog changeProfileDetailsDialog = new AlertDialog.Builder(requireContext())
       .setView(dialogView)
@@ -113,49 +98,10 @@ public class UserAccountPage extends Fragment {
       })
       .create();
 
-    profileHolderView.setOnClickListener(v -> {
+    editProfileButton.setOnClickListener(v -> {
       displayNameInput.setText(displayNameView.getText());
       changeProfileDetailsDialog.show();
     });
-  }
-
-  /**
-   * This method is called when external intents are used to load data on view.
-   *
-   * @param requestCode integer value specifying which intent was launched
-   * @param resultCode integer indicating whether intent was successful
-   * @param data result from intent. In this case it contains picture data
-   */
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-
-    super.onActivityResult(requestCode, resultCode, data);
-    // If intent was not succesful
-    if (resultCode != RESULT_OK || data == null) {
-      CommonTools.showSnackbar(requireView(), getString(R.string.error_msg_image_request_view));
-      return;
-    }
-    System.out.println(1);
-    switch (requestCode) {
-      case PICK_IMAGE_REQUEST:
-      {
-        Uri mImageUri = data.getData();
-        profilePictureInput.setImageURI(mImageUri);
-        break;
-      }
-      case USE_CAMERA_REQUEST:
-      {
-        Bundle extras = data.getExtras();
-        Bitmap imageBitmap = (Bitmap) extras.get("data");
-        profilePictureInput.setImageBitmap(imageBitmap);
-        break;
-      }
-    }
-    savePicture();
-  }
-
-  private void savePicture() {
-    // do this later
   }
 
   private void displayUserDetails(User user) {

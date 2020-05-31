@@ -9,66 +9,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Edit Profile Details"
-        android:textStyle="bold"
-        android:textColor="@color/material_purple_a700"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-    <RelativeLayout android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-        <ImageView
-            android:id="@+id/new_profile_picture"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp" />
-
-        <TextView
-            android:id="@+id/default_new_profile_picture_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/new_profile_picture"
-            android:layout_alignTop="@+id/new_profile_picture"
-            android:layout_alignEnd="@+id/new_profile_picture"
-            android:layout_alignBottom="@+id/new_profile_picture"
-            android:layout_margin="1dp"
-            android:layout_gravity="center"
-            android:text="Please upload or capture a picture" />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/picture_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/add_picture_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="picture button"
-            android:src="@drawable/ic_image_green_48dp" />
-
-        <ImageButton
-            android:id="@+id/add_camera_picture_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="camera button"
-            android:src="@drawable/ic_camera_green_48dp" />
-
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/change_name_dialog_title"
         android:textStyle="bold"
         android:textColor="@color/material_purple_a700"

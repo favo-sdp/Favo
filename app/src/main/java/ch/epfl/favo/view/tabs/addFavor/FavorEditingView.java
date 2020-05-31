@@ -1,12 +1,15 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -20,12 +23,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -86,7 +91,7 @@ public class FavorEditingView extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View rootView = inflater.inflate(R.layout.fragment_favor_editing_view, container, false);
-    PictureUploadButtons.getInstance().setupButtons(requireContext(), requireActivity(), rootView);
+    setupButtons(rootView);
 
     setupToolBar();
 
@@ -177,6 +182,25 @@ public class FavorEditingView extends Fragment {
                 v.findViewById(R.id.loading_panel).setVisibility(View.GONE);
               });
     }
+  }
+
+  /** Identifes buttons and sets onclick listeners. */
+  private void setupButtons(View rootView) {
+
+    // Button: Add Image from files
+    ImageButton addPictureFromFilesBtn = rootView.findViewById(R.id.add_picture_button);
+    addPictureFromFilesBtn.setOnClickListener(new onButtonClick());
+
+    // Button: Add picture from camera
+    ImageButton addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
+    addPictureFromCameraBtn.setOnClickListener(new onButtonClick());
+    if (!isCameraAvailable()) { // if camera is not available
+      addPictureFromCameraBtn.setEnabled(false);
+    }
+
+    // Button: Access location
+    //    EditText locationAccessBtn = rootView.findViewById(R.id.location_request_view_btn);
+    //    locationAccessBtn.setOnClickListener(new onButtonClick());
   }
 
   /**
@@ -281,6 +305,39 @@ public class FavorEditingView extends Fragment {
   }
 
   /**
+   * Called when upload file from storage button is clicked. Method calls external fileChooser
+   * intent.
+   */
+  public void openFileChooser() {
+    Intent openFileChooserIntent = new Intent();
+    openFileChooserIntent.setType("image/*");
+    openFileChooserIntent.setAction(Intent.ACTION_GET_CONTENT);
+    startActivityForResult(openFileChooserIntent, PICK_IMAGE_REQUEST);
+  }
+
+  /** Called when camera button is clicked Method calls camera intent. */
+  private void takePicture() {
+    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+      != PackageManager.PERMISSION_GRANTED) {
+      requireActivity()
+        .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
+    } else {
+      Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
+
+      if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
+        startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
+      }
+    }
+  }
+
+  private boolean isCameraAvailable() {
+    boolean hasCamera =
+      requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    int numberOfCameras = Camera.getNumberOfCameras();
+    return (hasCamera && numberOfCameras != 0);
+  }
+
+  /**
    * This method is called when external intents are used to load data on view.
    *
    * @param requestCode integer value specifying which intent was launched
@@ -358,6 +415,20 @@ public class FavorEditingView extends Fragment {
               CommonTools.getSnackbarMessageForFailedRequest((CompletionException) exception)));
       return null;
     };
+  }
+
+  class onButtonClick implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+      switch (v.getId()) {
+        case R.id.add_camera_picture_button:
+          takePicture();
+          break;
+        case R.id.add_picture_button:
+          openFileChooser();
+          break;
+      }
+    }
   }
 
   private void setupToolBar() {
