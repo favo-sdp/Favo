@@ -194,7 +194,7 @@ public class FavorViewModelTest {
 
   @Test
   public void testUploadPicture() {
-    Mockito.doNothing().when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
+    Mockito.doReturn(successfulResult).when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
     Mockito.when(pictureUtility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
     assertTrue(viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap).isDone());
   }
