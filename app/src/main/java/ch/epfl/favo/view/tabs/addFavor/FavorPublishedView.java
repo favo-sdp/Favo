@@ -60,7 +60,6 @@ public class FavorPublishedView extends Fragment {
   private NonClickableToolbar toolbar;
   private MenuItem cancelItem;
   private MenuItem editItem;
-  // private MenuItem restartItem;
   private MenuItem inviteItem;
   private MenuItem deleteItem;
   private MenuItem cancelCommitItem;
@@ -111,7 +110,6 @@ public class FavorPublishedView extends Fragment {
     cancelItem = menu.findItem(R.id.cancel_button);
     cancelCommitItem = menu.findItem(R.id.cancel_commit_button);
     editItem = menu.findItem(R.id.edit_button);
-    // restartItem = menu.findItem(R.id.restart_button);
     inviteItem = menu.findItem(R.id.share_button);
     deleteItem = menu.findItem(R.id.delete_button);
     reuseItem = menu.findItem(R.id.reuse_button);
@@ -124,8 +122,7 @@ public class FavorPublishedView extends Fragment {
     // if one of the Item is not ready, then all of them are not ready, just return
     if (cancelItem == null) return;
     // if requester has committed this favor, then he can cancel commit
-    boolean cancelCommitVisible = favorStatus == FavorStatus.REQUESTED && isPotentialHelper();
-    cancelCommitItem.setVisible(cancelCommitVisible);
+    cancelCommitItem.setVisible(favorStatus == FavorStatus.REQUESTED && isPotentialHelper());
 
     boolean cancelVisible =
         (favorStatus == FavorStatus.REQUESTED && isRequestedByCurrentUser)
@@ -134,9 +131,6 @@ public class FavorPublishedView extends Fragment {
             || favorStatus == FavorStatus.COMPLETED_REQUESTER;
     cancelItem.setVisible(cancelVisible);
 
-    boolean restartVisible = currentFavor.getIsArchived() && isRequestedByCurrentUser;
-    // restartItem.setVisible(restartVisible);
-
     deleteItem.setVisible(
         currentFavor.getIsArchived()
             && isRequestedByCurrentUser
@@ -144,7 +138,7 @@ public class FavorPublishedView extends Fragment {
     editItem.setVisible(isRequestedByCurrentUser && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
     reportItem.setVisible(!isRequestedByCurrentUser);
-    reuseItem.setVisible(restartVisible);
+    reuseItem.setVisible(currentFavor.getIsArchived() && isRequestedByCurrentUser);
   }
 
   // handle button activities
@@ -162,9 +156,6 @@ public class FavorPublishedView extends Fragment {
         break;
       case R.id.share_button:
         onShareClicked();
-        break;
-      case R.id.restart_button:
-        goRestartFavor();
         break;
       case R.id.delete_button:
         deleteFavor();
@@ -469,18 +460,6 @@ public class FavorPublishedView extends Fragment {
             FavorStatus.EDIT.toInt(),
             currentFavor.getReward(),
             currentFavor.getPictureUrl());
-    favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
-    favorBundle.putString(
-        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
-    findNavController(requireActivity(), R.id.nav_host_fragment)
-        .navigate(R.id.action_global_favorEditingView, favorBundle);
-  }
-
-  private void goRestartFavor() {
-    // restart a favor with different favorId
-    Favor newFavor = new Favor("", "", currentUser.getUid(), null, FavorStatus.EDIT, 0);
-    newFavor.updateToOther(currentFavor);
-    Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
     favorBundle.putString(
         FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
