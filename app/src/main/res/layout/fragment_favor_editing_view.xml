@@ -119,8 +119,8 @@
                     android:id="@+id/loading_panel"
                     style="?android:attr/progressBarStyle"
                     android:gravity="center"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_margin="125dp"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/pictures_grid"
@@ -137,13 +137,18 @@
                     android:text=""
                     android:textColor="#FF0000"
                     android:textSize="20sp" />
-
+                <!--
                 <ImageView
                     android:id="@+id/image_view_request_view"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
                     android:scaleType="centerCrop" />
-
+                    -->
+                <ImageView
+                    android:id="@+id/image_view_request_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:adjustViewBounds="true" />
             </LinearLayout>
 
 

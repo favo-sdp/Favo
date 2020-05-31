@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -69,6 +71,8 @@ public class FavorPublishedView extends Fragment {
   private MenuItem reportItem;
   private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
+  private boolean isImageFitToScreen;
+  private ImageView imageView;
   private FirebaseUser currentUser;
 
   private Map<String, User> commitUsers = new HashMap<>();
@@ -136,14 +140,14 @@ public class FavorPublishedView extends Fragment {
     cancelItem.setVisible(cancelVisible);
 
     boolean restartVisible = currentFavor.getIsArchived() && isRequestedByCurrentUser;
-    restartItem.setVisible(restartVisible);
+    //restartItem.setVisible(restartVisible);
 
     deleteItem.setVisible(
         currentFavor.getIsArchived() && isRequestedByCurrentUser && currentFavor.getAccepterId() == null);
     editItem.setVisible(isRequestedByCurrentUser && favorStatus == FavorStatus.REQUESTED);
     inviteItem.setVisible(favorStatus == FavorStatus.REQUESTED);
     reportItem.setVisible(!isRequestedByCurrentUser);
-    reuseItem.setVisible(isRequestedByCurrentUser);
+    reuseItem.setVisible(restartVisible);
   }
 
   // handle button activities
@@ -266,6 +270,7 @@ public class FavorPublishedView extends Fragment {
     }
   }
 
+
   private void tryMoveToUserInfoPage(String userId) {
 
     // check if user exists
@@ -298,8 +303,11 @@ public class FavorPublishedView extends Fragment {
     String favoCoinStr = String.format(getString(R.string.favor_worth), favor.getReward());
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
-    setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
+    if(descriptionStr==null || descriptionStr.equals(""))
+      rootView.findViewById(R.id.description).setVisibility(View.GONE);
+    else
+      setupTextView(rootView, R.id.description, descriptionStr);
 
     isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getUid());
     favorStatus = verifyFavorHasBeenAccepted(favor);
@@ -349,9 +357,8 @@ public class FavorPublishedView extends Fragment {
   private void setupImageView(View rootView, Favor favor) {
     String url = favor.getPictureUrl();
     if (url != null) {
-      ImageView imageView = rootView.findViewById(R.id.picture);
+      imageView = rootView.findViewById(R.id.picture);
       View loadingPanelView = rootView.findViewById(R.id.loading_panel);
-
       loadingPanelView.setVisibility(View.VISIBLE);
       getViewModel()
           .downloadPicture(favor)
