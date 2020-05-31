@@ -78,6 +78,7 @@ public class MapPage extends Fragment
   private String latitudeFromChat;
   private String longitudeFromChat;
   private Button doneButton;
+  private FloatingActionButton lookThroughBtn;
 
   private IFavorViewModel favorViewModel;
   private View view;
@@ -161,7 +162,7 @@ public class MapPage extends Fragment
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
 
-    FloatingActionButton lookThroughBtn = view.findViewById(R.id.look_through_btn);
+    lookThroughBtn = view.findViewById(R.id.look_through_btn);
     lookThroughBtn.setOnClickListener(this::onLookThroughClick);
 
     try {
@@ -228,6 +229,7 @@ public class MapPage extends Fragment
     requireActivity().findViewById(R.id.hamburger_menu_button).setVisibility(View.GONE);
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
+    lookThroughBtn.setVisibility(View.INVISIBLE);
     setupToolbar(intentType);
   }
 

@@ -198,7 +198,8 @@
     <string name="report_favor_text">Report</string>
     <string name="optional_text">Optional</string>
     <string name="picture_description_text">Upload a picture or take a photo</string>
-
+    <string name="upload_pic_btn">upload picture</string>
+    <string name="camera_btn">open camera</string>
 
     <string name="set_location_message">The favor location is set to your current position. Would you like to change it?</string>
     <string name="set_location_yes">Yes, take me to the map</string>
