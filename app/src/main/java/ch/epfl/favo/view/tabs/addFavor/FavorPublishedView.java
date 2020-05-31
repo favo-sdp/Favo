@@ -229,7 +229,6 @@ public class FavorPublishedView extends Fragment {
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
     ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name_published_view);
-
     locationAccessBtn.setOnClickListener(new onButtonClick());
     commitAndCompleteBtn.setOnClickListener(new onButtonClick());
     chatBtn.setOnClickListener(new onButtonClick());

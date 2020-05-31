@@ -20,7 +20,6 @@ This models the favor fragment_favor_published_view.
 @SuppressLint("NewApi")
 public class FavorUtil implements IFavorUtil {
   private static final String TAG = "FavorUtil";
-  private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static ICollectionWrapper<Favor> collection =
       DependencyFactory.getCurrentCollectionWrapper(

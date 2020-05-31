@@ -129,9 +129,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (int i = 1; i < tempFavor.getUserIds().size(); i++) {
       int commitUser = i;
-      resultFuture = resultFuture.thenCompose(
-          aVoid ->
-              changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
+      resultFuture =
+          resultFuture.thenCompose(
+              aVoid ->
+                  changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
     }
 
     return resultFuture;
@@ -227,11 +228,11 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return activeFavorsAroundMe;
   }
 
-  public Map<String, Favor> getNearbyFavorsFromQuery(
-      Location loc,
-      double radius,
-      QuerySnapshot queryDocumentSnapshots,
-      FirebaseFirestoreException e) {
+  Map<String, Favor> getNearbyFavorsFromQuery(
+          Location loc,
+          double radius,
+          QuerySnapshot queryDocumentSnapshots,
+          FirebaseFirestoreException e) {
     handleException(e);
     List<Favor> favorsList = queryDocumentSnapshots.toObjects(Favor.class);
 
