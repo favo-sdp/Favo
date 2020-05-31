@@ -42,9 +42,9 @@ import ch.epfl.favo.viewmodel.IFavorViewModel;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 /**
- * View will contain list of favors requested in the past. The list will contain clickable items
- * that will expand to give more information about them. This object is a simple {@link Fragment}
- * subclass.
+ * View will contain list of favors requested and accepted, currently active and in the past.
+ * The list will contain clickable items that will expand to give more information about them.
+ * This object is a simple {@link Fragment} subclass.
  */
 public class FavorPage extends Fragment {
 
@@ -54,7 +54,6 @@ public class FavorPage extends Fragment {
   private RadioGroup radioGroup;
   private RadioButton activeToggle;
   private RadioButton archivedToggle;
-  private TextView currentBalance;
 
   private RecyclerView mRecycler;
   private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -103,14 +102,6 @@ public class FavorPage extends Fragment {
     radioGroup = rootView.findViewById(R.id.radio_toggle);
     activeToggle = rootView.findViewById(R.id.active_toggle);
     archivedToggle = rootView.findViewById(R.id.archived_toggle);
-
-    UserUtil.getSingleInstance()
-            .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-            .thenAccept(
-                    user -> {
-//                      currentBalance = requireActivity().findViewById(R.id.currentCoins);
-                      currentBalance.setText("Current balance: " + user.getBalance());
-                    });
 
     mRecycler = rootView.findViewById(R.id.paging_recycler);
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
