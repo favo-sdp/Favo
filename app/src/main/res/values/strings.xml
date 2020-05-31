@@ -75,6 +75,7 @@
     <string name="favor_no_nearby_favor">There are no favors around you</string>
     <string name="list_toggle">List</string>
     <string name="map_toggle">Map</string>
+    <string name="num_coins">%d coins</string>
 
     <!--Favor Published View -->
     <string name="accept_favor">Accept</string>
