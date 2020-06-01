@@ -68,12 +68,8 @@ public class DatabaseWrapperTest {
     Mockito.doReturn(querySnapshotTask).when(mockCollectionReference).get();
     // setup for testing getAllDocumentsLongitudeLatitudeBounded()
     Query query = Mockito.mock(Query.class);
-    Mockito.doReturn(query)
-            .when(mockCollectionReference)
-            .whereEqualTo(anyString(), anyInt());
-    Mockito.doReturn(query)
-        .when(query)
-        .whereGreaterThan(anyString(), anyDouble());
+    Mockito.doReturn(query).when(mockCollectionReference).whereEqualTo(anyString(), anyInt());
+    Mockito.doReturn(query).when(query).whereGreaterThan(anyString(), anyDouble());
     Mockito.doReturn(query).when(query).whereLessThan(anyString(), anyDouble());
     Mockito.doReturn(query).when(query).limit(anyLong());
     Mockito.doReturn(querySnapshotTask).when(query).get();

@@ -41,6 +41,7 @@ import static org.hamcrest.core.AllOf.allOf;
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
   private static final String MAP_DESCRIPTION = "Map";
+
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
       new ActivityTestRule<MainActivity>(MainActivity.class) {
@@ -71,7 +72,7 @@ public class MainActivityTest {
     getInstrumentation().waitForIdleSync();
     // Check that the current fragment is the map tab
     onView(allOf(withId(R.id.fragment_map), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
   }
 
   @Test
@@ -106,7 +107,7 @@ public class MainActivityTest {
     // press back can hide menu
     onView(withId(R.id.nav_view)).check(matches(not(isDisplayed())));
     onView(allOf(withId(R.id.fragment_map), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
   }
 
   @Test
@@ -127,7 +128,7 @@ public class MainActivityTest {
     // press back can hide menu
     onView(withId(R.id.nav_view)).check(matches(not(isDisplayed())));
     onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
   }
 
   @Test
@@ -175,7 +176,7 @@ public class MainActivityTest {
     recyclerView.check(matches(isDisplayed())).perform(actionOnItemAtPosition(0, click()));
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText(R.string.shop_pay_message)));
+        .check(matches(withText(R.string.shop_pay_message)));
   }
 
   @Test
@@ -248,9 +249,9 @@ public class MainActivityTest {
 
     // check that we're back on the main page
     onView(allOf(withId(R.id.fragment_map), withParent(withId(R.id.nav_host_fragment))))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
     onView(allOf(withId(R.id.nav_map), withContentDescription(R.string.title_map)))
-            .check(matches(isDisplayed()));
+        .check(matches(isDisplayed()));
   }
 
   @Test

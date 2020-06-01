@@ -19,7 +19,6 @@ import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 public class CacheUtil {
 
   private static CacheUtil INSTANCE = null;
-  private static final String TAG = "LocalCacheUtil";
 
   private CacheUtil() {}
 
@@ -73,7 +72,7 @@ public class CacheUtil {
    * @param key: String, key for lookup
    * @return value (Boolean) associated with the given key
    */
-  public Boolean getValueFromCacheBool(Context context, String key) {
+  Boolean getValueFromCacheBool(Context context, String key) {
     SharedPreferences preferences = getDefaultSharedPreferences(context);
     return preferences.getBoolean(key, false);
   }

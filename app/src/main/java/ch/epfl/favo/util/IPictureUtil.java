@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IPictureUtil {
 
-
   CompletableFuture<String> uploadPicture(Bitmap picture);
 
   CompletableFuture<Void> deletePicture(@NonNull String imagePath);
