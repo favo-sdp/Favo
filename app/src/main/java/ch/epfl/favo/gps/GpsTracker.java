@@ -66,10 +66,10 @@ public class GpsTracker implements LocationListener, IGpsTracker {
             LocationManager.NETWORK_PROVIDER, minTime, minDistance, this);
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
-    } else{
+    } else {
       throw new NoPermissionGrantedException();
     }
-    if (mLastKnownLocation == null){
+    if (mLastKnownLocation == null) {
       throw new NoPositionFoundException();
     }
     mLastUpdate = System.currentTimeMillis();
