@@ -3,7 +3,6 @@ package ch.epfl.favo.auth;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +24,6 @@ import java.util.function.Function;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -34,7 +32,7 @@ import ch.epfl.favo.util.DependencyFactory;
 public class SignInActivity extends AppCompatActivity {
 
   public static final int RC_SIGN_IN = 123;
-  private static final String TAG = "SignInActivity";
+  private static final String URL_APP_NOT_FOUND = "https://google.com";
   private IGpsTracker mGpsTracker;
 
   @Override
@@ -55,9 +53,7 @@ public class SignInActivity extends AppCompatActivity {
       if (user.getDisplayName() == null || user.getDisplayName().equals("")) {
         UserProfileChangeRequest profileUpdates =
             new UserProfileChangeRequest.Builder()
-                .setDisplayName(CommonTools.emailToName(user.getEmail()))
-                // TODO: update user profile photoUri
-                // .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
+                .setDisplayName(CommonTools.emailToName(Objects.requireNonNull(user.getEmail())))
                 .build();
         user.updateProfile(profileUpdates);
       }
@@ -69,10 +65,6 @@ public class SignInActivity extends AppCompatActivity {
     startActivityForResult(createSignInIntent(), RC_SIGN_IN);
   }
 
-  private IUserUtil getCurrentUserUtil() {
-    return DependencyFactory.getCurrentUserRepository();
-  }
-
   private void checkPlayServices() {
     GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
     int resultCode = gApi.isGooglePlayServicesAvailable(this);
@@ -81,6 +73,11 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
+  /**
+   * Create a new sign-in intent for FirebaseAuth to initialize the login flow
+   *
+   * @return sign-in intent
+   */
   @NonNull
   public Intent createSignInIntent() {
     ActionCodeSettings actionCodeSettings = getActionCodeSettings();
@@ -118,9 +115,9 @@ public class SignInActivity extends AppCompatActivity {
 
   private ActionCodeSettings getActionCodeSettings() {
     return ActionCodeSettings.newBuilder()
-        .setAndroidPackageName("ch.epfl.favo", true, null)
+        .setAndroidPackageName(getString(R.string.package_name), true, null)
         .setHandleCodeInApp(true)
-        .setUrl("https://google.com")
+        .setUrl(URL_APP_NOT_FOUND)
         .build();
   }
 
@@ -149,7 +146,13 @@ public class SignInActivity extends AppCompatActivity {
     finish();
   }
 
-  void handleSignInResponse(int resultCode) throws RuntimeException {
+  /**
+   * Handle sign-in response with the result code provided by FirebaseAuth and, if successful,
+   * creates/updates the current user logged in the app
+   *
+   * @param resultCode: code indicating the result of the login activity
+   */
+  void handleSignInResponse(int resultCode) {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
@@ -158,7 +161,8 @@ public class SignInActivity extends AppCompatActivity {
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
-      CompletableFuture<User> userFuture = getCurrentUserUtil().findUser(userId);
+      CompletableFuture<User> userFuture =
+          DependencyFactory.getCurrentUserRepository().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Try to edit user. If not completed properly, we create a new user and post it in the db.
       CompletableFuture<User> loginFuture =

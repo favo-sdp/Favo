@@ -27,14 +27,14 @@ public class Favor implements Parcelable, Document, Cloneable {
 
   // String constants for Map conversion
   private static final String ID = "id";
-  private static final String TITLE = "title";
+  public static final String TITLE = "title";
   private static final String DESCRIPTION = "description";
   private static final String USER_IDS = "userIds";
   private static final String LOCATION = "location";
   private static final String POSTED_TIME = "postedTime";
   private static final String STATUS_ID = "statusId";
   static final String PICTURE_URL = "pictureUrl";
-  private static final String IS_ARCHIVED = "isArchived";
+  public static final String IS_ARCHIVED = "isArchived";
   private static final String REWARD = "reward";
 
   public static final Creator<Favor> CREATOR =

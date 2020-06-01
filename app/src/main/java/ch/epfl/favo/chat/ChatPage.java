@@ -33,7 +33,6 @@ import com.firebase.ui.auth.util.ui.ImeHelper;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.io.IOException;
@@ -60,15 +59,17 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 @SuppressLint("NewApi")
 public class ChatPage extends Fragment {
 
-  private static String TAG = "ChatPage";
-  private  static final String DEFAULT_TOOLBAR_TITLE = "Favor Title";
+  private static final String DEFAULT_TOOLBAR_TITLE = "Favor Title";
+  private static final String TAG = "ChatPage";
+  private static final int FILE_CHOOSER_RC = 1;
+  private static final int SCROLL_DELAY = 200;
+  private static final String IMAGE_PATH = "image/*";
 
   private View view;
   private RecyclerView recyclerView;
   private Favor currentFavor;
   private IFavorViewModel viewModel;
 
-  private static int FILE_CHOOSER_RC = 1;
   private LatLng locationForMessage;
   private IPictureUtil pictureUtil;
   private IChatUtil chatUtil;
@@ -84,10 +85,24 @@ public class ChatPage extends Fragment {
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    currentFavor = viewModel.getObservedFavor().getValue();
+
+    //    currentFavor = viewModel.getObservedFavor().getValue();
+    viewModel
+        .getObservedFavor()
+        .observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              if (favor != null) {
+                currentFavor = favor;
+                setupToolBar();
+                attachRecyclerViewAdapter();
+              }
+            });
+
     if (getArguments() != null) {
       locationForMessage = (getArguments().getParcelable(MapPage.LOCATION_ARGUMENT_KEY));
     }
+
     setupView();
     pictureUtil = DependencyFactory.getCurrentPictureUtility();
     chatUtil = DependencyFactory.getCurrentChatUtility();
@@ -111,7 +126,7 @@ public class ChatPage extends Fragment {
     recyclerView.addOnLayoutChangeListener(
         (view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
           if (bottom < oldBottom) {
-            recyclerView.postDelayed(() -> recyclerView.smoothScrollToPosition(0), 100);
+            recyclerView.postDelayed(() -> recyclerView.smoothScrollToPosition(0), SCROLL_DELAY);
           }
         });
 
@@ -122,7 +137,6 @@ public class ChatPage extends Fragment {
         });
 
     ImeHelper.setImeOnDoneListener(view.findViewById(R.id.messageEdit), this::onSendClick);
-    setupToolBar();
   }
 
   private void setupButtons() {
@@ -168,8 +182,9 @@ public class ChatPage extends Fragment {
   }
 
   private void onSendImageClick() {
-    Intent imageIntent = new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT);
-    startActivityForResult(Intent.createChooser(imageIntent, "Select Image"), FILE_CHOOSER_RC);
+    Intent imageIntent = new Intent().setType(IMAGE_PATH).setAction(Intent.ACTION_GET_CONTENT);
+    startActivityForResult(
+        Intent.createChooser(imageIntent, getString(R.string.select_image_text)), FILE_CHOOSER_RC);
   }
 
   private void setupToolBar() {
@@ -193,12 +208,12 @@ public class ChatPage extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
-    attachRecyclerViewAdapter();
+    //    attachRecyclerViewAdapter();
   }
 
   private void attachRecyclerViewAdapter() {
     FirestoreRecyclerOptions<Message> options = getFirestoreRecyclerOptions();
-    final RecyclerView.Adapter adapter = createRecyclerAdapter(options);
+    FirestoreRecyclerAdapter<Message, MessageViewHolder> adapter = createRecyclerAdapter(options);
 
     RecyclerView mRecyclerView = view.findViewById(R.id.messagesList);
 
@@ -206,15 +221,14 @@ public class ChatPage extends Fragment {
         new RecyclerView.AdapterDataObserver() {
           @Override
           public void onItemRangeInserted(int positionStart, int itemCount) {
-            mRecyclerView.postDelayed(() -> mRecyclerView.smoothScrollToPosition(0), 100);
+            mRecyclerView.postDelayed(() -> mRecyclerView.smoothScrollToPosition(0), SCROLL_DELAY);
           }
         });
 
     mRecyclerView.setAdapter(adapter);
   }
-  /*
-  Sends text message
-   */
+
+  // Sends text message
   private void onSendClick() {
     Message message = generateMessageFromView(CommonTools.TEXT_MESSAGE_TYPE);
     chatUtil.addChatMessage(message).exceptionally(this::handleException);
@@ -223,11 +237,7 @@ public class ChatPage extends Fragment {
 
   private Message generateMessageFromView(int messageType) {
     String favorId = currentFavor.getId();
-    String requesterNotifId = currentFavor.getRequesterNotifId();
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
-    // If the empty message view is visible, then this is the first message.
-    String isFirstMsg =
-        String.valueOf(view.findViewById(R.id.emptyTextView).getVisibility() == View.VISIBLE);
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     return new Message(
         DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
@@ -235,18 +245,12 @@ public class ChatPage extends Fragment {
         messageType,
         mMessageEdit.getText().toString(),
         null,
-        requesterNotifId,
-        favorId,
-        isFirstMsg); // do we want to store location for all messages?
+        favorId);
   }
 
   private FirestoreRecyclerOptions<Message> getFirestoreRecyclerOptions() {
     Query sChatQuery =
-        FirebaseFirestore.getInstance()
-            .collection("chats")
-            .whereEqualTo("favorId", currentFavor.getId())
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .limit(50);
+        ChatUtil.getSingleInstance().getAllChatMessagesForFavor(currentFavor.getId());
 
     return new FirestoreRecyclerOptions.Builder<Message>()
         .setQuery(sChatQuery, Message.class)
@@ -255,7 +259,7 @@ public class ChatPage extends Fragment {
   }
 
   @NonNull
-  private RecyclerView.Adapter createRecyclerAdapter(FirestoreRecyclerOptions<Message> options) {
+  private FirestoreRecyclerAdapter<Message, MessageViewHolder> createRecyclerAdapter(FirestoreRecyclerOptions<Message> options) {
     return new FirestoreRecyclerAdapter<Message, MessageViewHolder>(options) {
 
       @Override

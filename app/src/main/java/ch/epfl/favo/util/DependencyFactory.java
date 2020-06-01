@@ -72,6 +72,10 @@ public class DependencyFactory {
   @VisibleForTesting
   public static void setCurrentFirebaseUser(FirebaseUser dependency) {
     currentFirebaseUser = dependency;
+
+    if (dependency == null) {
+      FirebaseAuth.getInstance().signOut();
+    }
   }
 
   public static IGpsTracker getCurrentGpsTracker(@Nullable Context context) {

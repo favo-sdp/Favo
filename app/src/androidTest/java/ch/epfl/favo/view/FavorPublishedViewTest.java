@@ -281,9 +281,7 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound() {
-
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
-
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
     UserUtil.getSingleInstance().updateCollectionWrapper((mockDatabaseWrapper));
     onView(withId(R.id.fragment_favor_published)).check(matches(isDisplayed()));

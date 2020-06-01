@@ -12,33 +12,34 @@ import ch.epfl.favo.database.Document;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.util.CommonTools;
 
 /**
- * This class contains all the relevant information about users TODO: It should implement parcelable
- * so that it can be injected in views
+ * This class contains all the relevant information about users so that it can be injected in views
  */
 public class User implements Document {
 
-  public static final int MAX_ACCEPTING_FAVORS = 1;
-  public static final int MAX_REQUESTING_FAVORS = 5;
+  static final int MAX_ACCEPTING_FAVORS = 1;
+  static final int MAX_REQUESTING_FAVORS = 5;
 
   // String constants for Map conversion
-  public static final String ID = "id";
+  static final String ID = "id";
   public static final String NAME = "name";
   public static final String EMAIL = "email";
-  public static final String DEVICE_ID = "deviceId";
-  public static final String NOTIFICATION_ID = "notificationId";
-  public static final String BIRTH_DATE = "birthDate";
-  public static final String LOCATION = "location";
-  public static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
-  public static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
-  public static final String REQUESTED_FAVORS = "requestedFavors";
-  public static final String ACCEPTED_FAVORS = "acceptedFavors";
-  public static final String COMPLETED_FAVORS = "completedFavors";
-  public static final String LIKES = "likes";
-  public static final String DISLIKES = "dislikes";
-  public static final String BALANCE = "balance";
+  private static final String DEVICE_ID = "deviceId";
+  static final String NOTIFICATION_ID = "notificationId";
+  static final String BIRTH_DATE = "birthDate";
+  static final String LOCATION = "location";
+  static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
+  static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
+  private static final String REQUESTED_FAVORS = "requestedFavors";
+  private static final String ACCEPTED_FAVORS = "acceptedFavors";
+  private static final String COMPLETED_FAVORS = "completedFavors";
+  private static final String LIKES = "likes";
+  private static final String DISLIKES = "dislikes";
+  private static final String BALANCE = "balance";
+  private static final String NOTIFICATION_RADIUS = "notificationRadius";
+  private static final String CHAT_NOTIFICATIONS = "chatNotifications";
+  private static final String UPDATE_NOTIFICATIONS = "updateNotifications";
 
   private String id;
   private String name;
@@ -55,6 +56,9 @@ public class User implements Document {
   private int likes;
   private int dislikes;
   private double balance;
+  private double notificationRadius;
+  private boolean chatNotifications;
+  private boolean updateNotifications;
   private String profilePicUrl;
 
   public User() {
@@ -66,6 +70,9 @@ public class User implements Document {
     this.dislikes = 0;
     this.completedFavors = 0;
     this.balance = 10.0;
+    this.notificationRadius = 10.0;
+    this.updateNotifications = true;
+    this.chatNotifications = true;
   }
 
   public User(Map<String, Object> map) {
@@ -84,6 +91,9 @@ public class User implements Document {
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
     this.balance = (double) map.get(BALANCE);
+    this.notificationRadius = (double) map.get(NOTIFICATION_RADIUS);
+    this.chatNotifications = (boolean) map.get(CHAT_NOTIFICATIONS);
+    this.updateNotifications = (boolean) map.get(UPDATE_NOTIFICATIONS);
   }
 
   public User(
@@ -108,6 +118,9 @@ public class User implements Document {
     this.dislikes = 0;
     this.completedFavors = 0;
     this.balance = 10.0;
+    this.notificationRadius = 10.0;
+    this.updateNotifications = true;
+    this.chatNotifications = true;
   }
 
   public User(FirebaseUser firebaseUser, String deviceId, Location location) {
@@ -147,6 +160,9 @@ public class User implements Document {
         put(LIKES, likes);
         put(DISLIKES, dislikes);
         put(BALANCE, balance);
+        put(NOTIFICATION_RADIUS, notificationRadius);
+        put(CHAT_NOTIFICATIONS, chatNotifications);
+        put(UPDATE_NOTIFICATIONS, updateNotifications);
       }
     };
   }
@@ -155,7 +171,9 @@ public class User implements Document {
     return name;
   }
 
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public String getEmail() {
     return email;
@@ -173,7 +191,7 @@ public class User implements Document {
     return balance;
   }
 
-  public Date getBirthDate() {
+  Date getBirthDate() {
     return birthDate;
   }
 
@@ -181,29 +199,29 @@ public class User implements Document {
     return location;
   }
 
-  public int getActiveAcceptingFavors() {
+  int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
   }
 
-  public int getActiveRequestingFavors() {
+  int getActiveRequestingFavors() {
     return activeRequestingFavors;
   }
 
-  public String getPictureUrl() {
+  String getPictureUrl() {
     return profilePicUrl;
   }
 
-  public void setProfilePicUrl(String url) {
+  void setProfilePicUrl(String url) {
     profilePicUrl = url;
   }
 
-  public void setActiveAcceptingFavors(int totalAcceptingFavors) {
+  void setActiveAcceptingFavors(int totalAcceptingFavors) {
     if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
       throw new IllegalAcceptException("Cannot accept");
     this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
-  public void setActiveRequestingFavors(int totalRequestingFavors) {
+  void setActiveRequestingFavors(int totalRequestingFavors) {
     if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
       throw new IllegalRequestException("Cannot request");
     this.activeRequestingFavors = totalRequestingFavors;
@@ -213,7 +231,7 @@ public class User implements Document {
     this.notificationId = notificationId;
   }
 
-  public void setBalance(Double balance) {
+  void setBalance(Double balance) {
     this.balance = balance;
   }
 
@@ -238,7 +256,7 @@ public class User implements Document {
     return requestedFavors;
   }
 
-  public void setRequestedFavors(int requestedFavors) {
+  void setRequestedFavors(int requestedFavors) {
     this.requestedFavors = requestedFavors;
   }
 
@@ -254,7 +272,7 @@ public class User implements Document {
     return completedFavors;
   }
 
-  public void setCompletedFavors(int completedFavors) {
+  void setCompletedFavors(int completedFavors) {
     this.completedFavors = completedFavors;
   }
 
@@ -272,5 +290,29 @@ public class User implements Document {
 
   public void setDislikes(int dislikes) {
     this.dislikes = dislikes;
+  }
+
+  public double getNotificationRadius() {
+    return notificationRadius;
+  }
+
+  public boolean isChatNotifications() {
+    return chatNotifications;
+  }
+
+  public boolean isUpdateNotifications() {
+    return updateNotifications;
+  }
+
+  public void setNotificationRadius(double notificationRadius) {
+    this.notificationRadius = notificationRadius;
+  }
+
+  public void setChatNotifications(boolean chatNotifications) {
+    this.chatNotifications = chatNotifications;
+  }
+
+  public void setUpdateNotifications(boolean updateNotifications) {
+    this.updateNotifications = updateNotifications;
   }
 }

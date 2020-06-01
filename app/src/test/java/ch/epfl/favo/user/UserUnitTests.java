@@ -19,7 +19,7 @@ import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -79,6 +79,7 @@ public class UserUnitTests {
     String temporaryDeviceId = "temporaryDeviceId";
     FavoLocation newLoc = new FavoLocation();
     String testName = "newName";
+    double radius = 5;
 
     user.setActiveAcceptingFavors(activeAcceptingFavors);
     user.setActiveRequestingFavors(activeRequestingFavors);
@@ -93,6 +94,9 @@ public class UserUnitTests {
     user.setBalance(newBalance);
     user.setProfilePicUrl(pictureUrl);
     user.setName(testName);
+    user.setNotificationRadius(radius);
+    user.setChatNotifications(false);
+    user.setUpdateNotifications(false);
 
     assertEquals(activeAcceptingFavors, user.getActiveAcceptingFavors());
     assertEquals(activeRequestingFavors, user.getActiveRequestingFavors());
@@ -106,6 +110,9 @@ public class UserUnitTests {
     assertEquals((int) newBalance, (int) user.getBalance());
     assertEquals(pictureUrl, user.getPictureUrl());
     assertEquals(testName, user.getName());
+    assertEquals((int) radius, (int) user.getNotificationRadius());
+    assertFalse(user.isChatNotifications());
+    assertFalse(user.isUpdateNotifications());
   }
 
   @Test

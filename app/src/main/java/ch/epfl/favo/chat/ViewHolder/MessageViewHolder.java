@@ -38,8 +38,12 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
     mTimeField = itemView.findViewById(R.id.date_text);
   }
 
+  /**
+   * bind Message view to Message model
+   *
+   * @param textMessage: message model given
+   */
   public void bind(@NonNull Message textMessage) {
-
     FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
     setIsSender(currentUser != null && textMessage.getUid().equals(currentUser.getUid()));
     mNameField.setText(textMessage.getName());

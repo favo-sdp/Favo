@@ -45,6 +45,7 @@ import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
@@ -52,7 +53,6 @@ import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.UserSettings;
 import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -137,22 +137,26 @@ public class MapPage extends Fragment
   @Override
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
-    String setting = UserSettings.getNotificationRadius(requireContext());
-    if (setting.equals(getString(R.string.setting_disabled)))
-      setting = getString(R.string.default_radius);
-    // split the radius setting string pattern, like "10 Km"
-    radiusThreshold = Double.parseDouble(setting.split(" ")[0]);
+
+    String radiusSetting =
+        CacheUtil.getInstance()
+            .getValueFromCacheStr(
+                requireContext(), getString(R.string.radius_notifications_setting_key));
+    double radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
+    if (!radiusSetting.equals("")) {
+      radiusThreshold = Integer.parseInt(radiusSetting);
+    }
     defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference
-
-    String map_mode = UserSettings.getMapStyle(requireContext());
-    if( map_mode == null || map_mode.equals("")) map_mode = "0";
-    int map_mode_idx = Integer.parseInt(map_mode);
+    String mapStyleSetting =
+        CacheUtil.getInstance()
+            .getValueFromCacheStr(requireContext(), getString(R.string.map_style_key));
+    if (mapStyleSetting == null || mapStyleSetting.equals("")) mapStyleSetting = "0";
+    int mapModeIndex = Integer.parseInt(mapStyleSetting);
     MapStyleOptions mapStyleOptions =
-        MapStyleOptions.loadRawResourceStyle(getContext(), mapStyles.get(map_mode_idx));
+        MapStyleOptions.loadRawResourceStyle(requireContext(), mapStyles.get(mapModeIndex));
     googleMap.setMapStyle(mapStyleOptions);
-    radiusThreshold = parseDouble(setting.split(" ")[0]);
 
     mMap = googleMap;
     mMap.clear();

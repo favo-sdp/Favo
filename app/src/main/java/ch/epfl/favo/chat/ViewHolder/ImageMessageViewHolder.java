@@ -30,10 +30,10 @@ public class ImageMessageViewHolder extends MessageViewHolder {
     String picturePath = message.getPicturePath();
     if (picturePath != null) {
       Glide.with(mContext)
-              .load(picturePath)
-              .fitCenter()
-              .diskCacheStrategy(DiskCacheStrategy.ALL)
-              .into(mImageView);
+          .load(picturePath)
+          .fitCenter()
+          .diskCacheStrategy(DiskCacheStrategy.ALL)
+          .into(mImageView);
     }
   }
 }
