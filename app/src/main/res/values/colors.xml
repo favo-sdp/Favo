@@ -17,9 +17,7 @@
 
     <!-- Favor Request View Status Text Colors -->
     <color name="requested_status_bg">#F7FF00</color>
-    <color name="edit_status_bg">#F7FF00</color>
     <color name="accepted_status_bg">#6ED172</color>
-    <color name="completed_status_bg">#6ED172</color>
     <color name="cancelled_status_bg">#F79790</color>
 
 

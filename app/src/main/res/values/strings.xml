@@ -24,20 +24,17 @@
     <string name="delete_account_failed">Delete account failed</string>
 
     <string name="profile_picture_content_desc">Profile picture</string>
-    <string name="used_providers">Provider used: %s</string>
 
     <string name="facebook_application_id" translatable="false">616130435602635</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
     <string name="facebook_login_protocol_scheme" translatable="false">fb616130435602635</string>
 
     <!-- TAB 1 Map and Nearby List -->
-    <string name="self_location">FavorRequest</string>
     <string name="nearby_favors_exception">Error when reading nearby favors from database</string>
     <string name="download_offline_map">https://support.google.com/maps/answer/6291838?co=GENIE.Platform%3DiOS&amp;hl=en</string>
     <string name="hint_drag_marker">Drag me</string>
     <string name="hint_click_window">Long press marker to drag</string>
     <string name="default_radius">10</string>
-    <string name="setting_disabled">disabled</string>
     <string name="map_request_favor">Select Favor Location</string>
     <string name="map_edit_favor_loc">Edit Favor Location</string>
     <string name="map_share_loc">Share Favor Location</string>
@@ -51,8 +48,6 @@
     <string name="favor_img_content_desc">Descriptive image</string>
     <string name="favor_details_hint">Add more details - Max. length = %d</string>
     <string name="favor_payment_hint">Add payment (Default: free favor)</string>
-    <string name="favor_location_hint">Add location</string>
-    <string name="favor_confirm_button">Request Favor</string>
     <string name="favor_no_active_favor">You have no active favors</string>
     <string name="favor_no_archived_favor">You have no archived favors</string>
     <string name="active_favors_text">Active</string>
@@ -152,16 +147,11 @@
     <string name="cancel_request">Cancel</string>
     <string name="delete_favor">Delete Request</string>
     <string name="favor_cancel_success_msg">Favor successfully cancelled</string>
-    <string name="favor_cancel_success_msg_listView">Favor successfully cancelled. Swipe down to refresh</string>
-    <string name="favor_edit_success_msg">Favor successfully updated</string>
     <string name="favor_complete_success_msg">Favor successfully completed</string>
-    <string name="chat_message_detail_view">Start a chat</string>
     <string name="update_favor_error">Failed to perform operation</string>
     <string name="illegal_request_error">Max requested favors reached. Complete or cancel active favors</string>
     <string name="illegal_accept_error">Max accepted favors reached. Complete or cancel current favor.</string>
-    <string name="favor_remotely_changed_msg">Favor has been updated by another!</string>
     <string name="restart_request">Re-enable</string>
-    <string name="fail_edit_favor_request_view">Cannot edit favor</string>
     <string name="complete_favor">Complete</string>
     <string name="old_favor_accepted_by_others">Someone commit your unmodified favor</string>
     <string name="old_favor_cancelled_by_others">Someone cancel committing your unmodified favor</string>
@@ -173,7 +163,6 @@
     <string name="title_favors">Favors</string>
 
     <!-- Chat -->
-    <string name="open_chat">Open chat</string>
     <string name="start_chatting">No messages</string>
     <string name="hint_message">Write message</string>
 
@@ -225,8 +214,4 @@
     <string name="share_location_propose">I\'d like to share a new location</string>
     <string name="share_location_current">Share my current location</string>
     <!-- List item menu -->
-    <string name="edit">Edit</string>
-    <string name="view">View</string>
-    <string name="cancel">Cancel</string>
-    <string name="commit">Commit</string>
 </resources>

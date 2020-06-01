@@ -57,13 +57,14 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
   @RequiresApi(api = Build.VERSION_CODES.N)
   private void setItemDisplay(Favor favor, Context context) {
     mTitleView.setText(favor.getTitle());
-    mRewardView.setText(context.getString(R.string.favo_coins_item_placeholder,favor.getReward()));
+    mRewardView.setText(context.getString(R.string.favo_coins_item_placeholder, favor.getReward()));
 
     if (currentUser.getUid().equals(favor.getRequesterId())) {
       if (currentUser.getPhotoUrl() != null) {
         Glide.with(context).load(currentUser.getPhotoUrl()).into(mRequesterIconView);
       }
-      mRequesterView.setText(context.getString(R.string.user_name_item_placeholder, currentUser.getDisplayName()));
+      mRequesterView.setText(
+          context.getString(R.string.user_name_item_placeholder, currentUser.getDisplayName()));
     } else {
       UserUtil.getSingleInstance()
           .findUser(favor.getRequesterId())

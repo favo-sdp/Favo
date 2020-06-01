@@ -84,7 +84,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     mActivityRule.launchActivity(null);
     Thread.sleep(5000);
-    onView(withId(R.id.logo)).check(matches(isDisplayed()));
+    onView(withText(R.string.fui_sign_in_with_google)).check(matches(isDisplayed()));
   }
 
   @Test
