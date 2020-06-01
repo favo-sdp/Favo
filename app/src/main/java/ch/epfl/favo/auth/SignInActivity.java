@@ -53,7 +53,6 @@ public class SignInActivity extends AppCompatActivity {
         UserProfileChangeRequest profileUpdates =
             new UserProfileChangeRequest.Builder()
                 .setDisplayName(CommonTools.emailToName(Objects.requireNonNull(user.getEmail())))
-                // .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
                 .build();
         user.updateProfile(profileUpdates);
       }

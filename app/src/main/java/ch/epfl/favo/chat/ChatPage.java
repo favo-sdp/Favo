@@ -213,7 +213,7 @@ public class ChatPage extends Fragment {
 
   private void attachRecyclerViewAdapter() {
     FirestoreRecyclerOptions<Message> options = getFirestoreRecyclerOptions();
-    final RecyclerView.Adapter adapter = createRecyclerAdapter(options);
+    FirestoreRecyclerAdapter<Message, MessageViewHolder> adapter = createRecyclerAdapter(options);
 
     RecyclerView mRecyclerView = view.findViewById(R.id.messagesList);
 
@@ -259,7 +259,7 @@ public class ChatPage extends Fragment {
   }
 
   @NonNull
-  private RecyclerView.Adapter createRecyclerAdapter(FirestoreRecyclerOptions<Message> options) {
+  private FirestoreRecyclerAdapter<Message, MessageViewHolder> createRecyclerAdapter(FirestoreRecyclerOptions<Message> options) {
     return new FirestoreRecyclerAdapter<Message, MessageViewHolder>(options) {
 
       @Override
