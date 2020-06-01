@@ -4,6 +4,10 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.chat.Model.Message;
 
+/**
+ * Chat Utility acts as a utility repository for the chat. It allows us to communicate with
+ * Firestore and manage the chat collection
+ */
 public interface IChatUtil {
 
   /**
