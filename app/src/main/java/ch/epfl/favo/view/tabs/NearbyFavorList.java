@@ -89,7 +89,6 @@ public class NearbyFavorList extends Fragment {
     setupNearbyFavorsListener();
   }
 
-  // TODO: figure out a way to share view model without using main
   private void setupNearbyFavorsListener() {
     getViewModel()
       .getFavorsAroundMe()
@@ -105,6 +104,9 @@ public class NearbyFavorList extends Fragment {
           });
   }
 
+  /*
+   * @return favor view model
+   */
   public IFavorViewModel getViewModel() {
     return viewModel;
   }
