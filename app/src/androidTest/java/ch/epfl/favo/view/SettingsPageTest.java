@@ -35,7 +35,6 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class SettingsPageTest {
 
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
   private User testUser =
       new User(
           TestConstants.USER_ID,
@@ -53,14 +52,12 @@ public class SettingsPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
           testUser.setNotificationRadius(TestConstants.NOTIFICATION_RADIUS);
           testUser.setChatNotifications(TestConstants.DEFAULT_NOTIFICATION_PREFERENCE);
           testUser.setUpdateNotifications(TestConstants.DEFAULT_NOTIFICATION_PREFERENCE);
-          mockDatabaseWrapper.setMockDocument(testUser);
-          mockDatabaseWrapper.setMockResult(testUser);
-          new FakeUserUtil().setFindUserResult(testUser);
-          DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
+          FakeUserUtil userUtil = new FakeUserUtil();
+          userUtil.setFindUserResult(testUser);
+          DependencyFactory.setCurrentUserRepository(userUtil);
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
@@ -83,7 +80,7 @@ public class SettingsPageTest {
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentUserRepository(null);
     DependencyFactory.setCurrentViewModelClass(null);
   }
 

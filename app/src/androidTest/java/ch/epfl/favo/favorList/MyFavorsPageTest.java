@@ -84,7 +84,6 @@ public class MyFavorsPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentUserRepository(null);
-    // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   public static ViewAction withCustomConstraints(

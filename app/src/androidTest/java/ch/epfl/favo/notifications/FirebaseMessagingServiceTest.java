@@ -96,7 +96,7 @@ public class FirebaseMessagingServiceTest {
     title.click();
     getInstrumentation().waitForIdleSync();
     Thread.sleep(2000);
-    // check that tab 2 is indeed opened
+    // check that tab is indeed opened
     onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 

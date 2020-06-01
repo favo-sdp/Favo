@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Favo</string>
 
+    <string name="package_name">ch.epfl.favo</string>
+
     <string name="app_name_extended">Favo App</string>
 
     <!-- General info about the app -->

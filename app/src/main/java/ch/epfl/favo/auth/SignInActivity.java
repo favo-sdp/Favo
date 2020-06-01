@@ -31,6 +31,7 @@ import ch.epfl.favo.util.DependencyFactory;
 public class SignInActivity extends AppCompatActivity {
 
   public static final int RC_SIGN_IN = 123;
+  private static final String URL_APP_NOT_FOUND = "https://google.com";
   private IGpsTracker mGpsTracker;
 
   @Override
@@ -52,7 +53,6 @@ public class SignInActivity extends AppCompatActivity {
         UserProfileChangeRequest profileUpdates =
             new UserProfileChangeRequest.Builder()
                 .setDisplayName(CommonTools.emailToName(Objects.requireNonNull(user.getEmail())))
-                // TODO: update user profile photoUri
                 // .setPhotoUri(Uri.parse("https://example.com/jane-q-user/profile.jpg"))
                 .build();
         user.updateProfile(profileUpdates);
@@ -115,9 +115,9 @@ public class SignInActivity extends AppCompatActivity {
 
   private ActionCodeSettings getActionCodeSettings() {
     return ActionCodeSettings.newBuilder()
-        .setAndroidPackageName("ch.epfl.favo", true, null)
+        .setAndroidPackageName(getString(R.string.package_name), true, null)
         .setHandleCodeInApp(true)
-        .setUrl("https://google.com")
+        .setUrl(URL_APP_NOT_FOUND)
         .build();
   }
 

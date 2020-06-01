@@ -74,7 +74,6 @@ public class ChatPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          // DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
         }
       };
 
@@ -194,6 +193,7 @@ public class ChatPageTest {
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
     device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+    onView(withText(message)).check(matches(isDisplayed()));
   }
 
   @Test
