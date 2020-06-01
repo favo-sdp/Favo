@@ -85,10 +85,22 @@ public class ChatPage extends Fragment {
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    currentFavor = viewModel.getObservedFavor().getValue();
+
+//    currentFavor = viewModel.getObservedFavor().getValue();
+    viewModel.getObservedFavor().observe(
+            getViewLifecycleOwner(),
+            favor -> {
+              if (favor != null) {
+                currentFavor = favor;
+                setupToolBar();
+                attachRecyclerViewAdapter();
+              }
+            });
+
     if (getArguments() != null) {
       locationForMessage = (getArguments().getParcelable(MapPage.LOCATION_ARGUMENT_KEY));
     }
+
     setupView();
     pictureUtil = DependencyFactory.getCurrentPictureUtility();
     chatUtil = DependencyFactory.getCurrentChatUtility();
@@ -123,7 +135,6 @@ public class ChatPage extends Fragment {
         });
 
     ImeHelper.setImeOnDoneListener(view.findViewById(R.id.messageEdit), this::onSendClick);
-    setupToolBar();
   }
 
   private void setupButtons() {
@@ -195,7 +206,7 @@ public class ChatPage extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
-    attachRecyclerViewAdapter();
+//    attachRecyclerViewAdapter();
   }
 
   private void attachRecyclerViewAdapter() {

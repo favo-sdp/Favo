@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +37,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
@@ -68,6 +70,7 @@ public class MyFavorsPage extends Fragment {
           .build();
 
   private FirestorePagingAdapter<Favor, FavorViewHolder> adapter;
+  private IFavorViewModel favorViewModel;
 
   private FirestorePagingOptions<Favor> activeFavorsOptions;
   private FirestorePagingOptions<Favor> archiveFavorsOptions;
@@ -110,6 +113,9 @@ public class MyFavorsPage extends Fragment {
         createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, false));
     archiveFavorsOptions =
         createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, true));
+
+    favorViewModel = (IFavorViewModel) new ViewModelProvider(requireActivity())
+            .get(DependencyFactory.getCurrentViewModelClass());
 
     // setup methods
     setupSwitchButtons();
@@ -199,7 +205,7 @@ public class MyFavorsPage extends Fragment {
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-        holder.bind(requireContext(), model, rootView);
+        holder.bind(requireContext(), model, rootView, favorViewModel);
       }
 
       @Override
