@@ -157,7 +157,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   /**
    * @param favor
    * @param user could be requester
-   * @return
    */
   public CompletableFuture<Void> acceptFavor(final Favor favor, User user) {
     Favor tempFavor = new Favor(favor);
@@ -229,10 +228,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   Map<String, Favor> getNearbyFavorsFromQuery(
-          Location loc,
-          double radius,
-          QuerySnapshot queryDocumentSnapshots,
-          FirebaseFirestoreException e) {
+      Location loc,
+      double radius,
+      QuerySnapshot queryDocumentSnapshots,
+      FirebaseFirestoreException e) {
     handleException(e);
     List<Favor> favorsList = queryDocumentSnapshots.toObjects(Favor.class);
 

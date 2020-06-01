@@ -3,6 +3,7 @@ package ch.epfl.favo.auth;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,13 +25,14 @@ import java.util.function.Function;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.gps.IGpsTracker;
+import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
 @SuppressLint("NewApi")
 public class SignInActivity extends AppCompatActivity {
-
+  public static final String TAG = "SignInActivity";
   public static final int RC_SIGN_IN = 123;
   private static final String URL_APP_NOT_FOUND = "https://google.com";
   private IGpsTracker mGpsTracker;
@@ -192,7 +194,7 @@ public class SignInActivity extends AppCompatActivity {
   private CompletableFuture postNewUserFuture(User user) {
     if (user.getName() == null || user.getName().equals(""))
       user.setName(CommonTools.emailToName(user.getEmail()));
-    return getCurrentUserUtil()
+    return DependencyFactory.getCurrentUserRepository()
         .postUser(user)
         .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
   }
@@ -205,5 +207,9 @@ public class SignInActivity extends AppCompatActivity {
       user.setName(CommonTools.emailToName(user.getEmail()));
       return getCurrentUserUtil().updateUser(user);
     } else return CompletableFuture.supplyAsync(() -> null);
+  }
+
+  private IUserUtil getCurrentUserUtil() {
+    return DependencyFactory.getCurrentUserRepository();
   }
 }

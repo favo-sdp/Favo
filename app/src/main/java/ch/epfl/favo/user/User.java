@@ -31,11 +31,11 @@ public class User implements Document {
   static final String LOCATION = "location";
   static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
   static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
-  private static final String REQUESTED_FAVORS = "requestedFavors";
+  public static final String REQUESTED_FAVORS = "requestedFavors";
   private static final String ACCEPTED_FAVORS = "acceptedFavors";
-  private static final String COMPLETED_FAVORS = "completedFavors";
-  private static final String LIKES = "likes";
-  private static final String DISLIKES = "dislikes";
+  public static final String COMPLETED_FAVORS = "completedFavors";
+  public static final String LIKES = "likes";
+  public static final String DISLIKES = "dislikes";
   private static final String BALANCE = "balance";
   private static final String NOTIFICATION_RADIUS = "notificationRadius";
   private static final String CHAT_NOTIFICATIONS = "chatNotifications";

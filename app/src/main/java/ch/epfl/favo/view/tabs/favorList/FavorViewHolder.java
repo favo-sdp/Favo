@@ -1,5 +1,6 @@
 package ch.epfl.favo.view.tabs.favorList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
@@ -66,15 +67,4 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
                 Glide.with(context).load(user.getPictureUrl()).into(mRequesterIconView);
             });
   }
-
-  /* Code for edit:
-     favor.setStatusIdToInt(FavorStatus.EDIT);
-     Bundle favorBundle = new Bundle();
-     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, favor);
-     favorBundle.putString(
-             CommonTools.FAVOR_SOURCE, context.getResources().getString(R.string.favor_source_publishedFavor));
-     findNavController((Activity) context, R.id.nav_host_fragment)
-             .navigate(R.id.action_global_favorEditingView, favorBundle);
-  */
-
 }
