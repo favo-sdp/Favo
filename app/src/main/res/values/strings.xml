@@ -158,6 +158,7 @@
     <string name="committed_helpers">Potential helpers"</string>
     <string name="cancel_commit">Cancel commit</string>
     <string name="commit_favor">Commit</string>
+    <string name="no_internet">"An error occurred. Check your internet connection."</string>
 
     <string name="title_map">Map</string>
     <string name="title_favors">Favors</string>

@@ -39,12 +39,13 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
+import static ch.epfl.favo.util.CommonTools.FAVOR_ARGS;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 /**
- * View will contain list of favors requested in the past. The list will contain clickable items
- * that will expand to give more information about them. This object is a simple {@link Fragment}
- * subclass.
+ * View will contain list of favors requested and accepted, currently active and in the past.
+ * The list will contain clickable items that will expand to give more information about them.
+ * This object is a simple {@link Fragment} subclass.
  */
 public class MyFavorsPage extends Fragment {
 
@@ -78,6 +79,10 @@ public class MyFavorsPage extends Fragment {
   private String lastQuery;
 
   private Query baseQuery;
+
+  private final static String TITLE = "title";
+  private final static String IS_ARCHIVED = "isArchived";
+  private final static String ENTER_SEARCH = "Enter Search";
 
   public MyFavorsPage() {
     // Required empty public constructor
