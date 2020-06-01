@@ -84,7 +84,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     mActivityRule.launchActivity(null);
     Thread.sleep(5000);
-    onView(withText(R.id.logo)).check(matches(isDisplayed()));
+    onView(withId(R.id.logo)).check(matches(isDisplayed()));
   }
 
   @Test
