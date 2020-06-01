@@ -207,7 +207,7 @@ public class User implements Document {
     return activeRequestingFavors;
   }
 
-  String getPictureUrl() {
+  public String getPictureUrl() {
     return profilePicUrl;
   }
 
