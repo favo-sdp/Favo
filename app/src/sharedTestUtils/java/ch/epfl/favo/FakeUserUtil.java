@@ -48,6 +48,11 @@ public class FakeUserUtil implements IUserUtil {
     return defaultResult();
   }
 
+  @Override
+  public CompletableFuture changeActiveBalance(String userId, boolean isRequested, double change) {
+    return defaultResult();
+  }
+
   public CompletableFuture defaultResult() {
     if (isThrowingError) return failedCompletableFuture;
     return successfulCompletableFuture;

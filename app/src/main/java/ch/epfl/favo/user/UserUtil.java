@@ -69,6 +69,21 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
+  public CompletableFuture<Void> changeActiveBalance(
+          String userId, boolean isRequested, double change) {
+    return findUser(userId)
+    .thenCompose(
+            (user) -> {
+                if (isRequested) {
+                    user.setBalance(user.getBalance() - change);
+                } else {
+                    user.setBalance(user.getBalance() + change);
+                }
+                return updateUser(user);
+            });
+  }
+
+  @Override
   public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());
   }
@@ -122,21 +137,5 @@ public class UserUtil implements IUserUtil {
 
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
-  }
-
-  public CompletableFuture<Void> settleTransaction(String accepterId, String requesterId, double reward) {
-    return findUser(accepterId)
-            .thenCompose(
-                    (accepter) -> {
-                      accepter.setBalance(accepter.getBalance() + reward);
-                        findUser(requesterId)
-                              .thenCompose(
-                                      (requester) -> {
-                                        requester.setBalance(requester.getBalance() - reward);
-                                        return updateUser(requester);
-                                      });
-                      return updateUser(accepter);
-                    });
-
   }
 }

@@ -78,6 +78,18 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   /**
+   * Tries to update the FavoCoins balance for the given user
+   *
+   * @param isRequested is/are the favors requested?
+   * @param change number of coins being updated
+   * @returnf
+   */
+  private CompletableFuture<Void> changeActiveBalance(
+          String userId, boolean isRequested, double change) {
+    return getUserRepository().changeActiveBalance(userId, isRequested, change);
+  }
+
+  /**
    * Checks if it's possible for user to update, if so, updates his/her status. Then posts favor to
    * DB
    *
@@ -164,8 +176,15 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
       throw new IllegalStateException("Wrong Status");
     }
 
-    return updateFavorForCurrentUser(tempFavor, isRequested, -1)
-      .thenCompose((aVoid -> UserUtil.getSingleInstance().settleTransaction(userIds.get(0), userIds.get(1), tempFavor.getReward())));
+    String userId;
+    if (isRequested) {
+      userId = userIds.get(0);
+    } else {
+      userId = userIds.get(0);
+    }
+    changeActiveBalance(userId, isRequested, tempFavor.getReward());
+
+    return updateFavorForCurrentUser(tempFavor, isRequested, -1);
   }
 
   /**

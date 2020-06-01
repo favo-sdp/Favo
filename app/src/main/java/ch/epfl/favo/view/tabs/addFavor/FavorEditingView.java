@@ -106,12 +106,14 @@ public class FavorEditingView extends Fragment {
     mDescriptionView = rootView.findViewById(R.id.details);
     mDescriptionView.setHint(getString(R.string.favor_details_hint, DESCRIPTION_MAX_LENGTH));
 
+    mFavoCoinsView = rootView.findViewById(R.id.favor_reward);
+
+
     setupView(rootView);
 
     // Extract other elements
     mImageView = rootView.findViewById(R.id.image_view_request_view);
 
-    mFavoCoinsView = rootView.findViewById(R.id.favor_reward);
 
     DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())

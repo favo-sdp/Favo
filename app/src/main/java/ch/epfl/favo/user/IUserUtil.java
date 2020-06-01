@@ -12,6 +12,8 @@ public interface IUserUtil {
 
   CompletableFuture<Void> changeActiveFavorCount(String userId, boolean isRequested, int change);
 
+  CompletableFuture<Void> changeActiveBalance(String userId, boolean isRequested, double change);
+
   CompletableFuture<Void> updateUser(User user);
 
   CompletableFuture<Void> deleteUser(User user);
