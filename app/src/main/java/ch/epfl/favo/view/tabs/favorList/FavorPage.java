@@ -35,10 +35,10 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
+import static ch.epfl.favo.util.CommonTools.FAVOR_ARGS;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 /**
@@ -79,6 +79,10 @@ public class FavorPage extends Fragment {
 
   private Query baseQuery;
 
+  private final static String TITLE = "title";
+  private final static String IS_ARCHIVED = "isArchived";
+  private final static String ENTER_SEARCH = "Enter Search";
+
   public FavorPage() {
     // Required empty public constructor
   }
@@ -110,8 +114,8 @@ public class FavorPage extends Fragment {
         FavorUtil.getSingleInstance()
             .getAllUserFavors(DependencyFactory.getCurrentFirebaseUser().getUid());
 
-    activeFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", false));
-    archiveFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo("isArchived", true));
+    activeFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo(IS_ARCHIVED, false));
+    archiveFavorsOptions = createFirestorePagingOptions(baseQuery.whereEqualTo(IS_ARCHIVED, true));
 
     favorViewModel = (IFavorViewModel) new ViewModelProvider(requireActivity())
             .get(DependencyFactory.getCurrentViewModelClass());
@@ -190,7 +194,7 @@ public class FavorPage extends Fragment {
                 Favor favor = doc.toObject(Favor.class);
                 if (favor != null) {
                   Bundle favorBundle = new Bundle();
-                  favorBundle.putString("FAVOR_ARGS", favor.getId());
+                  favorBundle.putString(FAVOR_ARGS, favor.getId());
                   Navigation.findNavController(requireView())
                       .navigate(R.id.action_nav_favorlist_to_favorPublishedView, favorBundle);
                 }
@@ -218,11 +222,7 @@ public class FavorPage extends Fragment {
             mSwipeRefreshLayout.setRefreshing(false);
             break;
           case ERROR:
-            Toast.makeText(
-                    getContext(),
-                    "An error occurred. Check your internet connection.",
-                    Toast.LENGTH_SHORT)
-                .show();
+            Toast.makeText(getContext(), R.string.no_internet, Toast.LENGTH_SHORT).show();
 
             // remove this to repeat toast every time
             // retry();
@@ -268,7 +268,7 @@ public class FavorPage extends Fragment {
     MenuItem searchMenuItem = menu.findItem(R.id.search_item);
     searchView = (SearchView) searchMenuItem.getActionView();
     searchView.setIconifiedByDefault(true);
-    searchView.setQueryHint("Enter search");
+    searchView.setQueryHint(ENTER_SEARCH);
 
     setOnMenuItemActions(searchMenuItem);
     setOnQueryTextListeners();
@@ -279,6 +279,9 @@ public class FavorPage extends Fragment {
     }
   }
 
+  /**
+   * Set up OnQueryTextListeners for search view.
+   */
   private void setOnQueryTextListeners() {
     searchView.setOnQueryTextListener(
         new SearchView.OnQueryTextListener() {
@@ -305,8 +308,8 @@ public class FavorPage extends Fragment {
             } else {
               query =
                   baseQuery
-                      .whereGreaterThanOrEqualTo("title", newText)
-                      .whereLessThanOrEqualTo("title", newText + END_CODE);
+                      .whereGreaterThanOrEqualTo(TITLE, newText)
+                      .whereLessThanOrEqualTo(TITLE, newText + END_CODE);
             }
 
             lastQuery = newText;
@@ -317,6 +320,10 @@ public class FavorPage extends Fragment {
         });
   }
 
+  /**
+   * Set up OnMenuItemActions for each of the menu items
+   * @param searchMenuItem: menu item 
+   */
   private void setOnMenuItemActions(MenuItem searchMenuItem) {
     searchMenuItem.setOnActionExpandListener(
         new MenuItem.OnActionExpandListener() {
@@ -332,7 +339,7 @@ public class FavorPage extends Fragment {
               query = baseQuery;
               lastQuery = "";
             } else {
-              query = baseQuery.whereEqualTo("title", lastQuery);
+              query = baseQuery.whereEqualTo(TITLE, lastQuery);
             }
 
             displayFavorList(createFirestorePagingOptions(query));
