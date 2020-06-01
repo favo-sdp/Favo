@@ -92,7 +92,6 @@ public class FavorUtil implements IFavorUtil {
    *
    * @param favor to get url updated
    * @param url of photo
-   * @return
    */
   @Override
   public CompletableFuture<Void> updateFavorPhoto(Favor favor, String url) {

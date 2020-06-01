@@ -167,8 +167,6 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testOnShareFavorClicked() throws Throwable {
-    // click accept button
-    // Thread.sleep(2000);
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
 
@@ -258,9 +256,6 @@ public class FavorPublishedViewTest {
             withDecorView(not(is(mainActivityTestRule.getActivity().getWindow().getDecorView()))))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    // check snackbar shows
-    //    onView(withId(com.google.android.material.R.id.snackbar_text))
-    //        .check(matches(withText(R.string.favor_complete_success_msg)));
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
   }
 
@@ -288,12 +283,9 @@ public class FavorPublishedViewTest {
   public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound() {
 
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
-    // TODO: mock failed task
-    // Mockito.doReturn(new Task<>() {
-    //  }).when(documentReference).get();
+
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
     UserUtil.getSingleInstance().updateCollectionWrapper((mockDatabaseWrapper));
-    // onView(withId(R.id.user_name_published_view)).perform(click());
     onView(withId(R.id.fragment_favor_published)).check(matches(isDisplayed()));
   }
 
