@@ -322,7 +322,7 @@ public class FavorPage extends Fragment {
 
   /**
    * Set up OnMenuItemActions for each of the menu items
-   * @param searchMenuItem: menu item 
+   * @param searchMenuItem: menu item
    */
   private void setOnMenuItemActions(MenuItem searchMenuItem) {
     searchMenuItem.setOnActionExpandListener(
