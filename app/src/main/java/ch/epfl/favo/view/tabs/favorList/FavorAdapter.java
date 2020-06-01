@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,8 +34,8 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     assert favor != null;
 
     if (convertView == null) {
-      convertView = LayoutInflater.from(getContext())
-              .inflate(R.layout.favor_list_item, parent, false);
+      convertView =
+          LayoutInflater.from(getContext()).inflate(R.layout.favor_list_item, parent, false);
     }
 
     TextView favorTitle = convertView.findViewById(R.id.item_title);
@@ -44,14 +43,12 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
 
     TextView favorRequester = convertView.findViewById(R.id.item_requester);
     UserUtil.getSingleInstance()
-            .findUser(favor.getRequesterId())
-            .thenAccept(user -> favorRequester.setText(getUserName(user)));
+        .findUser(favor.getRequesterId())
+        .thenAccept(user -> favorRequester.setText(getUserName(user)));
 
     TextView favorCoins = convertView.findViewById(R.id.item_coins);
-    favorCoins.setText(getContext().getResources().getString(R.string.num_coins, (int) favor.getReward()));
-
-    ImageView favorIcon = convertView.findViewById(R.id.item_icon);
-    // Todo: load requester profile picture (@Daniel)
+    favorCoins.setText(
+        getContext().getResources().getString(R.string.num_coins, (int) favor.getReward()));
 
     return convertView;
   }

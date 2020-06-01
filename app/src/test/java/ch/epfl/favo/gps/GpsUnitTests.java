@@ -17,7 +17,6 @@ import org.junit.Test;
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.MapPage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

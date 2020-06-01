@@ -1,7 +1,6 @@
 package ch.epfl.favo.database;
 
 import android.location.Location;
-import android.util.Log;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;

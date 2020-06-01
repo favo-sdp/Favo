@@ -8,7 +8,6 @@
     <dimen name="hamburger_button_size">40dp</dimen>
     <!-- Favor Request View-->
 
-    <dimen name="margin_bottom_button">10dip</dimen>
     <dimen name="margin_accept_view">10dip</dimen>
 
     <dimen name="toolbar_height">56dp</dimen>

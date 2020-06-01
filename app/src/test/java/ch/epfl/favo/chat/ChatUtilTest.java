@@ -29,8 +29,9 @@ public class ChatUtilTest {
 
     chatUtil = ChatUtil.getSingleInstance();
   }
+
   @After
-  public void tearDown(){
+  public void tearDown() {
     DependencyFactory.setCurrentCollectionWrapper(null);
   }
 
