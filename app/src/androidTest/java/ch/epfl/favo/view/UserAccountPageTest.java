@@ -80,7 +80,7 @@ public class UserAccountPageTest {
   }
 
   @Test
-  public void testUserNotLoggedIn() throws InterruptedException {
+  public void testUserNotLoggedIn() {
     DependencyFactory.setCurrentFirebaseUser(null);
     mActivityRule.launchActivity(null);
     // UI controlled by the Firebase UI library, view checks cannot be done properly
