@@ -8,6 +8,7 @@ public interface IChatUtil {
 
   /**
    * Save chat message to the corresponding collection in the database
+   *
    * @param message: message to save
    * @return: completable future
    */
@@ -15,6 +16,7 @@ public interface IChatUtil {
 
   /**
    * Returns custom URL to Google Maps
+   *
    * @param latitude: latitude coordinate
    * @param longitude: longitude coordinate
    * @return: string url

@@ -14,8 +14,7 @@ import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.gps.FavoLocation;
 
 /**
- * This class contains all the relevant information about users
- * so that it can be injected in views
+ * This class contains all the relevant information about users so that it can be injected in views
  */
 public class User implements Document {
 

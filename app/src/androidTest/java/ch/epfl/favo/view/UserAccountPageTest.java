@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeUserUtil;
