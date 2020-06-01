@@ -86,8 +86,10 @@ public class ChatPage extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
 
-//    currentFavor = viewModel.getObservedFavor().getValue();
-    viewModel.getObservedFavor().observe(
+    //    currentFavor = viewModel.getObservedFavor().getValue();
+    viewModel
+        .getObservedFavor()
+        .observe(
             getViewLifecycleOwner(),
             favor -> {
               if (favor != null) {
@@ -206,7 +208,7 @@ public class ChatPage extends Fragment {
   @Override
   public void onStart() {
     super.onStart();
-//    attachRecyclerViewAdapter();
+    //    attachRecyclerViewAdapter();
   }
 
   private void attachRecyclerViewAdapter() {

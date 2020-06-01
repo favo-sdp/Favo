@@ -207,7 +207,7 @@
             <argument
                 android:name="FAVOR_ID"
                 android:defaultValue="@null"
-                app:argType="string"/>
+                app:argType="string" />
         </action>
     </fragment>
 

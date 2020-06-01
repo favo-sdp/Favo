@@ -114,8 +114,10 @@ public class MyFavorsPage extends Fragment {
     archiveFavorsOptions =
         createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, true));
 
-    favorViewModel = (IFavorViewModel) new ViewModelProvider(requireActivity())
-            .get(DependencyFactory.getCurrentViewModelClass());
+    favorViewModel =
+        (IFavorViewModel)
+            new ViewModelProvider(requireActivity())
+                .get(DependencyFactory.getCurrentViewModelClass());
 
     // setup methods
     setupSwitchButtons();

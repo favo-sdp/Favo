@@ -58,6 +58,9 @@
     <string name="active_favors_text">Active</string>
     <string name="archived_favors_text">Archived</string>
 
+    <string name="favo_coins_item_placeholder">%.2f coins</string>
+    <string name="user_name_item_placeholder">%s - </string>
+
     <string name="tab2_description">2</string>
     <string name="share">Share</string>
     <string name="about">About</string>
