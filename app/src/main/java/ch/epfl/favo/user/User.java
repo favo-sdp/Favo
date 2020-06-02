@@ -32,7 +32,7 @@ public class User implements Document {
   static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
   static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
   public static final String REQUESTED_FAVORS = "requestedFavors";
-  private static final String ACCEPTED_FAVORS = "acceptedFavors";
+  public static final String ACCEPTED_FAVORS = "acceptedFavors";
   public static final String COMPLETED_FAVORS = "completedFavors";
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";

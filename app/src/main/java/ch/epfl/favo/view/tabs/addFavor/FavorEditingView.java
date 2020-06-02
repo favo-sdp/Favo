@@ -354,7 +354,6 @@ public class FavorEditingView extends Fragment {
           .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
-
       if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
         startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
       }

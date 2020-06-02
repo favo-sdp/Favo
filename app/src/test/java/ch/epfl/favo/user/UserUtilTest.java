@@ -45,9 +45,7 @@ public class UserUtilTest {
     Mockito.doReturn(successfulFuture)
         .when(mockCollectionWrapper)
         .updateDocument(anyString(), Mockito.anyMap());
-    Mockito.doReturn(successfulFuture)
-        .when(mockCollectionWrapper)
-        .addDocument(any(Document.class));
+    Mockito.doReturn(successfulFuture).when(mockCollectionWrapper).addDocument(any(Document.class));
     Query mockCollectionReference = Mockito.mock(Query.class);
 
     Query orderByResult = Mockito.mock(Query.class);
@@ -61,13 +59,15 @@ public class UserUtilTest {
         .orderBy(anyString(), any(Query.Direction.class));
     DocumentReference mockUserReference = Mockito.mock(DocumentReference.class);
     Task mockTask = Mockito.mock(Task.class);
-    Mockito.doReturn(mockTask).when(mockUserReference).update(anyString(),any());
+    Mockito.doReturn(mockTask).when(mockUserReference).update(anyString(), any());
     Mockito.doReturn(mockUserReference).when(mockCollectionWrapper).getDocumentQuery(anyString());
     DependencyFactory.setCurrentCollectionWrapper(mockCollectionWrapper);
     DependencyFactory.setCurrentCompletableFuture(successfulFuture);
+    UserUtil.getSingleInstance().updateCollectionWrapper(mockCollectionWrapper);
   }
+
   @After
-  public void tearDown(){
+  public void tearDown() {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
     DependencyFactory.setCurrentFirebaseUser(null);
@@ -75,7 +75,7 @@ public class UserUtilTest {
 
   @Test
   public void testPostUser() {
-    Assert.assertTrue(UserUtil.getSingleInstance().postUser(getUser()).isDone());
+    Assert.assertTrue(UserUtil.getSingleInstance().postUser(FakeItemFactory.getUser()).isDone());
   }
 
   @Test
@@ -184,7 +184,9 @@ public class UserUtilTest {
 
   @Test
   public void testIncrementFieldForUser() {
-    Assert.assertTrue(UserUtil.getSingleInstance()
-        .incrementFieldForUser(TestConstants.USER_ID, User.ACCEPTED_FAVORS, 1).isDone());
+    Assert.assertTrue(
+        UserUtil.getSingleInstance()
+            .incrementFieldForUser(TestConstants.USER_ID, User.ACCEPTED_FAVORS, 1)
+            .isDone());
   }
 }

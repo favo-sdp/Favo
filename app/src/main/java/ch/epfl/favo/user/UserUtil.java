@@ -49,7 +49,7 @@ public class UserUtil implements IUserUtil {
    * @throws RuntimeException Unable to post to DB.
    */
   @Override
-  public CompletableFuture<Void> postUser(User user) { // TODO: catch exception in view not here
+  public CompletableFuture<Void> postUser(User user) {
     return collection.addDocument(user);
   }
 
