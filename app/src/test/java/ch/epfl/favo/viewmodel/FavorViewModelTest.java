@@ -28,7 +28,7 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
-import ch.epfl.favo.util.PictureUtil.Folder;
+import ch.epfl.favo.util.IPictureUtil.Folder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
