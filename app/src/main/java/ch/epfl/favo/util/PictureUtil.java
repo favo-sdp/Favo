@@ -20,7 +20,6 @@ import ch.epfl.favo.database.DatabaseWrapper;
 public class PictureUtil {
 
   private static PictureUtil INSTANCE = null;
-  private static final String TAG = "PictureUtil";
 
   private static final String PICTURE_FILE_EXTENSION = ".jpeg";
   private static final long TEN_MEGABYTES = 10 * 1024 * 1024;
@@ -37,6 +36,18 @@ public class PictureUtil {
     return INSTANCE;
   }
 
+  public enum Folder {
+    FAVOR("favor/"),
+    CHAT("chat/"),
+    PROFILE_PICTURE("profile_picture/");
+
+    private String folder;
+
+    Folder(String folder) { this.folder = folder; }
+
+    public String toString() { return this.folder; }
+  }
+
   private static FirebaseStorage getStorage() {
     return getInstance().storage;
   }
@@ -47,12 +58,14 @@ public class PictureUtil {
    * @param picture to be uploaded to Firebase Cloud Storage
    * @return CompletableFuture of the resulting url
    */
-  public CompletableFuture<String> uploadPicture(Bitmap picture) {
+  public CompletableFuture<String> uploadPicture(Folder folder, Bitmap picture) {
     InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
+
+    String location = folder.toString() + DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION;
     StorageReference storageRef =
         getStorage()
             .getReference()
-            .child(DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION);
+            .child(location);
 
     Task<Uri> urlTask =
         storageRef

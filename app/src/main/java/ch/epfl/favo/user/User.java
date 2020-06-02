@@ -38,6 +38,7 @@ public class User implements Document {
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";
   public static final String BALANCE = "balance";
+  public static final String PROFILE_PICTURE_URL = "profilePictureUrl";
 
   private String id;
   private String name;
@@ -83,6 +84,7 @@ public class User implements Document {
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
     this.balance = (double) map.get(BALANCE);
+    this.profilePictureUrl = (String) map.get(PROFILE_PICTURE_URL);
   }
 
   public User(
@@ -146,6 +148,7 @@ public class User implements Document {
         put(LIKES, likes);
         put(DISLIKES, dislikes);
         put(BALANCE, balance);
+        put(PROFILE_PICTURE_URL, profilePictureUrl);
       }
     };
   }
