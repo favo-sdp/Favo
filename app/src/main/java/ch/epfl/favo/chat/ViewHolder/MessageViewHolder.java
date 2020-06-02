@@ -1,4 +1,4 @@
-package ch.epfl.favo.chat;
+package ch.epfl.favo.chat.ViewHolder;
 
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
@@ -8,47 +8,48 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.DateFormat;
+import java.util.Date;
+
 import ch.epfl.favo.R;
+import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.util.DependencyFactory;
 
-class ChatViewHolder extends RecyclerView.ViewHolder {
-  private final TextView mNameField;
-  private final TextView mTextField;
-  private final RelativeLayout mMessageContainer;
-  private final LinearLayout mMessage;
+public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
+  private TextView mNameField;
+  private TextView mTimeField;
+  private RelativeLayout mMessageContainer;
+  private LinearLayout mMessage;
   private final int mGreen300;
   private final int mGray300;
 
-  ChatViewHolder(@NonNull View itemView) {
+  MessageViewHolder(@NonNull View itemView) {
     super(itemView);
-    mNameField = itemView.findViewById(R.id.name_text);
-    mTextField = itemView.findViewById(R.id.message_text);
-    mMessageContainer = itemView.findViewById(R.id.message_container);
-    mMessage = itemView.findViewById(R.id.message);
     mGreen300 = ContextCompat.getColor(itemView.getContext(), R.color.material_green_300);
     mGray300 = ContextCompat.getColor(itemView.getContext(), R.color.material_gray_300);
+    mNameField = itemView.findViewById(R.id.name_text);
+    mMessageContainer = itemView.findViewById(R.id.message_container);
+    mMessage = itemView.findViewById(R.id.message_lin_layout);
+    mTimeField = itemView.findViewById(R.id.date_text);
   }
 
-  void bind(@NonNull ChatModel chatModel) {
-    setName(chatModel.getName());
-    setMessage(chatModel.getMessage());
-
+  /**
+   * bind Message view to Message model
+   *
+   * @param textMessage: message model given
+   */
+  public void bind(@NonNull Message textMessage) {
     FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
-    setIsSender(currentUser != null && chatModel.getUid().equals(currentUser.getUid()));
-  }
-
-  private void setName(@Nullable String name) {
-    mNameField.setText(name);
-  }
-
-  private void setMessage(@Nullable String text) {
-    mTextField.setText(text);
+    setIsSender(currentUser != null && textMessage.getUid().equals(currentUser.getUid()));
+    mNameField.setText(textMessage.getName());
+    mTimeField.setText(
+        DateFormat.getTimeInstance(DateFormat.SHORT)
+            .format(textMessage.getTimestamp() != null ? textMessage.getTimestamp() : new Date()));
   }
 
   private void setIsSender(boolean isSender) {

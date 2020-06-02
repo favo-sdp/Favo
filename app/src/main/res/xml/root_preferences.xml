@@ -12,34 +12,40 @@
 
     <PreferenceCategory android:title="@string/notification_header">
         <SwitchPreferenceCompat
-            app:key="notifications_new"
+            app:defaultValue="true"
+            app:key="@string/nearbyFavors_notifications_setting_key"
             app:summary="@string/notification_summary"
             app:title="@string/notification_title" />
         <ListPreference
-            app:defaultValue="10 Km"
-            app:dependency="notifications_new"
+            app:defaultValue="@string/default_radius"
+            app:dependency="@string/nearbyFavors_notifications_setting_key"
             app:entries="@array/notification_radius"
             app:entryValues="@array/notification_radius"
-            app:key="radius"
+            app:key="@string/radius_notifications_setting_key"
             app:title="@string/notification_radius_title"
             app:useSimpleSummaryProvider="true" />
         <SwitchPreferenceCompat
-            app:key="notifications_update"
+            app:defaultValue="true"
+            app:key="@string/update_notifications_setting_key"
             app:summary="@string/notification_update_summary"
             app:title="@string/notification_update_title" />
         <SwitchPreferenceCompat
-            app:key="notifications_delete"
-            app:summary="@string/notification_delete_summary"
-            app:title="@string/notification_delete_title" />
-        <SwitchPreferenceCompat
-            app:key="notifications_join"
-            app:summary="@string/notification_join_summary"
-            app:title="@string/notification_join_title" />
-        <SwitchPreferenceCompat
-            app:key="notifications_chat"
+            app:defaultValue="true"
+            app:key="@string/chat_notifications_setting_key"
             app:summary="@string/notification_chat_summary"
             app:title="@string/notification_chat_title" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Display">
+        <ListPreference
+            app:defaultValue="@string/map_style_default_value"
+            app:entries="@array/map_style"
+            app:entryValues="@array/map_style_idx"
+            app:key="@string/map_style_key"
+            app:title="@string/map_style_title"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/help_header">
         <Preference
             android:key="help"

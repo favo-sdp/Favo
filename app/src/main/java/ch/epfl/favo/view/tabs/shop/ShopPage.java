@@ -28,7 +28,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
@@ -76,7 +75,7 @@ public class ShopPage extends Fragment {
 
     shopItems = OFFERS;
 
-    UserUtil.getSingleInstance()
+    DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
         .thenAccept(
             user -> {

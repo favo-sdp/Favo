@@ -44,6 +44,7 @@ public class FavorViewModelTest {
   private PictureUtil pictureUtility;
   private Bitmap bitmap;
   private DocumentReference documentReference;
+  private FavorViewModel viewModelSpy;
 
   @Before
   public void setup() {
@@ -65,6 +66,7 @@ public class FavorViewModelTest {
     DependencyFactory.setCurrentUserRepository(userRepository);
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     viewModel = new FavorViewModel();
+    viewModelSpy = Mockito.spy(viewModel);
     bitmap = Mockito.mock(Bitmap.class);
     pictureUtility = Mockito.mock(PictureUtil.class);
     documentReference = Mockito.mock(DocumentReference.class);
@@ -82,6 +84,7 @@ public class FavorViewModelTest {
         .when(userRepository)
         .changeActiveFavorCount(anyString(), anyBoolean(), anyInt());
     Mockito.doReturn(successfulResult).when(userRepository).updateUser(any(User.class));
+    Mockito.doNothing().when(viewModelSpy).setFavorValue(any(Favor.class));
   }
 
   @After
@@ -91,7 +94,7 @@ public class FavorViewModelTest {
 
   @Test
   public void testRepositoryBehaviourIsUnchangedOnPostFavor() {
-    Assert.assertTrue(viewModel.requestFavor(FakeItemFactory.getFavor()).isDone());
+    Assert.assertTrue(viewModelSpy.requestFavor(FakeItemFactory.getFavor(), 1).isDone());
     // Assert.assertEquals(successfulResult,viewModel.requestFavor(FakeItemFactory.getFavor()));
   }
 
@@ -101,14 +104,14 @@ public class FavorViewModelTest {
         .when(userRepository)
         .changeActiveFavorCount(anyString(), anyBoolean(), anyInt());
     Assert.assertTrue(
-        viewModel.requestFavor(FakeItemFactory.getFavor()).isCompletedExceptionally());
+        viewModelSpy.requestFavor(FakeItemFactory.getFavor(), 1).isCompletedExceptionally());
   }
 
   @Test
   public void testRepositoryDoesNotThrowErrorOnRepositoryPostFavorFailedResult() {
     Mockito.doReturn(failedResult).when(favorRepository).requestFavor(any(Favor.class));
     CompletableFuture<Void> voidCompletableFuture =
-        viewModel.requestFavor(FakeItemFactory.getFavor());
+        viewModelSpy.requestFavor(FakeItemFactory.getFavor(), 1);
     voidCompletableFuture.whenComplete(
         (aVoid, throwable) -> Assert.assertTrue(throwable.getCause() instanceof RuntimeException));
   }

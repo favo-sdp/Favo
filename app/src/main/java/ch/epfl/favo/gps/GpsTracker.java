@@ -40,7 +40,7 @@ public class GpsTracker implements LocationListener, IGpsTracker {
 
   /**
    * @throws NoPermissionGrantedException Should check if location permissions are granted
-   * @throws RuntimeException Should check if location is finally found
+   * @throws NoPositionFoundException Should check if location is finally found
    * @return the location of phone
    */
   public Location getLocation() throws NoPermissionGrantedException, NoPositionFoundException {
@@ -67,10 +67,11 @@ public class GpsTracker implements LocationListener, IGpsTracker {
         mLastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
       }
     } else {
-      throw new NoPermissionGrantedException("No location permission granted");
+      throw new NoPermissionGrantedException();
     }
-    if (mLastKnownLocation == null)
-      throw new NoPositionFoundException("Permission is granted, but no position is found");
+    if (mLastKnownLocation == null) {
+      throw new NoPositionFoundException();
+    }
     mLastUpdate = System.currentTimeMillis();
     return mLastKnownLocation;
   }

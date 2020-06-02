@@ -7,10 +7,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.internal.firebase_auth.zzff;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.FirebaseUserMetadata;
 import com.google.firebase.auth.UserInfo;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.auth.zzy;
 import com.google.firebase.auth.zzz;
 
@@ -147,5 +149,10 @@ public class FakeFirebaseUser extends FirebaseUser {
   @Override
   public boolean isEmailVerified() {
     return false;
+  }
+
+  @Override
+  public Task updateProfile(UserProfileChangeRequest userProfileChangeRequest) {
+    return null;
   }
 }

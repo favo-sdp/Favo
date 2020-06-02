@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
@@ -35,8 +36,6 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 @RunWith(AndroidJUnit4.class)
 public class UserAccountPageTest {
 
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
-
   @Rule
   public final ActivityTestRule<SignInActivity> mActivityRule =
       new ActivityTestRule<>(SignInActivity.class, true, false);
@@ -57,7 +56,6 @@ public class UserAccountPageTest {
 
   @Before
   public void setUp() {
-    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     User testUser =
         new User(
             TestConstants.USER_ID,
@@ -66,8 +64,10 @@ public class UserAccountPageTest {
             TestConstants.DEVICE_ID,
             null,
             null);
-    mockDatabaseWrapper.setMockDocument(testUser);
-    mockDatabaseWrapper.setMockResult(testUser);
+
+    FakeUserUtil userUtil = new FakeUserUtil();
+    userUtil.setFindUserResult(testUser);
+    DependencyFactory.setCurrentUserRepository(userUtil);
     DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
   }
 
@@ -75,19 +75,19 @@ public class UserAccountPageTest {
   public void tearDown() {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
-    DependencyFactory.setCurrentCollectionWrapper(null);
+    DependencyFactory.setCurrentUserRepository(null);
     DependencyFactory.setCurrentViewModelClass(null);
   }
 
   @Test
   public void testUserNotLoggedIn() {
-    // just to test that sign-in activity handled by the library is correctly displayed without
-    // errors
+    DependencyFactory.setCurrentFirebaseUser(null);
     mActivityRule.launchActivity(null);
+    // UI controlled by the Firebase UI library, view checks cannot be done properly
   }
 
   @Test
-  public void testUserAlreadyLoggedIn_displayUserData() throws InterruptedException {
+  public void testUserAlreadyLoggedIn_displayUserData() {
 
     // set mock user
     DependencyFactory.setCurrentFirebaseUser(
@@ -110,7 +110,7 @@ public class UserAccountPageTest {
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
-    onView(withId(R.id.user_name)).check(matches(withText("Test Testerson")));
+    onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class UserAccountPageTest {
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
-    onView(withId(R.id.user_email)).check(matches(withText("test@example.com")));
+    onView(withId(R.id.user_email)).check(matches(withText("No email")));
   }
 
   @Test
@@ -175,5 +175,6 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(android.R.id.button1)).perform(click());
+    onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
   }
 }

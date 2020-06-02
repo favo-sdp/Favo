@@ -17,7 +17,6 @@ import org.junit.Test;
 import ch.epfl.favo.exception.NoPermissionGrantedException;
 import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.MapPage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -98,14 +97,5 @@ public class GpsUnitTests extends FragmentActivity {
     gpsTracker.onProviderEnabled(LocationManager.GPS_PROVIDER);
     Intent intent = mock(Intent.class);
     assertNull(gpsTracker.onBind(intent));
-  }
-
-  @Test
-  public void RadiusToZoomLevelTest() {
-    MapPage mapPage = new MapPage();
-    assertEquals(16, mapPage.notificationRadiusToZoomLevel(1));
-    assertEquals(14, mapPage.notificationRadiusToZoomLevel(5));
-    assertEquals(13, mapPage.notificationRadiusToZoomLevel(10));
-    assertEquals(9, mapPage.notificationRadiusToZoomLevel(25));
   }
 }

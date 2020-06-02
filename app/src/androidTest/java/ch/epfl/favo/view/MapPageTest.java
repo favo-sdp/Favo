@@ -1,8 +1,12 @@
 package ch.epfl.favo.view;
 
 import android.graphics.Point;
+import android.os.Bundle;
 import android.view.Display;
 
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -22,18 +26,20 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.view.tabs.MapPage;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 @RunWith(AndroidJUnit4.class)
 public class MapPageTest {
-  private FakeViewModel fakeViewModel;
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
 
   @Rule
@@ -42,7 +48,7 @@ public class MapPageTest {
         @Override
         protected void beforeActivityLaunched() {
           mockDatabaseWrapper.setThrowError(true);
-          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+          //          DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
@@ -108,7 +114,54 @@ public class MapPageTest {
         .check(matches(withText(snackbar)));
   }
 
+  @Test
+  public void testNewRequestView() throws Throwable {
+    launchMapFragment(MapPage.NEW_REQUEST);
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(R.string.map_request_favor))));
+  }
+
+  @Test
+  public void testEditLocationView() throws Throwable {
+    launchMapFragment(MapPage.EDIT_EXISTING_LOCATION);
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(R.string.map_edit_favor_loc))));
+  }
+
+  @Test
+  public void testShareLocationView() throws Throwable {
+    launchMapFragment(MapPage.SHARE_LOCATION);
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(R.string.map_share_loc))));
+  }
+
+  @Test
+  public void testObserveLocationView() throws Throwable {
+    launchMapFragment(MapPage.OBSERVE_LOCATION);
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.toolbar_main_activity))
+        .check(matches(hasDescendant(withText(R.string.map_observe_loc))));
+  }
+
   private void waitFor(int t) throws InterruptedException {
     Thread.sleep(t);
+  }
+
+  private MapPage launchMapFragment(int intentType) throws Throwable {
+    MainActivity activity = mainActivityTestRule.getActivity();
+    NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
+    Bundle bundle = new Bundle();
+    bundle.putInt(MapPage.LOCATION_ARGUMENT_KEY, intentType);
+    runOnUiThread(() -> navController.navigate(R.id.action_global_nav_map, bundle));
+
+    Fragment navHostFragment =
+        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
+    return (MapPage) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
 }

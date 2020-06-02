@@ -32,6 +32,9 @@ public class UserUtil implements IUserUtil {
   private static ICollectionWrapper<User> collection =
       DependencyFactory.getCurrentCollectionWrapper("users", User.class);
 
+  public void updateCollectionWrapper(ICollectionWrapper<User> newWrapper) {
+    collection = newWrapper;
+  }
   // Private constructor
   private UserUtil() {}
 
@@ -71,6 +74,11 @@ public class UserUtil implements IUserUtil {
   @Override
   public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());
+  }
+
+  @Override
+  public CompletableFuture<Void> deleteUser(User user) {
+    return collection.removeDocument(user.getId());
   }
 
   /** @param id A FireBase Uid to search for in Users table. */

@@ -28,6 +28,7 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
 
+import ch.epfl.favo.notifications.FirebaseMessagingService;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.FragmentAbout;
@@ -42,7 +43,7 @@ import ch.epfl.favo.view.tabs.shop.ShopPage;
 public class MainActivity extends AppCompatActivity {
 
   private static final String DEEP_LINK_QUERY_PARAMETER = "favorId";
-  private static final String NOTIFICATION_PARAMETER = "FavorId";
+  public static String GOOGLE_API_KEY;
 
   private static final int[] NAVIGATION_ITEMS =
       new int[] {
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     setUpDeepLink();
 
     setContentView(R.layout.activity_main);
+    GOOGLE_API_KEY = getString(R.string.google_api_key);
 
     // Initialize Variables
     navigationView = findViewById(R.id.nav_view);
@@ -243,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
     Bundle extras = intent.getExtras();
     if (extras != null) {
       Bundle favorBundle = new Bundle();
-      String favorId = extras.getString(NOTIFICATION_PARAMETER);
+      String favorId = extras.getString(FirebaseMessagingService.FAVOR_NOTIFICATION_KEY);
 
       if (favorId != null && !favorId.equals("")) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);

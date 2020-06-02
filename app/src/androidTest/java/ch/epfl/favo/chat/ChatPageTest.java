@@ -1,5 +1,11 @@
 package ch.epfl.favo.chat;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+
+import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -9,22 +15,30 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import java.io.File;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
+import ch.epfl.favo.FakeChatUtil;
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakePictureUtil;
 import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
+import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
 import ch.epfl.favo.view.MockGpsTracker;
 
+import static android.app.Activity.RESULT_OK;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -37,14 +51,16 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
 import static ch.epfl.favo.TestUtils.childAtPosition;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.AllOf.allOf;
+import static org.mockito.ArgumentMatchers.anyDouble;
 
 public class ChatPageTest {
 
@@ -58,7 +74,6 @@ public class ChatPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          // DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
         }
       };
 
@@ -70,6 +85,7 @@ public class ChatPageTest {
   public void setUp() {
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
+    DependencyFactory.setCurrentPictureUtility(new FakePictureUtil());
   }
 
   @After
@@ -104,7 +120,7 @@ public class ChatPageTest {
     getInstrumentation().waitForIdleSync();
 
     // wait for snackbar
-    Thread.sleep(4000);
+    Thread.sleep(5000);
 
     // Click on chat button
     onView(withId(R.id.chat_button)).perform(click());
@@ -177,16 +193,18 @@ public class ChatPageTest {
     // Click on upper left screen corner
     UiDevice device = UiDevice.getInstance(getInstrumentation());
     device.click(device.getDisplayWidth() / 2, device.getDisplayHeight() / 2);
+    onView(withText(message)).check(matches(isDisplayed()));
   }
 
   @Test
   public void testClickOnMessageNavigateToUserInfoPage() throws InterruptedException {
 
-    String message = "Fake message";
+    String message = "l";
     typeMessage(message);
-
+    Thread.sleep(1000);
     onView(withId(R.id.messageEdit)).perform(pressImeActionButton());
-
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
     User testUser =
         new User(
             TestConstants.USER_ID,
@@ -196,22 +214,98 @@ public class ChatPageTest {
             null,
             null);
 
-    DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     mockDatabaseWrapper.setMockDocument(testUser);
     mockDatabaseWrapper.setMockResult(testUser);
-
+    UserUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+    Thread.sleep(3000);
     ViewInteraction recyclerView =
         onView(
             allOf(
                 withId(R.id.messagesList),
                 childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
 
-    Thread.sleep(1000);
-
     recyclerView.perform(actionOnItemAtPosition(0, click()));
-
-    Thread.sleep(1000);
-
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(3000);
     onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testShareImage() throws Throwable {
+    FakeChatUtil fakeChatUtil = new FakeChatUtil();
+    DependencyFactory.setCurrentChatUtility(fakeChatUtil);
+    navigateToChatPage();
+    Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+
+    getInstrumentation().waitForIdleSync();
+    ChatPage chatPage = getChatPageReference();
+    Uri filePath = saveMockPicture(bm, chatPage);
+    Intent pictureIntent = new Intent();
+    pictureIntent.setData(filePath);
+
+    runOnUiThread(() -> chatPage.onActivityResult(1, RESULT_OK, pictureIntent));
+    fakeChatUtil.setThrowsError(new RuntimeException());
+    runOnUiThread(() -> chatPage.onActivityResult(1, RESULT_OK, pictureIntent));
+    getInstrumentation().waitForIdleSync();
+    Thread.sleep(1000);
+    onView(withId(com.google.android.material.R.id.snackbar_text))
+        .check(matches(withText(R.string.error_send_msg_chat)));
+    DependencyFactory.setCurrentChatUtility(null);
+  }
+
+  @Test
+  public void testShareMyCurrentLocation() throws InterruptedException {
+    ChatUtil spyChatUtil = Mockito.spy(ChatUtil.getSingleInstance());
+    DependencyFactory.setCurrentChatUtility(spyChatUtil);
+    navigateToChatPage();
+    Bitmap mockMap = Bitmap.createBitmap(300, 300, Bitmap.Config.RGB_565);
+    ChatPage chatPage = getChatPageReference();
+    Uri filePath = saveMockPicture(mockMap, chatPage);
+    Mockito.doReturn(filePath.toString())
+        .when(spyChatUtil)
+        .generateGoogleMapsPath(anyDouble(), anyDouble());
+    // share current location
+    onView(withId(R.id.share_location_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withText(R.string.share_location_current))
+        .check(matches(isDisplayed()))
+        .perform(click());
+    Thread.sleep(3000);
+    onView(withId(R.id.chat_msg_image)).check(matches(isDisplayed()));
+    DependencyFactory.setCurrentChatUtility(null);
+  }
+
+  @Test
+  public void testShareMapLocation() throws InterruptedException {
+    navigateToChatPage();
+    // share current location
+    onView(withId(R.id.share_location_button)).check(matches(isDisplayed())).perform(click());
+    getInstrumentation().waitForIdleSync();
+
+    onView(withText(R.string.share_location_propose))
+        .check(matches(isDisplayed()))
+        .perform(click());
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.fragment_map)).check(matches(isDisplayed()));
+    pressBack();
+  }
+
+  private Uri saveMockPicture(Bitmap bm, ChatPage chatPage) {
+    Uri path =
+        CacheUtil.getInstance()
+            .saveToInternalStorage(
+                Objects.requireNonNull(chatPage.getContext()), bm, "testImage", 0);
+    return Uri.fromFile(new File(path.toString()));
+  }
+
+  private ChatPage getChatPageReference() {
+    Navigation.findNavController(mainActivityTestRule.getActivity(), R.id.nav_host_fragment);
+    Fragment navHostFragment =
+        mainActivityTestRule
+            .getActivity()
+            .getSupportFragmentManager()
+            .findFragmentById(R.id.nav_host_fragment);
+    getInstrumentation().waitForIdleSync();
+    return (ChatPage) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
 }

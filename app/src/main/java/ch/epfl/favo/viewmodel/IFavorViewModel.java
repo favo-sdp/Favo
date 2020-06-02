@@ -18,7 +18,7 @@ import ch.epfl.favo.user.User;
  */
 public interface IFavorViewModel {
 
-  CompletableFuture<Void> requestFavor(final Favor favor);
+  CompletableFuture<Void> requestFavor(final Favor favor, int change);
 
   // Upload/download pictures
   void uploadOrUpdatePicture(Favor favor, Bitmap picture);

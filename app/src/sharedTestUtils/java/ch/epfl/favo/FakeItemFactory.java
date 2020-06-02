@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.util.CommonTools;
 
 public class FakeItemFactory {
 
@@ -18,17 +20,6 @@ public class FakeItemFactory {
         TestConstants.TITLE,
         TestConstants.DESCRIPTION,
         TestConstants.REQUESTER_ID,
-        TestConstants.LOCATION,
-        TestConstants.FAVOR_STATUS.toInt(),
-        TestConstants.REWARD);
-  }
-
-  public static Favor getFavorForRequester() {
-    return new Favor(
-        TestConstants.FAVOR_ID,
-        TestConstants.TITLE,
-        TestConstants.DESCRIPTION,
-        TestConstants.USER_ID,
         TestConstants.LOCATION,
         TestConstants.FAVOR_STATUS.toInt(),
         TestConstants.REWARD);
@@ -66,12 +57,25 @@ public class FakeItemFactory {
     };
   }
 
-  public static Map<String, Favor> getFavorListMap() {
+  static Map<String, Favor> getFavorListMap() {
     List<Favor> favorList = getFavorList();
     Map<String, Favor> result = new HashMap<>(favorList.size());
     for (Favor favor : favorList) {
       result.put(favor.getId(), favor);
     }
     return result;
+  }
+
+  public static Message getMessage(String id) {
+    return new Message(
+        id,
+        TestConstants.MESSAGE_USER_NAME,
+        TestConstants.MESSAGE_USER_ID,
+        CommonTools.TEXT_MESSAGE_TYPE,
+        TestConstants.MESSAGE_VALUE,
+        TestConstants.MESSAGE_IMAGE_PATH,
+        TestConstants.FAVOR_ID,
+        TestConstants.MESSAGE_LATITUDE,
+        TestConstants.MESSAGE_LONGITUDE);
   }
 }

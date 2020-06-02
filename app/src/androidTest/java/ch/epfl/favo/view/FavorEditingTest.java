@@ -110,7 +110,7 @@ public class FavorEditingTest {
     if (favor != null) {
       Bundle bundle = new Bundle();
       bundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, favor);
-      bundle.putString(CommonTools.FAVOR_SOURCE, "publishedFavor");
+      bundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView, bundle));
     } else {
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView));
@@ -129,7 +129,7 @@ public class FavorEditingTest {
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Intent intent = new Intent();
-    intent.putExtra("data", bm);
+    intent.putExtra(FavorEditingView.CAMERA_DATA_KEY, bm);
     runOnUiThread(() -> currentFragment.onActivityResult(2, RESULT_OK, intent));
 
     getInstrumentation().waitForIdleSync();
@@ -224,7 +224,7 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testRequestFavorFlow() throws InterruptedException {
+  public void testRequestFavorFlow() {
     // Click on fav list tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
@@ -290,25 +290,25 @@ public class FavorEditingTest {
     Thread.sleep(1000);
 
     // choose one committed user, click accept
-    /*onData(anything())
-        .inAdapterView(withId(R.id.commit_user))
-        .atPosition(0)
-        .check(matches(isDisplayed()))
-        .perform(click());
-    Thread.sleep(1000);
-    onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
+    // onData(anything())
+    //    .inAdapterView(withId(R.id.commit_user))
+    //    .atPosition(0)
+    //    .check(matches(isDisplayed()))
+    //    .perform(click());
+    // Thread.sleep(1000);
+    // onView(withText(R.string.accept_favor)).check(matches(isDisplayed())).perform(click());
 
     // check view become accepted
-    onView(withId(R.id.commit_complete_button))
-        .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
-    onView(withId(R.id.toolbar_main_activity))
-        .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
+    // onView(withId(R.id.commit_complete_button))
+    //     .check(matches(Matchers.allOf(isDisplayed(), withText(R.string.complete_favor))));
+    // onView(withId(R.id.toolbar_main_activity))
+    //     .check(matches(hasDescendant(withText(FavorStatus.ACCEPTED.toString()))));
     // check accept is gone , and click user profile
-    Thread.sleep(1000);
-    onView(withText("commit")).check(matches(isDisplayed())).perform(click());
-    Thread.sleep(1000);
-    onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));*/
+    // Thread.sleep(1000);
+    // onView(withText("commit")).check(matches(isDisplayed())).perform(click());
+    // Thread.sleep(1000);
+    // onView(withText(R.string.profile)).check(matches(isDisplayed())).perform(click());
+    // onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 
   @Test
@@ -330,7 +330,7 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testCantCreateFavorWithoutTitle() throws Throwable {
+  public void testCannotCreateFavorWithoutTitle() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
 
     onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
@@ -342,13 +342,16 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testCanReportFavor() throws Throwable {
+  public void testCannotCreateFavorWithLimitsExceeded() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
-    requestFavor();
 
-    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-    getInstrumentation().waitForIdleSync();
-    onView(withText(R.string.report_favor_text)).check(matches(isDisplayed())).perform(click());
+    String longString =
+        "texttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttexttext";
+    onView(withId(R.id.title_request_view)).perform(typeText(longString));
+    onView(withId(R.id.details)).perform(typeText(longString));
+
+    onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
+    onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
   }
 
   @Test

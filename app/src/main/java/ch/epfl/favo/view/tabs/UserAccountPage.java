@@ -26,7 +26,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -35,12 +34,12 @@ import com.google.android.gms.tasks.Task;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
-import ch.epfl.favo.util.PictureUtil.Folder;
-import ch.epfl.favo.viewmodel.IFavorViewModel;
+import ch.epfl.favo.util.IPictureUtil.Folder;
+
+import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -51,8 +50,8 @@ public class UserAccountPage extends Fragment {
   private static final int USE_CAMERA_REQUEST = 2;
 
   private View view;
-  private IFavorViewModel viewModel;
   private ImageView mImageView;
+  private User currentUser;
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -65,27 +64,17 @@ public class UserAccountPage extends Fragment {
     // Inflate the layout for this fragment
     view = inflater.inflate(R.layout.fragment_user_account, container, false);
 
-    String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
-
     setupButtons();
 
-    displayUserDetails(new User(null, "Name", "Email", null, null, null));
+    displayUserDetails(new User(null, "", "", null, null, null));
 
-    viewModel =
-        (IFavorViewModel)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
-
-    UserUtil.getSingleInstance()
-      .findUser(currentUserId)
+    DependencyFactory.getCurrentUserRepository()
+      .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+      .whenComplete((user, e) -> currentUser = user)
       .whenComplete((user, e) -> displayUserDetails(user))
       .whenComplete((user, e) -> setupEditProfileDialog(inflater, user));
 
     return view;
-  }
-
-  private IFavorViewModel getViewModel() {
-    return viewModel;
   }
 
   private void setupButtons() {
@@ -118,12 +107,12 @@ public class UserAccountPage extends Fragment {
           PictureUtil.getInstance().uploadPicture(Folder.PROFILE_PICTURE, newProfilePicture)
             .thenAccept(url -> {
               user.setProfilePictureUrl(url);
-              UserUtil.getSingleInstance().updateUser(user);
+              DependencyFactory.getCurrentUserRepository().updateUser(user);
             });
           profilePictureView.setImageBitmap(newProfilePicture);
           mImageView.setImageResource(0);
         } else {
-          UserUtil.getSingleInstance().updateUser(user);
+          DependencyFactory.getCurrentUserRepository().updateUser(user);
         }
 
         displayNameView.setText(displayNameInput.getText());
@@ -286,6 +275,12 @@ public class UserAccountPage extends Fragment {
 
   private void onComplete(@NonNull Task<Void> task, int errorMessage) {
     if (task.isSuccessful()) {
+      if (errorMessage == R.string.delete_account_failed) {
+        // remove user data from database
+        DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
+        // remove user preferences from cache
+        getDefaultSharedPreferences(requireContext()).edit().clear().apply();
+      }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
       CommonTools.showSnackbar(getView(), getString(errorMessage));

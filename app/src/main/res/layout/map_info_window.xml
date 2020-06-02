@@ -11,6 +11,7 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/custom"
     android:layout_width="80dp"
     android:layout_height="50dp"
@@ -19,10 +20,11 @@
 
     <ImageView
         android:id="@+id/userProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginRight="5dp"
-        android:adjustViewBounds="true"></ImageView>
+        app:srcCompat="@drawable/ic_anon_user_48dp"
+        android:adjustViewBounds="true" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -32,12 +34,11 @@
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:ellipsize="end"
-            android:singleLine="true"
-            android:maxLines="1"
+            android:maxLines="2"
             android:textColor="#ff000000"
             android:textSize="14dp"
             android:textStyle="bold" />
@@ -45,10 +46,10 @@
 
         <TextView
             android:id="@+id/snippet"
-            android:layout_width="80dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxLines="2"
+            android:maxLines="1"
             android:singleLine="true"
             android:textColor="#ff7f7f7f"
             android:textSize="14dp" />

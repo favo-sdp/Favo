@@ -7,8 +7,12 @@
     <action
         android:id="@+id/action_global_nav_map"
         app:destination="@id/nav_map"
-        app:launchSingleTop="true"
-        app:popUpTo="@id/nav_map" />
+        app:launchSingleTop="true">
+        <argument
+            android:name="LOCATION_ARGS"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </action>
     <action
         android:id="@+id/action_global_favorPublishedView"
         app:destination="@id/favorPublishedView">
@@ -29,10 +33,10 @@
         android:id="@+id/action_global_nav_account"
         app:destination="@id/nav_account"
         app:launchSingleTop="true" />
-
     <action
         android:id="@+id/action_global_nav_share"
         app:destination="@id/nav_share" />
+
 
     <fragment
         android:id="@+id/nav_account"
@@ -69,6 +73,7 @@
         android:name="ch.epfl.favo.chat.ChatPage"
         android:label="Chat">
 
+
         <action
             android:id="@+id/action_nav_chatView_to_UserInfoPage"
             app:destination="@id/userInfoView">
@@ -77,6 +82,24 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_chatView_to_nav_map"
+            app:destination="@id/nav_map"
+            app:launchSingleTop="true">
+            <argument
+                android:name="LOCATION_ARGS"
+                android:defaultValue="0"
+                app:argType="integer" />
+            <argument
+                android:name="LONGITUDE_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+            <argument
+                android:name="LATITUDE_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+
 
     </fragment>
     <fragment
@@ -103,6 +126,16 @@
                 android:name="FAVOR_SOURCE"
                 android:defaultValue="@null"
                 app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_nav_map_to_chatView"
+            app:destination="@id/chatView"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/chatView">
+            <argument
+                android:name="LOCATION_ARGS"
+                android:defaultValue="@null"
+                app:argType="com.google.android.gms.maps.model.LatLng" />
         </action>
         <action
             android:id="@+id/action_nav_map_to_favorPublishedView"
@@ -150,11 +183,14 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_nav_nearby_favor_list_to_chatView"
+            app:destination="@id/chatView" />
 
     </fragment>
     <fragment
         android:id="@+id/nav_favorList"
-        android:name="ch.epfl.favo.view.tabs.favorList.FavorPage"
+        android:name="ch.epfl.favo.view.tabs.favorList.MyFavorsPage"
         android:label="FavorView"
         tools:layout="@layout/fragment_favorpage">
         <action
@@ -162,6 +198,14 @@
             app:destination="@id/favorPublishedView">
             <argument
                 android:name="FAVOR_ARGS"
+                android:defaultValue="@null"
+                app:argType="string" />
+        </action>
+        <action
+            android:id="@+id/action_nav_favorList_to_chatView"
+            app:destination="@id/chatView">
+            <argument
+                android:name="FAVOR_ID"
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
@@ -192,10 +236,6 @@
                 android:defaultValue="@null"
                 app:argType="string" />
         </action>
-        <action
-            android:id="@+id/action_favorEditingView_to_nav_map"
-            app:destination="@id/nav_map"
-            app:launchSingleTop="true" />
     </fragment>
 
     <fragment
@@ -206,12 +246,7 @@
 
         <action
             android:id="@+id/action_nav_favorPublishedView_to_chatView"
-            app:destination="@id/chatView">
-            <argument
-                android:name="FAVOR_ARGS"
-                android:defaultValue="@null"
-                app:argType="string" />
-        </action>
+            app:destination="@id/chatView" />
 
         <action
             android:id="@+id/action_nav_favorPublishedView_to_UserInfoPage"
@@ -236,4 +271,5 @@
         </action>
 
     </fragment>
+
 </navigation>

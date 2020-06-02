@@ -3,7 +3,6 @@ package ch.epfl.favo.auth;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +12,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,11 +20,9 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-import ch.epfl.favo.BuildConfig;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -33,7 +31,7 @@ import ch.epfl.favo.util.DependencyFactory;
 public class SignInActivity extends AppCompatActivity {
 
   public static final int RC_SIGN_IN = 123;
-  private static final String TAG = "SignInActivity";
+  private static final String URL_APP_NOT_FOUND = "https://google.com";
   private IGpsTracker mGpsTracker;
 
   @Override
@@ -50,16 +48,20 @@ public class SignInActivity extends AppCompatActivity {
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
+      // update user name if firebase user has no name
+      if (user.getDisplayName() == null || user.getDisplayName().equals("")) {
+        UserProfileChangeRequest profileUpdates =
+            new UserProfileChangeRequest.Builder()
+                .setDisplayName(CommonTools.emailToName(Objects.requireNonNull(user.getEmail())))
+                .build();
+        user.updateProfile(profileUpdates);
+      }
       // Already signed-in
       startMainActivity();
       return;
     }
 
     startActivityForResult(createSignInIntent(), RC_SIGN_IN);
-  }
-
-  private IUserUtil getCurrentUserUtil() {
-    return DependencyFactory.getCurrentUserRepository();
   }
 
   private void checkPlayServices() {
@@ -70,6 +72,11 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
+  /**
+   * Create a new sign-in intent for FirebaseAuth to initialize the login flow
+   *
+   * @return sign-in intent
+   */
   @NonNull
   public Intent createSignInIntent() {
     ActionCodeSettings actionCodeSettings = getActionCodeSettings();
@@ -80,7 +87,7 @@ public class SignInActivity extends AppCompatActivity {
     AuthUI.SignInIntentBuilder builder =
         AuthUI.getInstance()
             .createSignInIntentBuilder()
-            .setIsSmartLockEnabled(!BuildConfig.DEBUG, true)
+            .setIsSmartLockEnabled(false, false)
             .setAvailableProviders(providers)
             .setLogo(R.drawable.logo)
             .setTheme(R.style.AppTheme);
@@ -107,9 +114,9 @@ public class SignInActivity extends AppCompatActivity {
 
   private ActionCodeSettings getActionCodeSettings() {
     return ActionCodeSettings.newBuilder()
-        .setAndroidPackageName("ch.epfl.favo", true, null)
+        .setAndroidPackageName(getString(R.string.package_name), true, null)
         .setHandleCodeInApp(true)
-        .setUrl("https://google.com")
+        .setUrl(URL_APP_NOT_FOUND)
         .build();
   }
 
@@ -138,7 +145,13 @@ public class SignInActivity extends AppCompatActivity {
     finish();
   }
 
-  void handleSignInResponse(int resultCode) throws RuntimeException {
+  /**
+   * Handle sign-in response with the result code provided by FirebaseAuth and, if successful,
+   * creates/updates the current user logged in the app
+   *
+   * @param resultCode: code indicating the result of the login activity
+   */
+  void handleSignInResponse(int resultCode) {
 
     if (resultCode == RESULT_OK) {
       // Successfully signed in
@@ -146,10 +159,13 @@ public class SignInActivity extends AppCompatActivity {
       // Lookup user with Firebase Id in Db to extract details
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
-      CompletableFuture<User> userFuture = getCurrentUserUtil().findUser(userId);
+
+      CompletableFuture<User> userFuture =
+          DependencyFactory.getCurrentUserRepository().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Add/update user info depending on db status
-      CompletableFuture<Void> editUserFuture = userFuture.thenAccept(editDeviceId(deviceId));
+      CompletableFuture<Void> editUserFuture =
+          userFuture.thenAccept(editDeviceIdUserName(deviceId));
       CompletableFuture<Void> newUserFuture =
           userFuture
               .exceptionally(
@@ -159,7 +175,6 @@ public class SignInActivity extends AppCompatActivity {
           editUserFuture.acceptEither(newUserFuture, user -> startMainActivity());
       postUserResult.exceptionally(
           ex -> {
-            Log.d(TAG, "failed to post user");
             CommonTools.showSnackbar(
                 getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
             return null;
@@ -168,17 +183,25 @@ public class SignInActivity extends AppCompatActivity {
   }
 
   private Consumer<User> postNewUser() {
-    return (user) ->
-        getCurrentUserUtil()
-            .postUser(user)
-            .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
+    return (user) -> {
+      if (user.getName() == null || user.getName().equals(""))
+        user.setName(CommonTools.emailToName(user.getEmail()));
+      DependencyFactory.getCurrentUserRepository()
+          .postUser(user)
+          .thenAccept(
+              o ->
+                  DependencyFactory.getCurrentUserRepository().retrieveUserRegistrationToken(user));
+    };
   }
 
-  private Consumer<User> editDeviceId(String deviceId) {
+  private Consumer<User> editDeviceIdUserName(String deviceId) {
     return (user) -> { // user is not null
       if (!deviceId.equals(user.getDeviceId())) {
         user.setDeviceId(deviceId);
-        getCurrentUserUtil().updateUser(user);
+        DependencyFactory.getCurrentUserRepository().updateUser(user);
+      } else if (user.getName() == null || user.getName().equals("")) {
+        user.setName(CommonTools.emailToName(user.getEmail()));
+        DependencyFactory.getCurrentUserRepository().updateUser(user);
       } else CompletableFuture.supplyAsync(() -> null);
     };
   }
