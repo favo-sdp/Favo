@@ -110,7 +110,7 @@ public class UserAccountPageTest {
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
-    onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
+    onView(withId(R.id.user_name)).check(matches(withText("Test Testerson")));
   }
 
   @Test
@@ -120,7 +120,7 @@ public class UserAccountPageTest {
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
-    onView(withId(R.id.user_email)).check(matches(withText("No email")));
+    onView(withId(R.id.user_email)).check(matches(withText("test@example.com")));
   }
 
   @Test
