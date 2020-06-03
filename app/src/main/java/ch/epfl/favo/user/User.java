@@ -217,13 +217,13 @@ public class User implements Document {
 
   void setActiveAcceptingFavors(int totalAcceptingFavors) {
     if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)
-      //throw new IllegalAcceptException("Cannot accept");
+      throw new IllegalAcceptException("Cannot accept");
     this.activeAcceptingFavors = totalAcceptingFavors;
   }
 
   void setActiveRequestingFavors(int totalRequestingFavors) {
     if (totalRequestingFavors < 0 || totalRequestingFavors > MAX_REQUESTING_FAVORS)
-      //throw new IllegalRequestException("Cannot request");
+      throw new IllegalRequestException("Cannot request");
     this.activeRequestingFavors = totalRequestingFavors;
   }
 
