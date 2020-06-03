@@ -89,7 +89,7 @@ public class MapPage extends Fragment
   private double radiusThreshold;
 
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-  private int defaultZoomLevel = 16;
+  private int defaultZoomLevel;
   private ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
@@ -119,7 +119,7 @@ public class MapPage extends Fragment
     offlineBtn.setOnClickListener(this::onOfflineMapClick);
 
     if (DependencyFactory.isOfflineMode(requireContext())) offlineBtn.setVisibility(View.VISIBLE);
-    else offlineBtn.setVisibility(View.INVISIBLE);
+    else offlineBtn.setVisibility(View.GONE);
     favorViewModel =
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
@@ -141,8 +141,8 @@ public class MapPage extends Fragment
     String radiusSetting =
         CacheUtil.getInstance()
             .getValueFromCacheStr(
-                requireContext(), getString(R.string.radius_notifications_setting_key));
-    double radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
+                requireContext(), getString(R.string.radius_map_setting_key));
+    radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
     if (!radiusSetting.equals("")) {
       radiusThreshold = Integer.parseInt(radiusSetting);
     }
@@ -231,6 +231,9 @@ public class MapPage extends Fragment
 
   private void setLimitedView() {
     view.findViewById(R.id.toggle).setVisibility(View.GONE);
+    view.findViewById(R.id.offline_map_button).setVisibility(View.GONE);
+    view.findViewById(R.id.look_through_btn).setVisibility(View.GONE);
+
     ((MainActivity) requireActivity()).hideBottomNavigation();
 
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);

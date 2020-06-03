@@ -3,9 +3,12 @@
 
     <PreferenceCategory app:title="@string/messages_header">
 
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/username_title"
+        <ListPreference
+            app:defaultValue="@string/default_radius"
+            app:entries="@array/notification_radius"
+            app:entryValues="@array/notification_radius"
+            app:key="@string/radius_map_setting_key"
+            app:title="@string/map_radius_title"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

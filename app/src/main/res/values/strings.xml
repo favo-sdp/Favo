@@ -108,7 +108,7 @@
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
     <string name="favor_delete_success_msg">Favor successfully deleted</string>
     <!-- Preference Titles -->
-    <string name="messages_header">Account</string>
+    <string name="messages_header">Map radius</string>
     <string name="notification_header">Notifications</string>
     <string name="help_header">Help</string>
 
@@ -119,6 +119,8 @@
     <string name="notification_title">Enable nearby favor notifications</string>
     <string name="notification_summary">Be notified when new favors are posted in the area within a certain radius</string>
     <string name="notification_radius_title">Notifications radius in kilometers</string>
+    <string name="map_radius_title">Map radius in kilometers</string>
+
 
     <string name="notification_update_title">Enable updates notifications</string>
     <string name="notification_update_summary">Be notified when there is an update on a favor you created or committed</string>
@@ -131,6 +133,7 @@
 
     <string name="nearbyFavors_notifications_setting_key">nearbyFavors_notifications_setting_key</string>
     <string name="radius_notifications_setting_key">radius_notifications_setting_key</string>
+    <string name="radius_map_setting_key">radius_map_setting_key</string>
     <string name="update_notifications_setting_key">update_notifications_setting_key</string>
     <string name="chat_notifications_setting_key">chat_notifications_setting_key</string>
     <string name="map_style_key">map_style</string>
