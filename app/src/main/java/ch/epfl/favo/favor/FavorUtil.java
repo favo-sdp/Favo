@@ -22,8 +22,6 @@ This models the favor fragment_favor_published_view.
 // TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
-  private static final String TAG = "FavorUtil";
-  private static final String COLLECTION_NAME = "favors";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static ICollectionWrapper<Favor> collection =
       DependencyFactory.getCurrentCollectionWrapper(
@@ -156,8 +154,6 @@ public class FavorUtil {
   public Query getAllUserFavors(String userId) {
     return collection
         .getReference()
-        .orderBy("title", Query.Direction.ASCENDING)
-        .orderBy("postedTime", Query.Direction.DESCENDING)
-        .whereArrayContains("userIds", userId);
+        .whereArrayContains(Favor.USER_IDS, userId);
   }
 }
