@@ -26,6 +26,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
 
@@ -137,10 +138,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   public CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
+    List<String> userIds = tempFavor.getUserIds();
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
-        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
+        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt())) {
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
-    else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
+      UserUtil.getSingleInstance().settleTransaction(userIds.get(0), userIds.get(1), tempFavor.getReward());
+    } else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException("Wrong Status");

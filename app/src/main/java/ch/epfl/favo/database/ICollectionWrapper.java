@@ -26,4 +26,6 @@ public interface ICollectionWrapper<T> {
   CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius);
 
   Query getReference();
+
+  void settleTransaction(String requesterId, String accepterId, double reward);
 }

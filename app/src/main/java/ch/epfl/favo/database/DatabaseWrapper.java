@@ -2,15 +2,22 @@ package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +31,7 @@ import ch.epfl.favo.util.TaskToFutureAdapter;
 public class DatabaseWrapper {
 
   private static DatabaseWrapper INSTANCE = null;
+  private static String TAG = "DatabaseWrapper";
   private FirebaseFirestore firestore;
 
   // final fields regarding ID generation
@@ -131,4 +139,37 @@ public class DatabaseWrapper {
   static CollectionReference getCollectionReference(String collection) {
     return getInstance().firestore.collection(collection);
   }
+
+    public static void settleTransaction(String requesterId, String accepterId, double reward, String collection) {
+      final DocumentReference requesterRef = getInstance().firestore.collection(collection).document(requesterId);
+      final DocumentReference accepterRef = getInstance().firestore.collection(collection).document(accepterId);
+
+      getInstance().firestore.runTransaction(new Transaction.Function<Void>() {
+        @Override
+        public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+          DocumentSnapshot requesterSnapshot = transaction.get(requesterRef);
+          double requesterBalance = requesterSnapshot.getDouble("balance") - reward;
+          transaction.update(requesterRef, "balance", requesterBalance);
+
+          DocumentSnapshot accepterSnapshot = transaction.get(accepterRef);
+          double accepterBalance = accepterSnapshot.getDouble("balance") + reward;
+          transaction.update(accepterRef, "balance", accepterBalance);
+
+          // Success
+          return null;
+        }
+      }).addOnSuccessListener(new OnSuccessListener<Void>() {
+        @Override
+        public void onSuccess(Void aVoid) {
+          Log.d(TAG, "Transaction success!");
+        }
+      })
+              .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                  Log.w(TAG, "Transaction failure.", e);
+                }
+              });
+    }
 }

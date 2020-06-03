@@ -71,6 +71,17 @@ public class UserUtil implements IUserUtil {
             });
   }
 
+  /**
+   * @param requesterId : Id of the requester of the favor
+   * @param accepterId : Id of the accepter of the favor
+   * @param requesterId : The agreed upon FavoCoins reward
+   */
+  @Override
+  public void settleTransaction(
+          String requesterId, String accepterId, double reward) {
+    collection.settleTransaction(requesterId, accepterId, reward);
+  }
+
   @Override
   public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());

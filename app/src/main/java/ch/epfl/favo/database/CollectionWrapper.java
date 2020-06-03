@@ -40,6 +40,11 @@ public class CollectionWrapper<T extends Document> implements ICollectionWrapper
   }
 
   @Override
+  public void settleTransaction(String requesterId, String accepterId, double reward) {
+    DatabaseWrapper.settleTransaction(requesterId, accepterId, reward, collection);
+  }
+
+  @Override
   public CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(Location loc, double radius) {
     return DatabaseWrapper.getAllDocumentsLongitudeBounded(loc, radius, cls, collection);
   }

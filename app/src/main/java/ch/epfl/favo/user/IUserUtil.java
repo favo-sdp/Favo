@@ -16,6 +16,8 @@ public interface IUserUtil {
 
   CompletableFuture<Void> deleteUser(User user);
 
+  void settleTransaction(String requesterId, String accepterId, double reward);
+
   CompletableFuture<User> findUser(String id) throws Resources.NotFoundException;
 
   CompletableFuture retrieveUserRegistrationToken(User user);
