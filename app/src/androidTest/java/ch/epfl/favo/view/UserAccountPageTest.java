@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import java.util.Objects;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakePictureUtil;
 import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
@@ -36,9 +37,11 @@ import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 import static android.app.Activity.RESULT_OK;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
@@ -48,6 +51,7 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROFILE_PICTURE_ID;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
@@ -97,6 +101,8 @@ public class UserAccountPageTest {
     userUtil.setFindUserResult(testUser);
     DependencyFactory.setCurrentUserRepository(userUtil);
     DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
+    FakePictureUtil fakePictureUtil = new FakePictureUtil();
+    DependencyFactory.setCurrentPictureUtility(fakePictureUtil);
   }
 
   @After
@@ -105,6 +111,7 @@ public class UserAccountPageTest {
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentUserRepository(null);
     DependencyFactory.setCurrentViewModelClass(null);
+    DependencyFactory.setCurrentPictureUtility(null);
   }
 
   @Test
@@ -224,6 +231,25 @@ public class UserAccountPageTest {
     onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
   }
 
+  @Test
+  public void testUserAlreadyLoggedIn_editProfile_changeName() {
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+    mActivityRule.launchActivity(null);
+    navigateToAccountTab();
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    // give time to display the dialog
+    getInstrumentation().waitForIdleSync();
+
+    onView(withId(R.id.change_name_dialog_user_input))
+      .perform(replaceText("Mr Test"));
+
+    onView(withId(android.R.id.button1)).perform(click());
+
+    onView(withId(R.id.user_name)).check(matches(withText("Mr Test")));
+  }
+
   public UserAccountPage launchFragment() throws Throwable {
     MainActivity activity = mainActivityTestRule.getActivity();
     NavController navController = Navigation.findNavController(activity, R.id.nav_host_fragment);
@@ -284,5 +310,27 @@ public class UserAccountPageTest {
     runOnUiThread(() -> currentFragment.onActivityResult(1, RESULT_OK, intent));
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.new_profile_picture)).check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void testUserAlreadyLoggedIn_editProfile_changeProfilePicture() throws Throwable {
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+    mActivityRule.launchActivity(null);
+    UserAccountPage currentFragment = launchFragment();
+    navigateToAccountTab();
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    // give time to display the dialog
+    getInstrumentation().waitForIdleSync();
+
+    Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
+    Intent intent = new Intent();
+    intent.putExtra(FavorEditingView.CAMERA_DATA_KEY, bm);
+    runOnUiThread(() -> currentFragment.onActivityResult(2, RESULT_OK, intent));
+
+    onView(withId(android.R.id.button1)).perform(click());
+
+    onView(withId(R.id.user_profile_picture)).check(matches(isDisplayed()));
   }
 }
