@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -70,7 +71,7 @@ public class NearbyFavorList extends Fragment {
     tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
     listView = rootView.findViewById(R.id.nearby_favor_list);
-    setupListView();
+    //setupListView();
 
     RadioButton toggle = rootView.findViewById(R.id.map_switch);
     toggle.setOnClickListener(this::onToggleClick);
@@ -197,6 +198,7 @@ public class NearbyFavorList extends Fragment {
   private void setupListView() {
     listView.setOnItemClickListener(
         (parent, view, position, id) -> {
+          Log.d("fuck", "call listener");
           CommonTools.hideSoftKeyboard(requireActivity());
           Favor favor = (Favor) parent.getItemAtPosition(position);
           Bundle favorBundle = new Bundle();
@@ -204,6 +206,7 @@ public class NearbyFavorList extends Fragment {
           findNavController(requireView())
               .navigate(R.id.action_nav_nearby_list_to_favorPublishedView, favorBundle);
         });
+    Log.d("fuck", "setup listener");
   }
 
   /**

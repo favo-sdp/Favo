@@ -67,7 +67,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
   private ImageView imageView;
-  private FirebaseUser currentUser;
+  private User currentUser;
 
   private Map<String, User> commitUsers = new HashMap<>();
 
@@ -88,12 +88,12 @@ public class FavorPublishedView extends Fragment {
     View rootView = inflater.inflate(R.layout.fragment_favor_published_view, container, false);
     setupButtons(rootView);
 
-    currentUser = DependencyFactory.getCurrentFirebaseUser();
     toolbar = requireActivity().findViewById(R.id.toolbar_main_activity);
     favorViewModel =
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
+    currentUser = favorViewModel.getObservedUser().getValue();
     String favorId = "";
     if (currentFavor != null) favorId = currentFavor.getId();
     if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
@@ -293,7 +293,7 @@ public class FavorPublishedView extends Fragment {
       rootView.findViewById(R.id.description).setVisibility(View.GONE);
     else setupTextView(rootView, R.id.description, descriptionStr);
 
-    isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getUid());
+    isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getId());
     favorStatus = verifyFavorHasBeenAccepted(favor);
 
     // display committed user list
@@ -314,21 +314,27 @@ public class FavorPublishedView extends Fragment {
   private void displayUserProfile(Favor favor) {
     if (isRequestedByCurrentUser) {
       // display user picture
-      if (currentUser.getPhotoUrl() != null) {
+      if (currentUser.getProfilePictureUrl() != null) {
 
         Glide.with(this)
-            .load(currentUser.getPhotoUrl())
+            .load(currentUser.getProfilePictureUrl())
             .fitCenter()
             .into((CircleImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      displayName(currentUser.getDisplayName(), currentUser.getEmail());
+      displayName(currentUser.getName(), currentUser.getEmail());
     } else {
       DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
           .thenAccept(
               user -> {
                 displayName(user.getName(), user.getEmail());
+                if (user.getProfilePictureUrl() != null) {
+                  Glide.with(this)
+                          .load(user.getProfilePictureUrl())
+                          .fitCenter()
+                          .into((CircleImageView) requireView().findViewById(R.id.user_profile_picture));
+                }
               });
     }
   }
@@ -420,7 +426,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private boolean isPotentialHelper() {
-    return currentFavor.getUserIds().contains(currentUser.getUid()) && (!isRequestedByCurrentUser);
+    return currentFavor.getUserIds().contains(currentUser.getId()) && (!isRequestedByCurrentUser);
   }
 
   private void showBottomBar(boolean visible) {
@@ -430,9 +436,9 @@ public class FavorPublishedView extends Fragment {
   // Verifies favor hasn't already been accepted
   private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
     FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
-    if (favor.getAccepterId() != null && !favor.getRequesterId().equals(currentUser.getUid())) {
+    if (favor.getAccepterId() != null && !favor.getRequesterId().equals(currentUser.getId())) {
       if (favorStatus.equals(FavorStatus.ACCEPTED)
-          && !favor.getAccepterId().equals(currentUser.getUid())) {
+          && !favor.getAccepterId().equals(currentUser.getId())) {
         favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
       }
     }

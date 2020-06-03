@@ -6,10 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -20,9 +23,10 @@ import ch.epfl.favo.user.UserUtil;
 import static ch.epfl.favo.util.CommonTools.getUserName;
 
 public class FavorAdapter extends ArrayAdapter<Favor> {
-
+  Context context;
   public FavorAdapter(Context context, ArrayList<Favor> favors) {
     super(context, 0, favors);
+    this.context = context;
   }
 
   @NonNull
@@ -42,9 +46,17 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
     favorTitle.setText(favor.getTitle());
 
     TextView favorRequester = convertView.findViewById(R.id.item_requester);
+    ImageView userPic = convertView.findViewById(R.id.item_icon);
     UserUtil.getSingleInstance()
         .findUser(favor.getRequesterId())
-        .thenAccept(user -> favorRequester.setText(getUserName(user)));
+        .thenAccept(user -> {
+          favorRequester.setText(getUserName(user));
+          if (user.getProfilePictureUrl() != null) {
+            Glide.with(context)
+                    .load(user.getProfilePictureUrl())
+                    .into(userPic);
+          }
+        });
 
     TextView favorCoins = convertView.findViewById(R.id.item_coins);
     favorCoins.setText(

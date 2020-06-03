@@ -50,6 +50,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
+  private MutableLiveData<User> observedUser = new MutableLiveData<>();
   // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
   private FavorUtil getFavorRepository() {
@@ -275,6 +276,20 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
+  }
+
+
+  @Override
+  public LiveData<User> getObservedUser() {
+    getUserRepository()
+            .getCurrentUserReference(currentUserId)
+            .addSnapshotListener(
+                    MetadataChanges.EXCLUDE,
+                    (documentSnapshot, e) -> {
+                      handleException(e);
+                      observedUser.setValue(documentSnapshot.toObject(User.class));
+                    });
+    return observedUser;
   }
 
   @Override

@@ -125,6 +125,8 @@ public class MapPage extends Fragment
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
+    // CRITICAL to prevent later calling from getting null value, DO NOT DELETE IT.
+    favorViewModel.getObservedUser();
     // setup toggle between map and nearby list
     nearbyFavorListToggle = view.findViewById(R.id.list_switch);
     nearbyFavorListToggle.setOnClickListener(this::onToggleClick);

@@ -43,6 +43,8 @@ public interface IFavorViewModel {
 
   LiveData<Favor> getObservedFavor();
 
+  LiveData<User> getObservedUser();
+
   void setFavorValue(Favor favor);
 
   void setShowObservedFavor(Boolean show);
