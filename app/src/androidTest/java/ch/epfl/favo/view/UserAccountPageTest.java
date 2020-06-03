@@ -178,4 +178,22 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button1)).perform(click());
     onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
   }
+
+  @Test
+  public void testUserAlreadyLoggedIn_editProfile_alertShowed_confirmOperation() {
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, EMAIL, null, PROVIDER));
+    DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+    mActivityRule.launchActivity(null);
+    navigateToAccountTab();
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    // give time to display the dialog
+    getInstrumentation().waitForIdleSync();
+    onView(withId(R.id.change_name_dialog_user_input)).check(matches(isDisplayed()));
+    onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
+    onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
+    DependencyFactory.setCurrentFirebaseUser(null);
+    onView(withId(android.R.id.button1)).perform(click());
+    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+  }
 }
