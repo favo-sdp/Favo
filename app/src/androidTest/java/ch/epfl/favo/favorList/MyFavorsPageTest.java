@@ -51,12 +51,11 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
-public class FavorPageTest {
+public class MyFavorsPageTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -85,7 +84,6 @@ public class FavorPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentUserRepository(null);
-    // DependencyFactory.setCurrentFavorCollection("favors");
   }
 
   public static ViewAction withCustomConstraints(
@@ -137,9 +135,6 @@ public class FavorPageTest {
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.active_toggle)).perform(click());
-
-    onView(withId(R.id.currentCoins)).check(matches(isDisplayed()));
-    onView(withId(R.id.currentCoins)).check(matches(withText(containsString("Current balance:"))));
   }
 
   @Test
@@ -211,20 +206,6 @@ public class FavorPageTest {
     onView(withId(R.id.item_title)).check(matches(isDisplayed()));
     onView(withId(R.id.item_requester)).check(matches(isDisplayed()));
     onView(withId(R.id.item_coins)).check(matches(isDisplayed()));
-    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
-
-    onView(withText(R.string.view)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-    pressBack();
-    getInstrumentation().waitForIdleSync();
-
-    onView(withId(R.id.item_menu_btn)).check(matches(isDisplayed())).perform(click());
-    onView(withText(R.string.cancel)).check(matches(isDisplayed())).perform(click());
-    getInstrumentation().waitForIdleSync();
-
-    onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
-    onView(withId(R.id.tip)).check(matches(isDisplayed()));
   }
 
   @Test

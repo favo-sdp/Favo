@@ -28,6 +28,7 @@ import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
+import ch.epfl.favo.util.IPictureUtil.Folder;
 
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
@@ -182,7 +183,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   // Upload/download pictures
   @Override
   public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
-    CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
+    CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(Folder.FAVOR, picture);
     pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
   } // check what happens if updateFavorFoto fails
 

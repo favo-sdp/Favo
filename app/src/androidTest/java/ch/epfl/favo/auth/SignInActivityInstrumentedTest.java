@@ -10,11 +10,17 @@ import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeUserUtil;
+import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
 import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
@@ -30,7 +36,6 @@ public class SignInActivityInstrumentedTest {
       new ActivityTestRule<SignInActivity>(SignInActivity.class) {
         @Override
         protected void beforeActivityLaunched() {
-          new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER);
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
@@ -48,11 +53,13 @@ public class SignInActivityInstrumentedTest {
   @Test
   public void testSignInFlow() throws Throwable {
     handleSignInResponse(RESULT_OK);
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
   public void testSignInFlowWhenResultNotSuccessful() throws Throwable {
     handleSignInResponse(RESULT_CANCELED);
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -62,6 +69,7 @@ public class SignInActivityInstrumentedTest {
     fakeUserUtil.setFindUserFail(true);
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   @Test
@@ -71,6 +79,7 @@ public class SignInActivityInstrumentedTest {
     fakeUserUtil.setThrowResult(new RuntimeException());
     DependencyFactory.setCurrentUserRepository(fakeUserUtil);
     handleSignInResponse(RESULT_OK);
+    onView(withParent(withId(R.id.nav_host_fragment))).check(matches(isDisplayed()));
   }
 
   private void handleSignInResponse(int result) throws Throwable {

@@ -2,7 +2,6 @@ package ch.epfl.favo.database;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
