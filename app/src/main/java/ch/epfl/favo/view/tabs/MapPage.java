@@ -472,7 +472,7 @@ public class MapPage extends Fragment
   }
 
   private void onToggleClick(View view) {
-    Navigation.findNavController(requireView()).navigate(R.id.action_nav_map_to_nearby_favor_list);
+    Navigation.findNavController(view).navigate(R.id.action_nav_map_to_nearby_favor_list);
   }
 
   private void onLookThroughClick(View view) {
