@@ -128,6 +128,7 @@ public class UserUtil implements IUserUtil {
     collection = collectionWrapper;
   }
 
+  @Override
   public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
     return findUser(userId)
             .thenCompose(
