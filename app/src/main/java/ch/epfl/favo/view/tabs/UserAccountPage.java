@@ -220,15 +220,10 @@ public class UserAccountPage extends Fragment {
 
   private void displayUserDetails(User user) {
     TextView nameView = view.findViewById(R.id.user_name);
-    nameView.setText(TextUtils.isEmpty(user.getName())
-      ? Objects.requireNonNull(user.getEmail()).split("@")[0]
-      : user.getName());
+    nameView.setText(user.getName());
 
     TextView emailView = view.findViewById(R.id.user_email);
-    emailView.setText(
-      TextUtils.isEmpty(user.getEmail())
-        ? getText(R.string.no_email_text)
-        : user.getEmail());
+    emailView.setText(user.getEmail());
 
     if (user.getProfilePictureUrl() != null) {
       ImageView profilePictureView = view.findViewById(R.id.user_profile_picture);

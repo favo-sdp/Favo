@@ -37,15 +37,6 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 @RunWith(AndroidJUnit4.class)
 public class UserAccountPageTest {
 
-  User testUser =
-    new User(
-      TestConstants.USER_ID,
-      TestConstants.NAME,
-      TestConstants.EMAIL,
-      TestConstants.DEVICE_ID,
-      null,
-      null);
-
   @Rule
   public final ActivityTestRule<SignInActivity> mActivityRule =
       new ActivityTestRule<>(SignInActivity.class, true, false);
@@ -66,6 +57,15 @@ public class UserAccountPageTest {
 
   @Before
   public void setUp() {
+    User testUser =
+      new User(
+        TestConstants.USER_ID,
+        TestConstants.NAME,
+        TestConstants.EMAIL,
+        TestConstants.DEVICE_ID,
+        null,
+        null);
+
     FakeUserUtil userUtil = new FakeUserUtil();
     userUtil.setFindUserResult(testUser);
     DependencyFactory.setCurrentUserRepository(userUtil);
@@ -105,26 +105,23 @@ public class UserAccountPageTest {
 
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingName() {
-    User user = testUser;
-    user.setName(null);
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
-    getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
+    onView(withId(R.id.user_name)).check(matches(withText("Test Testerson")));
   }
 
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingEmail() {
-    User user = testUser;
-    user.setEmail(null);
+    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(NAME, null, PHOTO_URI, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.user_email)).check(matches(withText("No email")));
+    onView(withId(R.id.user_email)).check(matches(withText("test@example.com")));
   }
 
   @Test
