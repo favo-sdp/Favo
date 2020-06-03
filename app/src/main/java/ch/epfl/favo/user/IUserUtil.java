@@ -6,21 +6,79 @@ import com.google.firebase.firestore.DocumentReference;
 
 import java.util.concurrent.CompletableFuture;
 
+/** Acts as a repository to retreive and update documents in the user firestore collection */
 public interface IUserUtil {
-
+  /**
+   * Posts new user to firestore
+   *
+   * @param user to be posted
+   * @return future that can be successful or not
+   */
   CompletableFuture<Void> postUser(User user);
 
+  /**
+   * Updates the current count of requested or accepted active favors of the user. It handles the
+   * case where the update is invalid or not.
+   *
+   * @param userId id of user to update
+   * @param isRequested the favor can either be requested or accepted
+   * @param change integer value (+1, or -1) when a single favor is updated
+   * @return future
+   */
   CompletableFuture<Void> changeActiveFavorCount(String userId, boolean isRequested, int change);
 
+  /**
+   * Updates the whole user document
+   *
+   * @param user user to be updated
+   * @return future
+   */
   CompletableFuture<Void> updateUser(User user);
 
-  CompletableFuture<Void> incrementFieldForUser(String userId, String field,int change);
+  /**
+   * This method allows us to quickly update other fields that can be increased less rigorously like
+   * the total favors requested, the likes and dislikes and the favors completed.
+   *
+   * @param userId user to be updated
+   * @param field string key corresponding to the attribute to be updated
+   * @param change integer value corresponding to the increment or decrement count (can be negative)
+   * @return a future that can be successful or not.
+   */
+  CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change);
 
+  /**
+   * Allows us to delete a user completely from the database. Doing so also trigers a cloud function
+   * externally that gets rid of associated user history like chat messages and favors.
+   *
+   * @param user user to be deleted
+   * @return future that can be successful or not.
+   */
   CompletableFuture<Void> deleteUser(User user);
 
+  /**
+   * Retrieves user document from firestore
+   *
+   * @param id user id
+   * @return future with user object fetched from firestore
+   * @throws Resources.NotFoundException if user not found
+   */
   CompletableFuture<User> findUser(String id) throws Resources.NotFoundException;
 
-  CompletableFuture retrieveUserRegistrationToken(User user);
+  /**
+   * Retrieves the registration token of a FirebaseUser for notifications. This value needs to be
+   * fetched after a new user is created. Then the value is transferred to the User document in
+   * firestore.
+   *
+   * @param user new user
+   * @return future
+   */
+  CompletableFuture<Void> postUserRegistrationToken(User user);
 
+  /**
+   * Gets a Firestore query that references the user. We can then attach observers to this query.
+   *
+   * @param userId user to be observed
+   * @return reference of user.
+   */
   DocumentReference getUserReference(String userId);
 }

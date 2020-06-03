@@ -87,7 +87,7 @@ public class FakeUserUtil implements IUserUtil {
   }
 
   @Override
-  public CompletableFuture retrieveUserRegistrationToken(User user) {
+  public CompletableFuture<Void> postUserRegistrationToken(User user) {
     return defaultResult();
   }
 

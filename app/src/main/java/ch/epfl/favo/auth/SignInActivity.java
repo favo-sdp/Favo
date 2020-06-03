@@ -196,7 +196,7 @@ public class SignInActivity extends AppCompatActivity {
       user.setName(CommonTools.emailToName(user.getEmail()));
     return DependencyFactory.getCurrentUserRepository()
         .postUser(user)
-        .thenAccept(o -> getCurrentUserUtil().retrieveUserRegistrationToken(user));
+        .thenAccept(o -> getCurrentUserUtil().postUserRegistrationToken(user));
   }
 
   private CompletableFuture editUser(User user, String deviceId) {

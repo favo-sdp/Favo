@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
-import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -100,23 +99,10 @@ public class UserUtil implements IUserUtil {
   }
 
 
-  /**
-   * Returns all the favors that are active in a given radius.
-   *
-   * @param loc Location to search around (Android location type)
-   * @param radius a given radius to search within
-   */
-  public ArrayList<User> retrieveOtherUsersInGivenRadius(Location loc, double radius) {
 
-    throw new NotImplementedException();
-  }
 
-  /**
-   * Retrieves current registration token for the notification system.
-   *
-   * @param user A user object.
-   */
-  public CompletableFuture<Void> retrieveUserRegistrationToken(User user) {
+
+  public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();
     CompletableFuture<InstanceIdResult> futureIdTask =

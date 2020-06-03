@@ -1,7 +1,5 @@
 package ch.epfl.favo.user;
 
-import android.location.Location;
-
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.Query;
@@ -20,7 +18,6 @@ import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.Document;
-import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static ch.epfl.favo.FakeItemFactory.getUser;
@@ -142,15 +139,6 @@ public class UserUtilTest {
   }
 
   @Test
-  public void testRetrieveOtherUsersInGivenRadius() {
-    Assert.assertThrows(
-        NotImplementedException.class,
-        () ->
-            UserUtil.getSingleInstance()
-                .retrieveOtherUsersInGivenRadius(Mockito.mock(Location.class), 0.1));
-  }
-
-  @Test
   public void retrieveUserRegistrationToken() {
     // Mock Firebase objects and returning task
     FirebaseInstanceId mockFirebaseInstanceId = Mockito.mock(FirebaseInstanceId.class);
@@ -171,7 +159,7 @@ public class UserUtilTest {
         };
     DependencyFactory.setCurrentCompletableFuture(idFuture);
     Assert.assertTrue(
-        UserUtil.getSingleInstance().retrieveUserRegistrationToken(getUser()).isDone());
+        UserUtil.getSingleInstance().postUserRegistrationToken(getUser()).isDone());
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirebaseNotificationInstanceId(null);
   }
