@@ -160,7 +160,7 @@
     <string name="commit_favor">Commit</string>
     <string name="no_internet">"An error occurred. Check your internet connection."</string>
 
-    <string name="title_map">Map</string>
+    <string name="title_map">Nearby Favors</string>
     <string name="title_favors">My Favors</string>
 
     <!-- Chat -->

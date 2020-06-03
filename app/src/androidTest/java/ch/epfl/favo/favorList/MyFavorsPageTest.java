@@ -201,7 +201,7 @@ public class MyFavorsPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
-
+    Thread.sleep(1500);
     // Check the following elements are displayed
     onView(withId(R.id.item_title)).check(matches(isDisplayed()));
     onView(withId(R.id.item_requester)).check(matches(isDisplayed()));
@@ -256,7 +256,7 @@ public class MyFavorsPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
-    Thread.sleep(2000);
+    Thread.sleep(3000);
 
     // check favor is displayed in archived favor list view
     onView(withText(favor.getTitle())).check(matches(isDisplayed()));
@@ -339,7 +339,7 @@ public class MyFavorsPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(1000);
+    Thread.sleep(2000);
     // check query is successful and click on found item
     onView(withId(R.id.tip)).check(matches(not(isDisplayed())));
     getInstrumentation().waitForIdleSync();
