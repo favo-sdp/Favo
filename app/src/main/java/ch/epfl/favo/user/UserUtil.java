@@ -3,6 +3,7 @@ package ch.epfl.favo.user;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.location.Location;
+import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -125,5 +126,14 @@ public class UserUtil implements IUserUtil {
 
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
+  }
+
+  public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
+    return findUser(userId)
+            .thenCompose(
+                    (user) -> {
+                      user.setBalance(user.getBalance() + reward);
+                      return updateUser(user);
+                    });
   }
 }

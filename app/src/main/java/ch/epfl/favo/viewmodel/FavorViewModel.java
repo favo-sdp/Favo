@@ -26,6 +26,7 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
 
@@ -124,6 +125,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
     if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
+
+    // deposit FavoCoins back into requesters account
+    UserUtil.getSingleInstance().updateCoinBalance(favor.getUserIds().get(0), favor.getReward());
+
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (int i = 1; i < favor.getUserIds().size(); i++) {
       int commitUser = i;
@@ -138,9 +143,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
-        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
+        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt())) {
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
-    else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
+      UserUtil.getSingleInstance().updateCoinBalance(tempFavor.getUserIds().get(1), tempFavor.getReward());
+    } else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException("Wrong Status");
