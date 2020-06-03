@@ -107,10 +107,11 @@ public class MyFavorsPageTest {
   }
 
   @Test
-  public void testFavorPageElements() {
+  public void testFavorPageElements() throws InterruptedException {
     // click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
 
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
