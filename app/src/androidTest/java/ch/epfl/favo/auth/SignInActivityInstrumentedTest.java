@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeUserUtil;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.R;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
@@ -30,6 +31,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityInstrumentedTest {
   private FakeUserUtil fakeUserUtil = new FakeUserUtil();
+
   @Rule
   public final ActivityTestRule<SignInActivity> activityTestRule =
       new ActivityTestRule<SignInActivity>(SignInActivity.class) {
@@ -39,6 +41,7 @@ public class SignInActivityInstrumentedTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentUserRepository(fakeUserUtil);
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
 
