@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -31,17 +29,18 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Objects;
+
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.util.IPictureUtil.Folder;
-
-import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
+import ch.epfl.favo.util.PictureUtil;
 
 import static android.app.Activity.RESULT_OK;
+import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
 @SuppressLint("NewApi")
 public class UserAccountPage extends Fragment {
@@ -57,7 +56,6 @@ public class UserAccountPage extends Fragment {
     // Required empty public constructor
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -225,8 +223,7 @@ public class UserAccountPage extends Fragment {
     nameView.setText(user.getName());
 
     TextView emailView = view.findViewById(R.id.user_email);
-    emailView.setText(
-        TextUtils.isEmpty(user.getEmail()) ? getText(R.string.no_email_text) : user.getEmail());
+    emailView.setText(user.getEmail());
 
     if (user.getProfilePictureUrl() != null) {
       ImageView profilePictureView = view.findViewById(R.id.user_profile_picture);
