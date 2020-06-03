@@ -42,9 +42,9 @@ import ch.epfl.favo.viewmodel.IFavorViewModel;
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 /**
- * View will contain list of favors requested in the past. The list will contain clickable items
- * that will expand to give more information about them. This object is a simple {@link Fragment}
- * subclass.
+ * View will contain list of favors requested and accepted, currently active and in the past. The
+ * list will contain clickable items that will expand to give more information about them. This
+ * object is a simple {@link Fragment} subclass.
  */
 public class MyFavorsPage extends Fragment {
 
@@ -76,8 +76,7 @@ public class MyFavorsPage extends Fragment {
   private FirestorePagingOptions<Favor> archiveFavorsOptions;
 
   private String lastQuery;
-
-  private Query baseQuery;
+  private Query searchQuery;
 
   public MyFavorsPage() {
     // Required empty public constructor
@@ -105,14 +104,17 @@ public class MyFavorsPage extends Fragment {
     mRecycler = rootView.findViewById(R.id.paging_recycler);
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
-    baseQuery =
+    Query baseQuery =
         FavorUtil.getSingleInstance()
             .getAllUserFavors(DependencyFactory.getCurrentFirebaseUser().getUid());
 
+    Query listQuery = baseQuery.orderBy(Favor.POSTED_TIME, Query.Direction.DESCENDING);
+    searchQuery = baseQuery.orderBy(Favor.TITLE, Query.Direction.ASCENDING);
+
     activeFavorsOptions =
-        createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, false));
+        createFirestorePagingOptions(listQuery.whereEqualTo(Favor.IS_ARCHIVED, false));
     archiveFavorsOptions =
-        createFirestorePagingOptions(baseQuery.whereEqualTo(Favor.IS_ARCHIVED, true));
+        createFirestorePagingOptions(listQuery.whereEqualTo(Favor.IS_ARCHIVED, true));
 
     favorViewModel =
         (IFavorViewModel)
@@ -233,10 +235,10 @@ public class MyFavorsPage extends Fragment {
     };
   }
 
-  private FirestorePagingOptions<Favor> createFirestorePagingOptions(Query baseQuery) {
+  private FirestorePagingOptions<Favor> createFirestorePagingOptions(Query query) {
     return new FirestorePagingOptions.Builder<Favor>()
         .setLifecycleOwner(this)
-        .setQuery(baseQuery, pagingConfig, Favor.class)
+        .setQuery(query, pagingConfig, Favor.class)
         .build();
   }
 
@@ -302,10 +304,10 @@ public class MyFavorsPage extends Fragment {
 
             Query query;
             if (newText.equals("")) {
-              query = baseQuery;
+              query = searchQuery;
             } else {
               query =
-                  baseQuery
+                  searchQuery
                       .whereGreaterThanOrEqualTo(Favor.TITLE, newText)
                       .whereLessThanOrEqualTo(Favor.TITLE, newText + END_CODE);
             }
@@ -330,10 +332,13 @@ public class MyFavorsPage extends Fragment {
 
             Query query;
             if (lastQuery == null || lastQuery.equals("")) {
-              query = baseQuery;
+              query = searchQuery;
               lastQuery = "";
             } else {
-              query = baseQuery.whereEqualTo(Favor.TITLE, lastQuery);
+              query =
+                  searchQuery
+                      .whereGreaterThanOrEqualTo(Favor.TITLE, lastQuery)
+                      .whereLessThanOrEqualTo(Favor.TITLE, lastQuery + END_CODE);
             }
 
             displayFavorList(createFirestorePagingOptions(query));

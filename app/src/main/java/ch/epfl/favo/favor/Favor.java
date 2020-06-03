@@ -29,9 +29,9 @@ public class Favor implements Parcelable, Document, Cloneable {
   private static final String ID = "id";
   public static final String TITLE = "title";
   private static final String DESCRIPTION = "description";
-  private static final String USER_IDS = "userIds";
+  static final String USER_IDS = "userIds";
   private static final String LOCATION = "location";
-  private static final String POSTED_TIME = "postedTime";
+  public static final String POSTED_TIME = "postedTime";
   private static final String STATUS_ID = "statusId";
   static final String PICTURE_URL = "pictureUrl";
   public static final String IS_ARCHIVED = "isArchived";

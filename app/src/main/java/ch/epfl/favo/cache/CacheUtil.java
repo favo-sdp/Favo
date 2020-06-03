@@ -36,8 +36,9 @@ public class CacheUtil {
    * @param key: String, key for lookup
    * @param value: String, value to store
    */
-  void storeKeyValueStr(Context context, String key, String value) {
-    getDefaultSharedPreferences(context).edit().putString(key, value).apply();
+  public void storeKeyValueStr(Context context, String key, String value) {
+    SharedPreferences.Editor editor = getDefaultSharedPreferences(context).edit();
+    editor.putString(key, value).apply();
   }
 
   /**
@@ -47,8 +48,9 @@ public class CacheUtil {
    * @param key: String, key for lookup
    * @param value: Boolean, value to store
    */
-  void storeKeyValueBool(Context context, String key, Boolean value) {
-    getDefaultSharedPreferences(context).edit().putBoolean(key, value).apply();
+  public void storeKeyValueBool(Context context, String key, Boolean value) {
+    SharedPreferences.Editor editor = getDefaultSharedPreferences(context).edit();
+    editor.putBoolean(key, value).apply();
   }
 
   /**
