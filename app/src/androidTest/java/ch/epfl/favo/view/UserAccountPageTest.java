@@ -41,7 +41,6 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.internal.runner.junit4.statement.UiThreadStatement.runOnUiThread;
@@ -51,7 +50,6 @@ import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROFILE_PICTURE_ID;
 import static ch.epfl.favo.TestConstants.PROVIDER;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 
 @RunWith(AndroidJUnit4.class)
