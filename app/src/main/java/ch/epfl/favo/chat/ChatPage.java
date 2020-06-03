@@ -45,10 +45,12 @@ import ch.epfl.favo.chat.ViewHolder.ImageMessageViewHolder;
 import ch.epfl.favo.chat.ViewHolder.MessageViewHolder;
 import ch.epfl.favo.chat.ViewHolder.TextMessageViewHolder;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.BitmapConversionUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
 import ch.epfl.favo.util.IPictureUtil.Folder;
+import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -288,7 +290,6 @@ public class ChatPage extends Fragment {
 
         if (viewType == LOCATION_MESSAGE_TYPE)
           messageView.setOnClickListener(this::navigateToMapPage);
-        else messageView.setOnClickListener(this::navigateToUserPage);
 
         return viewHolder;
       }
