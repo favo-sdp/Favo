@@ -37,6 +37,15 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 @RunWith(AndroidJUnit4.class)
 public class UserAccountPageTest {
 
+  User testUser =
+    new User(
+      TestConstants.USER_ID,
+      TestConstants.NAME,
+      TestConstants.EMAIL,
+      TestConstants.DEVICE_ID,
+      null,
+      null);
+
   @Rule
   public final ActivityTestRule<SignInActivity> mActivityRule =
       new ActivityTestRule<>(SignInActivity.class, true, false);
@@ -57,15 +66,6 @@ public class UserAccountPageTest {
 
   @Before
   public void setUp() {
-    User testUser =
-        new User(
-            TestConstants.USER_ID,
-            TestConstants.NAME,
-            TestConstants.EMAIL,
-            TestConstants.DEVICE_ID,
-            null,
-            null);
-
     FakeUserUtil userUtil = new FakeUserUtil();
     userUtil.setFindUserResult(testUser);
     DependencyFactory.setCurrentUserRepository(userUtil);
@@ -105,8 +105,8 @@ public class UserAccountPageTest {
 
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingName() {
-    DependencyFactory.setCurrentFirebaseUser(
-        new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
+    User user = testUser;
+    user.setName(null);
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
 
     mActivityRule.launchActivity(null);
@@ -117,7 +117,8 @@ public class UserAccountPageTest {
 
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingEmail() {
-    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, "", PHOTO_URI, PROVIDER));
+    User user = testUser;
+    user.setEmail(null);
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
 
     mActivityRule.launchActivity(null);
