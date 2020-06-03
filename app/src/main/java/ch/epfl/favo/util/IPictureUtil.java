@@ -14,10 +14,14 @@ public interface IPictureUtil {
 
   CompletableFuture<Bitmap> downloadPicture(String pictureUrl);
 
+  String favorFolder = "favor/";
+  String chatFolder = "chat/";
+  String profilePictureFolder = "profile_picture/";
+
   enum Folder {
-    FAVOR("favor/"),
-    CHAT("chat/"),
-    PROFILE_PICTURE("profile_picture/");
+    FAVOR(favorFolder),
+    CHAT(chatFolder),
+    PROFILE_PICTURE(profilePictureFolder);
 
     private String folder;
 
