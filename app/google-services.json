@@ -15,7 +15,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "533932732600-f0po44jolefjeksqls99gd4b2art9br9.apps.googleusercontent.com",
+          "client_id": "533932732600-7qka9iot6652p66faa6jau1cfj9nk1oh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ch.epfl.favo",
+            "certificate_hash": "e6d4062521fa5ab5ab6deae996e260c01ae935c8"
+          }
+        },
+        {
+          "client_id": "533932732600-v4ees6p98n99t0nm3tfat30s85kq4ecc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "ch.epfl.favo",
