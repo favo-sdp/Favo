@@ -143,7 +143,7 @@ public class MapPage extends Fragment
         CacheUtil.getInstance()
             .getValueFromCacheStr(
                 requireContext(), getString(R.string.radius_notifications_setting_key));
-    double radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
+    radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
 
     if (!radiusSetting.equals("")) {
       radiusThreshold = Integer.parseInt(radiusSetting);
