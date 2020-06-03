@@ -1,5 +1,6 @@
 package ch.epfl.favo.view;
 
+import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
@@ -110,6 +111,7 @@ public class UserAccountPageTest {
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_name)).check(matches(withText(EMAIL.split("@")[0])));
   }
 
@@ -120,6 +122,7 @@ public class UserAccountPageTest {
 
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
+    getInstrumentation().waitForIdleSync();
     onView(withId(R.id.user_email)).check(matches(withText("No email")));
   }
 
@@ -150,14 +153,14 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.delete_account)).perform(click());
+    onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).perform(click());
     // give time to display the dialog
     getInstrumentation().waitForIdleSync();
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
     onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button2)).perform(click());
-    onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
+    onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
   }
 
   @Test
@@ -167,7 +170,7 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.delete_account)).perform(click());
+    onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).perform(click());
     // give time to display the dialog
     getInstrumentation().waitForIdleSync();
     onView(withText(endsWith("?"))).check(matches(isDisplayed()));
@@ -175,6 +178,6 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(android.R.id.button1)).perform(click());
-    onView(withId(R.id.delete_account)).check(matches(isDisplayed()));
+    onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
   }
 }
