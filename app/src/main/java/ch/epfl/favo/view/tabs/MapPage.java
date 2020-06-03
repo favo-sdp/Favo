@@ -143,11 +143,11 @@ public class MapPage extends Fragment
         CacheUtil.getInstance()
             .getValueFromCacheStr(
                 requireContext(), getString(R.string.radius_notifications_setting_key));
-    radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
+    radiusThreshold =
+        (!radiusSetting.isEmpty())
+            ? Integer.parseInt(radiusSetting)
+            : Integer.parseInt(getString(R.string.default_radius));
 
-    if (!radiusSetting.equals("")) {
-      radiusThreshold = Integer.parseInt(radiusSetting);
-    }
     defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference
