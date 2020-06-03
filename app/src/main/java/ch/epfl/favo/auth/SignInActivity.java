@@ -167,17 +167,18 @@ public class SignInActivity extends AppCompatActivity {
           DependencyFactory.getCurrentUserRepository().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
       // Try to edit user. If not completed properly, we create a new user and post it in the db.
-      CompletableFuture<User> loginFuture =
+      CompletableFuture<User> editUserFuture =
           userFuture
               .thenCompose((Function<User, CompletionStage<User>>) user -> editUser(user, deviceId))
               .exceptionally(
-                  throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()))
-              .thenCompose(
-                  (Function<User, CompletionStage<User>>)
-                      user ->
-                          (user != null)
-                              ? postNewUserFuture(user)
-                              : CompletableFuture.supplyAsync(() -> null));
+                  throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()));
+      CompletableFuture<User> loginFuture =
+          editUserFuture.thenCompose(
+              (Function<User, CompletionStage<User>>)
+                  user ->
+                      (user != null)
+                          ? postNewUserFuture(user)
+                          : CompletableFuture.supplyAsync(() -> null));
       loginFuture
           .thenAccept(user -> startMainActivity())
           .exceptionally(
@@ -185,7 +186,7 @@ public class SignInActivity extends AppCompatActivity {
                 Log.d(TAG, "failed to post user");
                 CommonTools.showSnackbar(
                     getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
-                onCreate(null);
+                this.recreate();
                 return null;
               });
     }

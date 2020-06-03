@@ -103,6 +103,7 @@ public class MapPage extends Fragment
   private boolean firstOpenApp = true;
   private RadioButton nearbyFavorListToggle;
   private FloatingActionButton offlineBtn;
+  FloatingActionButton lookThroughBtn;
   private ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
@@ -167,9 +168,6 @@ public class MapPage extends Fragment
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
 
-    FloatingActionButton lookThroughBtn = view.findViewById(R.id.look_through_btn);
-    lookThroughBtn.setOnClickListener(this::onLookThroughClick);
-
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
     } catch (NoPermissionGrantedException e) {
@@ -230,7 +228,7 @@ public class MapPage extends Fragment
   private void setLimitedView() {
     view.findViewById(R.id.toggle).setVisibility(View.GONE);
     ((MainActivity) requireActivity()).hideBottomNavigation();
-    nearbyFavorListToggle.setVisibility(View.GONE);
+    lookThroughBtn.setVisibility(View.GONE);
     requireActivity().findViewById(R.id.hamburger_menu_button).setVisibility(View.GONE);
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
@@ -274,6 +272,8 @@ public class MapPage extends Fragment
   @Override
   public void onStart() {
     super.onStart();
+    lookThroughBtn = view.findViewById(R.id.look_through_btn);
+    lookThroughBtn.setOnClickListener(this::onLookThroughClick);
     if (getArguments() != null) {
       intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
       latitudeFromChat = getArguments().getString(LATITUDE_ARGUMENT_KEY);
