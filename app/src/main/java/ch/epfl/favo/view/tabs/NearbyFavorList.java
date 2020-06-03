@@ -71,7 +71,7 @@ public class NearbyFavorList extends Fragment {
     tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
     listView = rootView.findViewById(R.id.nearby_favor_list);
-    //setupListView();
+    setupListView();
 
     RadioButton toggle = rootView.findViewById(R.id.map_switch);
     toggle.setOnClickListener(this::onToggleClick);

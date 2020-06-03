@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -47,6 +48,9 @@ public class FavorAdapter extends ArrayAdapter<Favor> {
 
     TextView favorRequester = convertView.findViewById(R.id.item_requester);
     ImageView userPic = convertView.findViewById(R.id.item_icon);
+    Button mChatButton = convertView.findViewById(R.id.item_menu_chat_button);
+    mChatButton.setVisibility(View.GONE);
+
     UserUtil.getSingleInstance()
         .findUser(favor.getRequesterId())
         .thenAccept(user -> {
