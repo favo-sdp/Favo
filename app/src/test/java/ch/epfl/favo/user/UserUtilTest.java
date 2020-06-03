@@ -70,7 +70,6 @@ public class UserUtilTest {
   public void tearDown() {
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
-    DependencyFactory.setCurrentFirebaseUser(null);
   }
 
   @Test
