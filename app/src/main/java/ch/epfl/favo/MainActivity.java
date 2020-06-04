@@ -1,14 +1,13 @@
 package ch.epfl.favo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -37,6 +36,7 @@ import ch.epfl.favo.view.tabs.shop.ShopPage;
  * This view will control all the fragments that are created. Contains a navigation drawer on the
  * left. Contains a bottom navigation for top-level activities.
  */
+@SuppressLint("NewApi")
 public class MainActivity extends AppCompatActivity {
 
   private static final String DEEP_LINK_QUERY_PARAMETER = "favorId";
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
   private int currentMenuItem;
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     setTheme(R.style.AppTheme);
@@ -191,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.current_balance_text).setVisibility(View.GONE);
           }
 
-          // currentMenuItem = itemId;
           drawerLayout.closeDrawer(GravityCompat.START);
           return true;
         });
@@ -219,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
     startActivity(Intent.createChooser(intent, getText(R.string.app_name_extended)));
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);

@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs.favorList;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -41,7 +39,7 @@ import static androidx.navigation.Navigation.findNavController;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
-@RequiresApi(api = Build.VERSION_CODES.N)
+//@RequiresApi(api = Build.VERSION_CODES.N)
 public class NearbyFavorList extends Fragment {
 
   private View rootView;
@@ -232,7 +230,6 @@ public class NearbyFavorList extends Fragment {
         return new FavorViewHolder(view);
       }
 
-      @RequiresApi(api = Build.VERSION_CODES.N)
       @Override
       public void onBindViewHolder(@NonNull FavorViewHolder holder, int position) {
         Favor favor = items.get(position);

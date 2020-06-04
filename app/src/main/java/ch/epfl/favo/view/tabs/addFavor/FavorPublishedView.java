@@ -178,7 +178,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void reportFavor() {
-    // should decide what to do with reported favors
+    // TODO: decide what to do with reported favors
     CommonTools.showSnackbar(getView(), getString(R.string.report_favor_message));
   }
 
@@ -198,7 +198,6 @@ public class FavorPublishedView extends Fragment {
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
-                // Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 showBottomBar(false);
               }

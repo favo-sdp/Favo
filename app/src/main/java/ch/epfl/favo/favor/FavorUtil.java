@@ -14,18 +14,18 @@ import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 
-/*
-This models the favor fragment_favor_published_view.
-*/
+/**
+ * This models the favor fragment_favor_published_view.
+ */
 @SuppressLint("NewApi")
 public class FavorUtil implements IFavorUtil {
-  private static final String TAG = "FavorUtil";
+
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
+
   private static ICollectionWrapper<Favor> collection =
       DependencyFactory.getCurrentCollectionWrapper(
           DependencyFactory.getCurrentFavorCollection(), Favor.class);
 
-  // Private Constructor
   private FavorUtil() {}
 
   public void updateCollectionWrapper(ICollectionWrapper collectionWrapper) {

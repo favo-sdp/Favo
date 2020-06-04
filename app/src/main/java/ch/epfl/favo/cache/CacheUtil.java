@@ -1,12 +1,10 @@
 package ch.epfl.favo.cache;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import static android.graphics.BitmapFactory.decodeFile;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
 
+@SuppressLint("NewApi")
 public class CacheUtil {
 
   private static CacheUtil INSTANCE = null;
@@ -87,7 +86,6 @@ public class CacheUtil {
    * @param imageNum: the index of the image, set to 0 for now (TODO: support multiple pitures.)
    * @return Boolean to indicate whether the write was a success
    */
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public Uri saveToInternalStorage(
       Context context, Bitmap bitmapImage, String favorId, int imageNum) {
 
@@ -112,7 +110,6 @@ public class CacheUtil {
     return Uri.parse(image.getAbsolutePath());
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public CompletableFuture<Bitmap> loadFromInternalStorage(String pathToFolder, int picNum) {
     return CompletableFuture.supplyAsync(
         () -> decodeFile(pathToFolder + String.format("%s.jpeg", picNum)));
