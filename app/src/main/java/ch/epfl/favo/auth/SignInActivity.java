@@ -18,14 +18,11 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
+import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -162,55 +159,39 @@ public class SignInActivity extends AppCompatActivity {
       // Lookup user with Firebase Id in Db to extract details
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
-
-      CompletableFuture<User> userFuture =
-          DependencyFactory.getCurrentUserRepository().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
-      // Try to edit user. If not completed properly, we create a new user and post it in the db.
-      CompletableFuture<User> editUserFuture =
-          userFuture
-              .thenCompose((Function<User, CompletionStage<User>>) user -> editUser(user, deviceId))
-              .exceptionally(
-                  throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()));
-      CompletableFuture<User> loginFuture =
-          editUserFuture.thenCompose(
-              (Function<User, CompletionStage<User>>)
-                  user ->
-                      (user != null)
-                          ? postNewUserFuture(user)
-                          : CompletableFuture.supplyAsync(() -> null));
-      loginFuture
-          .thenAccept(user -> startMainActivity())
-          .exceptionally(
-              ex -> {
-                Log.d(TAG, "failed to post user");
-                CommonTools.showSnackbar(
-                    getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
-                this.recreate();
-                return null;
+
+      DependencyFactory.getCurrentUserRepository()
+          .findUser(userId)
+          .thenAccept(
+              user -> {
+                // if user is present in the database, update fields
+                if (user != null) {
+                  user.setDeviceId(deviceId);
+                  user.setLocation(new FavoLocation(mGpsTracker.getLocation()));
+                } else {
+                  // if user is not present in the database, create a new one
+                  User newUser = new User(currentUser, deviceId, mGpsTracker.getLocation());
+                  if (newUser.getName() == null || newUser.getName().equals(""))
+                    newUser.setName(CommonTools.emailToName(newUser.getEmail()));
+                  DependencyFactory.getCurrentUserRepository().postUser(newUser);
+                  user = newUser;
+                }
+
+                // always update the notification id
+                DependencyFactory.getCurrentUserRepository()
+                    .postUserRegistrationToken(user)
+                    .thenAccept(u -> startMainActivity())
+                    .exceptionally(
+                        ex -> {
+                          Log.d(TAG, "failed to post user");
+                          CommonTools.showSnackbar(
+                              getWindow().getDecorView().getRootView(),
+                              getString(R.string.sign_in_failed));
+                          this.recreate();
+                          return null;
+                        });
               });
     }
-  }
-  // Returs null but need to use raw type to chain this future
-  private CompletableFuture postNewUserFuture(User user) {
-    if (user.getName() == null || user.getName().equals(""))
-      user.setName(CommonTools.emailToName(user.getEmail()));
-    return DependencyFactory.getCurrentUserRepository()
-        .postUser(user)
-        .thenAccept(o -> getCurrentUserUtil().postUserRegistrationToken(user));
-  }
-
-  private CompletableFuture editUser(User user, String deviceId) {
-    if (!deviceId.equals(user.getDeviceId())) {
-      user.setDeviceId(deviceId);
-      return getCurrentUserUtil().updateUser(user);
-    } else if (user.getName() == null || user.getName().equals("")) {
-      user.setName(CommonTools.emailToName(user.getEmail()));
-      return getCurrentUserUtil().updateUser(user);
-    } else return CompletableFuture.supplyAsync(() -> null);
-  }
-
-  private IUserUtil getCurrentUserUtil() {
-    return DependencyFactory.getCurrentUserRepository();
   }
 }

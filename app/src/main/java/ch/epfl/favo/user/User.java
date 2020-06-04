@@ -249,7 +249,7 @@ public class User implements Document {
     this.deviceId = deviceId;
   }
 
-  void setLocation(FavoLocation location) {
+  public void setLocation(FavoLocation location) {
     this.location = location;
   }
 
