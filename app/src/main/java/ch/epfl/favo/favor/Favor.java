@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
 import ch.epfl.favo.database.DatabaseWrapper;
 import ch.epfl.favo.database.Document;
 import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.util.DependencyFactory;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
@@ -110,6 +109,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.isArchived = other.isArchived;
     this.pictureUrl = other.getPictureUrl();
     this.postedTime = other.getPostedTime();
+    this.notifId = other.notifId;
     this.userIds = new ArrayList<>(other.getUserIds());
   }
 
