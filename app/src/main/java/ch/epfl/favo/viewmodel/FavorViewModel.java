@@ -114,10 +114,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             currentUserId,
             true,
             change) // if user can request favor then post it in the favor collection
-        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor))
+        .thenCompose(aVoid -> getFavorRepository().requestFavor(tempFavor))
         .thenCompose(
             avoid ->
-                getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, 1));
+                getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, 1))
+        .thenCompose(
+            (aVoid) ->
+                getUserRepository()
+                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
@@ -127,6 +131,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
     if (tempFavor.getStatusId() == REQUESTED.toInt()) tempFavor.clearAccepterIds();
+    // deposit FavoCoins back into requesters account
+    getUserRepository().updateCoinBalance(tempFavor.getRequesterId(), favor.getReward());
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (String userId : favor.getUserIds()) { // loop over original user list
       if (!userId.equals(currentUserId))
@@ -140,9 +146,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public CompletableFuture<Void> completeFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
-        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt()))
+        || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt())) {
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
-    else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
+      if (tempFavor.getUserIds().size() > 1) {
+        getUserRepository().updateCoinBalance(tempFavor.getUserIds().get(1), tempFavor.getReward());
+      } else {
+        Log.d(TAG, "Fatal: successfully completed favor with missing accepterId");
+      }
+    } else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException("Wrong Status");

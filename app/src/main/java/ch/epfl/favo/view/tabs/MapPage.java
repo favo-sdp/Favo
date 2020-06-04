@@ -135,6 +135,7 @@ public class MapPage extends Fragment
     return view;
   }
 
+  @SuppressLint("MissingPermission")
   @Override
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
@@ -147,7 +148,6 @@ public class MapPage extends Fragment
         (!radiusSetting.isEmpty())
             ? Integer.parseInt(radiusSetting)
             : Integer.parseInt(getString(R.string.default_radius));
-
     defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference

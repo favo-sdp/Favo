@@ -75,6 +75,14 @@ public interface IUserUtil {
   CompletableFuture<Void> postUserRegistrationToken(User user);
 
   /**
+   * Updates user balance. Occurs when user posts request and when favor is successfully completed.
+   *
+   * @param userId id of user updated
+   * @param reward value of favor in FavoCoins currency
+   */
+  CompletableFuture<Void> updateCoinBalance(String userId, double reward);
+
+  /**
    * Gets a Firestore query that references the user. We can then attach observers to this query.
    *
    * @param userId user to be observed

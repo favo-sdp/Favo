@@ -13,9 +13,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -30,6 +32,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 /** Unit tests for favor util class */
 public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
+  private UserUtil mockUserUtil;
+  private CompletableFuture<Void> successfulFuture =
+          new CompletableFuture<Void>() {
+            {
+              complete(null);
+            }
+          };
 
   @Before
   public void setUp() {
@@ -39,7 +48,14 @@ public class FavorUtilTest {
             .when(mockDatabaseWrapper)
             .updateDocument(anyString(), Mockito.anyMap());
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
+    DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+
+    mockUserUtil = Mockito.mock(UserUtil.class);
+    Mockito.doReturn(successfulFuture)
+            .when(mockUserUtil)
+            .updateCoinBalance(anyString(), anyDouble());
   }
 
   @After
@@ -50,6 +66,13 @@ public class FavorUtilTest {
 
   @Test
   public void testPostFavorFlow() {
+    FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+
+    mockUserUtil = Mockito.mock(UserUtil.class);
+    Mockito.doReturn(successfulFuture)
+            .when(mockUserUtil)
+            .updateCoinBalance(anyString(), anyDouble());
+
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().requestFavor(favor);
   }

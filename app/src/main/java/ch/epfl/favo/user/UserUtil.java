@@ -120,4 +120,14 @@ public class UserUtil implements IUserUtil {
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
   }
+
+  @Override
+  public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
+    return findUser(userId)
+            .thenCompose(
+                    (user) -> {
+                      user.setBalance(user.getBalance() + reward);
+                      return updateUser(user);
+                    });
+  }
 }

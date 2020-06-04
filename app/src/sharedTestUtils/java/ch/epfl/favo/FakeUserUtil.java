@@ -86,6 +86,10 @@ public class FakeUserUtil implements IUserUtil {
     return successfulUserFuture;
   }
 
+  public CompletableFuture updateCoinBalance(String userId, double reward) {
+    return defaultResult();
+  }
+
   @Override
   public CompletableFuture<Void> postUserRegistrationToken(User user) {
     return defaultResult();
