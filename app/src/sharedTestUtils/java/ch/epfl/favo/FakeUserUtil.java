@@ -86,7 +86,7 @@ public class FakeUserUtil implements IUserUtil {
     return successfulUserFuture;
   }
 
-  public CompletableFuture updateCoinBalance(String userId, double reward) {
+  public CompletableFuture updateCoinBalance(String userId, int reward) {
     return defaultResult();
   }
 

@@ -56,7 +56,7 @@ public class FavorUnitTests {
     String accepterId = TestConstants.ACCEPTER_ID;
     String otherPictureUrl = TestConstants.OTHER_PICTURE_URL;
 
-    double reward = 4.25;
+    int reward = 4;
 
     favor.setStatusIdToInt(statusId);
     favor.setLocation(location);

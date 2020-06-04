@@ -37,7 +37,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -87,7 +86,7 @@ public class FavorViewModelTest {
     Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
     Mockito.doReturn(successfulResult)
         .when(userRepository)
-        .updateCoinBalance(anyString(), anyDouble());
+        .updateCoinBalance(anyString(), anyInt());
     Mockito.doReturn(successfulResult).when(favorRepository).removeFavor(Mockito.anyString());
     Mockito.doReturn(successfulResult)
         .when(userRepository)

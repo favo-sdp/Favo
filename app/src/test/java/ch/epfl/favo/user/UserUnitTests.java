@@ -74,7 +74,7 @@ public class UserUnitTests {
     String pictureUrl = "someUrl";
     int activeAcceptingFavors = User.MAX_ACCEPTING_FAVORS;
     int activeRequestingFavors = User.MAX_REQUESTING_FAVORS;
-    double newBalance = 5;
+    int newBalance = 5;
     String temporaryNotificationId = "temporaryNotificationId";
     String temporaryDeviceId = "temporaryDeviceId";
     FavoLocation newLoc = new FavoLocation();
@@ -120,7 +120,7 @@ public class UserUnitTests {
     FirebaseUser fbUser = FakeItemFactory.getFirebaseUser();
     String deviceId = TestConstants.DEVICE_ID;
     Location loc = TestConstants.LOCATION;
-    User user = new User(fbUser, deviceId, loc);
+    new User(fbUser, deviceId, loc);
   }
 
   @Test
