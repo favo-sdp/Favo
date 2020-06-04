@@ -1,6 +1,6 @@
 package ch.epfl.favo.view.tabs;
 
-import android.os.Build;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
@@ -23,6 +22,7 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
+@SuppressLint("NewApi")
 public class UserInfoPage extends Fragment {
 
   private View view;
@@ -32,7 +32,6 @@ public class UserInfoPage extends Fragment {
     // Required empty public constructor
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,7 +58,7 @@ public class UserInfoPage extends Fragment {
   }
 
   private void setupButtons() {
-    // should decide what to do with reported users
+    // TODO: decide what to do with reported users
     Button reportUserButton = view.findViewById(R.id.report_user);
     reportUserButton.setOnClickListener(
         v -> CommonTools.showSnackbar(getView(), getString(R.string.report_user_message)));

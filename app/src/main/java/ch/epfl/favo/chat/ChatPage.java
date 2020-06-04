@@ -87,7 +87,6 @@ public class ChatPage extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
 
-    //    currentFavor = viewModel.getObservedFavor().getValue();
     viewModel
         .getObservedFavor()
         .observe(
@@ -207,10 +206,7 @@ public class ChatPage extends Fragment {
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-    //    attachRecyclerViewAdapter();
-  }
+  public void onStart() { super.onStart(); }
 
   private void attachRecyclerViewAdapter() {
     FirestoreRecyclerOptions<Message> options = getFirestoreRecyclerOptions();
