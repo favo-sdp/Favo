@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -66,6 +67,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
   private FirebaseUser currentUser;
+  private ImageView userProfilePicture;
 
   private Map<String, User> commitUsers = new HashMap<>();
 
@@ -227,12 +229,12 @@ public class FavorPublishedView extends Fragment {
     commitAndCompleteBtn = rootView.findViewById(R.id.commit_complete_button);
     Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
-    ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
+    userProfilePicture = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name_published_view);
     locationAccessBtn.setOnClickListener(new onButtonClick());
     commitAndCompleteBtn.setOnClickListener(new onButtonClick());
     chatBtn.setOnClickListener(new onButtonClick());
-    userProfile.setOnClickListener(new onButtonClick());
+    userProfilePicture.setOnClickListener(new onButtonClick());
     userName.setOnClickListener(new onButtonClick());
   }
 
@@ -299,7 +301,7 @@ public class FavorPublishedView extends Fragment {
     if (isRequestedByCurrentUser && favor.getUserIds().size() > 1) setupUserListView();
     else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
-    displayUserProfile(favor);
+    displayUserInfo(favor.getRequesterId());
     updateAppBarMenuDisplay();
     updateDisplayFromViewStatus();
   }
@@ -310,31 +312,18 @@ public class FavorPublishedView extends Fragment {
     textView.setKeyListener(null);
   }
 
-  private void displayUserProfile(Favor favor) {
-    if (isRequestedByCurrentUser) {
-      // display user picture
-      if (currentUser.getPhotoUrl() != null) {
-
-        Glide.with(this)
-            .load(currentUser.getPhotoUrl())
-            .fitCenter()
-            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
-      }
-      // display user name
-      displayName(currentUser.getDisplayName(), currentUser.getEmail());
-    } else {
-      DependencyFactory.getCurrentUserRepository()
-          .findUser(favor.getRequesterId())
-          .thenAccept(
-              user -> {
-                displayName(user.getName(), user.getEmail());
-              });
-    }
+  private void displayUserInfo(String userId){
+    DependencyFactory.getCurrentUserRepository().findUser(userId).thenAccept(this::displayUserInfo);
   }
-
-  private void displayName(String name, String email) {
-    if (name == null || name.equals("")) name = CommonTools.emailToName(email);
+  private void displayUserInfo(User user){
+    String name = (user.getName() == null || user.getName().equals("")) ? CommonTools.emailToName(user.getEmail()):user.getName();
     ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
+    if (user.getProfilePictureUrl() != null) {
+      Glide.with(this)
+              .load(user.getProfilePictureUrl())
+              .fitCenter()
+              .into(userProfilePicture);
+    }
   }
 
   private void setupImageView(View rootView, Favor favor) {
