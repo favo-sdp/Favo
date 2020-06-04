@@ -63,8 +63,8 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
         .thenAccept(
             user -> {
               mRequesterView.setText(getUserName(user));
-              if (user.getPictureUrl() != null)
-                Glide.with(context).load(user.getPictureUrl()).into(mRequesterIconView);
+              if (user.getProfilePictureUrl() != null)
+                Glide.with(context).load(user.getProfilePictureUrl()).into(mRequesterIconView);
             });
   }
 }
