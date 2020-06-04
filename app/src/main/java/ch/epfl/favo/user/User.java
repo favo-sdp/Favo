@@ -37,6 +37,7 @@ public class User implements Document {
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";
   private static final String BALANCE = "balance";
+  public static final String PROFILE_PICTURE_URL = "profilePictureUrl";
   private static final String NOTIFICATION_RADIUS = "notificationRadius";
   private static final String CHAT_NOTIFICATIONS = "chatNotifications";
   private static final String UPDATE_NOTIFICATIONS = "updateNotifications";
@@ -57,10 +58,10 @@ public class User implements Document {
   private int likes;
   private int dislikes;
   private double balance;
+  private String profilePictureUrl;
   private double notificationRadius;
   private boolean chatNotifications;
   private boolean updateNotifications;
-  private String pictureUrl;
 
   public User() {
     this.activeAcceptingFavors = 0;
@@ -92,6 +93,7 @@ public class User implements Document {
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
     this.balance = (double) map.get(BALANCE);
+    this.profilePictureUrl = (String) map.get(PROFILE_PICTURE_URL);
     this.notificationRadius = (double) map.get(NOTIFICATION_RADIUS);
     this.chatNotifications = (boolean) map.get(CHAT_NOTIFICATIONS);
     this.updateNotifications = (boolean) map.get(UPDATE_NOTIFICATIONS);
@@ -132,7 +134,8 @@ public class User implements Document {
         deviceId,
         null,
         new FavoLocation(location));
-    pictureUrl =
+
+    profilePictureUrl =
         (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;
   }
 
@@ -161,10 +164,11 @@ public class User implements Document {
         put(LIKES, likes);
         put(DISLIKES, dislikes);
         put(BALANCE, balance);
+        put(PROFILE_PICTURE_URL, profilePictureUrl);
         put(NOTIFICATION_RADIUS, notificationRadius);
         put(CHAT_NOTIFICATIONS, chatNotifications);
         put(UPDATE_NOTIFICATIONS, updateNotifications);
-        put(PICTURE_URL, pictureUrl);
+        put(PICTURE_URL, profilePictureUrl);
       }
     };
   }
@@ -179,6 +183,10 @@ public class User implements Document {
 
   public String getEmail() {
     return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public String getDeviceId() {
@@ -209,12 +217,12 @@ public class User implements Document {
     return activeRequestingFavors;
   }
 
-  public String getPictureUrl() {
-    return pictureUrl;
+  public String getProfilePictureUrl() {
+    return profilePictureUrl;
   }
 
-  void setProfilePicUrl(String url) {
-    pictureUrl = url;
+  public void setProfilePictureUrl(String url) {
+    profilePictureUrl = url;
   }
 
   void setActiveAcceptingFavors(int totalAcceptingFavors) {

@@ -28,6 +28,7 @@ import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
+import ch.epfl.favo.util.IPictureUtil.Folder;
 
 import static ch.epfl.favo.favor.FavorStatus.ACCEPTED;
 import static ch.epfl.favo.favor.FavorStatus.CANCELLED_ACCEPTER;
@@ -127,7 +128,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // archived favors will not counted in this favor
     if (tempFavor.getStatusId() == REQUESTED.toInt()) tempFavor.clearAccepterIds();
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    for (String userId : favor.getUserIds()) { //loop over original user list
+    for (String userId : favor.getUserIds()) { // loop over original user list
       if (!userId.equals(currentUserId))
         resultFuture =
             resultFuture.thenCompose(aVoid -> changeUserActiveFavorCount(userId, !isRequested, -1));
@@ -179,7 +180,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   // Upload/download pictures
   @Override
   public CompletableFuture<Void> uploadOrUpdatePicture(Favor favor, Bitmap picture) {
-    CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(picture);
+    CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(Folder.FAVOR, picture);
     return pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
   }
 

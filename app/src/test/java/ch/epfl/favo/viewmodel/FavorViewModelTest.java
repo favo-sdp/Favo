@@ -27,6 +27,7 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
+import ch.epfl.favo.util.IPictureUtil.Folder;
 import ch.epfl.favo.util.PictureUtil;
 
 import static junit.framework.TestCase.assertTrue;
@@ -194,8 +195,11 @@ public class FavorViewModelTest {
 
   @Test
   public void testUploadPicture() {
-    Mockito.doReturn(successfulResult).when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
-    Mockito.when(pictureUtility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
+    Mockito.doReturn(successfulResult)
+        .when(favorRepository)
+        .updateFavorPhoto(any(Favor.class), anyString());
+    Mockito.when(pictureUtility.uploadPicture(any(Folder.class), any(Bitmap.class)))
+        .thenReturn(successfulResult);
     assertTrue(viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap).isDone());
   }
 

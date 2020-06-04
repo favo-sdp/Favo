@@ -8,13 +8,15 @@ import java.util.concurrent.CompletableFuture;
 
 /** This class allows one to communicate with the remote storage to upload and download images */
 public interface IPictureUtil {
+
   /**
-   * Uploads picture to storage.
+   * Uploads picture to storage
    *
-   * @param picture picture to be uploaded
-   * @return a future with the string url
+   * @param folder could be favor chat or profile
+   * @param picture bitmap holding picture
+   * @return future with url
    */
-  CompletableFuture<String> uploadPicture(Bitmap picture);
+  CompletableFuture<String> uploadPicture(Folder folder, Bitmap picture);
 
   /**
    * Deletes a picture from storage
@@ -31,4 +33,24 @@ public interface IPictureUtil {
    * @return picture bitmap
    */
   CompletableFuture<Bitmap> downloadPicture(String pictureUrl);
+
+  String favorFolder = "favor/";
+  String chatFolder = "chat/";
+  String profilePictureFolder = "profile_picture/";
+
+  enum Folder {
+    FAVOR(favorFolder),
+    CHAT(chatFolder),
+    PROFILE_PICTURE(profilePictureFolder);
+
+    private String folder;
+
+    Folder(String folder) {
+      this.folder = folder;
+    }
+
+    public String toString() {
+      return this.folder;
+    }
+  }
 }

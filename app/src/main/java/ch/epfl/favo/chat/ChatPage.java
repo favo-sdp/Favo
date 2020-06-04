@@ -48,6 +48,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
+import ch.epfl.favo.util.IPictureUtil.Folder;
 import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -339,7 +340,7 @@ public class ChatPage extends Fragment {
             ImageDecoder.decodeBitmap(
                 ImageDecoder.createSource(requireActivity().getContentResolver(), imagePath));
         pictureUtil
-            .uploadPicture(selectedImage)
+            .uploadPicture(Folder.CHAT, selectedImage)
             .thenAccept(
                 remotePath -> {
                   Message imageMessage = generateMessageFromView(IMAGE_MESSAGE_TYPE);

@@ -22,6 +22,7 @@ public class TestConstants {
   public static final Uri PHOTO_URI = Uri.parse("http://example.com/profile.png");
   public static final double NOTIFICATION_RADIUS = 1.0;
   public static final boolean DEFAULT_NOTIFICATION_PREFERENCE = false;
+  public static final String PROFILE_PICTURE_ID = "APA2DQS78A7SI3Q790SZAL3FW";
 
   // Favor related test constants
   public static final String TITLE = "fake test title";
