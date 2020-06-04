@@ -223,7 +223,7 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    onView(withId(R.id.edit_profile_button)).perform(ViewActions.scrollTo()).perform(click());
     // give time to display the dialog
     getInstrumentation().waitForIdleSync();
     onView(withId(R.id.change_name_dialog_user_input)).check(matches(isDisplayed()));
@@ -231,7 +231,9 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(android.R.id.button1)).perform(click());
-    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+    onView(withId(R.id.edit_profile_button))
+        .perform(ViewActions.scrollTo())
+        .check(matches(isDisplayed()));
   }
 
   @Test
@@ -241,7 +243,7 @@ public class UserAccountPageTest {
     mActivityRule.launchActivity(null);
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    onView(withId(R.id.edit_profile_button)).perform(ViewActions.scrollTo()).perform(click());
     // give time to display the dialog
     getInstrumentation().waitForIdleSync();
 
@@ -270,7 +272,7 @@ public class UserAccountPageTest {
     UserAccountPage currentFragment = launchFragment();
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    onView(withId(R.id.edit_profile_button)).perform(ViewActions.scrollTo()).perform(click());
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Intent intent = new Intent();
@@ -288,7 +290,7 @@ public class UserAccountPageTest {
     UserAccountPage currentFragment = launchFragment();
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    onView(withId(R.id.edit_profile_button)).perform(ViewActions.scrollTo()).perform(click());
     getInstrumentation().waitForIdleSync();
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
@@ -322,7 +324,7 @@ public class UserAccountPageTest {
     UserAccountPage currentFragment = launchFragment();
     navigateToAccountTab();
     getInstrumentation().waitForIdleSync();
-    onView(withId(R.id.edit_profile)).perform(ViewActions.scrollTo()).perform(click());
+    onView(withId(R.id.edit_profile_button)).perform(ViewActions.scrollTo()).perform(click());
     // give time to display the dialog
     getInstrumentation().waitForIdleSync();
 

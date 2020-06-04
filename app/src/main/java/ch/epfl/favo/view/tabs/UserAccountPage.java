@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class UserAccountPage extends Fragment {
   private View view;
   private ImageView mImageView;
   private User currentUser;
+  private String TAG = "UserAccountPage";
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -81,7 +83,7 @@ public class UserAccountPage extends Fragment {
   }
 
   private void setupEditProfileDialog(LayoutInflater inflater, User user) {
-    Button editProfileButton = view.findViewById(R.id.edit_profile);
+    Button editProfileButton = view.findViewById(R.id.edit_profile_button);
     TextView displayNameView = view.findViewById(R.id.user_name);
     ImageView profilePictureView = view.findViewById(R.id.user_profile_picture);
 
@@ -283,6 +285,7 @@ public class UserAccountPage extends Fragment {
       }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
+      Log.e(TAG, task.getException().toString());
       CommonTools.showSnackbar(getView(), getString(errorMessage));
     }
   }

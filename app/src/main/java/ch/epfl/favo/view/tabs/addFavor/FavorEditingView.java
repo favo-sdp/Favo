@@ -9,7 +9,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -353,7 +354,6 @@ public class FavorEditingView extends Fragment {
           .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
-
       if (takePictureIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
         startActivityForResult(takePictureIntent, USE_CAMERA_REQUEST);
       }
@@ -363,7 +363,15 @@ public class FavorEditingView extends Fragment {
   private boolean isCameraAvailable() {
     boolean hasCamera =
         requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    int numberOfCameras = Camera.getNumberOfCameras();
+    int numberOfCameras = 0;
+    try {
+      numberOfCameras =
+          ((CameraManager) requireActivity().getSystemService(getContext().CAMERA_SERVICE))
+              .getCameraIdList()
+              .length;
+    } catch (CameraAccessException e) {
+      Log.e(TAG, "", e);
+    }
     return (hasCamera && numberOfCameras != 0);
   }
   /**

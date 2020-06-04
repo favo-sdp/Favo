@@ -15,7 +15,6 @@ import com.google.firebase.auth.FirebaseUser;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 class FavorViewHolder extends RecyclerView.ViewHolder {
@@ -49,12 +48,15 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
       mRequesterView.setText(
           context.getString(R.string.user_name_item_placeholder, currentUser.getDisplayName()));
     } else {
-      UserUtil.getSingleInstance()
+      DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
           .thenAccept(
-              user ->
+              user -> {
                   mRequesterView.setText(
-                      context.getString(R.string.user_name_item_placeholder, user.getName())));
+                      context.getString(R.string.user_name_item_placeholder, user.getName()));
+        if (user.getProfilePictureUrl() != null)
+          Glide.with(context).load(user.getProfilePictureUrl()).into(mRequesterIconView);
+              });
     }
   }
 }

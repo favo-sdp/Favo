@@ -16,7 +16,6 @@ import java.util.stream.IntStream;
 import ch.epfl.favo.database.DatabaseWrapper;
 import ch.epfl.favo.database.Document;
 import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.util.DependencyFactory;
 
 /**
  * Class contains all the information relevant to a single favor. Relevant info includes tile,
@@ -75,7 +74,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
     this.description = description;
-    this.userIds = Arrays.asList(requesterId);
+    this.userIds = new ArrayList<>(Arrays.asList(requesterId));
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
@@ -109,7 +108,8 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.isArchived = other.isArchived;
     this.pictureUrl = other.getPictureUrl();
     this.postedTime = other.getPostedTime();
-    this.userIds = other.getUserIds();
+    this.notifId = other.notifId;
+    this.userIds = new ArrayList<>(other.getUserIds());
   }
 
   // Constructor to make statusId int conversion implicit
@@ -133,7 +133,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.id = (String) map.get(ID);
     this.title = (String) map.get(TITLE);
     this.description = (String) map.get(DESCRIPTION);
-    this.userIds = (List<String>) map.get(USER_IDS);
+    this.userIds = new ArrayList<>((List<String>) map.get(USER_IDS));
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
     this.statusId = (int) map.get(STATUS_ID);
@@ -214,21 +214,22 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.reward = reward;
   }
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
   /**
    * structure of userIds: a list with the first position always setting as requester Id, following
    * with potential helpers who commit this favor. When a requester finally decide a accepter, he
    * reset this list with his own Id and accepter's ID *
    */
   public void setAccepterId(String id) {
-    // if argument is "", clear the list of committed/accepted user
-    if (id != null && id.equals("")) {
-      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
-    } else if (userIds != null && !userIds.isEmpty()) {
-      ArrayList<String> arrayList = new ArrayList<>();
-      arrayList.addAll(userIds);
-      arrayList.add(id);
-      userIds = arrayList;
+    if (userIds != null && !userIds.isEmpty()) {
+      userIds.add(id);
     }
+  }
+
+  public void clearAccepterIds() {
+    userIds = new ArrayList<>(Arrays.asList(getRequesterId()));
   }
 
   public Date getPostedTime() {

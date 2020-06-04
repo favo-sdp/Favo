@@ -40,7 +40,6 @@ import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-  private static final String MAP_DESCRIPTION = "Map";
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -52,6 +51,8 @@ public class MainActivityTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
         }
       };
+
+  private static final String MAP_DESCRIPTION = "Map";
 
   @Rule
   public GrantPermissionRule permissionRule =
@@ -241,7 +242,15 @@ public class MainActivityTest {
 
     getInstrumentation().waitForIdleSync();
 
-    onView(allOf(withId(R.id.nav_map), withContentDescription(not(MAP_DESCRIPTION))))
+    onView(
+            allOf(
+                withId(R.id.nav_map),
+                withContentDescription(
+                    not(
+                        mainActivityTestRule
+                            .getActivity()
+                            .getResources()
+                            .getString(R.string.title_map)))))
         .check(matches(isDisplayed()))
         .perform(click());
 

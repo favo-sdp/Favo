@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+
+import com.bumptech.glide.Glide;
 
 import java.util.Objects;
 
@@ -83,5 +86,8 @@ public class UserInfoPage extends Fragment {
         .setText(getString(R.string.likes_format, user.getLikes()));
     ((TextView) view.findViewById(R.id.user_info_dislikes))
         .setText(getString(R.string.dislikes_format, user.getDislikes()));
+    ImageView profilePicture = (ImageView) view.findViewById(R.id.user_info_profile_picture);
+    if (user.getProfilePictureUrl() != null)
+      Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(profilePicture);
   }
 }

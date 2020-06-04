@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -41,6 +42,7 @@ import static androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -53,6 +55,7 @@ import static ch.epfl.favo.TestConstants.EMAIL;
 import static ch.epfl.favo.TestConstants.NAME;
 import static ch.epfl.favo.TestConstants.PHOTO_URI;
 import static ch.epfl.favo.TestConstants.PROVIDER;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 
@@ -71,6 +74,7 @@ public class FavorPublishedViewTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
+          DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
         }
       };
 
@@ -163,8 +167,6 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testOnShareFavorClicked() throws Throwable {
-    // click accept button
-    // Thread.sleep(2000);
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
 
@@ -248,10 +250,12 @@ public class FavorPublishedViewTest {
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(500);
-    //    // check snackbar shows
-    onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.favor_complete_success_msg)));
+    Thread.sleep(300);
+    onView(withText(R.string.negative_feedback))
+        .inRoot(
+            withDecorView(not(is(mainActivityTestRule.getActivity().getWindow().getDecorView()))))
+        .perform(click());
+    getInstrumentation().waitForIdleSync();
     checkCompletedOrAcceptedView(FavorStatus.COMPLETED_ACCEPTER);
   }
 
@@ -267,16 +271,16 @@ public class FavorPublishedViewTest {
         .check(matches(withText(R.string.complete_favor)))
         .perform(click());
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(2000);
+    Thread.sleep(300);
+    onView(withText(R.string.positive_feedback)).perform(click());
     checkCompletedSuccessfullyView();
     // check snackbar shows
     onView(withId(com.google.android.material.R.id.snackbar_text))
-        .check(matches(withText(R.string.favor_complete_success_msg)));
+        .check(matches(withText(R.string.feedback_message)));
   }
 
   @Test
   public void testClickOnRequesterTextNavigateToUserInfoPage_NoUserAccountFound() {
-
     DocumentReference documentReference = Mockito.mock(DocumentReference.class);
     mockDatabaseWrapper.setMockDocumentReference(documentReference);
     UserUtil.getSingleInstance().updateCollectionWrapper((mockDatabaseWrapper));
