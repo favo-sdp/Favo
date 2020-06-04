@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -317,17 +316,18 @@ public class FavorPublishedView extends Fragment {
     textView.setKeyListener(null);
   }
 
-  private void displayUserInfo(String userId){
+  private void displayUserInfo(String userId) {
     DependencyFactory.getCurrentUserRepository().findUser(userId).thenAccept(this::displayUserInfo);
   }
-  private void displayUserInfo(User user){
-    String name = (user.getName() == null || user.getName().equals("")) ? CommonTools.emailToName(user.getEmail()):user.getName();
+
+  private void displayUserInfo(User user) {
+    String name =
+        (user.getName() == null || user.getName().equals(""))
+            ? CommonTools.emailToName(user.getEmail())
+            : user.getName();
     ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
     if (user.getProfilePictureUrl() != null) {
-      Glide.with(this)
-              .load(user.getProfilePictureUrl())
-              .fitCenter()
-              .into(userProfilePicture);
+      Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(userProfilePicture);
     }
   }
 

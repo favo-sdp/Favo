@@ -158,8 +158,7 @@ public class UserUtilTest {
           }
         };
     DependencyFactory.setCurrentCompletableFuture(idFuture);
-    Assert.assertTrue(
-        UserUtil.getSingleInstance().postUserRegistrationToken(getUser()).isDone());
+    Assert.assertTrue(UserUtil.getSingleInstance().postUserRegistrationToken(getUser()).isDone());
     DependencyFactory.setCurrentCompletableFuture(null);
     DependencyFactory.setCurrentFirebaseNotificationInstanceId(null);
   }

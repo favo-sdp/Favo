@@ -43,10 +43,10 @@ public class FavorUtilTest {
   @Before
   public void setUp() {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
-    CompletableFuture successfulTask = CompletableFuture.supplyAsync(()->null);
+    CompletableFuture successfulTask = CompletableFuture.supplyAsync(() -> null);
     Mockito.doReturn(successfulTask)
-            .when(mockDatabaseWrapper)
-            .updateDocument(anyString(), Mockito.anyMap());
+        .when(mockDatabaseWrapper)
+        .updateDocument(anyString(), Mockito.anyMap());
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());

@@ -30,10 +30,13 @@ public class FirebaseMessagingServiceUnitTest {
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     fms = new FirebaseMessagingService();
   }
+
   @After
-  public void tearDown(){
+  public void tearDown() {
     DependencyFactory.setCurrentCollectionWrapper(null);
-    UserUtil.getSingleInstance().updateCollectionWrapper(DependencyFactory.getCurrentCollectionWrapper("users",User.class));
+    UserUtil.getSingleInstance()
+        .updateCollectionWrapper(
+            DependencyFactory.getCurrentCollectionWrapper("users", User.class));
   }
 
   @Test

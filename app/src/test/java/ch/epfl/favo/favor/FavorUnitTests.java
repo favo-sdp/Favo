@@ -2,7 +2,6 @@ package ch.epfl.favo.favor;
 
 import android.location.Location;
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +10,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,57 +80,73 @@ public class FavorUnitTests {
     Favor newFavor = new Favor(favor);
     assertTrue(favor.contentEquals(newFavor));
     newFavor.setAccepterId("otherId");
-    assertNotEquals(favor,newFavor);
+    assertNotEquals(favor, newFavor);
   }
+
   @Test
-  public void testParcelConstructor(){
+  public void testParcelConstructor() {
     Parcel parcelFavor = Mockito.mock(Parcel.class);
     Mockito.doReturn(TestConstants.TITLE).when(parcelFavor).readString();
-    Mockito.doAnswer(new Answer(){
-      private int count=0;
-      @Override
-      public Object answer(InvocationOnMock invocation) throws Throwable {
-        if (count++==0)
-          return TestConstants.TITLE;
-        else return TestConstants.DESCRIPTION;
-      }
-    }).when(parcelFavor).readString();
-    Mockito.doReturn(TestConstants.LOCATION).when(parcelFavor).readParcelable(Location.class.getClassLoader());
-    Mockito.doReturn(TestConstants.USER_IDS).when(parcelFavor).readArrayList(String.class.getClassLoader());
+    Mockito.doAnswer(
+            new Answer() {
+              private int count = 0;
+
+              @Override
+              public Object answer(InvocationOnMock invocation) throws Throwable {
+                if (count++ == 0) return TestConstants.TITLE;
+                else return TestConstants.DESCRIPTION;
+              }
+            })
+        .when(parcelFavor)
+        .readString();
+    Mockito.doReturn(TestConstants.LOCATION)
+        .when(parcelFavor)
+        .readParcelable(Location.class.getClassLoader());
+    Mockito.doReturn(TestConstants.USER_IDS)
+        .when(parcelFavor)
+        .readArrayList(String.class.getClassLoader());
     Mockito.doReturn(0).when(parcelFavor).readInt();
-    Favor expectedFavor = new Favor(TestConstants.TITLE,TestConstants.DESCRIPTION,TestConstants.REQUESTER_ID,TestConstants.LOCATION,0,0,null);
+    Favor expectedFavor =
+        new Favor(
+            TestConstants.TITLE,
+            TestConstants.DESCRIPTION,
+            TestConstants.REQUESTER_ID,
+            TestConstants.LOCATION,
+            0,
+            0,
+            null);
     expectedFavor.setAccepterId(TestConstants.ACCEPTER_ID);
     Favor obtainedFavor = new Favor(parcelFavor);
-    Assert.assertEquals(expectedFavor.getTitle(),obtainedFavor.getTitle());
-    Assert.assertEquals(expectedFavor.getDescription(),obtainedFavor.getDescription());
-    Assert.assertEquals(expectedFavor.getLocation(),obtainedFavor.getLocation());
-    Assert.assertEquals(expectedFavor.getUserIds(),obtainedFavor.getUserIds());
-    Assert.assertEquals(expectedFavor.getStatusId(),obtainedFavor.getStatusId());
+    Assert.assertEquals(expectedFavor.getTitle(), obtainedFavor.getTitle());
+    Assert.assertEquals(expectedFavor.getDescription(), obtainedFavor.getDescription());
+    Assert.assertEquals(expectedFavor.getLocation(), obtainedFavor.getLocation());
+    Assert.assertEquals(expectedFavor.getUserIds(), obtainedFavor.getUserIds());
+    Assert.assertEquals(expectedFavor.getStatusId(), obtainedFavor.getStatusId());
   }
+
   @Test
-  public void testWriteToParcel(){
+  public void testWriteToParcel() {
     Favor favor = FakeItemFactory.getFavorWithUrl();
-    favor.setAccepterId(TestConstants.ACCEPTER_ID);//now user ids contain requester and accepter
+    favor.setAccepterId(TestConstants.ACCEPTER_ID); // now user ids contain requester and accepter
     Parcel parcelDestination = Mockito.mock(Parcel.class);
     List<String> userIds = TestConstants.USER_IDS;
     ArgumentCaptor<List<String>> userIdArgCaptor = ArgumentCaptor.forClass(userIds.getClass());
-    favor.writeToParcel(parcelDestination,0);
+    favor.writeToParcel(parcelDestination, 0);
     Mockito.verify(parcelDestination).writeList(userIdArgCaptor.capture());
 
-    Assert.assertEquals(TestConstants.USER_IDS,userIdArgCaptor.getValue());
-
+    Assert.assertEquals(TestConstants.USER_IDS, userIdArgCaptor.getValue());
   }
+
   @Test
-  public void testClearAccepterIdsKeepsRequesterAndCanBeAcceptedAgain(){
+  public void testClearAccepterIdsKeepsRequesterAndCanBeAcceptedAgain() {
     Favor favor = FakeItemFactory.getFavorWithUrl();
     favor.setAccepterId("accepter1");
     favor.setAccepterId("accepter2");
-    assertEquals(3,favor.getUserIds().size());
+    assertEquals(3, favor.getUserIds().size());
     favor.clearAccepterIds();
-    assertEquals(1,favor.getUserIds().size());
+    assertEquals(1, favor.getUserIds().size());
     favor.setAccepterId("accepter3");
-    assertEquals("accepter3",favor.getAccepterId());
-
+    assertEquals("accepter3", favor.getAccepterId());
   }
 
   @Test

@@ -142,8 +142,7 @@ public class MapPage extends Fragment
 
     String radiusSetting =
         CacheUtil.getInstance()
-            .getValueFromCacheStr(
-                requireContext(), getString(R.string.radius_map_setting_key));
+            .getValueFromCacheStr(requireContext(), getString(R.string.radius_map_setting_key));
     radiusThreshold =
         (!radiusSetting.isEmpty())
             ? Integer.parseInt(radiusSetting)

@@ -13,7 +13,6 @@
     <string name="no_text">No</string>
 
     <!-- Auth UI - Signed in -->
-    <string name="no_email_text">No email</string>
     <string name="delete_account_alert">Are you sure you want to delete this account?</string>
 
     <string name="sign_in_failed">Sign in failed</string>
@@ -57,7 +56,6 @@
     <string name="favo_coins_item_placeholder">%.1f</string>
     <string name="user_name_item_placeholder">%s</string>
 
-    <string name="tab2_description">2</string>
     <string name="share">Share</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
@@ -81,7 +79,6 @@
     <string name="favor_no_nearby_favor">There are no favors around you</string>
     <string name="list_toggle">List</string>
     <string name="map_toggle">Map</string>
-    <string name="num_coins">%d coins</string>
 
     <!--Favor Published View -->
     <string name="accept_favor">Accept</string>
@@ -115,7 +112,6 @@
     <string name="help_header">Help</string>
 
     <!-- Account Preferences -->
-    <string name="username_title">Username</string>
     <string name="name_change_dialog_positive">SAVE</string>
     <string name="name_change_dialog_negative">CANCEL</string>
 
@@ -165,7 +161,6 @@
     <string name="committed_helpers">Potential helpers"</string>
     <string name="cancel_commit">Cancel commit</string>
     <string name="commit_favor">Commit</string>
-    <string name="no_internet">"An error occurred. Check your internet connection."</string>
 
     <string name="title_map">Nearby Favors</string>
     <string name="title_favors">My Favors</string>
