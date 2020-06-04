@@ -116,7 +116,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             true,
             change) // if user can request favor then post it in the favor collection
         .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor))
-        .thenCompose((aVoid) -> UserUtil.getSingleInstance().updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
+        .thenCompose((aVoid) -> getUserRepository().updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
@@ -128,7 +128,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
 
     // deposit FavoCoins back into requesters account
-    UserUtil.getSingleInstance().updateCoinBalance(favor.getUserIds().get(0), favor.getReward());
+    getUserRepository().updateCoinBalance(favor.getUserIds().get(0), favor.getReward());
 
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
     for (int i = 1; i < favor.getUserIds().size(); i++) {
@@ -146,7 +146,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
         || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt())) {
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
-      UserUtil.getSingleInstance().updateCoinBalance(tempFavor.getUserIds().get(1), tempFavor.getReward());
+      getUserRepository().updateCoinBalance(tempFavor.getUserIds().get(1), tempFavor.getReward());
     } else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture
