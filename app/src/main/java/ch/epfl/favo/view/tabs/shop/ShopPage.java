@@ -1,9 +1,9 @@
 package ch.epfl.favo.view.tabs.shop;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -31,6 +30,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
+@SuppressLint("NewApi")
 public class ShopPage extends Fragment {
 
   private static final List<ShopItem> COINS =
@@ -67,7 +67,6 @@ public class ShopPage extends Fragment {
     }
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -147,7 +146,7 @@ public class ShopPage extends Fragment {
 
         view.setOnClickListener(
             v -> {
-              // do something, temporary for now
+              // TODO: do something, temporary for now
               CommonTools.showSnackbar(getView(), getString(R.string.shop_pay_message));
             });
 

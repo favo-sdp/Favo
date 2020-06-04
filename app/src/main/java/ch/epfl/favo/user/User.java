@@ -139,7 +139,6 @@ public class User implements Document {
         (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;
   }
 
-  // Getters
   @Override
   public String getId() {
     return id;

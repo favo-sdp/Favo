@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs.favorList;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -85,7 +83,6 @@ public class MyFavorsPage extends Fragment {
     setHasOptionsMenu(true);
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   @Override
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -199,7 +196,6 @@ public class MyFavorsPage extends Fragment {
         return new FavorViewHolder(view);
       }
 
-      @RequiresApi(api = Build.VERSION_CODES.N)
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
