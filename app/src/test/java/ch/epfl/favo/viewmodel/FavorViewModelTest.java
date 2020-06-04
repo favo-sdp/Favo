@@ -225,7 +225,7 @@ public class FavorViewModelTest {
         .changeActiveFavorCount(fakeFavor.getUserIds().get(2), false, -1);
     DependencyFactory.setCurrentUserRepository(userRepository);
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isCompletedExceptionally());
-    fakeFavor.setAccepterId(null);
+    fakeFavor.clearAccepterIds();
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isDone());
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, false).isDone());
   }

@@ -119,20 +119,18 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
                 getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, 1));
   }
 
-  public CompletableFuture<Void> cancelFavor(Favor favor, boolean isRequested) {
+  public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
     Favor tempFavor = new Favor(favor);
     FavorStatus cancelledStatus = isRequested ? CANCELLED_REQUESTER : CANCELLED_ACCEPTER;
     tempFavor.setStatusIdToInt(cancelledStatus);
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
-    if (tempFavor.getStatusId() == REQUESTED.toInt()) tempFavor.setAccepterId("");
+    if (tempFavor.getStatusId() == REQUESTED.toInt()) tempFavor.clearAccepterIds();
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    for (int i = 1; i < tempFavor.getUserIds().size(); i++) {
-      int commitUser = i;
-      resultFuture =
-          resultFuture.thenCompose(
-              aVoid ->
-                  changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
+    for (String userId : favor.getUserIds()) { //loop over original user list
+      if (!userId.equals(currentUserId))
+        resultFuture =
+            resultFuture.thenCompose(aVoid -> changeUserActiveFavorCount(userId, !isRequested, -1));
     }
 
     return resultFuture;

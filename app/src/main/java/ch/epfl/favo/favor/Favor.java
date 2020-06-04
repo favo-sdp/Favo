@@ -76,7 +76,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.id = DatabaseWrapper.generateRandomId();
     this.title = title;
     this.description = description;
-    this.userIds = Arrays.asList(requesterId);
+    this.userIds = new ArrayList<>(Arrays.asList(requesterId));
     this.location = location;
     this.postedTime = new Date();
     this.statusId = statusId;
@@ -134,7 +134,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.id = (String) map.get(ID);
     this.title = (String) map.get(TITLE);
     this.description = (String) map.get(DESCRIPTION);
-    this.userIds = (List<String>) map.get(USER_IDS);
+    this.userIds = new ArrayList<>((List<String>) map.get(USER_IDS));
     this.location = (FavoLocation) map.get(LOCATION);
     this.postedTime = (Date) map.get(POSTED_TIME);
     this.statusId = (int) map.get(STATUS_ID);
@@ -221,15 +221,13 @@ public class Favor implements Parcelable, Document, Cloneable {
    * reset this list with his own Id and accepter's ID *
    */
   public void setAccepterId(String id) {
-    // if argument is "", clear the list of committed/accepted user
-    if (id != null && id.equals("")) {
-      userIds = Arrays.asList(DependencyFactory.getCurrentFirebaseUser().getUid());
-    } else if (userIds != null && !userIds.isEmpty()) {
-      ArrayList<String> arrayList = new ArrayList<>();
-      arrayList.addAll(userIds);
-      arrayList.add(id);
-      userIds = arrayList;
+    if (userIds != null && !userIds.isEmpty()) {
+      userIds.add(id);
     }
+  }
+
+  public void clearAccepterIds() {
+    userIds = new ArrayList<>(Arrays.asList(getRequesterId()));
   }
 
   public Date getPostedTime() {

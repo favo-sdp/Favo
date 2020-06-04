@@ -27,6 +27,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
@@ -66,6 +67,7 @@ public class MyFavorsPageTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+          FavorUtil.getSingleInstance().updateCollectionWrapper(DependencyFactory.getCurrentCollectionWrapper(TestConstants.TEST_COLLECTION,Favor.class));
         }
       };
 
@@ -76,6 +78,8 @@ public class MyFavorsPageTest {
   @Before
   public void setUp() {
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
+    DependencyFactory.setCurrentViewModelClass(null);
+    FavorUtil.getSingleInstance().updateCollectionWrapper(DependencyFactory.getCurrentCollectionWrapper("favors",Favor.class));
   }
 
   @After

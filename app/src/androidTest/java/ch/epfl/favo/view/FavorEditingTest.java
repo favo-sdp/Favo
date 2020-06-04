@@ -374,7 +374,7 @@ public class FavorEditingTest {
 
     // someone uncommit the old favor
     Favor favor2 = new Favor(fakeViewModel.getObservedFavor().getValue());
-    favor2.setAccepterId("");
+    favor2.clearAccepterIds();
     runOnUiThread(() -> fakeViewModel.setObservedFavorResult(favor2));
     Thread.sleep(1000);
     getInstrumentation().waitForIdleSync();

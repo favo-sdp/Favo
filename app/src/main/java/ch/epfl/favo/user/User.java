@@ -193,7 +193,7 @@ public class User implements Document {
         return balance;
     }
 
-    Date getBirthDate() {
+    public Date getBirthDate() {
         return birthDate;
     }
 
@@ -201,11 +201,11 @@ public class User implements Document {
         return location;
     }
 
-    int getActiveAcceptingFavors() {
+    public int getActiveAcceptingFavors() {
         return activeAcceptingFavors;
     }
 
-    int getActiveRequestingFavors() {
+    public int getActiveRequestingFavors() {
         return activeRequestingFavors;
     }
 
