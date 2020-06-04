@@ -229,7 +229,6 @@ public class MapPage extends Fragment
     view.findViewById(R.id.toggle).setVisibility(View.GONE);
     ((MainActivity) requireActivity()).hideBottomNavigation();
     lookThroughBtn.setVisibility(View.GONE);
-    requireActivity().findViewById(R.id.hamburger_menu_button).setVisibility(View.GONE);
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
     setupToolbar(intentType);

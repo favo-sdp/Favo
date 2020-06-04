@@ -49,7 +49,7 @@ import static ch.epfl.favo.util.CommonTools.handleException;
 public class FavorPublishedView extends Fragment {
   private static String TAG = "FavorPublishedView";
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
-  private static final String FAOV_DOMAIN = "https://favoapp.page.link</string>";
+  private static final String FAVO_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
   private FavorStatus favorStatus;
   private Favor currentFavor;
@@ -211,7 +211,7 @@ public class FavorPublishedView extends Fragment {
         FirebaseDynamicLinks.getInstance()
             .createDynamicLink()
             .setLink(baseUrl)
-            .setDomainUriPrefix(FAOV_DOMAIN)
+            .setDomainUriPrefix(FAVO_DOMAIN)
             .setAndroidParameters(new DynamicLink.AndroidParameters.Builder(PACKAGE_NAME).build())
             .setSocialMetaTagParameters(
                 new DynamicLink.SocialMetaTagParameters.Builder()
