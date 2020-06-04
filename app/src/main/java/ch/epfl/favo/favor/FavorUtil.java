@@ -50,7 +50,6 @@ public class FavorUtil {
    */
   public CompletableFuture<Void> requestFavor(Favor favor) throws RuntimeException {
     // also deduct the coin balance from the requester
-    UserUtil.getSingleInstance().updateCoinBalance(favor.getUserIds().get(0), -favor.getReward());
     return collection.addDocument(favor);
   }
 

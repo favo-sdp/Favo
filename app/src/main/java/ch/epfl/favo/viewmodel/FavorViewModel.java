@@ -115,7 +115,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             currentUserId,
             true,
             change) // if user can request favor then post it in the favor collection
-        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor));
+        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor))
+        .thenCompose((aVoid) -> UserUtil.getSingleInstance().updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
