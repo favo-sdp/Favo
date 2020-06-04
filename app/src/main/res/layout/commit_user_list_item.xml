@@ -8,13 +8,16 @@
     <LinearLayout
         android:id="@+id/commit_user_list"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/user_profile_picture_commit"
-            android:paddingTop="5dp"
+            android:gravity="start"
+            android:padding="2dp"
             android:layout_width="35dp"
             android:layout_height="35dp"
             app:srcCompat="@drawable/ic_anon_user_48dp" />
@@ -23,17 +26,12 @@
             android:id="@+id/user_name_commit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="username"
+            android:text="User"
             android:maxLines="1"
+            android:padding="5dp"
             android:textColor="@android:color/holo_green_dark"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
