@@ -17,6 +17,7 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 import static org.junit.Assert.assertEquals;
@@ -31,12 +32,25 @@ import static org.mockito.ArgumentMatchers.anyString;
 /** Unit tests for favor util class */
 public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
+  private UserUtil mockUserUtil;
+  private CompletableFuture<Void> successfulFuture =
+          new CompletableFuture<Void>() {
+            {
+              complete(null);
+            }
+          };
 
   @Before
   public void setUp() {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+    DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
+
+    mockUserUtil = Mockito.mock(UserUtil.class);
+    Mockito.doReturn(successfulFuture)
+            .when(mockUserUtil)
+            .updateCoinBalance(anyString(), anyDouble());
   }
 
   @After

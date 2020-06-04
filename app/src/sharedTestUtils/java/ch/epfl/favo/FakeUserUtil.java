@@ -81,7 +81,7 @@ public class FakeUserUtil implements IUserUtil {
   }
 
   @Override
-  public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
+  public CompletableFuture updateCoinBalance(String userId, double reward) {
     return defaultResult();
   }
 
