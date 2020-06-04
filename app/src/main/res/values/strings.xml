@@ -18,6 +18,7 @@
 
     <string name="sign_in_failed">Sign in failed</string>
     <string name="sign_out">Sign out</string>
+    <string name="edit_profile">Edit profile</string>
     <string name="delete_account_label">Delete account</string>
 
     <string name="sign_out_failed">Sign out failed</string>
@@ -114,6 +115,8 @@
 
     <!-- Account Preferences -->
     <string name="username_title">Username</string>
+    <string name="name_change_dialog_positive">SAVE</string>
+    <string name="name_change_dialog_negative">CANCEL</string>
 
     <!-- Notification Preferences -->
     <string name="notification_title">Enable nearby favor notifications</string>
@@ -183,6 +186,8 @@
     <string name="feedback_description">Rate your experience with this user to help others</string>
     <string name="positive_feedback">All good!</string>
     <string name="negative_feedback">Bad experience</string>
+    <string name="change_profile_picture_title">Please upload or capture a picture</string>
+    <string name="change_display_name_title">Change display name</string>
 
 
     <!-- Shop Page -->

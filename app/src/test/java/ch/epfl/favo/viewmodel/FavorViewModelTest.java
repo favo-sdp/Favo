@@ -28,6 +28,7 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.PictureUtil;
+import ch.epfl.favo.util.IPictureUtil.Folder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -193,7 +194,7 @@ public class FavorViewModelTest {
   @Test
   public void testUploadPicture() {
     Mockito.doNothing().when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
-    Mockito.when(pictureUtility.uploadPicture(any(Bitmap.class))).thenReturn(successfulResult);
+    Mockito.when(pictureUtility.uploadPicture(any(Folder.class), any(Bitmap.class))).thenReturn(successfulResult);
     viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap);
   }
 
