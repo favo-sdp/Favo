@@ -86,7 +86,7 @@ public class UserInfoPage extends Fragment {
         .setText(getString(R.string.likes_format, user.getLikes()));
     ((TextView) view.findViewById(R.id.user_info_dislikes))
         .setText(getString(R.string.dislikes_format, user.getDislikes()));
-    ImageView profilePicture = (ImageView) view.findViewById(R.id.user_info_profile_picture);
+    ImageView profilePicture = view.findViewById(R.id.user_info_profile_picture);
     if (user.getProfilePictureUrl() != null)
       Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(profilePicture);
   }

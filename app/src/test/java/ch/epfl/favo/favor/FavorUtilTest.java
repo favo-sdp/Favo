@@ -34,19 +34,19 @@ public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
   private UserUtil mockUserUtil;
   private CompletableFuture<Void> successfulFuture =
-          new CompletableFuture<Void>() {
-            {
-              complete(null);
-            }
-          };
+      new CompletableFuture<Void>() {
+        {
+          complete(null);
+        }
+      };
 
   @Before
   public void setUp() {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
-    CompletableFuture successfulTask = CompletableFuture.supplyAsync(()->null);
+    CompletableFuture successfulTask = CompletableFuture.supplyAsync(() -> null);
     Mockito.doReturn(successfulTask)
-            .when(mockDatabaseWrapper)
-            .updateDocument(anyString(), Mockito.anyMap());
+        .when(mockDatabaseWrapper)
+        .updateDocument(anyString(), Mockito.anyMap());
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
@@ -54,8 +54,8 @@ public class FavorUtilTest {
 
     mockUserUtil = Mockito.mock(UserUtil.class);
     Mockito.doReturn(successfulFuture)
-            .when(mockUserUtil)
-            .updateCoinBalance(anyString(), anyDouble());
+        .when(mockUserUtil)
+        .updateCoinBalance(anyString(), anyDouble());
   }
 
   @After
@@ -70,8 +70,8 @@ public class FavorUtilTest {
 
     mockUserUtil = Mockito.mock(UserUtil.class);
     Mockito.doReturn(successfulFuture)
-            .when(mockUserUtil)
-            .updateCoinBalance(anyString(), anyDouble());
+        .when(mockUserUtil)
+        .updateCoinBalance(anyString(), anyDouble());
 
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().requestFavor(favor);

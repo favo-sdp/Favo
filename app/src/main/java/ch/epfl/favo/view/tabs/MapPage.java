@@ -89,7 +89,7 @@ public class MapPage extends Fragment
   private double radiusThreshold;
 
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-  private int defaultZoomLevel = 16;
+  private int defaultZoomLevel;
   private ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
@@ -120,7 +120,7 @@ public class MapPage extends Fragment
     offlineBtn.setOnClickListener(this::onOfflineMapClick);
 
     if (DependencyFactory.isOfflineMode(requireContext())) offlineBtn.setVisibility(View.VISIBLE);
-    else offlineBtn.setVisibility(View.INVISIBLE);
+    else offlineBtn.setVisibility(View.GONE);
     favorViewModel =
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
@@ -142,8 +142,7 @@ public class MapPage extends Fragment
 
     String radiusSetting =
         CacheUtil.getInstance()
-            .getValueFromCacheStr(
-                requireContext(), getString(R.string.radius_notifications_setting_key));
+            .getValueFromCacheStr(requireContext(), getString(R.string.radius_map_setting_key));
     radiusThreshold =
         (!radiusSetting.isEmpty())
             ? Integer.parseInt(radiusSetting)
@@ -227,8 +226,11 @@ public class MapPage extends Fragment
 
   private void setLimitedView() {
     view.findViewById(R.id.toggle).setVisibility(View.GONE);
+    view.findViewById(R.id.offline_map_button).setVisibility(View.GONE);
+    view.findViewById(R.id.look_through_btn).setVisibility(View.GONE);
+
     ((MainActivity) requireActivity()).hideBottomNavigation();
-    lookThroughBtn.setVisibility(View.GONE);
+
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
     setupToolbar(intentType);
@@ -392,6 +394,10 @@ public class MapPage extends Fragment
                 .navigate(R.id.action_nav_map_to_favorPublishedView_via_RequestView, favorBundle);
           }
         });
+
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+    }
   }
 
   public IFavorViewModel getViewModel() {

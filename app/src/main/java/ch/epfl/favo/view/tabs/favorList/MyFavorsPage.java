@@ -18,9 +18,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -37,7 +37,6 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
@@ -48,7 +47,6 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
  */
 public class MyFavorsPage extends Fragment {
 
-  private View rootView;
   private TextView tipTextView;
   private SearchView searchView;
   private RadioGroup radioGroup;
@@ -70,7 +68,6 @@ public class MyFavorsPage extends Fragment {
           .build();
 
   private FirestorePagingAdapter<Favor, FavorViewHolder> adapter;
-  private IFavorViewModel favorViewModel;
 
   private FirestorePagingOptions<Favor> activeFavorsOptions;
   private FirestorePagingOptions<Favor> archiveFavorsOptions;
@@ -93,7 +90,7 @@ public class MyFavorsPage extends Fragment {
   public View onCreateView(
       LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-    rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_favorpage, container, false);
 
     // initialize fields
     tipTextView = rootView.findViewById(R.id.tip);
@@ -102,6 +99,8 @@ public class MyFavorsPage extends Fragment {
     archivedToggle = rootView.findViewById(R.id.archived_toggle);
 
     mRecycler = rootView.findViewById(R.id.paging_recycler);
+    mRecycler.addItemDecoration(
+        new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
     Query baseQuery =
@@ -115,11 +114,6 @@ public class MyFavorsPage extends Fragment {
         createFirestorePagingOptions(listQuery.whereEqualTo(Favor.IS_ARCHIVED, false));
     archiveFavorsOptions =
         createFirestorePagingOptions(listQuery.whereEqualTo(Favor.IS_ARCHIVED, true));
-
-    favorViewModel =
-        (IFavorViewModel)
-            new ViewModelProvider(requireActivity())
-                .get(DependencyFactory.getCurrentViewModelClass());
 
     // setup methods
     setupSwitchButtons();
@@ -209,7 +203,7 @@ public class MyFavorsPage extends Fragment {
       @Override
       protected void onBindViewHolder(
           @NonNull FavorViewHolder holder, int position, @NonNull Favor model) {
-        holder.bind(requireContext(), model, rootView, favorViewModel);
+        holder.bind(requireContext(), model);
       }
 
       @Override

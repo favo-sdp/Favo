@@ -1,7 +1,6 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -285,14 +284,19 @@ public class FavorPublishedView extends Fragment {
 
   private void displayFromFavor(View rootView, Favor favor) {
 
-    String timeStr = CommonTools.convertTime(favor.getPostedTime());
+    String timeStr =
+        getString(R.string.posted_placeholder, CommonTools.convertTime(favor.getPostedTime()));
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
-    String favoCoinStr = String.format(getString(R.string.favor_worth), favor.getReward());
+    String favoCoinStr = getString(R.string.favor_worth, favor.getReward());
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
+
+    if (descriptionStr.equals("")) {
+      rootView.findViewById(R.id.description).setVisibility(View.GONE);
+    }
 
     isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getUid());
     favorStatus = verifyFavorHasBeenAccepted(favor);
@@ -312,17 +316,18 @@ public class FavorPublishedView extends Fragment {
     textView.setKeyListener(null);
   }
 
-  private void displayUserInfo(String userId){
+  private void displayUserInfo(String userId) {
     DependencyFactory.getCurrentUserRepository().findUser(userId).thenAccept(this::displayUserInfo);
   }
-  private void displayUserInfo(User user){
-    String name = (user.getName() == null || user.getName().equals("")) ? CommonTools.emailToName(user.getEmail()):user.getName();
+
+  private void displayUserInfo(User user) {
+    String name =
+        (user.getName() == null || user.getName().equals(""))
+            ? CommonTools.emailToName(user.getEmail())
+            : user.getName();
     ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
     if (user.getProfilePictureUrl() != null) {
-      Glide.with(this)
-              .load(user.getProfilePictureUrl())
-              .fitCenter()
-              .into(userProfilePicture);
+      Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(userProfilePicture);
     }
   }
 

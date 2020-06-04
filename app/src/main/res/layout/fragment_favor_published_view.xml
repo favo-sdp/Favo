@@ -36,6 +36,8 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:layout_margin="10dp"
                         android:orientation="horizontal">
 
                         <ImageView
@@ -43,7 +45,7 @@
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:gravity="start"
-                            android:padding="5dp"
+                            android:padding="8dp"
                             app:srcCompat="@drawable/ic_anon_user_48dp" />
 
                         <TextView
@@ -51,10 +53,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:maxLines="1"
-                            android:padding="5dp"
+                            android:padding="8dp"
                             android:text="User"
                             android:textColor="@android:color/holo_green_dark"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -78,22 +80,11 @@
                             android:layout_marginBottom="5dp"
                             android:ems="10"
                             android:focusable="true"
-                            android:gravity="start"
                             android:padding="10dp"
+                            android:textAlignment="center"
                             android:textIsSelectable="true"
-                            android:textSize="22sp"
+                            android:textSize="24sp"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/description"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="@dimen/margin_accept_view"
-                            android:ems="10"
-                            android:gravity="start"
-                            android:padding="10dp"
-                            android:textIsSelectable="true"
-                            android:textSize="21sp" />
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -110,7 +101,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:orientation="vertical"
-                        android:paddingStart="20dp">
+                        android:padding="10dp">
 
                         <ImageView
                             android:id="@+id/picture"
@@ -146,78 +137,47 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/description"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingStart="10dp"
-                            android:paddingTop="10dp">
+                            android:drawableStart="@drawable/ic_info_green_24dp"
+                            android:drawablePadding="10dp"
+                            android:gravity="center"
+                            android:textIsSelectable="true"
+                            android:layout_margin="10dp"
+                            android:textSize="18sp" />
 
-                            <ImageView
-                                android:id="@+id/coin"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="start"
-                                android:scaleType="fitEnd"
-                                app:srcCompat="@drawable/favo_coin_icon" />
-
-                            <TextView
-                                android:id="@+id/value"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:hint="worth 20 coins"
-                                android:paddingStart="5dp"
-                                android:textSize="16sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingStart="10dp"
-                            android:paddingTop="10dp">
-
-                            <ImageView
-                                android:id="@+id/clock"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="start"
-                                android:scaleType="fitEnd"
-                                app:srcCompat="@drawable/ic_access_time_black_24dp" />
-
-                            <TextView
-                                android:id="@+id/time"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-
-                                android:hint="Posted at: 2020/05/02 03:20"
-                                android:textSize="16sp" />
-                        </LinearLayout>
-
-
-                        <LinearLayout
+                        <TextView
+                            android:id="@+id/value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:paddingStart="10dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp">
+                            android:drawableStart="@drawable/favo_coin_icon"
+                            android:drawablePadding="10dp"
+                            android:gravity="center"
+                            android:layout_margin="10dp"
+                            android:textSize="18sp" />
 
-                            <ImageView
-                                android:id="@+id/marker"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="start"
-                                android:scaleType="fitEnd"
-                                app:srcCompat="@drawable/ic_location_on_24dp" />
+                        <TextView
+                            android:id="@+id/time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_access_time_black_24dp"
+                            android:drawablePadding="10dp"
+                            android:layout_margin="10dp"
+                            android:gravity="center"
+                            android:textSize="18sp" />
 
-                            <TextView
-                                android:id="@+id/location"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Where is it?"
-                                android:textSize="16sp" />
-                        </LinearLayout>
-
+                        <TextView
+                            android:id="@+id/location"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:drawableStart="@drawable/ic_location_on_24dp"
+                            android:drawablePadding="10dp"
+                            android:gravity="center"
+                            android:layout_margin="10dp"
+                            android:text="Click here to see the favor on the map"
+                            android:textSize="18sp" />
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
@@ -235,7 +195,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingStart="10dp">
+                        android:padding="10dp">
 
                         <TextView
                             android:id="@+id/commit_user_tips"
@@ -250,7 +210,8 @@
                             android:layout_height="wrap_content"
                             android:autofillHints="commit users shown here"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="NestedScrolling" />
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>

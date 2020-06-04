@@ -260,7 +260,8 @@ public class ChatPage extends Fragment {
   }
 
   @NonNull
-  private FirestoreRecyclerAdapter<Message, MessageViewHolder> createRecyclerAdapter(FirestoreRecyclerOptions<Message> options) {
+  private FirestoreRecyclerAdapter<Message, MessageViewHolder> createRecyclerAdapter(
+      FirestoreRecyclerOptions<Message> options) {
     return new FirestoreRecyclerAdapter<Message, MessageViewHolder>(options) {
 
       @Override

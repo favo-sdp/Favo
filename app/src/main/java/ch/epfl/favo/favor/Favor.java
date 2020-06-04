@@ -58,7 +58,6 @@ public class Favor implements Parcelable, Document, Cloneable {
   private String pictureUrl;
   private boolean isArchived;
   private double reward;
-  private String notifId; // notification id of the requester
 
   public Favor() {}
 
@@ -109,7 +108,6 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.isArchived = other.isArchived;
     this.pictureUrl = other.getPictureUrl();
     this.postedTime = other.getPostedTime();
-    this.notifId = other.notifId;
     this.userIds = new ArrayList<>(other.getUserIds());
   }
 
@@ -278,14 +276,6 @@ public class Favor implements Parcelable, Document, Cloneable {
 
   public void setPictureUrl(String pictureUrl) {
     this.pictureUrl = pictureUrl;
-  }
-
-  public String getRequesterNotifId() {
-    return this.notifId;
-  }
-
-  public void setRequesterNotifId(String notifId) {
-    this.notifId = notifId;
   }
 
   @Override

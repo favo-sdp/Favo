@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
@@ -28,12 +29,17 @@ public class FirebaseMessagingServiceUnitTest {
   public void setup() {
     UserUtil.getSingleInstance().updateCollectionWrapper((new MockDatabaseWrapper<>()));
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
+    DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
     fms = new FirebaseMessagingService();
   }
+
   @After
-  public void tearDown(){
+  public void tearDown() {
     DependencyFactory.setCurrentCollectionWrapper(null);
-    UserUtil.getSingleInstance().updateCollectionWrapper(DependencyFactory.getCurrentCollectionWrapper("users",User.class));
+    UserUtil.getSingleInstance()
+        .updateCollectionWrapper(
+            DependencyFactory.getCurrentCollectionWrapper("users", User.class));
+    DependencyFactory.setCurrentUserRepository(null);
   }
 
   @Test

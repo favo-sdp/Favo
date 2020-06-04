@@ -2,7 +2,6 @@ package ch.epfl.favo.user;
 
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
-import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -10,7 +9,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -98,10 +96,6 @@ public class UserUtil implements IUserUtil {
     return collection.getDocumentQuery(userId);
   }
 
-
-
-
-
   public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();
@@ -124,10 +118,10 @@ public class UserUtil implements IUserUtil {
   @Override
   public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
     return findUser(userId)
-            .thenCompose(
-                    (user) -> {
-                      user.setBalance(user.getBalance() + reward);
-                      return updateUser(user);
-                    });
+        .thenCompose(
+            (user) -> {
+              user.setBalance(user.getBalance() + reward);
+              return updateUser(user);
+            });
   }
 }

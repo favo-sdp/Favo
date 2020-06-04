@@ -44,11 +44,9 @@ public class PictureUtil implements IPictureUtil {
   public CompletableFuture<String> uploadPicture(Folder folder, Bitmap picture) {
     InputStream is = BitmapConversionUtil.bitmapToJpegInputStream(picture);
 
-    String location = folder.toString() + DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION;
-    StorageReference storageRef =
-        getStorage()
-            .getReference()
-            .child(location);
+    String location =
+        folder.toString() + DatabaseWrapper.generateRandomId() + PICTURE_FILE_EXTENSION;
+    StorageReference storageRef = getStorage().getReference().child(location);
 
     Task<Uri> urlTask =
         storageRef

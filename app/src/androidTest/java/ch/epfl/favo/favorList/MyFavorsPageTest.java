@@ -195,7 +195,6 @@ public class MyFavorsPageTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-
     onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
@@ -227,8 +226,6 @@ public class MyFavorsPageTest {
     // Click on new favor tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-
-
 
     onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
@@ -280,8 +277,6 @@ public class MyFavorsPageTest {
     // Click on new favor tab
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
-
-
 
     onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
     onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));

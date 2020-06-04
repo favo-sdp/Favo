@@ -15,17 +15,14 @@ import ch.epfl.favo.util.CommonTools;
 public class FakeItemFactory {
 
   public static Favor getFavor() {
-    Favor favor =
-        new Favor(
-            TestConstants.FAVOR_ID,
-            TestConstants.TITLE,
-            TestConstants.DESCRIPTION,
-            TestConstants.REQUESTER_ID,
-            TestConstants.LOCATION,
-            TestConstants.FAVOR_STATUS.toInt(),
-            TestConstants.REWARD);
-    favor.setRequesterNotifId(TestConstants.REQUESTER_NOTIFICATION_ID);
-    return favor;
+    return new Favor(
+        TestConstants.FAVOR_ID,
+        TestConstants.TITLE,
+        TestConstants.DESCRIPTION,
+        TestConstants.REQUESTER_ID,
+        TestConstants.LOCATION,
+        TestConstants.FAVOR_STATUS.toInt(),
+        TestConstants.REWARD);
   }
 
   public static Favor getFavorWithUrl() {

@@ -1,11 +1,22 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/messages_header">
+    <PreferenceCategory app:title="@string/map_header">
 
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/username_title"
+        <ListPreference
+            app:defaultValue="@string/default_radius"
+            app:entries="@array/notification_radius"
+            app:entryValues="@array/notification_radius"
+            app:key="@string/radius_map_setting_key"
+            app:title="@string/map_radius_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="@string/map_style_default_value"
+            app:entries="@array/map_style"
+            app:entryValues="@array/map_style_idx"
+            app:key="@string/map_style_key"
+            app:title="@string/map_style_title"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -34,16 +45,6 @@
             app:key="@string/chat_notifications_setting_key"
             app:summary="@string/notification_chat_summary"
             app:title="@string/notification_chat_title" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="Display">
-        <ListPreference
-            app:defaultValue="@string/map_style_default_value"
-            app:entries="@array/map_style"
-            app:entryValues="@array/map_style_idx"
-            app:key="@string/map_style_key"
-            app:title="@string/map_style_title"
-            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/help_header">
