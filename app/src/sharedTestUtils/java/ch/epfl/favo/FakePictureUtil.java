@@ -23,7 +23,7 @@ public class FakePictureUtil implements IPictureUtil {
   }
 
   @Override
-  public CompletableFuture<String> uploadPicture(Bitmap picture) {
+  public CompletableFuture<String> uploadPicture(Folder folder, Bitmap picture) {
     if (throwsError) return failedResult;
     return CompletableFuture.supplyAsync(() -> "testUrl");
   }
