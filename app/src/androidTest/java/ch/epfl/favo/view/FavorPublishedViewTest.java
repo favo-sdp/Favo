@@ -289,8 +289,7 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testFavorIsNotAcceptedIfSurpassedLimit() throws Throwable {
-    runOnUiThread(
-        () -> fakeViewModel.setThrowError(new IllegalAcceptException("illegal operation!")));
+    fakeViewModel.numActiveAcceptedFavor = 1;
     onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))

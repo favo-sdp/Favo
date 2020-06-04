@@ -60,6 +60,11 @@ public class FakeUserUtil implements IUserUtil {
     return successfulCompletableFuture;
   }
 
+  @Override
+  public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
+    return null;
+  }
+
   private boolean isFailedFindUser = false;
 
   public void setFindUserResult(User user) {

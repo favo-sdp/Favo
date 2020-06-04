@@ -272,7 +272,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     getUserRepository()
         .getCurrentUserReference(currentUserId)
         .addSnapshotListener(
-            MetadataChanges.EXCLUDE,
+            MetadataChanges.INCLUDE,
             (documentSnapshot, e) -> {
               handleException(e);
               observedUser.setValue(documentSnapshot.toObject(User.class));

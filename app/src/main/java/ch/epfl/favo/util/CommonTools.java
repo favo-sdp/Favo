@@ -142,6 +142,6 @@ public class CommonTools {
       if(user.getEmail() != null && user.getEmail().equals(""))
         name = user.getEmail().split("@")[0].replace(".", " ");
       else name = DEFAULT_NAME;
-    return name + "   ";
+    return name;
   }
 }

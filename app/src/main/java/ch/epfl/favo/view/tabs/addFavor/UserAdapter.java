@@ -44,7 +44,6 @@ public class UserAdapter extends ArrayAdapter<User> {
 
     // Populate the data into the template view using the data object
     if (user.getProfilePictureUrl() != null) {
-      Log.d("fuck", "diaplay committed user pic");
       Glide.with(context)
               .load(user.getProfilePictureUrl())
               .into(UserProfilePic);
