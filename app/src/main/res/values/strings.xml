@@ -53,7 +53,7 @@
     <string name="active_favors_text">Active</string>
     <string name="archived_favors_text">Archived</string>
 
-    <string name="favo_coins_item_placeholder">%.1f</string>
+    <string name="favo_coins_item_placeholder">%d</string>
     <string name="user_name_item_placeholder">%s</string>
 
     <string name="share">Share</string>
@@ -87,7 +87,7 @@
     <string name="favor_request_success_msg">Favor was successfully requested</string>
     <string name="profile">Profile</string>
     <string name="user_not_present_message">User account has been deleted</string>
-    <string name="favor_worth">%.1f coins</string>
+    <string name="favor_worth">%d coins</string>
     <string name="posted_placeholder">Posted at: %s</string>
 
     <!-- Notification -->
@@ -188,7 +188,7 @@
 
     <!-- Shop Page -->
     <string name="shop">Shop</string>
-    <string name="balance_text">%.2f</string>
+    <string name="balance_text">%d</string>
     <string name="price_text">%.2f CHF</string>
     <string name="shop_pay_message">Coming soon!</string>
     <string name="favo_coins_text">Favo Coins</string>

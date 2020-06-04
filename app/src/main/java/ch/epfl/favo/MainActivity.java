@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
               navController.navigate(itemId);
           }
 
-          if (itemId == R.id.nav_shop) {
+          if (itemId == R.id.nav_shop || itemId == R.id.nav_account) {
             findViewById(R.id.current_balance_text).setVisibility(View.VISIBLE);
           } else {
             findViewById(R.id.current_balance_text).setVisibility(View.GONE);

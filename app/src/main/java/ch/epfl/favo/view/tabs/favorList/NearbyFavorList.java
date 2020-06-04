@@ -204,19 +204,8 @@ public class NearbyFavorList extends Fragment {
    * CommonTools.FAVOR_ARGS 3. Navigate to favorPublishView with this bundle.
    */
   private void setupListView() {
-
     recycleView.setLayoutManager(new LinearLayoutManager(requireContext()));
     recycleView.setAdapter(createFavorAdapter(new ArrayList<>()));
-
-    //    recycleView.setOnItemClickListener(
-    //        (parent, view, position, id) -> {
-    //          CommonTools.hideSoftKeyboard(requireActivity());
-    //          Favor favor = (Favor) parent.getItemAtPosition(position);
-    //          Bundle favorBundle = new Bundle();
-    //          favorBundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
-    //          findNavController(requireView())
-    //              .navigate(R.id.action_nav_nearby_list_to_favorPublishedView, favorBundle);
-    //        });
   }
 
   private RecyclerView.Adapter<FavorViewHolder> createFavorAdapter(List<Favor> items) {

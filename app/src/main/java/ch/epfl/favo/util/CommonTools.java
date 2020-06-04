@@ -3,9 +3,12 @@ package ch.epfl.favo.util;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.util.Log;
@@ -143,5 +146,28 @@ public class CommonTools {
           parentView, context.getResources().getString(R.string.update_favor_error));
     }
     if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
+  }
+
+  /**
+   * Check if a camera is available in the current used device
+   *
+   * @param activity: activity of rhe
+   * @return: boolean indicating if a camera is available on the current device
+   */
+  public static boolean isCameraAvailable(Activity activity) {
+    boolean hasCamera =
+            activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+    int numberOfCameras = 0;
+    try {
+      numberOfCameras =
+              ((CameraManager)
+                      Objects.requireNonNull(
+                              activity.getSystemService(Context.CAMERA_SERVICE)))
+                      .getCameraIdList()
+                      .length;
+    } catch (CameraAccessException e) {
+      Log.e("CameraAvailability", e.toString());
+    }
+    return (hasCamera && numberOfCameras != 0);
   }
 }

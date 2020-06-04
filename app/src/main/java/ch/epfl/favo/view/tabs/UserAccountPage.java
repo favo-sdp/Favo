@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +47,6 @@ public class UserAccountPage extends Fragment {
   private View view;
   private ImageView mImageView;
   private User currentUser;
-  private String TAG = "UserAccountPage";
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -79,7 +76,7 @@ public class UserAccountPage extends Fragment {
     signOutButton.setOnClickListener(this::signOut);
 
     Button deleteAccountButton = view.findViewById(R.id.delete_account);
-    deleteAccountButton.setOnClickListener(this::deleteAccountClicked);
+    deleteAccountButton.setOnClickListener(view1 -> deleteAccountClicked());
   }
 
   private void setupEditProfileDialog(LayoutInflater inflater, User user) {
@@ -140,7 +137,7 @@ public class UserAccountPage extends Fragment {
     // Button: Add picture from camera
     ImageButton addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
     addPictureFromCameraBtn.setOnClickListener(new onButtonClick());
-    if (!isCameraAvailable()) { // if camera is not available
+    if (!CommonTools.isCameraAvailable(requireActivity())) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
   }
@@ -185,12 +182,6 @@ public class UserAccountPage extends Fragment {
     }
   }
 
-  private boolean isCameraAvailable() {
-    boolean hasCamera =
-        requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    int numberOfCameras = Camera.getNumberOfCameras();
-    return (hasCamera && numberOfCameras != 0);
-  }
   /**
    * This method is called when external intents are used to load data on view.
    *
@@ -202,7 +193,7 @@ public class UserAccountPage extends Fragment {
   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
     super.onActivityResult(requestCode, resultCode, data);
-    // If intent was not succesful
+    // If intent was not successful
     if (resultCode != RESULT_OK || data == null) {
       CommonTools.showSnackbar(requireView(), getString(R.string.error_msg_image_request_view));
       return;
@@ -217,8 +208,10 @@ public class UserAccountPage extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-          Bitmap imageBitmap = (Bitmap) extras.get("data");
-          mImageView.setImageBitmap(imageBitmap);
+          if (extras != null) {
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+          }
           break;
         }
     }
@@ -253,6 +246,9 @@ public class UserAccountPage extends Fragment {
 
     TextView accountDislikesView = view.findViewById(R.id.user_account_dislikes);
     accountDislikesView.setText(getString(R.string.dislikes_format, user.getDislikes()));
+
+    TextView currentBalance = requireActivity().findViewById(R.id.current_balance_text);
+    currentBalance.setText(getString(R.string.balance_text, user.getBalance()));
   }
 
   private void signOut(View view) {
@@ -261,7 +257,7 @@ public class UserAccountPage extends Fragment {
         .addOnCompleteListener(task -> onComplete(task, R.string.sign_out_failed));
   }
 
-  private void deleteAccountClicked(View view) {
+  private void deleteAccountClicked() {
     new AlertDialog.Builder(requireActivity())
         .setMessage(getText(R.string.delete_account_alert))
         .setPositiveButton(getText(R.string.yes_text), (dialogInterface, i) -> deleteAccount())
@@ -285,7 +281,6 @@ public class UserAccountPage extends Fragment {
       }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
-      Log.e(TAG, task.getException().toString());
       CommonTools.showSnackbar(getView(), getString(errorMessage));
     }
   }

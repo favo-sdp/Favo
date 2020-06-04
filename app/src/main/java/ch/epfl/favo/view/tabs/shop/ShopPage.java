@@ -50,9 +50,10 @@ public class ShopPage extends Fragment {
           new ShopItem(R.drawable.favo_coin_multiple, 500000, 99.99, new Date()));
 
   private static final String ARG_COLUMN_COUNT = "column-count";
+  public static final String DATE_FORMAT = "dd/MM/yy";
 
   private List<ShopItem> shopItems;
-  private RecyclerView.Adapter adapter;
+  private RecyclerView.Adapter<ShopItemViewHolder> adapter;
 
   private int mColumnCount = 2;
 
@@ -77,8 +78,8 @@ public class ShopPage extends Fragment {
 
     DependencyFactory.getCurrentUserRepository()
         .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-        .thenAccept(
-            user -> {
+        .whenComplete(
+            (user, e) -> {
               TextView currentBalance = requireActivity().findViewById(R.id.current_balance_text);
               currentBalance.setText(getString(R.string.balance_text, user.getBalance()));
             });
@@ -136,11 +137,11 @@ public class ShopPage extends Fragment {
         .setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP));
   }
 
-  private RecyclerView.Adapter getRecyclerViewAdapter() {
-    return new RecyclerView.Adapter() {
+  private RecyclerView.Adapter<ShopItemViewHolder> getRecyclerViewAdapter() {
+    return new RecyclerView.Adapter<ShopItemViewHolder>() {
       @NonNull
       @Override
-      public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+      public ShopItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view =
             LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_shop_item, parent, false);
@@ -155,18 +156,17 @@ public class ShopPage extends Fragment {
       }
 
       @Override
-      public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        ShopItemViewHolder shopHolder = ((ShopItemViewHolder) holder);
-        shopHolder.imageView.setImageResource(shopItems.get(position).resourceId);
-        shopHolder.quantityView.setText(String.valueOf(shopItems.get(position).quantity));
-        shopHolder.priceView.setText(getString(R.string.price_text, shopItems.get(position).price));
+      public void onBindViewHolder(@NonNull ShopItemViewHolder holder, int position) {
+        holder.imageView.setImageResource(shopItems.get(position).resourceId);
+        holder.quantityView.setText(String.valueOf(shopItems.get(position).quantity));
+        holder.priceView.setText(getString(R.string.price_text, shopItems.get(position).price));
 
         if (shopItems.get(position).expiration != null) {
-          shopHolder.expirationView.setVisibility(View.VISIBLE);
-          SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy", Locale.US);
-          shopHolder.expirationView.setText(dateFormat.format(shopItems.get(position).expiration));
+          holder.expirationView.setVisibility(View.VISIBLE);
+          SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+          holder.expirationView.setText(dateFormat.format(shopItems.get(position).expiration));
         } else {
-          shopHolder.expirationView.setVisibility(View.GONE);
+          holder.expirationView.setVisibility(View.GONE);
         }
       }
 
