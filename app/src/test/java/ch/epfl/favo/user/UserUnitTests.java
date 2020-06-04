@@ -92,7 +92,7 @@ public class UserUnitTests {
     user.setLikes(testNum);
     user.setDislikes(testNum);
     user.setBalance(newBalance);
-    user.setProfilePicUrl(pictureUrl);
+    user.setProfilePictureUrl(pictureUrl);
     user.setName(testName);
     user.setNotificationRadius(radius);
     user.setChatNotifications(false);
@@ -108,7 +108,7 @@ public class UserUnitTests {
     assertEquals(testNum, user.getLikes());
     assertEquals(testNum, user.getDislikes());
     assertEquals((int) newBalance, (int) user.getBalance());
-    assertEquals(pictureUrl, user.getPictureUrl());
+    assertEquals(pictureUrl, user.getProfilePictureUrl());
     assertEquals(testName, user.getName());
     assertEquals((int) radius, (int) user.getNotificationRadius());
     assertFalse(user.isChatNotifications());
