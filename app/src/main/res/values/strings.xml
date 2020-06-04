@@ -90,7 +90,8 @@
     <string name="favor_request_success_msg">Favor added successfully.</string>
     <string name="profile">Profile</string>
     <string name="user_not_present_message">User account has been deleted</string>
-    <string name="favor_worth">worth %.1f coin(s)</string>
+    <string name="favor_worth">%.1f coins</string>
+    <string name="posted_placeholder">Posted at: %s</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>

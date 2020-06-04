@@ -228,13 +228,11 @@ public class FavorPublishedView extends Fragment {
     commitAndCompleteBtn = rootView.findViewById(R.id.commit_complete_button);
     Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
-    ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name_published_view);
 
     locationAccessBtn.setOnClickListener(new onButtonClick());
     commitAndCompleteBtn.setOnClickListener(new onButtonClick());
     chatBtn.setOnClickListener(new onButtonClick());
-    userProfile.setOnClickListener(new onButtonClick());
     userName.setOnClickListener(new onButtonClick());
   }
 
@@ -289,14 +287,18 @@ public class FavorPublishedView extends Fragment {
 
   private void displayFromFavor(View rootView, Favor favor) {
 
-    String timeStr = CommonTools.convertTime(favor.getPostedTime());
+    String timeStr = getString(R.string.posted_placeholder, CommonTools.convertTime(favor.getPostedTime()));
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
-    String favoCoinStr = String.format(getString(R.string.favor_worth), favor.getReward());
+    String favoCoinStr = getString(R.string.favor_worth, favor.getReward());
     setupTextView(rootView, R.id.time, timeStr);
     setupTextView(rootView, R.id.title, titleStr);
     setupTextView(rootView, R.id.description, descriptionStr);
     setupTextView(rootView, R.id.value, favoCoinStr);
+
+    if (descriptionStr.equals("")) {
+      rootView.findViewById(R.id.description).setVisibility(View.GONE);
+    }
 
     isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getUid());
     favorStatus = verifyFavorHasBeenAccepted(favor);
@@ -324,7 +326,7 @@ public class FavorPublishedView extends Fragment {
         Glide.with(this)
             .load(currentUser.getPhotoUrl())
             .fitCenter()
-            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
+            .into( (ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
       displayName(currentUser.getDisplayName(), currentUser.getEmail());

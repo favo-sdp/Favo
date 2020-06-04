@@ -52,6 +52,7 @@
                 android:lines="1"
                 android:maxLength="15"
                 android:maxLines="1"
+                android:text="User"
                 android:ellipsize="end"
                 android:textSize="17sp"
                 android:textAppearance="?attr/textAppearanceListItemSecondary" />

@@ -55,7 +55,9 @@ public class CommonTools {
 
   public static String convertTime(Date time) {
     @SuppressLint("SimpleDateFormat")
-    Format format = new SimpleDateFormat("yyyy MM dd HH:mm");
+
+
+    Format format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     return format.format(time);
   }
 
