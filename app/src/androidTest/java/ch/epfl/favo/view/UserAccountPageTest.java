@@ -61,14 +61,14 @@ public class UserAccountPageTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
-    new ActivityTestRule<MainActivity>(MainActivity.class) {
-      @Override
-      protected void beforeActivityLaunched() {
-        DependencyFactory.setCurrentFirebaseUser(
-          new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-        DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
-      }
-    };
+      new ActivityTestRule<MainActivity>(MainActivity.class) {
+        @Override
+        protected void beforeActivityLaunched() {
+          DependencyFactory.setCurrentFirebaseUser(
+              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
+        }
+      };
 
   @Rule
   public GrantPermissionRule permissionRule =
@@ -87,13 +87,13 @@ public class UserAccountPageTest {
   @Before
   public void setUp() {
     User testUser =
-      new User(
-        TestConstants.USER_ID,
-        TestConstants.NAME,
-        TestConstants.EMAIL,
-        TestConstants.DEVICE_ID,
-        null,
-        null);
+        new User(
+            TestConstants.USER_ID,
+            TestConstants.NAME,
+            TestConstants.EMAIL,
+            TestConstants.DEVICE_ID,
+            null,
+            null);
 
     FakeUserUtil userUtil = new FakeUserUtil();
     userUtil.setFindUserResult(testUser);
@@ -137,7 +137,8 @@ public class UserAccountPageTest {
 
   @Test
   public void testUserAlreadyLoggedIn_displayUserData_missingName() {
-    DependencyFactory.setCurrentFirebaseUser(new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
+    DependencyFactory.setCurrentFirebaseUser(
+        new FakeFirebaseUser(null, EMAIL, PHOTO_URI, PROVIDER));
     DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
 
     mActivityRule.launchActivity(null);
@@ -190,7 +191,9 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button2)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     onView(withId(android.R.id.button2)).perform(click());
-    onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+    onView(withId(R.id.delete_account))
+        .perform(ViewActions.scrollTo())
+        .check(matches(isDisplayed()));
   }
 
   @Test
@@ -208,7 +211,9 @@ public class UserAccountPageTest {
     onView(withId(android.R.id.button1)).inRoot(isDialog()).check(matches(isDisplayed()));
     DependencyFactory.setCurrentFirebaseUser(null);
     onView(withId(android.R.id.button1)).perform(click());
-    onView(withId(R.id.delete_account)).perform(ViewActions.scrollTo()).check(matches(isDisplayed()));
+    onView(withId(R.id.delete_account))
+        .perform(ViewActions.scrollTo())
+        .check(matches(isDisplayed()));
   }
 
   @Test
@@ -240,8 +245,7 @@ public class UserAccountPageTest {
     // give time to display the dialog
     getInstrumentation().waitForIdleSync();
 
-    onView(withId(R.id.change_name_dialog_user_input))
-      .perform(replaceText("Mr Test"));
+    onView(withId(R.id.change_name_dialog_user_input)).perform(replaceText("Mr Test"));
 
     onView(withId(android.R.id.button1)).perform(click());
 
@@ -255,7 +259,7 @@ public class UserAccountPageTest {
     runOnUiThread(() -> navController.navigate(R.id.nav_account));
 
     Fragment navHostFragment =
-      activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        activity.getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
     getInstrumentation().waitForIdleSync();
     return (UserAccountPage) navHostFragment.getChildFragmentManager().getFragments().get(0);
   }
@@ -289,19 +293,19 @@ public class UserAccountPageTest {
     // inject picture
     Bitmap bm = Bitmap.createBitmap(200, 100, Bitmap.Config.RGB_565);
     Uri filePath =
-      CacheUtil.getInstance()
-        .saveToInternalStorage(
-          Objects.requireNonNull(currentFragment.getContext()), bm, PROFILE_PICTURE_ID, 0);
+        CacheUtil.getInstance()
+            .saveToInternalStorage(
+                Objects.requireNonNull(currentFragment.getContext()), bm, PROFILE_PICTURE_ID, 0);
     getInstrumentation().waitForIdleSync();
     Bitmap actual =
-      CacheUtil.getInstance()
-        .loadFromInternalStorage(
-          Objects.requireNonNull(currentFragment.getContext()).getFilesDir().getAbsolutePath()
-            + "/"
-            + PROFILE_PICTURE_ID
-            + "/",
-          0)
-        .get();
+        CacheUtil.getInstance()
+            .loadFromInternalStorage(
+                Objects.requireNonNull(currentFragment.getContext()).getFilesDir().getAbsolutePath()
+                    + "/"
+                    + PROFILE_PICTURE_ID
+                    + "/",
+                0)
+            .get();
     assert (actual.sameAs(bm));
     Intent intent = new Intent();
     intent.setData(filePath);

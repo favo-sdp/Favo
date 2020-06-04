@@ -130,10 +130,10 @@ public class UserUtil implements IUserUtil {
   @Override
   public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
     return findUser(userId)
-            .thenCompose(
-                    (user) -> {
-                      user.setBalance(user.getBalance() + reward);
-                      return updateUser(user);
-                    });
+        .thenCompose(
+            (user) -> {
+              user.setBalance(user.getBalance() + reward);
+              return updateUser(user);
+            });
   }
 }

@@ -76,7 +76,8 @@ public class NearbyFavorList extends Fragment {
     tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
     recycleView = rootView.findViewById(R.id.nearby_favor_list);
-    recycleView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+    recycleView.addItemDecoration(
+        new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
     setupListView();
 
     RadioButton toggle = rootView.findViewById(R.id.map_switch);

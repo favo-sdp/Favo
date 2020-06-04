@@ -287,7 +287,8 @@ public class FavorPublishedView extends Fragment {
 
   private void displayFromFavor(View rootView, Favor favor) {
 
-    String timeStr = getString(R.string.posted_placeholder, CommonTools.convertTime(favor.getPostedTime()));
+    String timeStr =
+        getString(R.string.posted_placeholder, CommonTools.convertTime(favor.getPostedTime()));
     String titleStr = favor.getTitle();
     String descriptionStr = favor.getDescription();
     String favoCoinStr = getString(R.string.favor_worth, favor.getReward());
@@ -326,7 +327,7 @@ public class FavorPublishedView extends Fragment {
         Glide.with(this)
             .load(currentUser.getPhotoUrl())
             .fitCenter()
-            .into( (ImageView) requireView().findViewById(R.id.user_profile_picture));
+            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
       displayName(currentUser.getDisplayName(), currentUser.getEmail());

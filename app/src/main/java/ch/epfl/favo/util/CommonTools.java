@@ -8,12 +8,9 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.os.Build;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -29,7 +26,6 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
-import ch.epfl.favo.user.User;
 import ch.epfl.favo.view.NonClickableToolbar;
 
 @SuppressLint("NewApi")
@@ -55,8 +51,6 @@ public class CommonTools {
 
   public static String convertTime(Date time) {
     @SuppressLint("SimpleDateFormat")
-
-
     Format format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     return format.format(time);
   }

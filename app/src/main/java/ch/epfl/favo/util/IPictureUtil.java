@@ -25,8 +25,12 @@ public interface IPictureUtil {
 
     private String folder;
 
-    Folder(String folder) { this.folder = folder; }
+    Folder(String folder) {
+      this.folder = folder;
+    }
 
-    public String toString() { return this.folder; }
+    public String toString() {
+      return this.folder;
+    }
   }
 }

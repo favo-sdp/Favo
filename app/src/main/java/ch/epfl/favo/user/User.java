@@ -170,15 +170,21 @@ public class User implements Document {
     };
   }
 
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
 
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public String getEmail() {
     return email;
   }
 
-  public void setEmail(String email) { this.email = email; }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
   public String getDeviceId() {
     return deviceId;
@@ -208,9 +214,13 @@ public class User implements Document {
     return activeRequestingFavors;
   }
 
-  public String getProfilePictureUrl() { return profilePictureUrl; }
+  public String getProfilePictureUrl() {
+    return profilePictureUrl;
+  }
 
-  public void setProfilePictureUrl(String url) { profilePictureUrl = url; }
+  public void setProfilePictureUrl(String url) {
+    profilePictureUrl = url;
+  }
 
   void setActiveAcceptingFavors(int totalAcceptingFavors) {
     if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)

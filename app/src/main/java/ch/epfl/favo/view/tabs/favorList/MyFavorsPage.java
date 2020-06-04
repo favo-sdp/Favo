@@ -99,7 +99,8 @@ public class MyFavorsPage extends Fragment {
     archivedToggle = rootView.findViewById(R.id.archived_toggle);
 
     mRecycler = rootView.findViewById(R.id.paging_recycler);
-    mRecycler.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+    mRecycler.addItemDecoration(
+        new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
     mSwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 
     Query baseQuery =

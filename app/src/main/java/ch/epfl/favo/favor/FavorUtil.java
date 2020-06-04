@@ -151,8 +151,6 @@ public class FavorUtil {
   }
 
   public Query getAllUserFavors(String userId) {
-    return collection
-        .getReference()
-        .whereArrayContains(Favor.USER_IDS, userId);
+    return collection.getReference().whereArrayContains(Favor.USER_IDS, userId);
   }
 }
