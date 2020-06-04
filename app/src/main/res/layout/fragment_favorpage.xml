@@ -57,6 +57,7 @@
         android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/toolbar_height"
         android:layout_marginTop="@dimen/toolbar_height">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -64,7 +65,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="vertical"
-
             android:layout_below="@+id/paging_loading"
             android:clipToPadding="false"
             android:paddingLeft="16dp"
