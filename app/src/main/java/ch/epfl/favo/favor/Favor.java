@@ -215,6 +215,9 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.reward = reward;
   }
 
+  public void setTitle(String title) {
+    this.title = title;
+  }
   /**
    * structure of userIds: a list with the first position always setting as requester Id, following
    * with potential helpers who commit this favor. When a requester finally decide a accepter, he
