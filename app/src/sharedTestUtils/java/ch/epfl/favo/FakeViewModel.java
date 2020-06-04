@@ -162,7 +162,11 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<User> getObservedUser() {
-    return null;
+    return new MutableLiveData<User>() {
+      {
+        setValue(FakeItemFactory.getUser());
+      }
+    };
   }
 
   @Override
