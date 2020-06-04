@@ -32,6 +32,7 @@ import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
@@ -87,6 +88,10 @@ public class ChatPageTest {
   @Before
   public void setUp() {
     DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+    FavorUtil.getSingleInstance()
+        .updateCollectionWrapper(
+            DependencyFactory.getCurrentCollectionWrapper(
+                TestConstants.TEST_COLLECTION, Favor.class));
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
     DependencyFactory.setCurrentPictureUtility(new FakePictureUtil());
   }
@@ -97,6 +102,9 @@ public class ChatPageTest {
     DependencyFactory.setCurrentFirebaseUser(null);
     DependencyFactory.setCurrentGpsTracker(null);
     DependencyFactory.setCurrentCollectionWrapper(null);
+    FavorUtil.getSingleInstance()
+        .updateCollectionWrapper(
+            DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class));
   }
 
   private void navigateToChatPage() throws InterruptedException {

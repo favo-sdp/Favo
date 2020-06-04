@@ -8,19 +8,22 @@
     <LinearLayout
         android:id="@+id/commit_user_list"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile_picture_commit"
+            android:gravity="start"
+            android:padding="2dp"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_marginTop="6dp"
             android:layout_marginStart="0dp"
             android:src="@drawable/ic_anon_user_48dp"
             app:civ_border_width="2dp"
-            android:gravity="start"
             app:civ_border_color="@color/fui_transparent"/>
 
 
@@ -30,17 +33,11 @@
             android:layout_height="wrap_content"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
-            android:hint="@string/username_title"
             android:maxLines="1"
+            android:padding="5dp"
             android:textColor="@android:color/holo_green_dark"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

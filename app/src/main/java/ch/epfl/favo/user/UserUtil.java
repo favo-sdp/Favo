@@ -45,13 +45,19 @@ public class UserUtil implements IUserUtil {
    * @throws RuntimeException Unable to post to DB.
    */
   @Override
-  public CompletableFuture<Void> postUser(User user) { // TODO: catch exception in view not here
+  public CompletableFuture<Void> postUser(User user) {
     return collection.addDocument(user);
   }
 
   @Override
   public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());
+  }
+
+  @Override
+  public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
+    Task<Void> updateTask = getUserReference(userId).update(field, FieldValue.increment(change));
+    return new TaskToFutureAdapter<>(updateTask).getInstance();
   }
 
   @Override
@@ -66,22 +72,12 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
-  public DocumentReference getCurrentUserReference(String userId) {
+  public DocumentReference getUserReference(String userId) {
     return collection.getDocumentQuery(userId);
   }
 
-  @Override
-  public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
-    Task<Void> updateTask = getCurrentUserReference(userId).update(field, FieldValue.increment(change));
-    return new TaskToFutureAdapter<>(updateTask).getInstance();
-  }
 
-  /**
-   * Retrieves current registration token for the notification system.
-   *
-   * @param user A user object.
-   */
-  public CompletableFuture<Void> retrieveUserRegistrationToken(User user) {
+  public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();
     CompletableFuture<InstanceIdResult> futureIdTask =
@@ -98,5 +94,15 @@ public class UserUtil implements IUserUtil {
 
   public void setCollectionWrapper(CollectionWrapper collectionWrapper) {
     collection = collectionWrapper;
+  }
+
+  @Override
+  public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
+    return findUser(userId)
+        .thenCompose(
+            (user) -> {
+              user.setBalance(user.getBalance() + reward);
+              return updateUser(user);
+            });
   }
 }

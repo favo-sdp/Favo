@@ -47,17 +47,17 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="20sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/user_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="15dp"
                 android:textAlignment="center"
                 android:textColor="@android:color/white"
-                android:textSize="18sp" />
+                android:textSize="22sp" />
 
         </LinearLayout>
 
@@ -131,7 +131,7 @@
             android:textSize="16sp" />
 
         <Button
-            android:id="@+id/edit_profile"
+            android:id="@+id/edit_profile_button"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

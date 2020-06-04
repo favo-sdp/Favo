@@ -8,12 +8,8 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.annotation.RequiresApi;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -26,7 +22,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.user.User;
@@ -38,7 +33,7 @@ public class CommonTools {
   public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
   public static final String USER_ARGS = "USER_ARGS";
   public static final String DEFAULT_NAME = "anonymous";
-  public static final String TIME_PATTERN= "yyyy MM dd HH:mm";
+  public static final String TIME_PATTERN = "yyyy/MM/dd HH:mm";
   public static final int TEXT_MESSAGE_TYPE = 0;
   public static final int IMAGE_MESSAGE_TYPE = 1;
   public static final int LOCATION_MESSAGE_TYPE = 2;
@@ -135,7 +130,6 @@ public class CommonTools {
   }
 
 
-  @RequiresApi(api = Build.VERSION_CODES.N)
   public static String getUserName(User user) {
     String name = user.getName();
     if (name == null || name.equals(""))

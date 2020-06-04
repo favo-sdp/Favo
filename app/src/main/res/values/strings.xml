@@ -13,7 +13,6 @@
     <string name="no_text">No</string>
 
     <!-- Auth UI - Signed in -->
-    <string name="no_email_text">No email</string>
     <string name="delete_account_alert">Are you sure you want to delete this account?</string>
 
     <string name="sign_in_failed">Sign in failed</string>
@@ -22,7 +21,7 @@
     <string name="delete_account_label">Delete account</string>
 
     <string name="sign_out_failed">Sign out failed</string>
-    <string name="delete_account_failed">Delete account failed</string>
+    <string name="delete_account_failed">Log out and back in to perform such operation</string>
 
     <string name="profile_picture_content_desc">Profile picture</string>
 
@@ -45,7 +44,7 @@
     <string name="report_unknown_error">Unknown error during fetching location</string>
 
     <!-- TAB 2 (David) -->
-    <string name="favor_title_hint">What do you need? - Max. length = %d</string>
+    <string name="favor_title_hint">What do you need? Max.length=%d</string>
     <string name="favor_img_content_desc">Descriptive image</string>
     <string name="favor_details_hint">Add more details - Max. length = %d</string>
     <string name="favor_payment_hint">Add payment (Default: free favor)</string>
@@ -54,10 +53,9 @@
     <string name="active_favors_text">Active</string>
     <string name="archived_favors_text">Archived</string>
 
-    <string name="favo_coins_item_placeholder"> %.2f coins</string>
-    <string name="user_name_item_placeholder">%s - </string>
+    <string name="favo_coins_item_placeholder">%.1f</string>
+    <string name="user_name_item_placeholder">%s</string>
 
-    <string name="tab2_description">2</string>
     <string name="share">Share</string>
     <string name="about">About</string>
     <string name="settings">Settings</string>
@@ -81,16 +79,16 @@
     <string name="favor_no_nearby_favor">There are no favors around you</string>
     <string name="list_toggle">List</string>
     <string name="map_toggle">Map</string>
-    <string name="num_coins">%d coins</string>
 
     <!--Favor Published View -->
     <string name="accept_favor">Accept</string>
-    <string name="favor_respond_success_msg">Favor responded successfully.</string>
+    <string name="favor_respond_success_msg">Favor was successfully updated</string>
     <string name="home">Home</string>
-    <string name="favor_request_success_msg">Favor added successfully.</string>
+    <string name="favor_request_success_msg">Favor was successfully requested</string>
     <string name="profile">Profile</string>
     <string name="user_not_present_message">User account has been deleted</string>
-    <string name="favor_worth">worth %.1f coin(s)</string>
+    <string name="favor_worth">%.1f coins</string>
+    <string name="posted_placeholder">Posted at: %s</string>
 
     <!-- Notification -->
     <string name="default_notification_channel_id" translatable="false">Default channel id</string>
@@ -109,12 +107,11 @@
     <string name="save_draft_message">Draft saved: favor will be published as soon as connection returns</string>
     <string name="favor_delete_success_msg">Favor successfully deleted</string>
     <!-- Preference Titles -->
-    <string name="messages_header">Account</string>
+    <string name="map_header">Map</string>
     <string name="notification_header">Notifications</string>
     <string name="help_header">Help</string>
 
     <!-- Account Preferences -->
-    <string name="username_title">Username</string>
     <string name="name_change_dialog_positive">SAVE</string>
     <string name="name_change_dialog_negative">CANCEL</string>
 
@@ -122,6 +119,8 @@
     <string name="notification_title">Enable nearby favor notifications</string>
     <string name="notification_summary">Be notified when new favors are posted in the area within a certain radius</string>
     <string name="notification_radius_title">Notifications radius in kilometers</string>
+    <string name="map_radius_title">Default map zoom level radius in kilometers</string>
+
 
     <string name="notification_update_title">Enable updates notifications</string>
     <string name="notification_update_summary">Be notified when there is an update on a favor you created or committed</string>
@@ -130,7 +129,7 @@
     <string name="notification_chat_summary">Be notified when someone writes a message in a chat of a favor created or committed</string>
 
     <string name="map_style_default_value">0</string>
-    <string name="map_style_title">Map style</string>
+    <string name="map_style_title">Map display style</string>
 
     <string name="nearbyFavors_notifications_setting_key">nearbyFavors_notifications_setting_key</string>
     <string name="radius_notifications_setting_key">radius_notifications_setting_key</string>
@@ -161,10 +160,9 @@
     <string name="committed_helpers">Potential helpers"</string>
     <string name="cancel_commit">Cancel commit</string>
     <string name="commit_favor">Commit</string>
-    <string name="no_internet">"An error occurred. Check your internet connection."</string>
 
-    <string name="title_map">Map</string>
-    <string name="title_favors">Favors</string>
+    <string name="title_map">Nearby Favors</string>
+    <string name="title_favors">My Favors</string>
 
     <!-- Chat -->
     <string name="start_chatting">No messages</string>
@@ -191,7 +189,7 @@
     <string name="shop">Shop</string>
     <string name="balance_text">%.2f</string>
     <string name="price_text">%.2f CHF</string>
-    <string name="shop_pay_message">Pay the price for the quantity of coins selected</string>
+    <string name="shop_pay_message">Coming soon!</string>
     <string name="favo_coins_text">Favo Coins</string>
     <string name="special_offers_text">Special offers</string>
     <string name="buy_favo_coins_text">Buy Favo Coins</string>

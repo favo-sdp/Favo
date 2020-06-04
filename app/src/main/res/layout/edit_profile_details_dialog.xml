@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/edit_profile_details_dialog"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:padding="25dp" >
+    android:padding="25dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -14,7 +13,7 @@
         android:text="@string/change_profile_picture_title"
         android:textStyle="bold"
         android:textColor="@color/material_purple_a700"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ImageView
         android:id="@+id/new_profile_picture"
@@ -69,7 +68,7 @@
         android:inputType="textNoSuggestions"
         android:singleLine="true"
         app:backgroundTint="@color/material_green_500"
-        android:textCursorDrawable="@drawable/green_cursor" >
+        android:textCursorDrawable="@drawable/green_cursor">
 
         <requestFocus />
 

@@ -4,10 +4,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +21,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import java.util.Objects;
@@ -86,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
     // check connection
     if (DependencyFactory.isOfflineMode(this)) {
-      showNoConnectionSnackbar();
+      Toast.makeText(this, getString(R.string.no_connection_message), Toast.LENGTH_LONG).show();
     }
   }
 
@@ -214,22 +211,6 @@ public class MainActivity extends AppCompatActivity {
         });
   }
 
-  private void showNoConnectionSnackbar() {
-    Snackbar snack =
-        Snackbar.make(
-            findViewById(android.R.id.content).getRootView(),
-            R.string.no_connection_message,
-            Snackbar.LENGTH_LONG);
-    View view = snack.getView();
-    snack.setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_FADE);
-    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
-    params.gravity = Gravity.TOP;
-    params.setMargins(
-        params.leftMargin, params.topMargin + 60, params.rightMargin, params.bottomMargin);
-    view.setLayoutParams(params);
-    snack.show();
-  }
-
   public void startShareIntent(String link) {
     Intent intent = new Intent(Intent.ACTION_SEND);
     intent.setType("text/plain");
@@ -249,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
       if (favorId != null && !favorId.equals("")) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+
         navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
       }
     }

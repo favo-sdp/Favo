@@ -8,20 +8,23 @@
     android:layout_height="match_parent"
     tools:context=".view.tabs.MapPage">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="20dp"
+        android:layout_marginTop="@dimen/toolbar_height"
         android:id="@+id/constraint_layout_nearby_favor_view">
 
-        <ListView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/nearby_favor_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="@dimen/toolbar_height"
-            android:layout_marginBottom="20dp"
+            android:scrollbars="vertical"
+            android:clipToPadding="false"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingRight="16dp"
+            android:layout_marginBottom="@dimen/toolbar_height"
+            tools:listitem="@layout/favor_list_item"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

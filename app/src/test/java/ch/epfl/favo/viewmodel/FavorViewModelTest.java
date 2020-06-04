@@ -27,11 +27,17 @@ import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.util.IPictureUtil.Folder;
+import ch.epfl.favo.util.PictureUtil;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -75,10 +81,13 @@ public class FavorViewModelTest {
   }
 
   private void setupReturns() {
-    Mockito.doReturn(documentReference).when(userRepository).getCurrentUserReference(anyString());
+    Mockito.doReturn(documentReference).when(userRepository).getUserReference(anyString());
     Mockito.doReturn(successfulResult).when(pictureUtility).deletePicture(Mockito.anyString());
     Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
     Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
+    Mockito.doReturn(successfulResult)
+        .when(userRepository)
+        .updateCoinBalance(anyString(), anyDouble());
     Mockito.doReturn(successfulResult).when(favorRepository).removeFavor(Mockito.anyString());
     Mockito.doReturn(successfulResult).when(userRepository).updateUser(any(User.class));
     Mockito.doNothing().when(viewModelSpy).setFavorValue(any(Favor.class));
@@ -92,7 +101,6 @@ public class FavorViewModelTest {
   @Test
   public void testRepositoryBehaviourIsUnchangedOnPostFavor() {
     Assert.assertTrue(viewModelSpy.requestFavor(FakeItemFactory.getFavor(), 1).isDone());
-    // Assert.assertEquals(successfulResult,viewModel.requestFavor(FakeItemFactory.getFavor()));
   }
 
   @Test
@@ -119,12 +127,12 @@ public class FavorViewModelTest {
 
     Mockito.doReturn(mockQuery)
         .when(favorRepository)
-        .getNearbyFavors(any(Location.class), Mockito.anyDouble());
+        .getLongitudeBoundedFavorsAroundMe(any(Location.class), Mockito.anyDouble());
     DependencyFactory.setCurrentFavorRepository(favorRepository);
 
     Location centralLocation = fakeList.get(0).getLocation();
-    viewModel.getFavorsAroundMe(
-        centralLocation, 100.0); // TODO: Find a way to test a snapshot listener
+    assertEquals(
+        viewModel.getFavorsAroundMe(), viewModel.getFavorsAroundMe(centralLocation, 100.0));
   }
 
   @Test
@@ -158,14 +166,12 @@ public class FavorViewModelTest {
   public void testExceptionIsThrownIfEncountered() {
     FirebaseFirestoreException mockException = Mockito.mock(FirebaseFirestoreException.class);
     Mockito.doReturn("mockMessage").when(mockException).getMessage();
-    Assert.assertThrows(RuntimeException.class, () -> viewModel.handleException(mockException));
+    assertThrows(RuntimeException.class, () -> viewModel.handleException(mockException));
     viewModel.handleException(null); // ensure nothing is thrown
   }
 
   @Test
   public void testSetObservedFavor() {
-    // TODO: Find a way to test snapshot listener
-    // mocks
     DocumentReference mockDocumentReference = Mockito.mock(DocumentReference.class);
     Mockito.doReturn(mockDocumentReference)
         .when(favorRepository)
@@ -181,15 +187,18 @@ public class FavorViewModelTest {
   }
 
   @Test
-  public void testGetObservedFavor() {
-    viewModel.getObservedFavor();
+  public void testGetObservedFavorValueIsNullByDefault() {
+    assertNull(viewModel.getObservedFavor().getValue());
   }
 
   @Test
   public void testUploadPicture() {
-    Mockito.doNothing().when(favorRepository).updateFavorPhoto(any(Favor.class), anyString());
-    Mockito.when(pictureUtility.uploadPicture(any(Folder.class), any(Bitmap.class))).thenReturn(successfulResult);
-    viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap);
+    Mockito.doReturn(successfulResult)
+        .when(favorRepository)
+        .updateFavorPhoto(any(Favor.class), anyString());
+    Mockito.when(pictureUtility.uploadPicture(any(Folder.class), any(Bitmap.class)))
+        .thenReturn(successfulResult);
+    assertTrue(viewModel.uploadOrUpdatePicture(FakeItemFactory.getFavor(), bitmap).isDone());
   }
 
   @Test
@@ -207,12 +216,15 @@ public class FavorViewModelTest {
   }
 
   @Test
-  public void testCancelFavorIsSuccessful() {
+  public void testCancelFavorIsSuccessfulOnlyIfAllTheActiveCountsAreUpdated() {
     Favor fakeFavor = FakeItemFactory.getFavor();
     fakeFavor.setAccepterId("accepter");
-    viewModel.cancelFavor(fakeFavor, true);
+    fakeFavor.setAccepterId("accepter2");
+    fakeFavor.setAccepterId("accepter3");
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isDone());
-    fakeFavor.setAccepterId(null);
+    DependencyFactory.setCurrentUserRepository(userRepository);
+//    Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isCompletedExceptionally());
+    fakeFavor.clearAccepterIds();
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isDone());
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, false).isDone());
   }
@@ -234,6 +246,7 @@ public class FavorViewModelTest {
     Assert.assertTrue(viewModel.completeFavor(fakeFavor, false).isDone());
     // Should fail if favor is not currently
    /* Assert.assertThrows(
+    assertThrows(
         IllegalStateException.class,
         () -> viewModel.completeFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());*/
   }
@@ -241,21 +254,35 @@ public class FavorViewModelTest {
   @Test
   public void testDeleteFavorIsSuccessful() {
     Favor fakeFavor = FakeItemFactory.getFavorWithUrl();
-    viewModel.deleteFavor(fakeFavor);
+    assertTrue(viewModel.deleteFavor(fakeFavor).isDone());
   }
 
   @Test
-  public void getObservedFavor() {
-    viewModel.getObservedFavor();
+  public void testSetObservedFavorRunsOnUiThread() {
+    assertThrows(Exception.class, () -> viewModel.setFavorValue(FakeItemFactory.getFavor()));
   }
 
   @Test
   public void testSetShowObservedFavor() {
+
     viewModel.setShowObservedFavor(true);
+    assertTrue(viewModel.showsObservedFavor());
   }
 
   @Test
-  public void testIsShowObservedFavor() {
-    viewModel.isShowObservedFavor();
+  public void testDoesNotShowObservedFavorByDefault() {
+    assertFalse(viewModel.showsObservedFavor());
+  }
+
+  @Test
+  public void testCommitFavorWrapsExceptionsProperly() {
+    assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), false).isDone());
+    assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), true).isDone());
+    Mockito.doReturn(failedResult).when(favorRepository).updateFavor(any(Favor.class));
+    DependencyFactory.setCurrentFavorRepository(favorRepository);
+    assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());
+    Mockito.doThrow(new RuntimeException()).when(favorRepository).updateFavor(any(Favor.class));
+    DependencyFactory.setCurrentFavorRepository(favorRepository);
+    //assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());
   }
 }

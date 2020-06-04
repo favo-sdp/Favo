@@ -41,6 +41,7 @@ public class User implements Document {
   public static final String NOTIFICATION_RADIUS = "notificationRadius";
   public static final String CHAT_NOTIFICATIONS = "chatNotifications";
   public static final String UPDATE_NOTIFICATIONS = "updateNotifications";
+  private static final String PICTURE_URL = "pictureUrl";
 
   private String id;
   private String name;
@@ -133,6 +134,7 @@ public class User implements Document {
         deviceId,
         null,
         new FavoLocation(location));
+
     profilePictureUrl =
         (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;
   }
@@ -166,19 +168,26 @@ public class User implements Document {
         put(NOTIFICATION_RADIUS, notificationRadius);
         put(CHAT_NOTIFICATIONS, chatNotifications);
         put(UPDATE_NOTIFICATIONS, updateNotifications);
+        put(PICTURE_URL, profilePictureUrl);
       }
     };
   }
 
-  public String getName() { return name; }
+  public String getName() {
+    return name;
+  }
 
-  public void setName(String name) { this.name = name; }
+  public void setName(String name) {
+    this.name = name;
+  }
 
   public String getEmail() {
     return email;
   }
 
-  public void setEmail(String email) { this.email = email; }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
   public String getDeviceId() {
     return deviceId;
@@ -192,7 +201,7 @@ public class User implements Document {
     return balance;
   }
 
-  Date getBirthDate() {
+  public Date getBirthDate() {
     return birthDate;
   }
 
@@ -200,17 +209,21 @@ public class User implements Document {
     return location;
   }
 
-  int getActiveAcceptingFavors() {
+  public int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
   }
 
-  int getActiveRequestingFavors() {
+  public int getActiveRequestingFavors() {
     return activeRequestingFavors;
   }
 
-  public String getProfilePictureUrl() { return profilePictureUrl; }
+  public String getProfilePictureUrl() {
+    return profilePictureUrl;
+  }
 
-  public void setProfilePictureUrl(String url) { profilePictureUrl = url; }
+  public void setProfilePictureUrl(String url) {
+    profilePictureUrl = url;
+  }
 
   void setActiveAcceptingFavors(int totalAcceptingFavors) {
     if (totalAcceptingFavors < 0 || totalAcceptingFavors > MAX_ACCEPTING_FAVORS)

@@ -18,7 +18,7 @@ public enum FavorStatus {
   ACCEPTED_BY_OTHER("Accepted by other", 8), // additional state
   EDIT("Edit mode", 9);
 
-  public static int[] archivedStates = {
+  public static final int[] archivedStates = {
     EXPIRED.toInt(),
     CANCELLED_REQUESTER.toInt(),
     CANCELLED_ACCEPTER.toInt(),
@@ -61,15 +61,4 @@ public enum FavorStatus {
   public static FavorStatus toEnum(int code) {
     return FavorStatus.values()[code];
   }
-
-  // public static FavorStatus toEnum(String status) {
-  //   return FavorStatus.valueOf(status);
-  // }
-
-  // public static FavorStatus convertTemporaryStatus(FavorStatus status) {
-  //  if (status.equals(FavorStatus.EDIT)) {
-  //    status = FavorStatus.REQUESTED;
-  //  }
-  //  return status;
-  // }
 }

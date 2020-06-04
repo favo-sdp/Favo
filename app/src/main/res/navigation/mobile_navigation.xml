@@ -172,7 +172,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_nearby_favor_list"
-        android:name="ch.epfl.favo.view.tabs.NearbyFavorList"
+        android:name="ch.epfl.favo.view.tabs.favorList.NearbyFavorList"
         android:label="NearbyList"
         tools:layout="@layout/fragment_nearby_favor_list">
         <action

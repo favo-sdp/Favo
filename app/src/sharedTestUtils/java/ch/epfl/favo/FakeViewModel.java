@@ -85,7 +85,10 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {}
+  public CompletableFuture<Void> uploadOrUpdatePicture(Favor favor, Bitmap picture) {
+    if (isThrowingError) return failedResult;
+    return getSuccessfulCompletableFuture();
+  }
 
   @Override
   public CompletableFuture<Void> commitFavor(final Favor favor, boolean isCancelled) {
@@ -191,7 +194,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public boolean isShowObservedFavor() {
+  public boolean showsObservedFavor() {
     return showFavor;
   }
 

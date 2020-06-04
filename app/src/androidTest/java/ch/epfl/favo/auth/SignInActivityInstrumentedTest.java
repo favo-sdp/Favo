@@ -42,6 +42,7 @@ public class SignInActivityInstrumentedTest {
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
           DependencyFactory.setCurrentUserRepository(fakeUserUtil);
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }
       };
 

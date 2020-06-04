@@ -26,6 +26,7 @@ import ch.epfl.favo.chat.IChatUtil;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.favor.IFavorUtil;
 import ch.epfl.favo.gps.GpsTracker;
 import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.IUserUtil;
@@ -179,7 +180,7 @@ public class DependencyFactory {
     currentFavorRepository = dependency;
   }
 
-  public static FavorUtil getCurrentFavorRepository() {
+  public static IFavorUtil getCurrentFavorRepository() {
     if (currentFavorRepository != null) return currentFavorRepository;
     return FavorUtil.getSingleInstance();
   }
