@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import ch.epfl.favo.FakeItemFactory;
+import ch.epfl.favo.FakeUserUtil;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.exception.NotImplementedException;
@@ -45,6 +46,7 @@ public class FavorUtilTest {
     mockDatabaseWrapper = Mockito.mock(CollectionWrapper.class);
     DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
     DependencyFactory.setCurrentFirebaseUser(FakeItemFactory.getFirebaseUser());
+    DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
 
     mockUserUtil = Mockito.mock(UserUtil.class);
@@ -67,10 +69,6 @@ public class FavorUtilTest {
     Mockito.doReturn(successfulFuture)
             .when(mockUserUtil)
             .updateCoinBalance(anyString(), anyDouble());
-
-    Mockito.doReturn(mockUserUtil)
-            .when(mockUserUtil)
-            .getSingleInstance();
 
     Mockito.when(UserUtil.getSingleInstance().updateCoinBalance(anyString(), anyDouble())).thenReturn(null);
 
