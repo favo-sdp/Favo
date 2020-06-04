@@ -72,7 +72,7 @@ public class FavorUtilTest {
             .when(mockUserUtil)
             .getSingleInstance();
 
-    Mockito.when(UserUtil.getSingleInstance()).thenReturn(mockUserUtil);
+    Mockito.when(UserUtil.getSingleInstance().updateCoinBalance(anyString(), anyDouble())).thenReturn(null);
 
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().requestFavor(favor);
