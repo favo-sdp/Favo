@@ -65,6 +65,7 @@ public class MyFavorsPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
         }
       };
 
@@ -74,7 +75,6 @@ public class MyFavorsPageTest {
 
   @Before
   public void setUp() {
-    DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
   }
 

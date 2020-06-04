@@ -166,13 +166,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .updateFavor(tempFavor)
         .thenCompose(
             aVoid ->
-                getUserRepository()
-                    .findUser(user.getId())
-                    .thenCompose(
-                        user1 -> {
-                          user1.setAcceptedFavors(user1.getAcceptedFavors() + 1);
-                          return getUserRepository().updateUser(user1);
-                        }));
+                getUserRepository().incrementFieldForUser(user.getId(), User.ACCEPTED_FAVORS, 1));
   }
 
   public CompletableFuture<Void> deleteFavor(final Favor favor) {
