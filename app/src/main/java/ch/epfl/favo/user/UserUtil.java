@@ -6,6 +6,7 @@ import android.location.Location;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -17,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 
 import ch.epfl.favo.database.CollectionWrapper;
 import ch.epfl.favo.database.ICollectionWrapper;
-import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.TaskToFutureAdapter;
 
@@ -48,7 +48,7 @@ public class UserUtil implements IUserUtil {
    * @throws RuntimeException Unable to post to DB.
    */
   @Override
-  public CompletableFuture<Void> postUser(User user) { // TODO: catch exception in view not here
+  public CompletableFuture<Void> postUser(User user) {
     return collection.addDocument(user);
   }
 
@@ -77,6 +77,12 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
+  public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
+    Task<Void> updateTask = getUserReference(userId).update(field, FieldValue.increment(change));
+    return new TaskToFutureAdapter<>(updateTask).getInstance();
+  }
+
+  @Override
   public CompletableFuture<Void> deleteUser(User user) {
     return collection.removeDocument(user.getId());
   }
@@ -88,27 +94,15 @@ public class UserUtil implements IUserUtil {
   }
 
   @Override
-  public DocumentReference getCurrentUserReference(String userId) {
+  public DocumentReference getUserReference(String userId) {
     return collection.getDocumentQuery(userId);
   }
 
-  /**
-   * Returns all the favors that are active in a given radius.
-   *
-   * @param loc Location to search around (Android location type)
-   * @param radius a given radius to search within
-   */
-  public ArrayList<User> retrieveOtherUsersInGivenRadius(Location loc, double radius) {
 
-    throw new NotImplementedException();
-  }
 
-  /**
-   * Retrieves current registration token for the notification system.
-   *
-   * @param user A user object.
-   */
-  public CompletableFuture<Void> retrieveUserRegistrationToken(User user) {
+
+
+  public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();
     CompletableFuture<InstanceIdResult> futureIdTask =

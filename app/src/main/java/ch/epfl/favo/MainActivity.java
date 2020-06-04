@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
       if (favorId != null && !favorId.equals("")) {
         favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
+
         navController.navigate(R.id.action_global_favorPublishedView, favorBundle);
       }
     }

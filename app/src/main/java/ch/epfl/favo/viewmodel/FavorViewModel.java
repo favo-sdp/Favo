@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.cache.CacheUtil;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
-import ch.epfl.favo.favor.FavorUtil;
+import ch.epfl.favo.favor.IFavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
@@ -50,9 +50,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  // MediatorLiveData<Favor> observedFavor = new MediatorLiveData<>();
 
-  private FavorUtil getFavorRepository() {
+  private IFavorUtil getFavorRepository() {
     return DependencyFactory.getCurrentFavorRepository();
   }
 
@@ -115,8 +114,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
             currentUserId,
             true,
             change) // if user can request favor then post it in the favor collection
-        .thenCompose((aVoid) -> getFavorRepository().requestFavor(tempFavor))
-        .thenCompose((aVoid) -> getUserRepository().updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
+        .thenCompose(aVoid -> getFavorRepository().requestFavor(tempFavor))
+        .thenCompose(
+            avoid ->
+                getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, 1))
+        .thenCompose(
+            (aVoid) ->
+                getUserRepository()
+                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
@@ -125,17 +130,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     tempFavor.setStatusIdToInt(cancelledStatus);
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
-    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
-
+    if (tempFavor.getStatusId() == REQUESTED.toInt()) tempFavor.clearAccepterIds();
     // deposit FavoCoins back into requesters account
-    getUserRepository().updateCoinBalance(favor.getUserIds().get(0), favor.getReward());
-
+    getUserRepository().updateCoinBalance(tempFavor.getRequesterId(), favor.getReward());
     CompletableFuture<Void> resultFuture = updateFavorForCurrentUser(tempFavor, isRequested, -1);
-    for (int i = 1; i < favor.getUserIds().size(); i++) {
-      int commitUser = i;
-      resultFuture.thenCompose(
-          aVoid ->
-              changeUserActiveFavorCount(favor.getUserIds().get(commitUser), !isRequested, -1));
+    for (String userId : favor.getUserIds()) { // loop over original user list
+      if (!userId.equals(currentUserId))
+        resultFuture =
+            resultFuture.thenCompose(aVoid -> changeUserActiveFavorCount(userId, !isRequested, -1));
     }
 
     return resultFuture;
@@ -156,13 +158,15 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     } else { // not sure if this will be wrapped by completablefuture
       throw new IllegalStateException("Wrong Status");
     }
-    return updateFavorForCurrentUser(tempFavor, isRequested, -1);
+    return updateFavorForCurrentUser(tempFavor, isRequested, -1)
+        .thenCompose(
+            aVoid ->
+                getUserRepository().incrementFieldForUser(currentUserId, User.COMPLETED_FAVORS, 1));
   }
 
   /**
    * @param favor
    * @param user could be requester
-   * @return
    */
   public CompletableFuture<Void> acceptFavor(final Favor favor, User user) {
     Favor tempFavor = new Favor(favor);
@@ -172,13 +176,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .updateFavor(tempFavor)
         .thenCompose(
             aVoid ->
-                getUserRepository()
-                    .findUser(user.getId())
-                    .thenCompose(
-                        user1 -> {
-                          user1.setAcceptedFavors(user1.getAcceptedFavors() + 1);
-                          return getUserRepository().updateUser(user1);
-                        }));
+                getUserRepository().incrementFieldForUser(user.getId(), User.ACCEPTED_FAVORS, 1));
   }
 
   public CompletableFuture<Void> deleteFavor(final Favor favor) {
@@ -192,10 +190,10 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   // Upload/download pictures
   @Override
-  public void uploadOrUpdatePicture(Favor favor, Bitmap picture) {
+  public CompletableFuture<Void> uploadOrUpdatePicture(Favor favor, Bitmap picture) {
     CompletableFuture<String> pictureUrl = getPictureUtility().uploadPicture(Folder.FAVOR, picture);
-    pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
-  } // check what happens if updateFavorFoto fails
+    return pictureUrl.thenAccept(url -> getFavorRepository().updateFavorPhoto(favor, url));
+  }
 
   @Override
   public CompletableFuture<Bitmap> downloadPicture(Favor favor) {
@@ -218,7 +216,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     if (activeFavorsAroundMe.getValue() == null
         || (mCurrentLocation.distanceTo(loc)) > 1000 * radiusInKm) {
       getFavorRepository()
-          .getNearbyFavors(loc, radiusInKm)
+          .getLongitudeBoundedFavorsAroundMe(loc, radiusInKm)
           .addSnapshotListener(
               MetadataChanges.EXCLUDE,
               (queryDocumentSnapshots, e) ->
@@ -233,7 +231,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return activeFavorsAroundMe;
   }
 
-  public Map<String, Favor> getNearbyFavorsFromQuery(
+  Map<String, Favor> getNearbyFavorsFromQuery(
       Location loc,
       double radius,
       QuerySnapshot queryDocumentSnapshots,
@@ -265,7 +263,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<Favor> setObservedFavor(String favorId) {
-    // setFavorValue(null);
     getFavorRepository()
         .getFavorReference(favorId)
         .addSnapshotListener(
@@ -311,7 +308,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public boolean isShowObservedFavor() {
+  public boolean showsObservedFavor() {
     return showFavor;
   }
 }

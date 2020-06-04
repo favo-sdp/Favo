@@ -27,6 +27,7 @@ import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
@@ -56,6 +57,7 @@ import static org.hamcrest.core.AllOf.allOf;
 
 @RunWith(AndroidJUnit4.class)
 public class MyFavorsPageTest {
+  Favor fakeFavor;
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -65,6 +67,11 @@ public class MyFavorsPageTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+          FavorUtil.getSingleInstance()
+              .updateCollectionWrapper(
+                  DependencyFactory.getCurrentCollectionWrapper(
+                      TestConstants.TEST_COLLECTION, Favor.class));
         }
       };
 
@@ -74,8 +81,13 @@ public class MyFavorsPageTest {
 
   @Before
   public void setUp() {
-    DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
+    DependencyFactory.setCurrentViewModelClass(null);
+    FavorUtil.getSingleInstance()
+        .updateCollectionWrapper(
+            DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class));
+    fakeFavor = FakeItemFactory.getFavor();
+    fakeFavor.setTitle(TestUtils.generateRandomString(8));
   }
 
   @After
@@ -107,10 +119,11 @@ public class MyFavorsPageTest {
   }
 
   @Test
-  public void testFavorPageElements() {
+  public void testFavorPageElements() throws InterruptedException {
     // click on favors tab
     onView(withId(R.id.nav_favorList)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
+    Thread.sleep(500);
 
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
@@ -148,11 +161,8 @@ public class MyFavorsPageTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Fill in text views with fake favor
-    Favor favor = FakeItemFactory.getFavor();
-
-    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
+    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
     //
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
@@ -173,7 +183,7 @@ public class MyFavorsPageTest {
     Thread.sleep(2000);
 
     // check favor is displayed in active favor list view
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
+    onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed()));
   }
 
   @Test
@@ -185,8 +195,8 @@ public class MyFavorsPageTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    Favor favor = FakeItemFactory.getFavor();
-    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
+
+    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
         .inRoot(isDialog())
@@ -201,7 +211,7 @@ public class MyFavorsPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
-
+    Thread.sleep(1500);
     // Check the following elements are displayed
     onView(withId(R.id.item_title)).check(matches(isDisplayed()));
     onView(withId(R.id.item_requester)).check(matches(isDisplayed()));
@@ -218,11 +228,10 @@ public class MyFavorsPageTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Fill in text views with fake favor
-    Favor favor = FakeItemFactory.getFavor();
 
-    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
+
+    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
@@ -247,7 +256,7 @@ public class MyFavorsPageTest {
     Thread.sleep(2000);
 
     // Check favor is not displayed in active list
-    onView(withText(favor.getTitle())).check(doesNotExist());
+    onView(withText(fakeFavor.getTitle())).check(doesNotExist());
 
     // go to archived list
     onView(withId(R.id.archived_toggle)).perform(click());
@@ -256,10 +265,10 @@ public class MyFavorsPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
-    Thread.sleep(2000);
+    Thread.sleep(3000);
 
     // check favor is displayed in archived favor list view
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
+    onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed()));
   }
 
   @Test
@@ -272,11 +281,10 @@ public class MyFavorsPageTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Fill in text views with fake favor
-    Favor favor = FakeItemFactory.getFavor();
 
-    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getDescription()));
+
+    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(fakeFavor.getDescription()));
 
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
@@ -309,7 +317,7 @@ public class MyFavorsPageTest {
     Thread.sleep(1000);
 
     // Check favor is not displayed in active list
-    onView(withText(favor.getTitle())).check(doesNotExist());
+    onView(withText(fakeFavor.getTitle())).check(doesNotExist());
 
     // go to archived list
     onView(withId(R.id.archived_toggle)).perform(click());
@@ -321,7 +329,7 @@ public class MyFavorsPageTest {
     Thread.sleep(1000);
 
     // check favor is displayed in archived favor list view
-    onView(withText(favor.getTitle())).check(doesNotExist());
+    onView(withText(fakeFavor.getTitle())).check(doesNotExist());
   }
 
   @Test
@@ -329,9 +337,7 @@ public class MyFavorsPageTest {
 
     requestFavorAndSearch();
 
-    Favor favor = FakeItemFactory.getFavor();
-
-    onView(isAssignableFrom(EditText.class)).perform(typeText(favor.getTitle()));
+    onView(isAssignableFrom(EditText.class)).perform(typeText(fakeFavor.getTitle()));
     Thread.sleep(3000);
 
     getInstrumentation().waitForIdleSync();
@@ -339,7 +345,7 @@ public class MyFavorsPageTest {
     onView(withId(R.id.swipe_refresh_layout))
         .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(1000);
+    Thread.sleep(2000);
     // check query is successful and click on found item
     onView(withId(R.id.tip)).check(matches(not(isDisplayed())));
     getInstrumentation().waitForIdleSync();
@@ -380,12 +386,11 @@ public class MyFavorsPageTest {
     Thread.sleep(1000);
     // if keyboard hidden, one time of pressBack will return to Favor List view
     onView(withId(R.id.hamburger_menu_button)).check(matches(isDisplayed())).perform(click());
-    Favor favor = FakeItemFactory.getFavor();
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
 
     // check favor is displayed in active favor list view
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
+    onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed()));
   }
 
   private void requestFavorAndSearch() throws InterruptedException {
@@ -397,11 +402,8 @@ public class MyFavorsPageTest {
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed())).perform(click());
     getInstrumentation().waitForIdleSync();
 
-    // Fill in text views with fake favor
-    Favor favor = FakeItemFactory.getFavor();
-
-    onView(withId(R.id.title_request_view)).perform(typeText(favor.getTitle()));
-    onView(withId(R.id.details)).perform(typeText(favor.getTitle()));
+    onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
+    onView(withId(R.id.details)).perform(typeText(fakeFavor.getTitle()));
 
     // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
@@ -422,6 +424,6 @@ public class MyFavorsPageTest {
     Thread.sleep(2000);
 
     // check item is displayed
-    onView(withText(favor.getTitle())).check(matches(isDisplayed()));
+    onView(withText(fakeFavor.getTitle())).check(matches(isDisplayed()));
   }
 }

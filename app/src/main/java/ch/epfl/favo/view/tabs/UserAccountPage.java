@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ public class UserAccountPage extends Fragment {
   private View view;
   private ImageView mImageView;
   private User currentUser;
+  private String TAG = "UserAccountPage";
 
   public UserAccountPage() {
     // Required empty public constructor
@@ -64,10 +66,10 @@ public class UserAccountPage extends Fragment {
     displayUserDetails(new User(null, "", "", null, null, null));
 
     DependencyFactory.getCurrentUserRepository()
-      .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-      .whenComplete((user, e) -> currentUser = user)
-      .whenComplete((user, e) -> displayUserDetails(user))
-      .whenComplete((user, e) -> setupEditProfileDialog(inflater, user));
+        .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
+        .whenComplete((user, e) -> currentUser = user)
+        .whenComplete((user, e) -> displayUserDetails(user))
+        .whenComplete((user, e) -> setupEditProfileDialog(inflater, user));
 
     return view;
   }
@@ -81,7 +83,7 @@ public class UserAccountPage extends Fragment {
   }
 
   private void setupEditProfileDialog(LayoutInflater inflater, User user) {
-    Button editProfileButton = view.findViewById(R.id.edit_profile);
+    Button editProfileButton = view.findViewById(R.id.edit_profile_button);
     TextView displayNameView = view.findViewById(R.id.user_name);
     ImageView profilePictureView = view.findViewById(R.id.user_profile_picture);
 
@@ -91,34 +93,41 @@ public class UserAccountPage extends Fragment {
 
     setupPictureUploadButtons(dialogView);
 
-    AlertDialog changeProfileDetailsDialog = new AlertDialog.Builder(requireContext())
-      .setView(dialogView)
-      .setNegativeButton(R.string.name_change_dialog_negative, ((dialog, which) -> dialog.dismiss()))
-      .setPositiveButton(R.string.name_change_dialog_positive, (dialog, which) -> {
+    AlertDialog changeProfileDetailsDialog =
+        new AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setNegativeButton(
+                R.string.name_change_dialog_negative, ((dialog, which) -> dialog.dismiss()))
+            .setPositiveButton(
+                R.string.name_change_dialog_positive,
+                (dialog, which) -> {
+                  user.setName(displayNameInput.getText().toString());
+                  if (mImageView.getDrawable() != null) {
+                    Bitmap newProfilePicture =
+                        ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
+                    PictureUtil.getInstance()
+                        .uploadPicture(Folder.PROFILE_PICTURE, newProfilePicture)
+                        .thenAccept(
+                            url -> {
+                              user.setProfilePictureUrl(url);
+                              DependencyFactory.getCurrentUserRepository().updateUser(user);
+                            });
+                    profilePictureView.setImageBitmap(newProfilePicture);
+                    mImageView.setImageResource(0);
+                  } else {
+                    DependencyFactory.getCurrentUserRepository().updateUser(user);
+                  }
 
-        user.setName(displayNameInput.getText().toString());
-        if (mImageView.getDrawable() != null) {
-          Bitmap newProfilePicture = ((BitmapDrawable) mImageView.getDrawable()).getBitmap();
-          PictureUtil.getInstance().uploadPicture(Folder.PROFILE_PICTURE, newProfilePicture)
-            .thenAccept(url -> {
-              user.setProfilePictureUrl(url);
-              DependencyFactory.getCurrentUserRepository().updateUser(user);
-            });
-          profilePictureView.setImageBitmap(newProfilePicture);
-          mImageView.setImageResource(0);
-        } else {
-          DependencyFactory.getCurrentUserRepository().updateUser(user);
-        }
+                  displayNameView.setText(displayNameInput.getText());
+                  dialog.dismiss();
+                })
+            .create();
 
-        displayNameView.setText(displayNameInput.getText());
-        dialog.dismiss();
-      })
-      .create();
-
-    editProfileButton.setOnClickListener(v -> {
-      displayNameInput.setText(displayNameView.getText());
-      changeProfileDetailsDialog.show();
-    });
+    editProfileButton.setOnClickListener(
+        v -> {
+          displayNameInput.setText(displayNameView.getText());
+          changeProfileDetailsDialog.show();
+        });
   }
 
   /** Identifes buttons and sets onclick listeners. */
@@ -164,9 +173,9 @@ public class UserAccountPage extends Fragment {
   /** Called when camera button is clicked Method calls camera intent. */
   private void takePicture() {
     if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-      != PackageManager.PERMISSION_GRANTED) {
+        != PackageManager.PERMISSION_GRANTED) {
       requireActivity()
-        .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
+          .requestPermissions(new String[] {Manifest.permission.CAMERA}, USE_CAMERA_REQUEST);
     } else {
       Intent takePictureIntent = DependencyFactory.getCurrentCameraIntent();
 
@@ -178,7 +187,7 @@ public class UserAccountPage extends Fragment {
 
   private boolean isCameraAvailable() {
     boolean hasCamera =
-      requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+        requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     int numberOfCameras = Camera.getNumberOfCameras();
     return (hasCamera && numberOfCameras != 0);
   }
@@ -200,18 +209,18 @@ public class UserAccountPage extends Fragment {
     }
     switch (requestCode) {
       case PICK_IMAGE_REQUEST:
-      {
-        Uri mImageUri = data.getData();
-        mImageView.setImageURI(mImageUri);
-        break;
-      }
+        {
+          Uri mImageUri = data.getData();
+          mImageView.setImageURI(mImageUri);
+          break;
+        }
       case USE_CAMERA_REQUEST:
-      {
-        Bundle extras = data.getExtras();
-        Bitmap imageBitmap = (Bitmap) extras.get("data");
-        mImageView.setImageBitmap(imageBitmap);
-        break;
-      }
+        {
+          Bundle extras = data.getExtras();
+          Bitmap imageBitmap = (Bitmap) extras.get("data");
+          mImageView.setImageBitmap(imageBitmap);
+          break;
+        }
     }
   }
 
@@ -225,20 +234,19 @@ public class UserAccountPage extends Fragment {
     if (user.getProfilePictureUrl() != null) {
       ImageView profilePictureView = view.findViewById(R.id.user_profile_picture);
 
-      Glide.with(this)
-        .load(user.getProfilePictureUrl())
-        .fitCenter()
-        .into(profilePictureView);
+      Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(profilePictureView);
     }
 
     TextView favorsCreatedView = view.findViewById(R.id.user_account_favorsCreated);
     favorsCreatedView.setText(getString(R.string.favors_created_format, user.getRequestedFavors()));
 
     TextView favorsAcceptedView = view.findViewById(R.id.user_account_favorsAccepted);
-    favorsAcceptedView.setText(getString(R.string.favors_accepted_format, user.getAcceptedFavors()));
+    favorsAcceptedView.setText(
+        getString(R.string.favors_accepted_format, user.getAcceptedFavors()));
 
     TextView favorsCompletedView = view.findViewById(R.id.user_account_favorsCompleted);
-    favorsCompletedView.setText(getString(R.string.favors_completed_format, user.getCompletedFavors()));
+    favorsCompletedView.setText(
+        getString(R.string.favors_completed_format, user.getCompletedFavors()));
 
     TextView accountLikesView = view.findViewById(R.id.user_account_likes);
     accountLikesView.setText(getString(R.string.likes_format, user.getLikes()));
@@ -277,6 +285,7 @@ public class UserAccountPage extends Fragment {
       }
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
+      Log.e(TAG, task.getException().toString());
       CommonTools.showSnackbar(getView(), getString(errorMessage));
     }
   }

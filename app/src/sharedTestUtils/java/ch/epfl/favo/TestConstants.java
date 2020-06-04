@@ -2,7 +2,10 @@ package ch.epfl.favo;
 
 import android.net.Uri;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import ch.epfl.favo.database.DatabaseWrapper;
 import ch.epfl.favo.favor.FavorStatus;
@@ -32,7 +35,8 @@ public class TestConstants {
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
   public static final String PICTURE_URL = "https://favo.com/picture";
   public static final String OTHER_PICTURE_URL = "https://favo.com/otherPicture";
-
+  public static final String REQUESTER_NOTIFICATION_ID = "requesterNotificationId";
+  public static final ArrayList<String> USER_IDS = new ArrayList<>(Arrays.asList(new String[]{REQUESTER_ID, ACCEPTER_ID}));
   // Notification related constants
   public static final String NOTIFICATION_TITLE = "title";
   public static final String NOTIFICATION_BODY = "body";

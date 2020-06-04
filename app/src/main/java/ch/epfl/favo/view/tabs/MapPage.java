@@ -103,6 +103,7 @@ public class MapPage extends Fragment
   private boolean firstOpenApp = true;
   private RadioButton nearbyFavorListToggle;
   private FloatingActionButton offlineBtn;
+  FloatingActionButton lookThroughBtn;
   private ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
@@ -134,6 +135,7 @@ public class MapPage extends Fragment
     return view;
   }
 
+  @SuppressLint("MissingPermission")
   @Override
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
@@ -142,23 +144,20 @@ public class MapPage extends Fragment
         CacheUtil.getInstance()
             .getValueFromCacheStr(
                 requireContext(), getString(R.string.radius_notifications_setting_key));
-    radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
-    if (!radiusSetting.equals("")) {
-      radiusThreshold = Integer.parseInt(radiusSetting);
-    }
+    radiusThreshold =
+        (!radiusSetting.isEmpty())
+            ? Integer.parseInt(radiusSetting)
+            : Integer.parseInt(getString(R.string.default_radius));
     defaultZoomLevel = CommonTools.notificationRadiusToZoomLevel(radiusThreshold);
 
     // set map style from user preference
     String mapStyleSetting =
         CacheUtil.getInstance()
             .getValueFromCacheStr(requireContext(), getString(R.string.map_style_key));
-    int map_mode_idx = Integer.parseInt(getString(R.string.map_style_default_value));
-    if (!mapStyleSetting.equals("")) {
-      map_mode_idx = Integer.parseInt(mapStyleSetting);
-    }
-
+    if (mapStyleSetting == null || mapStyleSetting.equals("")) mapStyleSetting = "0";
+    int mapModeIndex = Integer.parseInt(mapStyleSetting);
     MapStyleOptions mapStyleOptions =
-        MapStyleOptions.loadRawResourceStyle(requireContext(), mapStyles.get(map_mode_idx));
+        MapStyleOptions.loadRawResourceStyle(requireContext(), mapStyles.get(mapModeIndex));
     googleMap.setMapStyle(mapStyleOptions);
 
     mMap = googleMap;
@@ -168,9 +167,6 @@ public class MapPage extends Fragment
     mMap.setOnInfoWindowClickListener(this);
     mMap.setOnMapLongClickListener(new LongClick());
     mMap.setOnMarkerDragListener(new MarkerDrag());
-
-    FloatingActionButton lookThroughBtn = view.findViewById(R.id.look_through_btn);
-    lookThroughBtn.setOnClickListener(this::onLookThroughClick);
 
     try {
       mLocation = DependencyFactory.getCurrentGpsTracker(getContext()).getLocation();
@@ -185,7 +181,7 @@ public class MapPage extends Fragment
       return;
     }
     try {
-      if (!getViewModel().isShowObservedFavor() && intentType != 0) //
+      if (!getViewModel().showsObservedFavor() && intentType != 0) //
       {
         boolean isMarkerEditable = intentType != OBSERVE_LOCATION;
         drawMarkerAndFocusOnLocation(isMarkerEditable);
@@ -232,7 +228,7 @@ public class MapPage extends Fragment
   private void setLimitedView() {
     view.findViewById(R.id.toggle).setVisibility(View.GONE);
     ((MainActivity) requireActivity()).hideBottomNavigation();
-
+    lookThroughBtn.setVisibility(View.GONE);
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
     setupToolbar(intentType);
@@ -275,6 +271,8 @@ public class MapPage extends Fragment
   @Override
   public void onStart() {
     super.onStart();
+    lookThroughBtn = view.findViewById(R.id.look_through_btn);
+    lookThroughBtn.setOnClickListener(this::onLookThroughClick);
     if (getArguments() != null) {
       intentType = getArguments().getInt(LOCATION_ARGUMENT_KEY);
       latitudeFromChat = getArguments().getString(LATITUDE_ARGUMENT_KEY);
@@ -338,7 +336,7 @@ public class MapPage extends Fragment
             getViewLifecycleOwner(),
             favor -> {
               try {
-                if (favor != null && favorViewModel.isShowObservedFavor()) {
+                if (favor != null && favorViewModel.showsObservedFavor()) {
                   favorViewModel.setShowObservedFavor(false);
                   setFocusedFavor(favor);
                   boolean isRequested = // check if favor is requested
@@ -473,7 +471,7 @@ public class MapPage extends Fragment
   }
 
   private void onToggleClick(View view) {
-    Navigation.findNavController(requireView()).navigate(R.id.action_nav_map_to_nearby_favor_list);
+    Navigation.findNavController(view).navigate(R.id.action_nav_map_to_nearby_favor_list);
   }
 
   private void onLookThroughClick(View view) {

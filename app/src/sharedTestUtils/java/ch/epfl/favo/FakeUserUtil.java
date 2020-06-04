@@ -54,8 +54,14 @@ public class FakeUserUtil implements IUserUtil {
   }
 
   @Override
-  public CompletableFuture updateUser(User user) {
+  public CompletableFuture<Void> updateUser(User user) {
     return defaultResult();
+  }
+
+  @Override
+  public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
+    if (isThrowingError) return failedCompletableFuture;
+    return successfulCompletableFuture;
   }
 
   @Override
@@ -80,18 +86,17 @@ public class FakeUserUtil implements IUserUtil {
     return successfulUserFuture;
   }
 
-  @Override
   public CompletableFuture updateCoinBalance(String userId, double reward) {
     return defaultResult();
   }
 
   @Override
-  public CompletableFuture retrieveUserRegistrationToken(User user) {
+  public CompletableFuture<Void> postUserRegistrationToken(User user) {
     return defaultResult();
   }
 
   @Override
-  public DocumentReference getCurrentUserReference(String userId) {
+  public DocumentReference getUserReference(String userId) {
     return currentUserReference;
   }
 

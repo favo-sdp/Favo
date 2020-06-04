@@ -1,6 +1,7 @@
 package ch.epfl.favo.view.tabs.addFavor;
 
 import android.annotation.SuppressLint;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,8 +26,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +36,7 @@ import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
+import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -50,7 +50,7 @@ import static ch.epfl.favo.util.CommonTools.handleException;
 public class FavorPublishedView extends Fragment {
   private static String TAG = "FavorPublishedView";
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
-  private static final String FAOV_DOMAIN = "https://favoapp.page.link</string>";
+  private static final String FAVO_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
   private FavorStatus favorStatus;
   private Favor currentFavor;
@@ -67,6 +67,7 @@ public class FavorPublishedView extends Fragment {
   private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
   private FirebaseUser currentUser;
+  private ImageView userProfilePicture;
 
   private Map<String, User> commitUsers = new HashMap<>();
 
@@ -212,7 +213,7 @@ public class FavorPublishedView extends Fragment {
         FirebaseDynamicLinks.getInstance()
             .createDynamicLink()
             .setLink(baseUrl)
-            .setDomainUriPrefix(FAOV_DOMAIN)
+            .setDomainUriPrefix(FAVO_DOMAIN)
             .setAndroidParameters(new DynamicLink.AndroidParameters.Builder(PACKAGE_NAME).build())
             .setSocialMetaTagParameters(
                 new DynamicLink.SocialMetaTagParameters.Builder()
@@ -228,13 +229,12 @@ public class FavorPublishedView extends Fragment {
     commitAndCompleteBtn = rootView.findViewById(R.id.commit_complete_button);
     Button chatBtn = rootView.findViewById(R.id.chat_button);
     TextView locationAccessBtn = rootView.findViewById(R.id.location);
-    ImageView userProfile = rootView.findViewById(R.id.user_profile_picture);
+    userProfilePicture = rootView.findViewById(R.id.user_profile_picture);
     TextView userName = rootView.findViewById(R.id.user_name_published_view);
-
     locationAccessBtn.setOnClickListener(new onButtonClick());
     commitAndCompleteBtn.setOnClickListener(new onButtonClick());
     chatBtn.setOnClickListener(new onButtonClick());
-    userProfile.setOnClickListener(new onButtonClick());
+    userProfilePicture.setOnClickListener(new onButtonClick());
     userName.setOnClickListener(new onButtonClick());
   }
 
@@ -266,25 +266,21 @@ public class FavorPublishedView extends Fragment {
   private void tryMoveToUserInfoPage(String userId) {
 
     // check if user exists
-    DocumentReference docIdRef =
-        DependencyFactory.getCurrentUserRepository().getCurrentUserReference(userId);
-
-    docIdRef
-        .get()
-        .addOnCompleteListener(
-            task -> {
-              if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null && document.exists()) {
+    CompletableFuture<Void> navigateToUserPage =
+        DependencyFactory.getCurrentUserRepository()
+            .findUser(userId)
+            .thenAccept(
+                user -> {
                   Bundle userBundle = new Bundle();
                   userBundle.putString(CommonTools.USER_ARGS, userId);
-                  Navigation.findNavController(requireView())
+                  findNavController(requireView())
                       .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
-                  return;
-                }
-              }
-              CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
-            });
+                })
+            .exceptionally(
+                t -> {
+                  CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
+                  return null;
+                });
   }
 
   private void displayFromFavor(View rootView, Favor favor) {
@@ -305,7 +301,7 @@ public class FavorPublishedView extends Fragment {
     if (isRequestedByCurrentUser && favor.getUserIds().size() > 1) setupUserListView();
     else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
-    displayUserProfile(favor);
+    displayUserInfo(favor.getRequesterId());
     updateAppBarMenuDisplay();
     updateDisplayFromViewStatus();
   }
@@ -316,31 +312,18 @@ public class FavorPublishedView extends Fragment {
     textView.setKeyListener(null);
   }
 
-  private void displayUserProfile(Favor favor) {
-    if (isRequestedByCurrentUser) {
-      // display user picture
-      if (currentUser.getPhotoUrl() != null) {
-
-        Glide.with(this)
-            .load(currentUser.getPhotoUrl())
-            .fitCenter()
-            .into((ImageView) requireView().findViewById(R.id.user_profile_picture));
-      }
-      // display user name
-      displayName(currentUser.getDisplayName(), currentUser.getEmail());
-    } else {
-      DependencyFactory.getCurrentUserRepository()
-          .findUser(favor.getRequesterId())
-          .thenAccept(
-              user -> {
-                displayName(user.getName(), user.getEmail());
-              });
-    }
+  private void displayUserInfo(String userId){
+    DependencyFactory.getCurrentUserRepository().findUser(userId).thenAccept(this::displayUserInfo);
   }
-
-  private void displayName(String name, String email) {
-    if (name == null || name.equals("")) name = CommonTools.emailToName(email);
+  private void displayUserInfo(User user){
+    String name = (user.getName() == null || user.getName().equals("")) ? CommonTools.emailToName(user.getEmail()):user.getName();
     ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
+    if (user.getProfilePictureUrl() != null) {
+      Glide.with(this)
+              .load(user.getProfilePictureUrl())
+              .fitCenter()
+              .into(userProfilePicture);
+    }
   }
 
   private void setupImageView(View rootView, Favor favor) {
@@ -524,32 +507,25 @@ public class FavorPublishedView extends Fragment {
     } else {
       otherUserId = currentFavor.getRequesterId();
     }
+    IUserUtil userRepository = DependencyFactory.getCurrentUserRepository();
 
-    DependencyFactory.getCurrentUserRepository()
-        .findUser(otherUserId)
-        .thenAccept(
-            user -> {
-              if (user == null) return;
-              new AlertDialog.Builder(requireActivity())
-                  .setMessage(getText(R.string.feedback_description))
-                  .setPositiveButton(
-                      getText(R.string.positive_feedback),
-                      (dialogInterface, i) -> {
-                        user.setLikes(user.getLikes() + 1);
-                        DependencyFactory.getCurrentUserRepository().updateUser(user);
-
-                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                      })
-                  .setNegativeButton(
-                      getText(R.string.negative_feedback),
-                      (dialogInterface, i) -> {
-                        user.setDislikes(user.getDislikes() + 1);
-                        DependencyFactory.getCurrentUserRepository().updateUser(user);
-
-                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                      })
-                  .show();
-            });
+    new AlertDialog.Builder(requireActivity())
+        .setMessage(getText(R.string.feedback_description))
+        .setPositiveButton(
+            getText(R.string.positive_feedback),
+            (dialogInterface, i) -> {
+              CompletableFuture<Void> feedbackFuture =
+                  userRepository.incrementFieldForUser(otherUserId, User.LIKES, 1);
+              handleResult(feedbackFuture, R.string.feedback_message);
+            })
+        .setNegativeButton(
+            getText(R.string.negative_feedback),
+            (dialogInterface, i) -> {
+              CompletableFuture<Void> feedbackFuture =
+                  userRepository.incrementFieldForUser(otherUserId, User.DISLIKES, 1);
+              handleResult(feedbackFuture, R.string.feedback_message);
+            })
+        .show();
   }
 
   private void cancelFavor() {
