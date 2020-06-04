@@ -18,6 +18,8 @@ public interface IUserUtil {
 
   CompletableFuture<User> findUser(String id) throws Resources.NotFoundException;
 
+  CompletableFuture<Void> updateCoinBalance(String userId, double reward);
+
   CompletableFuture retrieveUserRegistrationToken(User user);
 
   DocumentReference getCurrentUserReference(String userId);
