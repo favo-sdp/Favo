@@ -199,15 +199,15 @@ public class User implements Document {
     return location;
   }
 
-  int getActiveAcceptingFavors() {
+  public int getActiveAcceptingFavors() {
     return activeAcceptingFavors;
   }
 
-  int getActiveRequestingFavors() {
+  public int getActiveRequestingFavors() {
     return activeRequestingFavors;
   }
 
-  String getPictureUrl() {
+  public String getPictureUrl() {
     return profilePicUrl;
   }
 

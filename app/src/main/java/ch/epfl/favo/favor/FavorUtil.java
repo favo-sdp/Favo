@@ -93,10 +93,9 @@ public class FavorUtil {
             radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return collection
         .getReference()
-        .whereEqualTo("isArchived", false)
+        .whereEqualTo(Favor.IS_ARCHIVED, false)
         .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
-        .whereLessThan("location.longitude", loc.getLongitude() + longDif)
-        .limit(50);
+        .whereLessThan("location.longitude", loc.getLongitude() + longDif);
   }
 
   /**

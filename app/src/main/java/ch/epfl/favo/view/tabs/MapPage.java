@@ -140,8 +140,7 @@ public class MapPage extends Fragment
 
     String radiusSetting =
         CacheUtil.getInstance()
-            .getValueFromCacheStr(
-                requireContext(), getString(R.string.radius_map_setting_key));
+            .getValueFromCacheStr(requireContext(), getString(R.string.radius_map_setting_key));
     radiusThreshold = Integer.parseInt(getString(R.string.default_radius));
     if (!radiusSetting.equals("")) {
       radiusThreshold = Integer.parseInt(radiusSetting);
@@ -397,6 +396,10 @@ public class MapPage extends Fragment
                 .navigate(R.id.action_nav_map_to_favorPublishedView_via_RequestView, favorBundle);
           }
         });
+
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+    }
   }
 
   public IFavorViewModel getViewModel() {

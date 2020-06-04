@@ -148,11 +148,4 @@ public class CommonTools {
     }
     if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
   }
-
-  @RequiresApi(api = Build.VERSION_CODES.N)
-  public static String getUserName(User user) {
-    String name = user.getName();
-    if (name == null || name.equals("")) return (CommonTools.emailToName(user.getEmail()) + " - ");
-    else return (name + " - ");
-  }
 }

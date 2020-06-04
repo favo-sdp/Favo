@@ -1,6 +1,7 @@
-package ch.epfl.favo.view.tabs;
+package ch.epfl.favo.view.tabs.favorList;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -8,25 +9,29 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ch.epfl.favo.R;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
-import ch.epfl.favo.view.tabs.favorList.FavorAdapter;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
 import static androidx.navigation.Navigation.findNavController;
@@ -36,10 +41,11 @@ import static androidx.navigation.Navigation.findNavController;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class NearbyFavorList extends Fragment {
 
   private View rootView;
-  private ListView listView;
+  private RecyclerView recycleView;
   private TextView tipTextView;
 
   private SearchView searchView;
@@ -69,7 +75,8 @@ public class NearbyFavorList extends Fragment {
     tipTextView = rootView.findViewById(R.id.nearby_tip);
     tipTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
 
-    listView = rootView.findViewById(R.id.nearby_favor_list);
+    recycleView = rootView.findViewById(R.id.nearby_favor_list);
+    recycleView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
     setupListView();
 
     RadioButton toggle = rootView.findViewById(R.id.map_switch);
@@ -91,17 +98,17 @@ public class NearbyFavorList extends Fragment {
 
   private void setupNearbyFavorsListener() {
     getViewModel()
-      .getFavorsAroundMe()
-      .observe(
-          getViewLifecycleOwner(),
-          stringFavorMap -> {
-            try {
-              nearbyFavors = stringFavorMap;
-              displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
-            } catch (Exception e) {
-              CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
-            }
-          });
+        .getFavorsAroundMe()
+        .observe(
+            getViewLifecycleOwner(),
+            stringFavorMap -> {
+              try {
+                nearbyFavors = stringFavorMap;
+                displayFavorList(nearbyFavors, R.string.favor_no_nearby_favor);
+              } catch (Exception e) {
+                CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
+              }
+            });
   }
 
   /*
@@ -142,6 +149,7 @@ public class NearbyFavorList extends Fragment {
 
   /**
    * Display the list of favors specified by the argument, or display an tip string.
+   *
    * @param favors: a map of [favor_id, favor] to be displayed
    * @param textId: ID of the string to be displayed by tipTextView when favor list is empty
    */
@@ -150,7 +158,9 @@ public class NearbyFavorList extends Fragment {
       tipTextView.setText(getString(textId));
       tipTextView.setVisibility(View.VISIBLE);
     } else tipTextView.setVisibility(View.INVISIBLE);
-    listView.setAdapter(new FavorAdapter(getContext(), new ArrayList<>(favors.values())));
+
+    List<Favor> favorList = new ArrayList<>(favors.values());
+    recycleView.setAdapter(createFavorAdapter(favorList));
   }
 
   private void setupSearchListeners() {
@@ -188,26 +198,69 @@ public class NearbyFavorList extends Fragment {
   }
 
   /**
-   * Set up onItemClickListener for list items.
-   * Specifically, when a favor item is clicked,
-   * 1. High the soft keyboard.
-   * 2. Extract the favor object and put it inside a bundle with key CommonTools.FAVOR_ARGS
-   * 3. Navigate to favorPublishView with this bundle.
+   * Set up onItemClickListener for list items. Specifically, when a favor item is clicked, 1. High
+   * the soft keyboard. 2. Extract the favor object and put it inside a bundle with key
+   * CommonTools.FAVOR_ARGS 3. Navigate to favorPublishView with this bundle.
    */
   private void setupListView() {
-    listView.setOnItemClickListener(
-        (parent, view, position, id) -> {
-          CommonTools.hideSoftKeyboard(requireActivity());
-          Favor favor = (Favor) parent.getItemAtPosition(position);
-          Bundle favorBundle = new Bundle();
-          favorBundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
-          findNavController(requireView())
-              .navigate(R.id.action_nav_nearby_list_to_favorPublishedView, favorBundle);
-        });
+
+    recycleView.setLayoutManager(new LinearLayoutManager(requireContext()));
+    recycleView.setAdapter(createFavorAdapter(new ArrayList<>()));
+
+    //    recycleView.setOnItemClickListener(
+    //        (parent, view, position, id) -> {
+    //          CommonTools.hideSoftKeyboard(requireActivity());
+    //          Favor favor = (Favor) parent.getItemAtPosition(position);
+    //          Bundle favorBundle = new Bundle();
+    //          favorBundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
+    //          findNavController(requireView())
+    //              .navigate(R.id.action_nav_nearby_list_to_favorPublishedView, favorBundle);
+    //        });
+  }
+
+  private RecyclerView.Adapter<FavorViewHolder> createFavorAdapter(List<Favor> items) {
+    return new RecyclerView.Adapter<FavorViewHolder>() {
+      @NonNull
+      @Override
+      public FavorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view =
+            LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.favor_list_item, parent, false);
+
+        view.setOnClickListener(
+            v -> {
+              int itemPosition = recycleView.getChildLayoutPosition(view);
+              Favor favor = items.get(itemPosition);
+              if (favor != null) {
+                Bundle favorBundle = new Bundle();
+                favorBundle.putString(CommonTools.FAVOR_ARGS, favor.getId());
+                Navigation.findNavController(requireView())
+                    .navigate(R.id.action_nav_nearby_list_to_favorPublishedView, favorBundle);
+              }
+            });
+
+        return new FavorViewHolder(view);
+      }
+
+      @RequiresApi(api = Build.VERSION_CODES.N)
+      @Override
+      public void onBindViewHolder(@NonNull FavorViewHolder holder, int position) {
+        Favor favor = items.get(position);
+        if (favor != null) {
+          holder.bind(requireContext(), favor);
+        }
+      }
+
+      @Override
+      public int getItemCount() {
+        return items.size();
+      }
+    };
   }
 
   /**
    * Ensure click on the view will hide keyboard
+   *
    * @param view: clicking on this view will hide the soft keyboard
    */
   @SuppressLint("ClickableViewAccessibility")
