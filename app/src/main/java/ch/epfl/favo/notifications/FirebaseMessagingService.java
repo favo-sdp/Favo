@@ -22,6 +22,7 @@ import java.util.Random;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class FirebaseMessagingService
@@ -87,7 +88,7 @@ public class FirebaseMessagingService
   public void onNewToken(@NonNull String token) {
     // update user notification id
     if (DependencyFactory.getCurrentFirebaseUser() != null) {
-      UserUtil.getSingleInstance()
+      DependencyFactory.getCurrentUserRepository()
           .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
           .thenAccept(
               user -> {

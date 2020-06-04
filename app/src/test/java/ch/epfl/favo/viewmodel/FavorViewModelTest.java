@@ -32,6 +32,7 @@ import ch.epfl.favo.util.IPictureUtil.Folder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -79,6 +80,7 @@ public class FavorViewModelTest {
     Mockito.doReturn(successfulResult).when(pictureUtility).deletePicture(Mockito.anyString());
     Mockito.doReturn(successfulResult).when(favorRepository).updateFavor(any(Favor.class));
     Mockito.doReturn(successfulResult).when(favorRepository).requestFavor(any(Favor.class));
+    Mockito.doReturn(successfulResult).when(userRepository).updateCoinBalance(anyString(), anyDouble());
     Mockito.doReturn(successfulResult).when(favorRepository).removeFavor(Mockito.anyString());
     Mockito.doReturn(successfulResult)
         .when(userRepository)
