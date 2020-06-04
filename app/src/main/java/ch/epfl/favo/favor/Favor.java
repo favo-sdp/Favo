@@ -110,7 +110,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.isArchived = other.isArchived;
     this.pictureUrl = other.getPictureUrl();
     this.postedTime = other.getPostedTime();
-    this.userIds = other.getUserIds();
+    this.userIds = new ArrayList<>(other.getUserIds());
   }
 
   // Constructor to make statusId int conversion implicit

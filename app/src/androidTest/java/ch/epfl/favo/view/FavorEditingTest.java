@@ -359,7 +359,7 @@ public class FavorEditingTest {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
     requestFavor();
 
-    // cancel favor
+    // edit favor
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
     onView(withText(R.string.edit_favor)).check(matches(isDisplayed())).perform(click());

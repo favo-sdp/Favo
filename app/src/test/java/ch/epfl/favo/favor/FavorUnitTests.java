@@ -21,6 +21,7 @@ import ch.epfl.favo.gps.FavoLocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -80,6 +81,8 @@ public class FavorUnitTests {
     Favor favor = FakeItemFactory.getFavorWithUrl();
     Favor newFavor = new Favor(favor);
     assertTrue(favor.contentEquals(newFavor));
+    newFavor.setAccepterId("otherId");
+    assertNotEquals(favor,newFavor);
   }
   @Test
   public void testParcelConstructor(){
