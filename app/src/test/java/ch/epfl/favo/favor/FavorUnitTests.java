@@ -44,7 +44,6 @@ public class FavorUnitTests {
     assertEquals(TestConstants.FAVOR_STATUS.toInt(), favor.getStatusId());
     assertEquals(TestConstants.PICTURE_URL, favor.getPictureUrl());
     assertEquals((int) TestConstants.REWARD, (int) favor.getReward());
-    assertNotNull(TestConstants.REQUESTER_NOTIFICATION_ID, favor.getRequesterNotifId());
   }
 
   @Test
@@ -64,13 +63,11 @@ public class FavorUnitTests {
     favor.setAccepterId(accepterId);
     favor.setPictureUrl(otherPictureUrl);
     favor.setReward(reward);
-    favor.setRequesterNotifId(TestConstants.REQUESTER_NOTIFICATION_ID);
 
     assertEquals(location, favor.getLocation());
     assertEquals(statusId.toInt(), favor.getStatusId());
     assertEquals(accepterId, favor.getAccepterId());
     assertEquals(otherPictureUrl, favor.getPictureUrl());
-    assertEquals(TestConstants.REQUESTER_NOTIFICATION_ID, favor.getRequesterNotifId());
     assertEquals((int) reward, (int) favor.getReward());
   }
 
