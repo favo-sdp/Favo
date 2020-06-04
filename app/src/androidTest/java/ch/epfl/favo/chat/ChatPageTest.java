@@ -64,6 +64,9 @@ import static org.mockito.ArgumentMatchers.anyDouble;
 
 public class ChatPageTest {
 
+  private String className = "android.widget.RelativeLayout";
+  private String testFavorId = "testImage";
+
   private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
@@ -176,7 +179,6 @@ public class ChatPageTest {
     typeMessage(message);
 
     onView(withId(R.id.messageEdit)).perform(pressImeActionButton());
-
     Thread.sleep(1000);
 
     // check message is displayed
@@ -222,8 +224,7 @@ public class ChatPageTest {
         onView(
             allOf(
                 withId(R.id.messagesList),
-                childAtPosition(withClassName(is("android.widget.RelativeLayout")), 1)));
-
+                childAtPosition(withClassName(is(className)), 1)));
     recyclerView.perform(actionOnItemAtPosition(0, click()));
     getInstrumentation().waitForIdleSync();
     Thread.sleep(3000);
@@ -294,7 +295,7 @@ public class ChatPageTest {
     Uri path =
         CacheUtil.getInstance()
             .saveToInternalStorage(
-                Objects.requireNonNull(chatPage.getContext()), bm, "testImage", 0);
+                Objects.requireNonNull(chatPage.getContext()), bm, testFavorId, 0);
     return Uri.fromFile(new File(path.toString()));
   }
 

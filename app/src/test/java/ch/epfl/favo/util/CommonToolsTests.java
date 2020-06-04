@@ -35,9 +35,9 @@ public class CommonToolsTests {
   @Test
   public void RadiusToZoomLevelTest() {
     MapPage mapPage = new MapPage();
-    assertEquals(16, CommonTools.notificationRadiusToZoomLevel(1));
-    assertEquals(14, CommonTools.notificationRadiusToZoomLevel(5));
-    assertEquals(13, CommonTools.notificationRadiusToZoomLevel(10));
+    assertEquals(15, CommonTools.notificationRadiusToZoomLevel(1));
+    assertEquals(13, CommonTools.notificationRadiusToZoomLevel(5));
+    assertEquals(12, CommonTools.notificationRadiusToZoomLevel(10));
     assertEquals(11, CommonTools.notificationRadiusToZoomLevel(25));
   }
 }

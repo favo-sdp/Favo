@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
@@ -127,6 +129,7 @@ public class MapPage extends Fragment
                 .get(DependencyFactory.getCurrentViewModelClass());
     // CRITICAL to prevent later calling from getting null value, DO NOT DELETE IT.
     favorViewModel.getObservedUser();
+    favorViewModel.updateAllUserActiveFavors();
     // setup toggle between map and nearby list
     nearbyFavorListToggle = view.findViewById(R.id.list_switch);
     nearbyFavorListToggle.setOnClickListener(this::onToggleClick);
@@ -137,6 +140,7 @@ public class MapPage extends Fragment
     return view;
   }
 
+  @SuppressLint("MissingPermission")
   @Override
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
@@ -237,8 +241,7 @@ public class MapPage extends Fragment
 
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
-    if(lookThroughBtn!=null)
-      lookThroughBtn.setVisibility(View.INVISIBLE);
+    if (lookThroughBtn != null) lookThroughBtn.setVisibility(View.INVISIBLE);
     setupToolbar(intentType);
   }
 
@@ -365,6 +368,23 @@ public class MapPage extends Fragment
             });
   }
 
+  private void setupNearbyFavorsListener() {
+    favorViewModel
+        .getFavorsAroundMe(mLocation, radiusThreshold)
+        .observe(
+            getViewLifecycleOwner(),
+            stringFavorMap -> {
+              try {
+                for (Marker marker : favorsAroundMe.values()) marker.remove();
+                favorsAroundMe.clear();
+                drawFavorMarkers(new ArrayList<>(stringFavorMap.values()));
+              } catch (Exception e) {
+                CommonTools.showSnackbar(
+                    requireView(), getString(R.string.nearby_favors_exception));
+              }
+            });
+  }
+
   private void sendLocationToChat(Marker marker) {
 
     Bundle chatBundle = new Bundle();
@@ -382,11 +402,7 @@ public class MapPage extends Fragment
     postFavorFuture.whenComplete(
         (aVoid, throwable) -> {
           if (throwable != null)
-            CommonTools.showSnackbar(
-                requireView(),
-                getString(
-                    CommonTools.getSnackbarMessageForFailedRequest(
-                        (CompletionException) throwable)));
+            CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
           else {
             CommonTools.showSnackbar(
                 requireView(),
@@ -500,21 +516,6 @@ public class MapPage extends Fragment
     }
     Toast.makeText(requireContext(), getString(R.string.finish_visit_marker), Toast.LENGTH_SHORT)
         .show();
-  }
-
-  private void setupNearbyFavorsListener() {
-    favorViewModel
-        .getFavorsAroundMe(mLocation, radiusThreshold)
-        .observe(
-            getViewLifecycleOwner(),
-            stringFavorMap -> {
-              try {
-                drawFavorMarkers(new ArrayList<>(stringFavorMap.values()));
-              } catch (Exception e) {
-                CommonTools.showSnackbar(
-                    requireView(), getString(R.string.nearby_favors_exception));
-              }
-            });
   }
 
   private void drawFavorMarkers(List<Favor> favors) {

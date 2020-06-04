@@ -46,6 +46,7 @@ import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.gps.IGpsTracker;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.MapPage;
@@ -65,11 +66,11 @@ public class FavorEditingView extends Fragment {
   private static final int TITLE_MAX_LENGTH = 30;
   private static final int DESCRIPTION_MAX_LENGTH = 100;
 
-  public static final String CAMERA_DATA_KEY = "data";
   public static final String FAVOR_SOURCE_KEY = "FAVOR_SOURCE";
   public static final String FAVOR_SOURCE_MAP = "map";
   public static final String FAVOR_SOURCE_GLOBAL = "global";
   public static final String FAVOR_SOURCE_PUBLISHED = "published";
+  public static final String CAMERA_DATA_KEY = "data";
 
   private IFavorViewModel favorViewModel;
 
@@ -217,16 +218,21 @@ public class FavorEditingView extends Fragment {
    */
   private void requestFavor() {
     if (!isInputValid()) return;
+
     getFavorFromView();
     CommonTools.hideSoftKeyboard(requireActivity());
     Favor remoteFavor = getViewModel().getObservedFavor().getValue();
     // used to augment count
-    int change =
-        (remoteFavor != null
-                && remoteFavor.getId().equals(currentFavor.getId())
-                && remoteFavor.getStatusId() == FavorStatus.REQUESTED.toInt())
-            ? 0
-            : 1;
+    boolean isEditingOldFavor =
+        remoteFavor != null
+            && remoteFavor.getId().equals(currentFavor.getId())
+            && remoteFavor.getStatusId() == FavorStatus.REQUESTED.toInt();
+    int change = isEditingOldFavor ? 0 : 1;
+    if(!isEditingOldFavor && getViewModel().getActiveRequestedFavors() >= User.MAX_REQUESTING_FAVORS){
+      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
+      return;
+    }
+
     new AlertDialog.Builder(requireActivity())
         .setMessage(getText(R.string.set_location_message))
         .setPositiveButton(
@@ -240,7 +246,7 @@ public class FavorEditingView extends Fragment {
               Bundle arguments = new Bundle();
               arguments.putInt(
                   MapPage.LOCATION_ARGUMENT_KEY,
-                  (change == 1 ? MapPage.NEW_REQUEST : MapPage.EDIT_EXISTING_LOCATION));
+                  (isEditingOldFavor ? MapPage.EDIT_EXISTING_LOCATION : MapPage.NEW_REQUEST));
               findNavController(requireActivity(), R.id.nav_host_fragment)
                   .navigate(R.id.action_global_nav_map, arguments);
             })

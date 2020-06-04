@@ -38,6 +38,7 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil.Folder;
 import ch.epfl.favo.util.PictureUtil;
+import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
 
 import static android.app.Activity.RESULT_OK;
 import static androidx.preference.PreferenceManager.getDefaultSharedPreferences;
@@ -211,7 +212,7 @@ public class UserAccountPage extends Fragment {
       case USE_CAMERA_REQUEST:
       {
         Bundle extras = data.getExtras();
-        Bitmap imageBitmap = (Bitmap) extras.get("data");
+        Bitmap imageBitmap = (Bitmap) extras.get(FavorEditingView.CAMERA_DATA_KEY);
         mImageView.setImageBitmap(imageBitmap);
         break;
       }
@@ -220,7 +221,7 @@ public class UserAccountPage extends Fragment {
 
   private void displayUserDetails(User user) {
     TextView nameView = view.findViewById(R.id.user_name);
-    nameView.setText(user.getName());
+    nameView.setText(CommonTools.getUserName(user));
 
     TextView emailView = view.findViewById(R.id.user_email);
     emailView.setText(user.getEmail());

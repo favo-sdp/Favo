@@ -39,6 +39,12 @@ public interface IFavorViewModel {
 
   LiveData<Map<String, Favor>> getFavorsAroundMe(); // used in nearbylistview
 
+  void updateAllUserActiveFavors();
+
+  int getActiveAcceptedFavors();
+
+  int getActiveRequestedFavors();
+
   LiveData<Favor> setObservedFavor(String favorId);
 
   LiveData<Favor> getObservedFavor();

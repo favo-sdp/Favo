@@ -44,11 +44,9 @@ import ch.epfl.favo.viewmodel.IFavorViewModel;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static androidx.navigation.Navigation.findNavController;
-import static ch.epfl.favo.util.CommonTools.handleException;
 
 @SuppressLint("NewApi")
 public class FavorPublishedView extends Fragment {
-  private static String TAG = "FavorPublishedView";
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
   private static final String FAOV_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
@@ -321,26 +319,24 @@ public class FavorPublishedView extends Fragment {
             .into((CircleImageView) requireView().findViewById(R.id.user_profile_picture));
       }
       // display user name
-      displayName(currentUser.getName(), currentUser.getEmail());
+      ((TextView) requireView().findViewById(R.id.user_name_published_view))
+          .setText(CommonTools.getUserName(currentUser));
     } else {
       DependencyFactory.getCurrentUserRepository()
           .findUser(favor.getRequesterId())
           .thenAccept(
               user -> {
-                displayName(user.getName(), user.getEmail());
+                ((TextView) requireView().findViewById(R.id.user_name_published_view))
+                    .setText(CommonTools.getUserName(user));
                 if (user.getProfilePictureUrl() != null) {
                   Glide.with(this)
-                          .load(user.getProfilePictureUrl())
-                          .fitCenter()
-                          .into((CircleImageView) requireView().findViewById(R.id.user_profile_picture));
+                      .load(user.getProfilePictureUrl())
+                      .fitCenter()
+                      .into(
+                          (CircleImageView) requireView().findViewById(R.id.user_profile_picture));
                 }
               });
     }
-  }
-
-  private void displayName(String name, String email) {
-    if (name == null || name.equals("")) name = CommonTools.emailToName(email);
-    ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
   }
 
   private void setupImageView(View rootView, Favor favor) {
@@ -473,6 +469,10 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void commitFavor() {
+    if (favorViewModel.getActiveAcceptedFavors() >= User.MAX_ACCEPTING_FAVORS) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.illegal_accept_error));
+      return;
+    }
     CompletableFuture<Void> commitFuture = getViewModel().commitFavor(currentFavor, false);
     handleResult(commitFuture, R.string.favor_respond_success_msg);
   }
@@ -485,7 +485,8 @@ public class FavorPublishedView extends Fragment {
   private void handleResult(CompletableFuture<Void> commitFuture, int successMessage) {
     commitFuture.whenComplete(
         (aVoid, throwable) -> {
-          if (throwable != null) handleException(throwable, requireView(), requireContext(), TAG);
+          if (throwable != null)
+            CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
           else CommonTools.showSnackbar(requireView(), getString(successMessage));
         });
   }
@@ -511,32 +512,24 @@ public class FavorPublishedView extends Fragment {
     } else {
       otherUserId = currentFavor.getRequesterId();
     }
+    new AlertDialog.Builder(requireActivity())
+        .setMessage(getText(R.string.feedback_description))
+        .setPositiveButton(
+            getText(R.string.positive_feedback),
+            (dialogInterface, i) -> {
+              DependencyFactory.getCurrentUserRepository()
+                  .incrementFieldForUser(otherUserId, User.LIKES, 1);
 
-    DependencyFactory.getCurrentUserRepository()
-        .findUser(otherUserId)
-        .thenAccept(
-            user -> {
-              if (user == null) return;
-              new AlertDialog.Builder(requireActivity())
-                  .setMessage(getText(R.string.feedback_description))
-                  .setPositiveButton(
-                      getText(R.string.positive_feedback),
-                      (dialogInterface, i) -> {
-                        user.setLikes(user.getLikes() + 1);
-                        DependencyFactory.getCurrentUserRepository().updateUser(user);
-
-                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                      })
-                  .setNegativeButton(
-                      getText(R.string.negative_feedback),
-                      (dialogInterface, i) -> {
-                        user.setDislikes(user.getDislikes() + 1);
-                        DependencyFactory.getCurrentUserRepository().updateUser(user);
-
-                        CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
-                      })
-                  .show();
-            });
+              CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+            })
+        .setNegativeButton(
+            getText(R.string.negative_feedback),
+            (dialogInterface, i) -> {
+              DependencyFactory.getCurrentUserRepository()
+                  .incrementFieldForUser(otherUserId, User.DISLIKES, 1);
+              CommonTools.showSnackbar(getView(), getString(R.string.feedback_message));
+            })
+        .show();
   }
 
   private void cancelFavor() {

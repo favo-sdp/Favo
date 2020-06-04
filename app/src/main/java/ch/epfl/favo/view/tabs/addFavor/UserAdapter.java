@@ -49,7 +49,7 @@ public class UserAdapter extends ArrayAdapter<User> {
               .load(user.getProfilePictureUrl())
               .into(UserProfilePic);
     }
-    UserNameView.setText(CommonTools.getUserName(user));
+    UserNameView.setText(user.getName() != null? user.getName() : CommonTools.emailToName(user.getEmail()));
     // UserProfilePic.setImageBitmap();
     // Return the completed view to render on screen
     return convertView;

@@ -127,15 +127,6 @@ public class UserUtilTest {
   }
 
   @Test
-  public void testRetrieveOtherUsersInGivenRadius() {
-    Assert.assertThrows(
-        NotImplementedException.class,
-        () ->
-            UserUtil.getSingleInstance()
-                .retrieveOtherUsersInGivenRadius(Mockito.mock(Location.class), 0.1));
-  }
-
-  @Test
   public void retrieveUserRegistrationToken() {
     // Mock Firebase objects and returning task
     FirebaseInstanceId mockFirebaseInstanceId = Mockito.mock(FirebaseInstanceId.class);

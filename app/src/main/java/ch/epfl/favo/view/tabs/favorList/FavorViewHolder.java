@@ -46,11 +46,14 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
   void bind(Context context, @NonNull Favor favor, View parentView, IFavorViewModel viewModel) {
     currentUser = viewModel.getObservedUser().getValue();
     setItemDisplay(favor, context);
-    mChatButton.setOnClickListener(
-        view -> {
-          viewModel.setObservedFavor(favor.getId());
-          Navigation.findNavController(parentView).navigate(R.id.action_nav_favorList_to_chatView);
-        });
+    if(favor.getIsArchived())
+      mChatButton.setVisibility(View.GONE);
+    else
+      mChatButton.setOnClickListener(
+          view -> {
+            viewModel.setObservedFavor(favor.getId());
+            Navigation.findNavController(parentView).navigate(R.id.action_nav_favorList_to_chatView);
+          });
   }
 
   @RequiresApi(api = Build.VERSION_CODES.N)
@@ -59,8 +62,7 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
     mRewardView.setText(context.getString(R.string.num_coins, (int)favor.getReward()));
 
     if (currentUser.getId().equals(favor.getRequesterId())) {
-      mRequesterView.setText(
-          context.getString(R.string.user_name_item_placeholder, currentUser.getName()));
+      mRequesterView.setText(getUserName(currentUser));
       if (currentUser.getProfilePictureUrl() != null) {
         Glide.with(context).load(currentUser.getProfilePictureUrl()).into(mRequesterIconView);
       }

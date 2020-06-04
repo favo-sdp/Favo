@@ -43,10 +43,6 @@ public class FakeUserUtil implements IUserUtil {
     return defaultResult();
   }
 
-  @Override
-  public CompletableFuture changeActiveFavorCount(String userId, boolean isRequested, int change) {
-    return defaultResult();
-  }
 
   public CompletableFuture defaultResult() {
     if (isThrowingError) return failedCompletableFuture;

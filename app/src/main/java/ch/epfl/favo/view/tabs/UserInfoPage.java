@@ -62,13 +62,11 @@ public class UserInfoPage extends Fragment {
         v -> CommonTools.showSnackbar(getView(), getString(R.string.report_user_message)));
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.N)
   private void displayUserData(User user) {
 
     ((TextView) view.findViewById(R.id.display_name))
-        .setText(
-            TextUtils.isEmpty(user.getName())
-                ? Objects.requireNonNull(user.getEmail()).split("@")[0]
-                : user.getName());
+        .setText(CommonTools.getUserName(user));
 
     ((TextView) view.findViewById(R.id.display_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "Email" : user.getEmail());

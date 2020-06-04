@@ -10,11 +10,11 @@ public interface IUserUtil {
 
   CompletableFuture<Void> postUser(User user);
 
-  CompletableFuture<Void> changeActiveFavorCount(String userId, boolean isRequested, int change);
-
   CompletableFuture<Void> updateUser(User user);
 
   CompletableFuture<Void> deleteUser(User user);
+
+  CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change);
 
   CompletableFuture<User> findUser(String id) throws Resources.NotFoundException;
 

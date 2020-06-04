@@ -22,6 +22,7 @@ This models the favor fragment_favor_published_view.
 // TODO: rename to FavorRepository?
 @SuppressLint("NewApi")
 public class FavorUtil {
+  private static String longitudeField = "location.longitude";
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
   private static ICollectionWrapper<Favor> collection =
       DependencyFactory.getCurrentCollectionWrapper(
@@ -67,76 +68,22 @@ public class FavorUtil {
     return collection.removeDocument(favorId);
   }
 
-  /**
-   * Returns all the favors for a given user (accepted + requested)
-   *
-   * @param userId Id of the user
-   */
-  public ArrayList<Favor> retrieveAllFavorsForGivenUser(String userId) {
-
-    throw new NotImplementedException();
-  }
-
-  /**
-   * Returns all active favors for a given user.
-   *
-   * @param userId Id of the user
-   */
-  public Query retrieveAllActiveFavorsForGivenUser(String userId) {
-
-    throw new NotImplementedException();
-  }
-
   public Query getNearbyFavors(Location loc, Double radius) {
     double longDif =
         Math.toDegrees(
             radius / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
     return collection
         .getReference()
-        .whereEqualTo("isArchived", false)
-        .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
-        .whereLessThan("location.longitude", loc.getLongitude() + longDif)
+        .whereEqualTo(Favor.IS_ARCHIVED, false)
+        .whereGreaterThan(longitudeField, loc.getLongitude() - longDif)
+        .whereLessThan(longitudeField, loc.getLongitude() + longDif)
         .limit(50);
-  }
-
-  /**
-   * Returns all inactive (past) favors for a given user.
-   *
-   * @param userId Id of the user
-   */
-  public ArrayList<Favor> retrieveAllPastFavorsForGivenUser(String userId) {
-
-    throw new NotImplementedException();
   }
 
   public DocumentReference getFavorReference(String id) {
     return collection.getDocumentQuery(id);
   }
 
-  /**
-   * Returns all the favors a given user has requested.
-   *
-   * @param userId Id of the user
-   */
-  public ArrayList<Favor> retrieveAllRequestedFavorsForGivenUser(String userId) {
-
-    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
-    // Filter out all favors except requested ones
-    throw new NotImplementedException();
-  }
-
-  /**
-   * Returns all the favors a given user has accepted.
-   *
-   * @param userId Id of the user
-   */
-  public ArrayList<Favor> retrieveAllAcceptedFavorsForGivenUser(String userId) {
-
-    // ArrayList allFavors = retrieveAllFavorsForGivenUser(userId);
-    // Filter out all favors except accepted
-
-    throw new NotImplementedException();
-  }
 
   /**
    * Update the Favor photo url and update the database to match if not done already
@@ -151,6 +98,11 @@ public class FavorUtil {
     favor.setPictureUrl(url);
   }
 
+  /**
+   * Returns all the favors for a given user (accepted/committed + requested)
+   *
+   * @param userId Id of the user
+   */
   public Query getAllUserFavors(String userId) {
     return collection
         .getReference()

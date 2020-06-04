@@ -90,48 +90,6 @@ public class FavorUtilTest {
   }
 
   @Test
-  public void retrieveAllFavorsForGivenUser() {
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().retrieveAllFavorsForGivenUser(userId));
-  }
-
-  @Test
-  public void favorCanRetrieveAllActiveFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().retrieveAllActiveFavorsForGivenUser(userId));
-  }
-
-  @Test
-  public void favorCanRetrieveAllRequestedFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().retrieveAllRequestedFavorsForGivenUser(userId));
-  }
-
-  @Test
-  public void favorCanRetrieveAllAcceptedFavorsForGivenUser() {
-
-    String userId = TestConstants.USER_ID;
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().retrieveAllAcceptedFavorsForGivenUser(userId));
-  }
-
-  @Test
-  public void favorCanRetrieveAllPastFavors() {
-    assertThrows(
-        NotImplementedException.class,
-        () -> FavorUtil.getSingleInstance().retrieveAllPastFavorsForGivenUser("id"));
-  }
-
-  @Test
   public void testCanGetLocationBoundQuery() {
     CollectionReference mockCollectionReference = Mockito.mock(CollectionReference.class);
     Query mockEqualTo = Mockito.mock(Query.class);

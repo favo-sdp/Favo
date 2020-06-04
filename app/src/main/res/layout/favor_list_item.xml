@@ -14,8 +14,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/item_icon"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_marginTop="6dp"
         android:layout_marginStart="0dp"
         android:src="@drawable/ic_anon_user_48dp"
