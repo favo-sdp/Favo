@@ -26,7 +26,6 @@ import ch.epfl.favo.favor.FavorUtil;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
 
@@ -146,7 +145,11 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     if ((tempFavor.getStatusId() == COMPLETED_ACCEPTER.toInt())
         || (tempFavor.getStatusId() == COMPLETED_REQUESTER.toInt())) {
       tempFavor.setStatusIdToInt(SUCCESSFULLY_COMPLETED);
-      getUserRepository().updateCoinBalance(tempFavor.getUserIds().get(1), tempFavor.getReward());
+      if (tempFavor.getUserIds().size() > 1) {
+        getUserRepository().updateCoinBalance(tempFavor.getUserIds().get(1), tempFavor.getReward());
+      } else {
+        Log.d(TAG, "Fatal: successfully completed favor with missing accepterId");
+      }
     } else if (tempFavor.getStatusId() == ACCEPTED.toInt()) {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     } else { // not sure if this will be wrapped by completablefuture

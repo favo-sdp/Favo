@@ -14,7 +14,6 @@ import java.util.concurrent.CompletableFuture;
 import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.exception.NotImplementedException;
 import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 
 /*
@@ -49,7 +48,6 @@ public class FavorUtil {
    * @throws RuntimeException Unable to post to DB.
    */
   public CompletableFuture<Void> requestFavor(Favor favor) throws RuntimeException {
-    // also deduct the coin balance from the requester
     return collection.addDocument(favor);
   }
 
