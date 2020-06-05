@@ -86,9 +86,8 @@ public class FavorUtil implements IFavorUtil {
    * @param loc a given android Location
    * @param radiusInKm the radius in which to search for favors
    */
-    @Override
-
-    public Query getLongitudeBoundedFavorsAroundMe(Location loc, Double radiusInKm) {
+  @Override
+  public Query getLongitudeBoundedFavorsAroundMe(Location loc, Double radiusInKm) {
     double longDif =
         Math.toDegrees(
             radiusInKm / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));

@@ -109,8 +109,7 @@ public class UserUtil implements IUserUtil {
   }
 
   /**
-   * This method updates the FavoCoin balance for the user with
-   * given userId.
+   * This method updates the FavoCoin balance for the user with given userId.
    *
    * @param userId The userId of the user receiving/giving FavoCoins.
    * @param reward The FavoCoins reward for the favor
