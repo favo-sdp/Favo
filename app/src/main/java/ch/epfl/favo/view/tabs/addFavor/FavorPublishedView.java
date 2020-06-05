@@ -245,11 +245,15 @@ public class FavorPublishedView extends Fragment {
           break;
         case R.id.location:
           Bundle arguments = new Bundle();
-          arguments.putInt(
-                  MapPage.LOCATION_ARGUMENT_KEY,
-                  MapPage.OBSERVE_LOCATION);
+          arguments.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.OBSERVE_FAVOR);
+          arguments.putString(
+              MapPage.LATITUDE_ARGUMENT_KEY,
+              String.valueOf(currentFavor.getLocation().getLatitude()));
+          arguments.putString(
+              MapPage.LONGITUDE_ARGUMENT_KEY,
+              String.valueOf(currentFavor.getLocation().getLongitude()));
           findNavController(requireActivity(), R.id.nav_host_fragment)
-                  .navigate(R.id.action_global_nav_map, arguments);
+              .navigate(R.id.action_global_nav_map, arguments);
           break;
       }
     }
@@ -313,15 +317,14 @@ public class FavorPublishedView extends Fragment {
 
   private void displayUserInfo(User user) {
     String name =
-            (user.getName() == null || user.getName().equals(""))
-                    ? CommonTools.emailToName(user.getEmail())
-                    : user.getName();
+        (user.getName() == null || user.getName().equals(""))
+            ? CommonTools.emailToName(user.getEmail())
+            : user.getName();
     ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
     if (user.getProfilePictureUrl() != null) {
       Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(userProfilePicture);
     }
   }
-
 
   private void setupImageView(View rootView, Favor favor) {
     String url = favor.getPictureUrl();
@@ -429,7 +432,7 @@ public class FavorPublishedView extends Fragment {
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
     favorBundle.putString(
-        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED_EDIT);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -447,7 +450,7 @@ public class FavorPublishedView extends Fragment {
             currentFavor.getPictureUrl());
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
     favorBundle.putString(
-        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED_REUSE);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }

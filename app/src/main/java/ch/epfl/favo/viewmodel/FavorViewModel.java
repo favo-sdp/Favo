@@ -80,7 +80,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public CompletableFuture<Void> commitFavor(Favor favor, boolean isCancel) {
     Favor tempFavor = new Favor(favor);
     if (isCancel) tempFavor.getUserIds().remove(currentUserId);
-    else tempFavor.setAccepterId(currentUserId);
+    else tempFavor.getUserIds().add(currentUserId);
     return updateFavorForCurrentUser(tempFavor);
   }
 

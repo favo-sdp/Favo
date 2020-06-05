@@ -110,7 +110,7 @@ public class FavorEditingTest {
     if (favor != null) {
       Bundle bundle = new Bundle();
       bundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, favor);
-      bundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+      bundle.putString(FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED_EDIT);
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView, bundle));
     } else {
       runOnUiThread(() -> navController.navigate(R.id.action_global_favorEditingView));

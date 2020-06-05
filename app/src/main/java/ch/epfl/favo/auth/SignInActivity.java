@@ -13,11 +13,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
@@ -44,10 +42,6 @@ public class SignInActivity extends AppCompatActivity {
 
     // check for google play services and make request if not present
     checkPlayServices();
-
-    // initialize location library
-    mGpsTracker =
-        DependencyFactory.getCurrentGpsTracker(Objects.requireNonNull(getApplicationContext()));
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
@@ -124,17 +118,6 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    checkPlayServices();
-
-    if (DependencyFactory.getCurrentFirebaseUser() != null && getIntent().getExtras() == null) {
-      startMainActivity();
-    }
-  }
-
   private void startMainActivity() {
     startActivity(new Intent(this, MainActivity.class));
     finish();
@@ -163,7 +146,7 @@ public class SignInActivity extends AppCompatActivity {
           userFuture
               .thenCompose((Function<User, CompletionStage<User>>) user -> editUser(user, deviceId))
               .exceptionally(
-                  throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()));
+                  throwable -> new User(currentUser, deviceId, null));
       CompletableFuture<User> loginFuture =
           editUserFuture.thenCompose(
               (Function<User, CompletionStage<User>>)
