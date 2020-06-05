@@ -10,6 +10,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -95,11 +96,12 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
         .requestFavor(tempFavor)
         .thenCompose(
             avoid ->
-                getUserRepository().incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, change))
-            .thenCompose(
-                    (aVoid) ->
-                            getUserRepository()
-                                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
+                getUserRepository()
+                    .incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, change))
+        .thenCompose(
+            (aVoid) ->
+                getUserRepository()
+                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
@@ -125,9 +127,9 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
       tempFavor.setStatusIdToInt(isRequested ? COMPLETED_REQUESTER : COMPLETED_ACCEPTER);
     }
     return updateFavorForCurrentUser(tempFavor)
-            .thenCompose(
+        .thenCompose(
             avoid ->
-                    getUserRepository().incrementFieldForUser(currentUserId, User.COMPLETED_FAVORS, 1));
+                getUserRepository().incrementFieldForUser(currentUserId, User.COMPLETED_FAVORS, 1));
   }
 
   /**
@@ -140,9 +142,9 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     tempFavor.setStatusIdToInt(ACCEPTED);
     return getFavorRepository()
         .updateFavor(tempFavor)
-            .thenCompose(
-                    avoid ->
-                            getUserRepository().incrementFieldForUser(user.getId(), User.ACCEPTED_FAVORS, 1));
+        .thenCompose(
+            avoid ->
+                getUserRepository().incrementFieldForUser(user.getId(), User.ACCEPTED_FAVORS, 1));
   }
 
   public CompletableFuture<Void> deleteFavor(final Favor favor) {
@@ -177,14 +179,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public void ObserveAllUserActiveFavorsAndCurrentUser() {
-    getUserRepository()
-            .getUserReference(currentUserId)
-            .addSnapshotListener(
-                    MetadataChanges.INCLUDE,
-                    (documentSnapshot, e) -> {
-                      handleException(e);
-                      observedUser.setValue(documentSnapshot.toObject(User.class));
-                    });
+    DocumentReference currentUserRef = getUserRepository().getUserReference(currentUserId);
+    if (currentUserRef != null)
+      currentUserRef.addSnapshotListener(
+          MetadataChanges.INCLUDE,
+          (documentSnapshot, e) -> {
+            handleException(e);
+            observedUser.setValue(documentSnapshot.toObject(User.class));
+          });
 
     getFavorRepository()
         .getAllUserFavors(currentUserId)
@@ -216,13 +218,13 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   public LiveData<Map<String, Favor>> getFavorsAroundMe(Location loc, double radiusInKm) {
     if (mCurrentLocation == null) mCurrentLocation = loc;
     if (mRadius == -1) mRadius = radiusInKm;
-      getFavorRepository()
-          .getLongitudeBoundedFavorsAroundMe(loc, radiusInKm)
-          .addSnapshotListener(
-              MetadataChanges.EXCLUDE,
-              (queryDocumentSnapshots, e) ->
-                  activeFavorsAroundMe.postValue(
-                      getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
+    getFavorRepository()
+        .getLongitudeBoundedFavorsAroundMe(loc, radiusInKm)
+        .addSnapshotListener(
+            MetadataChanges.EXCLUDE,
+            (queryDocumentSnapshots, e) ->
+                activeFavorsAroundMe.postValue(
+                    getNearbyFavorsFromQuery(loc, radiusInKm, queryDocumentSnapshots, e)));
     return getFavorsAroundMe();
   }
 

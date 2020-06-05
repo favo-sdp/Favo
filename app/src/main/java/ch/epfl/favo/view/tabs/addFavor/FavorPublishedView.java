@@ -63,7 +63,6 @@ public class FavorPublishedView extends Fragment {
   private MenuItem reuseItem;
   private boolean isRequestedByCurrentUser;
   private ImageView imageView;
-  private User currentUser;
   private String currentUserId;
   private CircleImageView userProfilePicture;
 
@@ -91,7 +90,6 @@ public class FavorPublishedView extends Fragment {
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
-    currentUser = favorViewModel.getObservedUser().getValue();
     currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String favorId = "";
     if (currentFavor != null) favorId = currentFavor.getId();
