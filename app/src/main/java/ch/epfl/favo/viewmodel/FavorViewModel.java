@@ -85,9 +85,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return updateFavorForCurrentUser(tempFavor);
   }
 
-  // save address to firebase
   @Override
   public CompletableFuture<Void> requestFavor(final Favor favor, int change) {
+    return requestFavor(favor, change, false);
+  }
+
+  // save address to firebase
+  @Override
+  public CompletableFuture<Void> requestFavor(final Favor favor, int change, boolean editMode) {
     Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
     setFavorValue(tempFavor);
@@ -99,9 +104,13 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
                 getUserRepository()
                     .incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, change))
         .thenCompose(
-            (aVoid) ->
-                getUserRepository()
-                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
+            (aVoid) -> { if (!editMode) {
+              return getUserRepository()
+                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward());
+                } else {
+              return null;
+            }
+            });
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {

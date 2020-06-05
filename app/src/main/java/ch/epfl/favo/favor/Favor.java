@@ -302,6 +302,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.postedTime = other.getPostedTime();
     this.statusId = other.getStatusId();
     this.pictureUrl = other.getPictureUrl();
+    this.reward = other.getReward();
   }
 
   public boolean contentEquals(Favor other) {
