@@ -306,7 +306,7 @@ public class FavorEditingView extends Fragment {
     if (currentFavor == null) currentFavor = favor;
     else {
       // do not override the pictureUrl of currentFavor
-      double balanceDelta = currentFavor.getReward() - favor.getReward();
+      int balanceDelta = currentFavor.getReward() - favor.getReward();
       if (balanceDelta != 0) {
         DependencyFactory.getCurrentUserRepository().updateCoinBalance(favor.getUserIds().get(0), balanceDelta);
       }
