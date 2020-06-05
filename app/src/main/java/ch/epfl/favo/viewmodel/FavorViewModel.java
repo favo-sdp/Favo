@@ -110,7 +110,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
     getUserRepository().updateCoinBalance(tempFavor.getRequesterId(), favor.getReward());
-    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
+    if (favor.getStatusId() == REQUESTED.toInt()) favor.clearAccepterIds();
     return updateFavorForCurrentUser(tempFavor);
   }
 
