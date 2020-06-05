@@ -332,7 +332,6 @@ public class MyFavorsPageTest {
   public void testSearchViewFound() throws InterruptedException {
 
     requestFavorAndSearch();
-    Log.d("fuck", fakeFavor.getTitle() + "  " + fakeFavor.getDescription());
     onView(isAssignableFrom(EditText.class)).perform(typeText(fakeFavor.getTitle()));
     Thread.sleep(3000);
 

@@ -56,9 +56,6 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
     FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
     setIsSender(currentUser != null && textMessage.getUid().equals(currentUser.getUid()));
     userId = textMessage.getUid();
-    SpannableString name = new SpannableString(textMessage.getName());;
-    name.setSpan(new UnderlineSpan(), 0, name.length(), 0);
-    mNameField.setText( name.subSequence(0, Math.min(name.length(), 10)));
     mNameField.setText(textMessage.getName());
     mNameField.setOnClickListener(this::navigateToUserPage);
     mTimeField.setText(

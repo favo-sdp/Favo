@@ -237,7 +237,7 @@ public class ChatPage extends Fragment {
   }
 
   private Message generateMessageFromView(int messageType) {
-    String favorId = currentFavor.getId();
+    String favorId = viewModel.getObservedFavor().getValue().getId();
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     return new Message(
@@ -301,17 +301,6 @@ public class ChatPage extends Fragment {
         mapBundle.putString(MapPage.LONGITUDE_ARGUMENT_KEY, model.getLongitude());
         mapBundle.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.OBSERVE_LOCATION);
         Navigation.findNavController(requireView()).navigate(R.id.action_global_nav_map, mapBundle);
-      }
-
-      private void navigateToUserPage(View v) {
-        int itemPosition = recyclerView.getChildLayoutPosition(v);
-        Message model = getItem(itemPosition);
-
-        Bundle userBundle = new Bundle();
-        userBundle.putString(CommonTools.USER_ARGS, model.getUid());
-        CommonTools.hideSoftKeyboard(requireActivity());
-        Navigation.findNavController(requireView())
-            .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
       }
 
       @Override

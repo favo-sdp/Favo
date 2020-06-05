@@ -39,6 +39,7 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
+import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -243,9 +244,12 @@ public class FavorPublishedView extends Fragment {
           tryMoveToUserInfoPage(currentFavor.getRequesterId());
           break;
         case R.id.location:
-          favorViewModel.setShowObservedFavor(true);
+          Bundle arguments = new Bundle();
+          arguments.putInt(
+                  MapPage.LOCATION_ARGUMENT_KEY,
+                  MapPage.OBSERVE_LOCATION);
           findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
+                  .navigate(R.id.action_global_nav_map, arguments);
           break;
       }
     }
