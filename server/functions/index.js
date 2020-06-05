@@ -62,7 +62,8 @@ function sendMessageToUsers(notification, userIds, type) {
                     //console.log('user', user.name);
 
                     if ((type === UPDATE_TYPE && user.updateNotifications) || (type === CHAT_TYPE && user.chatNotifications)) {
-                        notification.tokens.push(notificationId);
+                        if (notificationId!=null)
+                            {notification.tokens.push(notificationId);}
                     }
                 });
 
@@ -114,7 +115,7 @@ exports.sendNotificationNearbyOnNewFavor = functions.firestore
                     var latUser = user.location.latitude;
                     var longUser = user.location.longitude;
                     var distance = distanceInKm(longFav, latFav, longUser, latUser);
-                    if (distance < user.notificationRadius && user.id !== posterId && user.activeAcceptingFavors === 0) {
+                    if (distance < user.notificationRadius && user.id !== posterId && user.activeAcceptingFavors === 0 && user.notificationId!=null) {
                         usersIds.push(user.notificationId)
                     }
                 });
@@ -244,7 +245,7 @@ exports.expireOldFavorsOnCreate = functions.firestore
     .document('favors/{favorId}')
     .onCreate(() => {
 
-        const TIME_IN_DAYS = 1;
+        const TIME_IN_DAYS = 5;
         const MAX_UPDATES = 20;
         var now = Date.now();
         var cutoffTime = now - TIME_IN_DAYS * 24 * 60 * 60 * 1000;

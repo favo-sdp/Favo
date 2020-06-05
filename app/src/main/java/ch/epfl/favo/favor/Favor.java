@@ -57,7 +57,7 @@ public class Favor implements Parcelable, Document, Cloneable {
   private int statusId;
   private String pictureUrl;
   private boolean isArchived;
-  private double reward;
+  private int reward;
 
   public Favor() {}
 
@@ -68,7 +68,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       String requesterId,
       FavoLocation location,
       int statusId,
-      double reward,
+      int reward,
       String pictureUrl) {
 
     this.id = DatabaseWrapper.generateRandomId();
@@ -91,7 +91,7 @@ public class Favor implements Parcelable, Document, Cloneable {
       String requesterId,
       FavoLocation location,
       int statusId,
-      double reward) {
+      int reward) {
     this(title, description, requesterId, location, statusId, reward, null);
     this.id = id;
   }
@@ -118,15 +118,15 @@ public class Favor implements Parcelable, Document, Cloneable {
       String requesterId,
       FavoLocation location,
       FavorStatus statusId,
-      double reward) {
+      int reward) {
 
     this(title, description, requesterId, location, statusId.toInt(), reward, null);
   }
 
   /**
-   * Constructor from map
+   * Constructor of Favor from map
    *
-   * @param map
+   * @param map: map containing favor parameters
    */
   public Favor(Map<String, Object> map) {
     this.id = (String) map.get(ID);
@@ -138,13 +138,13 @@ public class Favor implements Parcelable, Document, Cloneable {
     this.statusId = (int) map.get(STATUS_ID);
     this.pictureUrl = (String) map.get(PICTURE_URL);
     this.isArchived = (boolean) map.get(IS_ARCHIVED);
-    this.reward = (double) map.get(REWARD);
+    this.reward = (int) map.get(REWARD);
   }
 
   /**
    * Parcelable implementaion allows us to pass favor to fragment
    *
-   * @param in
+   * @param in: parcel
    */
   protected Favor(Parcel in) {
     title = in.readString();
@@ -185,7 +185,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     return title;
   }
 
-  public double getReward() {
+  public int getReward() {
     return reward;
   }
 
@@ -209,7 +209,7 @@ public class Favor implements Parcelable, Document, Cloneable {
     return isArchived;
   }
 
-  public void setReward(double reward) {
+  public void setReward(int reward) {
     this.reward = reward;
   }
 
@@ -222,7 +222,8 @@ public class Favor implements Parcelable, Document, Cloneable {
    * reset this list with his own Id and accepter's ID *
    */
   public void setAccepterId(String id) {
-    if (userIds != null && !userIds.isEmpty()) {
+    clearAccepterIds();
+    if (userIds != null && !userIds.isEmpty() && id != null) {
       userIds.add(id);
     }
   }
@@ -312,6 +313,6 @@ public class Favor implements Parcelable, Document, Cloneable {
         && this.statusId == other.getStatusId()
         && this.location.equals(other.location)
         && (this.pictureUrl == null && other.pictureUrl == null
-            || (this.pictureUrl.equals(other.pictureUrl)));
+            || (this.pictureUrl != null && this.pictureUrl.equals(other.pictureUrl)));
   }
 }

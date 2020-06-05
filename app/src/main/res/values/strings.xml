@@ -45,7 +45,6 @@
 
     <!-- TAB 2 (David) -->
     <string name="favor_title_hint">What do you need? Max.length=%d</string>
-    <string name="favor_img_content_desc">Descriptive image</string>
     <string name="favor_details_hint">Add more details - Max. length = %d</string>
     <string name="favor_payment_hint">Add payment (Default: free favor)</string>
     <string name="favor_no_active_favor">You have no active favors</string>
@@ -53,7 +52,7 @@
     <string name="active_favors_text">Active</string>
     <string name="archived_favors_text">Archived</string>
 
-    <string name="favo_coins_item_placeholder">%.1f</string>
+    <string name="favo_coins_item_placeholder">%d</string>
     <string name="user_name_item_placeholder">%s</string>
 
     <string name="share">Share</string>
@@ -87,7 +86,7 @@
     <string name="favor_request_success_msg">Favor was successfully requested</string>
     <string name="profile">Profile</string>
     <string name="user_not_present_message">User account has been deleted</string>
-    <string name="favor_worth">%.1f coins</string>
+    <string name="favor_worth">%d coins</string>
     <string name="posted_placeholder">Posted at: %s</string>
 
     <!-- Notification -->
@@ -119,7 +118,7 @@
     <string name="notification_title">Enable nearby favor notifications</string>
     <string name="notification_summary">Be notified when new favors are posted in the area within a certain radius</string>
     <string name="notification_radius_title">Notifications radius in kilometers</string>
-    <string name="map_radius_title">Default map zoom level radius in kilometers</string>
+    <string name="map_radius_title">Map radius in kilometers</string>
 
 
     <string name="notification_update_title">Enable updates notifications</string>
@@ -188,7 +187,7 @@
 
     <!-- Shop Page -->
     <string name="shop">Shop</string>
-    <string name="balance_text">%.2f</string>
+    <string name="balance_text">%d</string>
     <string name="price_text">%.2f CHF</string>
     <string name="shop_pay_message">Coming soon!</string>
     <string name="favo_coins_text">Favo Coins</string>
@@ -207,7 +206,6 @@
     <string name="report_favor_message">Favor has been reported! Thanks for your help</string>
     <string name="report_favor_text">Report</string>
     <string name="optional_text">Optional</string>
-    <string name="picture_description_text">Upload a picture or take a photo</string>
     <string name="upload_pic_btn">upload picture</string>
     <string name="camera_btn">open camera</string>
 

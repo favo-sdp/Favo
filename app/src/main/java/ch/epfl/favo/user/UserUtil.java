@@ -9,8 +9,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -22,7 +20,7 @@ import ch.epfl.favo.util.TaskToFutureAdapter;
 @SuppressLint("NewApi")
 public class UserUtil implements IUserUtil {
 
-  private static final String USER_COLLECTION = "users";
+  public static final String USER_COLLECTION = "users";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
 
   private static ICollectionWrapper<User> collection =
@@ -93,7 +91,6 @@ public class UserUtil implements IUserUtil {
     return collection.getDocumentQuery(userId);
   }
 
-
   public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();
@@ -103,9 +100,7 @@ public class UserUtil implements IUserUtil {
         (instanceIdResult) -> {
           String token = Objects.requireNonNull(instanceIdResult).getToken();
           user.setNotificationId(token);
-          Map<String, Object> notifMap = new HashMap<>();
-          notifMap.put(User.NOTIFICATION_ID, token);
-          return collection.updateDocument(user.getId(), notifMap);
+          return DependencyFactory.getCurrentUserRepository().updateUser(user);
         });
   }
 
@@ -114,14 +109,13 @@ public class UserUtil implements IUserUtil {
   }
 
   /**
-   * This method updates the FavoCoin balance for the user with
-   * given userId.
+   * This method updates the FavoCoin balance for the user with given userId.
    *
    * @param userId The userId of the user receiving/giving FavoCoins.
    * @param reward The FavoCoins reward for the favor
    */
   @Override
-  public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
+  public CompletableFuture<Void> updateCoinBalance(String userId, int reward) {
     return findUser(userId)
         .thenCompose(
             (user) -> {

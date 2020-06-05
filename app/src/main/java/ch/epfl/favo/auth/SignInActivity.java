@@ -12,30 +12,29 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.gps.IGpsTracker;
-import ch.epfl.favo.user.IUserUtil;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+
+import static ch.epfl.favo.user.UserUtil.USER_COLLECTION;
 
 @SuppressLint("NewApi")
 public class SignInActivity extends AppCompatActivity {
   public static final String TAG = "SignInActivity";
   public static final int RC_SIGN_IN = 123;
   private static final String URL_APP_NOT_FOUND = "https://google.com";
-  private IGpsTracker mGpsTracker;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +43,6 @@ public class SignInActivity extends AppCompatActivity {
 
     // check for google play services and make request if not present
     checkPlayServices();
-
-    // initialize location library
-    mGpsTracker =
-        DependencyFactory.getCurrentGpsTracker(Objects.requireNonNull(getApplicationContext()));
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
@@ -124,17 +119,6 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-
-    checkPlayServices();
-
-    if (DependencyFactory.getCurrentFirebaseUser() != null && getIntent().getExtras() == null) {
-      startMainActivity();
-    }
-  }
-
   private void startMainActivity() {
     startActivity(new Intent(this, MainActivity.class));
     finish();
@@ -154,55 +138,96 @@ public class SignInActivity extends AppCompatActivity {
       // Lookup user with Firebase Id in Db to extract details
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
-
-      CompletableFuture<User> userFuture =
-          DependencyFactory.getCurrentUserRepository().findUser(userId);
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
-      // Try to edit user. If not completed properly, we create a new user and post it in the db.
-      CompletableFuture<User> editUserFuture =
-          userFuture
-              .thenCompose((Function<User, CompletionStage<User>>) user -> editUser(user, deviceId))
-              .exceptionally(
-                  throwable -> new User(currentUser, deviceId, mGpsTracker.getLocation()));
-      CompletableFuture<User> loginFuture =
-          editUserFuture.thenCompose(
-              (Function<User, CompletionStage<User>>)
-                  user ->
-                      (user != null)
-                          ? postNewUserFuture(user)
-                          : CompletableFuture.supplyAsync(() -> null));
-      loginFuture
-          .thenAccept(user -> startMainActivity())
-          .exceptionally(
-              ex -> {
-                Log.d(TAG, "failed to post user");
-                CommonTools.showSnackbar(
-                    getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
-                this.recreate();
-                return null;
+
+      DocumentReference docRef =
+          DependencyFactory.getCurrentFirestore().collection(USER_COLLECTION).document(userId);
+      docRef
+          .get()
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  DocumentSnapshot document = task.getResult();
+                  if (document != null && document.exists()) {
+                    User user = document.toObject(User.class);
+                    if (user != null) {
+                      user.setDeviceId(deviceId);
+                      updateNotificationToken(user, false);
+                    }
+                  } else {
+                    User user = new User(currentUser, deviceId);
+                    if (user.getName() == null || user.getName().equals(""))
+                      user.setName(CommonTools.emailToName(user.getEmail()));
+                    docRef
+                        .set(user.toMap())
+                        .addOnSuccessListener(
+                            aVoid -> {
+                              Log.d(TAG, "DocumentSnapshot successfully written!");
+                              updateNotificationToken(user, true);
+                            })
+                        .addOnFailureListener(e -> onSignInFailed(Objects.requireNonNull(e)));
+                  }
+                } else {
+                  onSignInFailed(Objects.requireNonNull(task.getException()));
+                }
               });
+    } else {
+      // if sign-in was cancelled, return back to home page
+      if (resultCode == RESULT_CANCELED) {
+        onBackPressed();
+      }
     }
   }
-  // Returs null but need to use raw type to chain this future
-  private CompletableFuture postNewUserFuture(User user) {
-    if (user.getName() == null || user.getName().equals(""))
-      user.setName(CommonTools.emailToName(user.getEmail()));
-    return DependencyFactory.getCurrentUserRepository()
-        .postUser(user)
-        .thenAccept(o -> getCurrentUserUtil().postUserRegistrationToken(user));
+
+  private void updateNotificationToken(User user, boolean isNewUser) {
+    FirebaseInstanceId.getInstance()
+        .getInstanceId()
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                if (isNewUser) {
+                  DependencyFactory.getCurrentFirestore()
+                      .collection(USER_COLLECTION)
+                      .document(user.getId())
+                      .delete();
+                }
+                onSignInFailed(Objects.requireNonNull(task.getException()));
+                return;
+              }
+
+              // Get new Instance ID token
+              String token = Objects.requireNonNull(task.getResult()).getToken();
+              user.setNotificationId(token);
+
+              DependencyFactory.getCurrentFirestore()
+                  .collection(USER_COLLECTION)
+                  .document(user.getId())
+                  .update(user.toMap())
+                  .addOnSuccessListener(
+                      aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                        startMainActivity();
+                      })
+                  .addOnFailureListener(
+                      e -> {
+                        if (isNewUser) {
+                          DependencyFactory.getCurrentFirestore()
+                              .collection(USER_COLLECTION)
+                              .document(user.getId())
+                              .delete();
+                        }
+                        onSignInFailed(Objects.requireNonNull(e));
+                      });
+            });
   }
 
-  private CompletableFuture editUser(User user, String deviceId) {
-    if (!deviceId.equals(user.getDeviceId())) {
-      user.setDeviceId(deviceId);
-      return getCurrentUserUtil().updateUser(user);
-    } else if (user.getName() == null || user.getName().equals("")) {
-      user.setName(CommonTools.emailToName(user.getEmail()));
-      return getCurrentUserUtil().updateUser(user);
-    } else return CompletableFuture.supplyAsync(() -> null);
-  }
+  private void onSignInFailed(Throwable ex) {
+    Log.e(TAG, "Sign-in failed: " + ex.getMessage());
+    CommonTools.showSnackbar(
+        getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
 
-  private IUserUtil getCurrentUserUtil() {
-    return DependencyFactory.getCurrentUserRepository();
+    // log out user on fail
+    FirebaseAuth.getInstance().signOut();
+    this.recreate();
   }
 }

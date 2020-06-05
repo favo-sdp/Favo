@@ -148,8 +148,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void ObserveAllUserActiveFavorsAndCurrentUser() {
-  }
+  public void ObserveAllUserActiveFavorsAndCurrentUser() {}
 
   @Override
   public int getActiveAcceptedFavors() {

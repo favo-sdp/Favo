@@ -2,7 +2,6 @@ package ch.epfl.favo.view.tabs.addFavor;
 
 import android.content.Context;
 import android.os.Build;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +21,7 @@ import ch.epfl.favo.util.CommonTools;
 
 public class UserAdapter extends ArrayAdapter<User> {
   Context context;
+
   public UserAdapter(Context context, ArrayList<User> users) {
     super(context, 0, users);
     this.context = context;
@@ -43,9 +43,7 @@ public class UserAdapter extends ArrayAdapter<User> {
     ImageView UserProfilePic = convertView.findViewById(R.id.user_profile_picture_commit);
     // Populate the data into the template view using the data object
     if (user.getProfilePictureUrl() != null) {
-      Glide.with(context)
-              .load(user.getProfilePictureUrl())
-              .into(UserProfilePic);
+      Glide.with(context).load(user.getProfilePictureUrl()).into(UserProfilePic);
     }
     UserNameView.setText(CommonTools.getUserName(user));
     // Return the completed view to render on screen

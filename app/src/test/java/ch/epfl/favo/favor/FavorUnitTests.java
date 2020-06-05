@@ -56,7 +56,7 @@ public class FavorUnitTests {
     String accepterId = TestConstants.ACCEPTER_ID;
     String otherPictureUrl = TestConstants.OTHER_PICTURE_URL;
 
-    double reward = 4.25;
+    int reward = 4;
 
     favor.setStatusIdToInt(statusId);
     favor.setLocation(location);
@@ -139,7 +139,7 @@ public class FavorUnitTests {
     Favor favor = FakeItemFactory.getFavorWithUrl();
     favor.setAccepterId("accepter1");
     favor.setAccepterId("accepter2");
-    assertEquals(3, favor.getUserIds().size());
+    assertEquals(2, favor.getUserIds().size());
     favor.clearAccepterIds();
     assertEquals(1, favor.getUserIds().size());
     favor.setAccepterId("accepter3");

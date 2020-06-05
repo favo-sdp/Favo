@@ -24,7 +24,7 @@
             android:layout_marginStart="0dp"
             android:src="@drawable/ic_anon_user_48dp"
             app:civ_border_width="2dp"
-            app:civ_border_color="@color/fui_transparent"/>
+            app:civ_border_color="@color/fui_transparent" />
 
 
         <TextView

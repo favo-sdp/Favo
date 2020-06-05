@@ -101,8 +101,6 @@ public class MapPage extends Fragment
   private static int intentType;
   private boolean mLocationPermissionGranted = false;
   private boolean firstOpenApp = true;
-  private RadioButton nearbyFavorListToggle;
-  private FloatingActionButton offlineBtn;
   private final ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
@@ -115,7 +113,7 @@ public class MapPage extends Fragment
     getLocationPermission();
     view = inflater.inflate(R.layout.fragment_map, container, false);
     // setup offline map button
-    offlineBtn = view.findViewById(R.id.offline_map_button);
+    FloatingActionButton offlineBtn = view.findViewById(R.id.offline_map_button);
     offlineBtn.setOnClickListener(this::onOfflineMapClick);
 
     if (DependencyFactory.isOfflineMode(requireContext())) offlineBtn.setVisibility(View.VISIBLE);
@@ -127,7 +125,7 @@ public class MapPage extends Fragment
     // CRITICAL to prevent later calling from getting null value, DO NOT DELETE IT.
     favorViewModel.ObserveAllUserActiveFavorsAndCurrentUser();
     // setup toggle between map and nearby list
-    nearbyFavorListToggle = view.findViewById(R.id.list_switch);
+    RadioButton nearbyFavorListToggle = view.findViewById(R.id.list_switch);
     nearbyFavorListToggle.setOnClickListener(this::onToggleClick);
 
     SupportMapFragment mapFragment =
@@ -142,8 +140,7 @@ public class MapPage extends Fragment
     // set zoomLevel from user preference
     String radiusSetting =
         CacheUtil.getInstance()
-            .getValueFromCacheStr(
-                requireContext(), getString(R.string.radius_map_setting_key));
+            .getValueFromCacheStr(requireContext(), getString(R.string.radius_map_setting_key));
     radiusThreshold =
         (!radiusSetting.isEmpty())
             ? Integer.parseInt(radiusSetting)
@@ -208,7 +205,7 @@ public class MapPage extends Fragment
     }
   }
 
-  public Marker drawMarkerAndFocusOnLocation(boolean isEditable) {
+  public void drawMarkerAndFocusOnLocation(boolean isEditable) {
     String markerTitle = isEditable ? getString(R.string.hint_drag_marker) : "";
     String markerDescription = isEditable ? getString(R.string.hint_click_window) : "";
     double selectedLongitude =
@@ -222,7 +219,6 @@ public class MapPage extends Fragment
         createMarker(markerLocation, markerColor, markerTitle, markerDescription, isEditable);
     existAddedNewMarkers.add(marker);
     focusViewOnLatLng(markerLocation, true);
-    return marker;
   }
 
   private void setLimitedView() {

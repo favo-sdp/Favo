@@ -9,14 +9,11 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -59,7 +56,6 @@ import static ch.epfl.favo.util.CommonTools.hideSoftKeyboard;
 
 @SuppressLint("NewApi")
 public class FavorEditingView extends Fragment {
-  private static String TAG = "FavorEditingView";
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
@@ -83,7 +79,6 @@ public class FavorEditingView extends Fragment {
   private IGpsTracker mGpsTracker;
   private Favor currentFavor;
   private String favorSource;
-  private MenuItem requestItem;
   private FirebaseUser currentUser;
 
   public FavorEditingView() {
@@ -166,7 +161,6 @@ public class FavorEditingView extends Fragment {
                   }
                 } else throw new RuntimeException(getString(R.string.error_database_sync));
               } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
               }
             });
@@ -208,7 +202,7 @@ public class FavorEditingView extends Fragment {
     // Button: Add picture from camera
     ImageButton addPictureFromCameraBtn = rootView.findViewById(R.id.add_camera_picture_button);
     addPictureFromCameraBtn.setOnClickListener(new onButtonClick());
-    if (!isCameraAvailable()) { // if camera is not available
+    if (!CommonTools.isCameraAvailable(requireActivity())) { // if camera is not available
       addPictureFromCameraBtn.setEnabled(false);
     }
   }
@@ -229,7 +223,8 @@ public class FavorEditingView extends Fragment {
             && remoteFavor.getId().equals(currentFavor.getId())
             && remoteFavor.getStatusId() == FavorStatus.REQUESTED.toInt();
     int change = isEditingOldFavor ? 0 : 1;
-    if(!isEditingOldFavor && getViewModel().getActiveRequestedFavors() >= User.MAX_REQUESTING_FAVORS){
+    if (!isEditingOldFavor
+        && getViewModel().getActiveRequestedFavors() >= User.MAX_REQUESTING_FAVORS) {
       CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
       return;
     }
@@ -294,9 +289,9 @@ public class FavorEditingView extends Fragment {
     String desc = mDescriptionView.getText().toString();
     String rewardString = mFavoCoinsView.getText().toString();
 
-    double reward = 0;
+    int reward = 0;
     if (!rewardString.equals("")) {
-      reward = Double.parseDouble(rewardString);
+      reward = Integer.parseInt(rewardString);
     }
 
     FavoLocation loc = new FavoLocation(mGpsTracker.getLocation());
@@ -311,9 +306,10 @@ public class FavorEditingView extends Fragment {
     if (currentFavor == null) currentFavor = favor;
     else {
       // do not override the pictureUrl of currentFavor
-      double balanceDelta = currentFavor.getReward() - favor.getReward();
+      int balanceDelta = currentFavor.getReward() - favor.getReward();
       if (balanceDelta != 0) {
-        DependencyFactory.getCurrentUserRepository().updateCoinBalance(favor.getUserIds().get(0), balanceDelta);
+        DependencyFactory.getCurrentUserRepository()
+            .updateCoinBalance(favor.getUserIds().get(0), balanceDelta);
       }
       favor.setPictureUrl(currentFavor.getPictureUrl());
       currentFavor.updateToOther(favor);
@@ -370,20 +366,6 @@ public class FavorEditingView extends Fragment {
     }
   }
 
-  private boolean isCameraAvailable() {
-    boolean hasCamera =
-        requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
-    int numberOfCameras = 0;
-    try {
-      numberOfCameras =
-          ((CameraManager) requireActivity().getSystemService(getContext().CAMERA_SERVICE))
-              .getCameraIdList()
-              .length;
-    } catch (CameraAccessException e) {
-      Log.e(TAG, "", e);
-    }
-    return (hasCamera && numberOfCameras != 0);
-  }
   /**
    * This method is called when external intents are used to load data on view.
    *
@@ -410,8 +392,10 @@ public class FavorEditingView extends Fragment {
       case USE_CAMERA_REQUEST:
         {
           Bundle extras = data.getExtras();
-          Bitmap imageBitmap = (Bitmap) extras.get(CAMERA_DATA_KEY);
-          mImageView.setImageBitmap(imageBitmap);
+          if (extras != null) {
+            Bitmap imageBitmap = (Bitmap) extras.get(CAMERA_DATA_KEY);
+            mImageView.setImageBitmap(imageBitmap);
+          }
           break;
         }
     }
@@ -485,7 +469,7 @@ public class FavorEditingView extends Fragment {
     // Inflate the menu; this adds items to the action bar if it is present.
     inflater.inflate(R.menu.request_view_menu, menu);
 
-    requestItem = menu.findItem(R.id.request_button);
+    MenuItem requestItem = menu.findItem(R.id.request_button);
 
     if (DependencyFactory.isOfflineMode(requireContext())) {
       requestItem.setTitle(R.string.request_favor_draft);
