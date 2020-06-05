@@ -14,7 +14,6 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -163,17 +162,16 @@ public class SignInActivity extends AppCompatActivity {
                   user.setLocation(new FavoLocation(mGpsTracker.getLocation()));
                 } else {
                   // if user is not present in the database, create a new one
-                  User newUser = new User(currentUser, deviceId, mGpsTracker.getLocation());
-                  if (newUser.getName() == null || newUser.getName().equals(""))
-                    newUser.setName(CommonTools.emailToName(newUser.getEmail()));
+                  user = new User(currentUser, deviceId, mGpsTracker.getLocation());
+                  if (user.getName() == null || user.getName().equals(""))
+                    user.setName(CommonTools.emailToName(user.getEmail()));
                   DependencyFactory.getCurrentUserRepository()
-                      .postUser(newUser)
+                      .postUser(user)
                       .exceptionally(
                           ex -> {
                             onSignInFailed(ex);
                             return null;
                           });
-                  user = newUser;
                 }
 
                 // always update the notification id

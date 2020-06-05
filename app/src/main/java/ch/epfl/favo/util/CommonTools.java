@@ -11,6 +11,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
