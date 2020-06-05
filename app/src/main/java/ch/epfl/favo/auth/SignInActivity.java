@@ -160,29 +160,45 @@ public class SignInActivity extends AppCompatActivity {
                 if (user != null) {
                   user.setDeviceId(deviceId);
                   user.setLocation(new FavoLocation(mGpsTracker.getLocation()));
+
+                  // always update the notification id and finally update user in the database
+                  DependencyFactory.getCurrentUserRepository()
+                      .postUserRegistrationToken(user)
+                      .thenAccept(bVoid -> startMainActivity())
+                      .exceptionally(
+                          ex -> {
+                            onSignInFailed(ex);
+                            return null;
+                          });
                 } else {
+
                   // if user is not present in the database, create a new one
                   user = new User(currentUser, deviceId, mGpsTracker.getLocation());
                   if (user.getName() == null || user.getName().equals(""))
                     user.setName(CommonTools.emailToName(user.getEmail()));
+
+                  // save the user in the database
+                  User finalUser = user;
                   DependencyFactory.getCurrentUserRepository()
                       .postUser(user)
+                      .thenAccept(
+                          aVoid -> {
+                            // always update the notification id
+                            DependencyFactory.getCurrentUserRepository()
+                                .postUserRegistrationToken(finalUser)
+                                .thenAccept(bVoid -> startMainActivity())
+                                .exceptionally(
+                                    ex -> {
+                                      onSignInFailed(ex);
+                                      return null;
+                                    });
+                          })
                       .exceptionally(
                           ex -> {
                             onSignInFailed(ex);
                             return null;
                           });
                 }
-
-                // always update the notification id
-                DependencyFactory.getCurrentUserRepository()
-                    .postUserRegistrationToken(user)
-                    .thenAccept(aVoid -> startMainActivity())
-                    .exceptionally(
-                        ex -> {
-                          onSignInFailed(ex);
-                          return null;
-                        });
               })
           .exceptionally(
               ex -> {
