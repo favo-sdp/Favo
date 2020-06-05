@@ -145,7 +145,6 @@ public class SignInActivity extends AppCompatActivity {
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
-      FavoLocation location = new FavoLocation(mGpsTracker.getLocation());
 
       DocumentReference docRef =
           FirebaseFirestore.getInstance().collection("users").document(userId);
@@ -158,10 +157,9 @@ public class SignInActivity extends AppCompatActivity {
                   if (document.exists()) {
                     User user = document.toObject(User.class);
                     user.setDeviceId(deviceId);
-                    user.setLocation(location);
                     updateNotificationToken(user);
                   } else {
-                    User user = new User(currentUser, deviceId, location);
+                    User user = new User(currentUser, deviceId, null);
                     if (user.getName() == null || user.getName().equals(""))
                       user.setName(CommonTools.emailToName(user.getEmail()));
                     FirebaseFirestore.getInstance()
