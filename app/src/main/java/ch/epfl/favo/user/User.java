@@ -133,7 +133,7 @@ public class User implements Document {
         firebaseUser.getEmail(),
         deviceId,
         null,
-        new FavoLocation(location));
+        new FavoLocation());
 
     profilePictureUrl =
         (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;
