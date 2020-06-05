@@ -20,10 +20,10 @@ import java.util.List;
 
 public class FakeFirebaseUser extends FirebaseUser {
 
-  private String displayName;
-  private String email;
-  private Uri photo;
-  private String provider;
+  private final String displayName;
+  private final String email;
+  private final Uri photo;
+  private final String provider;
 
   public FakeFirebaseUser(String displayName, String email, Uri photo, String provider) {
     this.displayName = displayName;

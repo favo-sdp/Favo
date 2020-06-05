@@ -30,7 +30,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityInstrumentedTest {
-  private FakeUserUtil fakeUserUtil = new FakeUserUtil();
+  private final FakeUserUtil fakeUserUtil = new FakeUserUtil();
 
   @Rule
   public final ActivityTestRule<SignInActivity> activityTestRule =

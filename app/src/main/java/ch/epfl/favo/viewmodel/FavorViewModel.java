@@ -40,7 +40,9 @@ import static ch.epfl.favo.favor.FavorStatus.SUCCESSFULLY_COMPLETED;
 
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements IFavorViewModel {
-  private String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
+
+  private final String TAG = "FIRESTORE_VIEW_MODEL";
+  private final String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
   private boolean showFavor = false;
   private Location mCurrentLocation;
@@ -49,9 +51,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private int numActiveAcceptedFavor = -1;
   private static final String InvalidPicUrl = "Invalid picture url in Favor";
 
-  private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
-
-  private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
+  private final MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  private final MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   private MutableLiveData<User> ownUser = new MutableLiveData<>();
 
   private IFavorUtil getFavorRepository() {

@@ -26,8 +26,8 @@ import static org.mockito.Mockito.when;
 
 public class GpsUnitTests extends FragmentActivity {
 
-  private Context contextMock = mock(Context.class);
-  private LocationManager locationManagerMock = mock(LocationManager.class);
+  private final Context contextMock = mock(Context.class);
+  private final LocationManager locationManagerMock = mock(LocationManager.class);
 
   @Before
   public void setUP() {

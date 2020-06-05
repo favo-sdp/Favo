@@ -109,7 +109,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     };
   }
 
-  private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
+  private final MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
   private MutableLiveData<User> observedUser = getUserMutableLiveData();
 
   private MutableLiveData<User> getUserMutableLiveData() {
@@ -153,7 +153,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return numActiveRequestedFavor;
   }
 
-  private MutableLiveData<Favor> observedFavorResult =
+  private final MutableLiveData<Favor> observedFavorResult =
       new MutableLiveData<Favor>() {
         {
           setValue(FakeItemFactory.getFavor());
