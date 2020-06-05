@@ -264,21 +264,20 @@ public class FavorPublishedView extends Fragment {
   private void tryMoveToUserInfoPage(String userId) {
 
     // check if user exists
-    CompletableFuture<Void> navigateToUserPage =
-        DependencyFactory.getCurrentUserRepository()
-            .findUser(userId)
-            .thenAccept(
-                user -> {
-                  Bundle userBundle = new Bundle();
-                  userBundle.putString(CommonTools.USER_ARGS, userId);
-                  findNavController(requireView())
-                      .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
-                })
-            .exceptionally(
-                t -> {
-                  CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
-                  return null;
-                });
+    DependencyFactory.getCurrentUserRepository()
+        .findUser(userId)
+        .thenAccept(
+            user -> {
+              Bundle userBundle = new Bundle();
+              userBundle.putString(CommonTools.USER_ARGS, userId);
+              findNavController(requireView())
+                  .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+            })
+        .exceptionally(
+            t -> {
+              CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
+              return null;
+            });
   }
 
   private void displayFromFavor(View rootView, Favor favor) {

@@ -163,8 +163,8 @@ public class SignInActivity extends AppCompatActivity {
 
       DependencyFactory.getCurrentUserRepository()
           .findUser(userId)
-          .thenAccept(
-              user -> {
+          .whenComplete(
+              (user, throwable) -> {
                 // if user is present in the database, update fields
                 if (user != null) {
                   user.setDeviceId(deviceId);
@@ -181,14 +181,13 @@ public class SignInActivity extends AppCompatActivity {
                 // always update the notification id
                 DependencyFactory.getCurrentUserRepository()
                     .postUserRegistrationToken(user)
-                    .thenAccept(u -> startMainActivity())
+                    .whenComplete((u, t) -> startMainActivity())
                     .exceptionally(
                         ex -> {
                           Log.d(TAG, "failed to post user");
                           CommonTools.showSnackbar(
                               getWindow().getDecorView().getRootView(),
                               getString(R.string.sign_in_failed));
-                          this.recreate();
                           return null;
                         });
               });
