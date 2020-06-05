@@ -45,6 +45,14 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
+  public CompletableFuture<Void> requestFavor(Favor favor, int change, boolean editMode) {
+
+    if (isThrowingError) return failedResult;
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
+  }
+
+  @Override
   public CompletableFuture<Void> requestFavor(Favor favor, int change) {
 
     if (isThrowingError) return failedResult;
@@ -109,7 +117,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     };
   }
 
-  private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
+  private final MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
   private MutableLiveData<User> observedUser = getUserMutableLiveData();
 
   private MutableLiveData<User> getUserMutableLiveData() {
@@ -140,8 +148,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void ObserveAllUserActiveFavorsAndCurrentUser() {
-  }
+  public void ObserveAllUserActiveFavorsAndCurrentUser() {}
 
   @Override
   public int getActiveAcceptedFavors() {
@@ -153,7 +160,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return numActiveRequestedFavor;
   }
 
-  private MutableLiveData<Favor> observedFavorResult =
+  private final MutableLiveData<Favor> observedFavorResult =
       new MutableLiveData<Favor>() {
         {
           setValue(FakeItemFactory.getFavor());

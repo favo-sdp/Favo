@@ -29,12 +29,11 @@ public class TestConstants {
   public static final String REQUESTER_ID = DatabaseWrapper.generateRandomId();
   public static final FavoLocation LOCATION = new FavoLocation(PROVIDER);
   public static final Date BIRTHDAY = new Date(0);
-  public static final double REWARD = 3;
+  public static final int REWARD = 3;
   public static final FavorStatus FAVOR_STATUS = FavorStatus.REQUESTED;
   public static final String ACCEPTER_ID = "ASDFASDFASDF";
   public static final String PICTURE_URL = "https://favo.com/picture";
   public static final String OTHER_PICTURE_URL = "https://favo.com/otherPicture";
-  public static final String REQUESTER_NOTIFICATION_ID = "requesterNotificationId";
   public static final ArrayList<String> USER_IDS =
       new ArrayList<>(Arrays.asList(REQUESTER_ID, ACCEPTER_ID));
   // Notification related constants

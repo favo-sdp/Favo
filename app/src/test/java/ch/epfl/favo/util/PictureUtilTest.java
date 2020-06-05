@@ -42,9 +42,6 @@ public class PictureUtilTest {
   }
 
   @Test
-  public void uploadPicture() {}
-
-  @Test
   public void testPicturePathIsParsedCorrectly() {
     String sampleUrl =
         "https://firebasestorage.googleapis.com/v0/b/favo-11728.appspot.com/o/V6Y8F6DOR3NKW71UEQKULUPXMQC0.jpeg?alt=media&token=f88ee85f-a201-435f-88cd-4b5803df9656";

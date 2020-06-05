@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
   private UserUtil mockUserUtil;
-  private CompletableFuture<Void> successfulFuture =
+  private final CompletableFuture<Void> successfulFuture =
       new CompletableFuture<Void>() {
         {
           complete(null);
@@ -53,9 +53,7 @@ public class FavorUtilTest {
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
 
     mockUserUtil = Mockito.mock(UserUtil.class);
-    Mockito.doReturn(successfulFuture)
-        .when(mockUserUtil)
-        .updateCoinBalance(anyString(), anyDouble());
+    Mockito.doReturn(successfulFuture).when(mockUserUtil).updateCoinBalance(anyString(), anyInt());
   }
 
   @After
@@ -69,9 +67,7 @@ public class FavorUtilTest {
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
 
     mockUserUtil = Mockito.mock(UserUtil.class);
-    Mockito.doReturn(successfulFuture)
-        .when(mockUserUtil)
-        .updateCoinBalance(anyString(), anyDouble());
+    Mockito.doReturn(successfulFuture).when(mockUserUtil).updateCoinBalance(anyString(), anyInt());
 
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().requestFavor(favor);

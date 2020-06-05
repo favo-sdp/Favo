@@ -16,12 +16,11 @@ import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.util.DependencyFactory;
 
 public class ChatUtilTest {
-  private ICollectionWrapper<Message> collectionWrapper;
   private ChatUtil chatUtil;
 
   @Before
   public void setup() {
-    collectionWrapper = Mockito.mock(CollectionWrapper.class);
+    ICollectionWrapper<Message> collectionWrapper = Mockito.mock(CollectionWrapper.class);
     Mockito.doReturn(CompletableFuture.supplyAsync(() -> null))
         .when(collectionWrapper)
         .addDocument(Mockito.any(Message.class));

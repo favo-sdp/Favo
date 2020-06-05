@@ -38,8 +38,8 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class UserInfoPageTest {
 
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
-  private User testUser =
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final User testUser =
       new User(
           TestConstants.USER_ID,
           TestConstants.NAME,

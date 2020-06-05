@@ -6,6 +6,7 @@
     android:id="@+id/user_account_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="20dp"
     android:clipToPadding="false"
     tools:context=".view.tabs.UserAccountPage">
 

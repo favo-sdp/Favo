@@ -28,7 +28,6 @@ import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;
@@ -63,7 +62,7 @@ import static org.hamcrest.core.AllOf.allOf;
 public class FavorPublishedViewTest {
   private Favor fakeFavor;
   private FakeViewModel fakeViewModel;
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -166,7 +165,7 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testOnShareFavorClicked() throws Throwable {
+  public void testOnShareFavorClicked() {
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
 

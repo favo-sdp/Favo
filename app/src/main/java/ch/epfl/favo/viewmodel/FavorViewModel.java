@@ -40,7 +40,9 @@ import static ch.epfl.favo.favor.FavorStatus.SUCCESSFULLY_COMPLETED;
 
 @SuppressLint("NewApi")
 public class FavorViewModel extends ViewModel implements IFavorViewModel {
-  private String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
+
+  private final String TAG = "FIRESTORE_VIEW_MODEL";
+  private final String currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
 
   private boolean showFavor = false;
   private Location mCurrentLocation;
@@ -49,9 +51,8 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private int numActiveAcceptedFavor = -1;
   private static final String InvalidPicUrl = "Invalid picture url in Favor";
 
-  private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
-
-  private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
+  private final MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
+  private final MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
   private MutableLiveData<User> ownUser = new MutableLiveData<>();
 
   private IFavorUtil getFavorRepository() {
@@ -84,9 +85,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     return updateFavorForCurrentUser(tempFavor);
   }
 
-  // save address to firebase
   @Override
   public CompletableFuture<Void> requestFavor(final Favor favor, int change) {
+    return requestFavor(favor, change, false);
+  }
+
+  // save address to firebase
+  @Override
+  public CompletableFuture<Void> requestFavor(final Favor favor, int change, boolean editMode) {
     Favor tempFavor = new Favor(favor);
     tempFavor.setStatusIdToInt(REQUESTED);
     setFavorValue(tempFavor);
@@ -98,9 +104,14 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
                 getUserRepository()
                     .incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, change))
         .thenCompose(
-            (aVoid) ->
-                getUserRepository()
-                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward()));
+            (aVoid) -> {
+              if (!editMode) {
+                return getUserRepository()
+                    .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward());
+              } else {
+                return null;
+              }
+            });
   }
 
   public CompletableFuture<Void> cancelFavor(final Favor favor, boolean isRequested) {
@@ -110,7 +121,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
     // if favor is in requested status, then clear the list of committed helpers, so their
     // archived favors will not counted in this favor
     getUserRepository().updateCoinBalance(tempFavor.getRequesterId(), favor.getReward());
-    if (favor.getStatusId() == REQUESTED.toInt()) favor.setAccepterId("");
+    if (favor.getStatusId() == REQUESTED.toInt()) favor.clearAccepterIds();
     return updateFavorForCurrentUser(tempFavor);
   }
 

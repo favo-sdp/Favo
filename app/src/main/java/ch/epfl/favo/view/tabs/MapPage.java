@@ -83,13 +83,14 @@ public class MapPage extends Fragment
   private GoogleMap mMap;
   private Location mLocation;
 
-  private Map<String, Marker> favorsAroundMe = new HashMap<>();
+  private final Map<String, Marker> favorsAroundMe = new HashMap<>();
+  private Favor focusedFavor;
   private double radiusThreshold;
 
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private int defaultZoomLevel;
   private int defaultZoomLevelDif = 2;
-  private ArrayList<Integer> mapStyles =
+  private final ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
           add(R.raw.google_map_style_standard);
@@ -100,7 +101,7 @@ public class MapPage extends Fragment
   private static int intentType;
   private boolean mLocationPermissionGranted = false;
   private boolean firstOpenApp = true;
-  private ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
+  private final ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
     // Required empty public constructor
@@ -466,8 +467,7 @@ public class MapPage extends Fragment
         tagArray.set(1, true);
         marker.showInfoWindow();
         mMap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                marker.getPosition(), defaultZoomLevel));
+            CameraUpdateFactory.newLatLngZoom(marker.getPosition(), defaultZoomLevel));
         return;
       }
     }

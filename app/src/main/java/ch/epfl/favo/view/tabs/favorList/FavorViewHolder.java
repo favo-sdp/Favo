@@ -19,12 +19,12 @@ import ch.epfl.favo.util.DependencyFactory;
 @SuppressLint("NewApi")
 class FavorViewHolder extends RecyclerView.ViewHolder {
 
-  private TextView mTitleView;
-  private TextView mRequesterView;
-  private TextView mRewardView;
-  private ImageView mRequesterIconView;
+  private final TextView mTitleView;
+  private final TextView mRequesterView;
+  private final TextView mRewardView;
+  private final ImageView mRequesterIconView;
 
-  private FirebaseUser currentUser;
+  private final FirebaseUser currentUser;
 
   FavorViewHolder(@NonNull View itemView) {
     super(itemView);
@@ -39,14 +39,14 @@ class FavorViewHolder extends RecyclerView.ViewHolder {
   void bind(Context context, @NonNull Favor favor) {
     mTitleView.setText(favor.getTitle());
     mRewardView.setText(context.getString(R.string.favo_coins_item_placeholder, favor.getReward()));
-      DependencyFactory.getCurrentUserRepository()
-          .findUser(favor.getRequesterId())
-          .thenAccept(
-              user -> {
-                mRequesterView.setText(
-                    context.getString(R.string.user_name_item_placeholder, user.getName()));
-                if (user.getProfilePictureUrl() != null)
-                  Glide.with(context).load(user.getProfilePictureUrl()).into(mRequesterIconView);
-              });
-    }
+    DependencyFactory.getCurrentUserRepository()
+        .findUser(favor.getRequesterId())
+        .thenAccept(
+            user -> {
+              mRequesterView.setText(
+                  context.getString(R.string.user_name_item_placeholder, user.getName()));
+              if (user.getProfilePictureUrl() != null)
+                Glide.with(context).load(user.getProfilePictureUrl()).into(mRequesterIconView);
+            });
+  }
 }

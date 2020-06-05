@@ -15,8 +15,8 @@ import ch.epfl.favo.chat.Model.Message;
 
 @SuppressLint("NewApi")
 public class ImageMessageViewHolder extends MessageViewHolder {
-  private ImageView mImageView;
-  private Context mContext;
+  private final ImageView mImageView;
+  private final Context mContext;
 
   public ImageMessageViewHolder(@NonNull View itemView) {
     super(itemView);

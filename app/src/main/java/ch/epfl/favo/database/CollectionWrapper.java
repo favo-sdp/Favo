@@ -11,8 +11,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class CollectionWrapper<T extends Document> implements ICollectionWrapper<T> {
 
-  private String collection;
-  private Class cls;
+  private final String collection;
+  private final Class cls;
 
   public CollectionWrapper(String collection, Class cls) {
     this.collection = collection;

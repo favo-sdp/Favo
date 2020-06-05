@@ -47,6 +47,7 @@ import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorPublishedView extends Fragment {
+
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
   private static final String FAVO_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
@@ -67,7 +68,7 @@ public class FavorPublishedView extends Fragment {
   private String currentUserId;
   private CircleImageView userProfilePicture;
 
-  private Map<String, User> commitUsers = new HashMap<>();
+  private final Map<String, User> commitUsers = new HashMap<>();
 
   public FavorPublishedView() {
     // create favor detail from a favor
@@ -262,21 +263,20 @@ public class FavorPublishedView extends Fragment {
   private void tryMoveToUserInfoPage(String userId) {
 
     // check if user exists
-    CompletableFuture<Void> navigateToUserPage =
-        DependencyFactory.getCurrentUserRepository()
-            .findUser(userId)
-            .thenAccept(
-                user -> {
-                  Bundle userBundle = new Bundle();
-                  userBundle.putString(CommonTools.USER_ARGS, userId);
-                  findNavController(requireView())
-                      .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
-                })
-            .exceptionally(
-                t -> {
-                  CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
-                  return null;
-                });
+    DependencyFactory.getCurrentUserRepository()
+        .findUser(userId)
+        .thenAccept(
+            user -> {
+              Bundle userBundle = new Bundle();
+              userBundle.putString(CommonTools.USER_ARGS, userId);
+              findNavController(requireView())
+                  .navigate(R.id.action_nav_favorPublishedView_to_UserInfoPage, userBundle);
+            })
+        .exceptionally(
+            t -> {
+              CommonTools.showSnackbar(getView(), getString(R.string.user_not_present_message));
+              return null;
+            });
   }
 
   private void displayFromFavor(View rootView, Favor favor) {

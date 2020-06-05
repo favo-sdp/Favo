@@ -13,19 +13,19 @@ import ch.epfl.favo.user.User;
 
 public class FakeUserUtil implements IUserUtil {
   private DocumentReference currentUserReference;
-  private CompletableFuture successfulCompletableFuture =
+  private final CompletableFuture successfulCompletableFuture =
       new CompletableFuture<Void>() {
         {
           complete(null);
         }
       };
-  private CompletableFuture failedCompletableFuture =
+  private final CompletableFuture failedCompletableFuture =
       new CompletableFuture() {
         {
           completeExceptionally(new RuntimeException());
         }
       };
-  private CompletableFuture<User> successfulUserFuture =
+  private final CompletableFuture<User> successfulUserFuture =
       new CompletableFuture<User>() {
         {
           complete(FakeItemFactory.getUser());
@@ -42,7 +42,6 @@ public class FakeUserUtil implements IUserUtil {
   public CompletableFuture postUser(User user) {
     return defaultResult();
   }
-
 
   public CompletableFuture defaultResult() {
     if (isThrowingError) return failedCompletableFuture;
@@ -82,7 +81,7 @@ public class FakeUserUtil implements IUserUtil {
     return successfulUserFuture;
   }
 
-  public CompletableFuture updateCoinBalance(String userId, double reward) {
+  public CompletableFuture updateCoinBalance(String userId, int reward) {
     return defaultResult();
   }
 

@@ -69,7 +69,7 @@ public interface IUserUtil {
    * @param userId id of user updated
    * @param reward value of favor in FavoCoins currency
    */
-  CompletableFuture<Void> updateCoinBalance(String userId, double reward);
+  CompletableFuture<Void> updateCoinBalance(String userId, int reward);
 
   /**
    * Gets a Firestore query that references the user. We can then attach observers to this query.

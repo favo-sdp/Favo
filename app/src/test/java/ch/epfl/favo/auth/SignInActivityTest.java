@@ -4,9 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockDatabaseWrapper;
@@ -45,8 +42,7 @@ public class SignInActivityTest {
   }
 
   @Test
-  public void testOnActivityResult_resultOk()
-      throws InterruptedException, ExecutionException, TimeoutException {
+  public void testOnActivityResult_resultOk() {
 
     Mockito.doNothing().when(spy).handleSignInResponse(anyInt());
     DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());

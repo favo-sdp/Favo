@@ -57,7 +57,7 @@ public class User implements Document {
   private int completedFavors;
   private int likes;
   private int dislikes;
-  private double balance;
+  private int balance;
   private String profilePictureUrl;
   private double notificationRadius;
   private boolean chatNotifications;
@@ -71,7 +71,7 @@ public class User implements Document {
     this.likes = 0;
     this.dislikes = 0;
     this.completedFavors = 0;
-    this.balance = 10.0;
+    this.balance = 10;
     this.notificationRadius = 10.0;
     this.updateNotifications = true;
     this.chatNotifications = true;
@@ -92,7 +92,7 @@ public class User implements Document {
     this.completedFavors = (int) map.get(COMPLETED_FAVORS);
     this.likes = (int) map.get(LIKES);
     this.dislikes = (int) map.get(DISLIKES);
-    this.balance = (double) map.get(BALANCE);
+    this.balance = (int) map.get(BALANCE);
     this.profilePictureUrl = (String) map.get(PROFILE_PICTURE_URL);
     this.notificationRadius = (double) map.get(NOTIFICATION_RADIUS);
     this.chatNotifications = (boolean) map.get(CHAT_NOTIFICATIONS);
@@ -120,20 +120,20 @@ public class User implements Document {
     this.likes = 0;
     this.dislikes = 0;
     this.completedFavors = 0;
-    this.balance = 10.0;
+    this.balance = 10;
     this.notificationRadius = 10.0;
     this.updateNotifications = true;
     this.chatNotifications = true;
   }
 
-  public User(FirebaseUser firebaseUser, String deviceId, Location location) {
+  public User(FirebaseUser firebaseUser, String deviceId) {
     this(
         firebaseUser.getUid(),
         firebaseUser.getDisplayName(),
         firebaseUser.getEmail(),
         deviceId,
         null,
-        new FavoLocation(location));
+        null);
 
     profilePictureUrl =
         (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;
@@ -196,7 +196,7 @@ public class User implements Document {
     return notificationId;
   }
 
-  public double getBalance() {
+  public int getBalance() {
     return balance;
   }
 
@@ -240,7 +240,7 @@ public class User implements Document {
     this.notificationId = notificationId;
   }
 
-  void setBalance(Double balance) {
+  void setBalance(int balance) {
     this.balance = balance;
   }
 
@@ -248,7 +248,7 @@ public class User implements Document {
     this.deviceId = deviceId;
   }
 
-  void setLocation(FavoLocation location) {
+  public void setLocation(FavoLocation location) {
     this.location = location;
   }
 
