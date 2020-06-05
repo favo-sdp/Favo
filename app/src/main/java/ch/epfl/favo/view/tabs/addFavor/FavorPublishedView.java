@@ -64,6 +64,7 @@ public class FavorPublishedView extends Fragment {
   private boolean isRequestedByCurrentUser;
   private ImageView imageView;
   private User currentUser;
+  private String currentUserId;
   private CircleImageView userProfilePicture;
 
   private Map<String, User> commitUsers = new HashMap<>();
@@ -91,6 +92,7 @@ public class FavorPublishedView extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
     currentUser = favorViewModel.getObservedUser().getValue();
+    currentUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
     String favorId = "";
     if (currentFavor != null) favorId = currentFavor.getId();
     if (getArguments() != null) favorId = getArguments().getString(CommonTools.FAVOR_ARGS);
@@ -188,7 +190,6 @@ public class FavorPublishedView extends Fragment {
                   displayFromFavor(rootView, currentFavor);
                 }
               } catch (Exception e) {
-                // Log.d(TAG, e.getMessage());
                 CommonTools.showSnackbar(rootView, getString(R.string.error_database_sync));
                 showBottomBar(false);
               }
@@ -286,14 +287,14 @@ public class FavorPublishedView extends Fragment {
       rootView.findViewById(R.id.description).setVisibility(View.GONE);
     else setupTextView(rootView, R.id.description, descriptionStr);
 
-    isRequestedByCurrentUser = favor.getRequesterId().equals(currentUser.getId());
+    isRequestedByCurrentUser = favor.getRequesterId().equals(currentUserId);
     favorStatus = verifyFavorHasBeenAccepted(favor);
 
     // display committed user list
     if (isRequestedByCurrentUser && favor.getUserIds().size() > 1) setupUserListView();
     else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
-    displayUserProfile(favor.getRequesterId());
+    displayUserInfo(favor.getRequesterId());
     updateAppBarMenuDisplay();
     updateDisplayFromViewStatus();
   }
@@ -304,25 +305,21 @@ public class FavorPublishedView extends Fragment {
     textView.setKeyListener(null);
   }
 
-  private void displayUserProfile(String requesterId) {
-    if (isRequestedByCurrentUser) {
-      displayUserInfo(currentUser);
-    } else {
-      DependencyFactory.getCurrentUserRepository()
-          .findUser(requesterId)
-          .thenAccept(
-              user -> displayUserInfo(user));
-    }
+  private void displayUserInfo(String userId) {
+    DependencyFactory.getCurrentUserRepository().findUser(userId).thenAccept(this::displayUserInfo);
   }
 
-
   private void displayUserInfo(User user) {
-    ((TextView) requireView().findViewById(R.id.user_name_published_view))
-            .setText(CommonTools.getUserName(user));
+    String name =
+            (user.getName() == null || user.getName().equals(""))
+                    ? CommonTools.emailToName(user.getEmail())
+                    : user.getName();
+    ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
     if (user.getProfilePictureUrl() != null) {
       Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(userProfilePicture);
     }
   }
+
 
   private void setupImageView(View rootView, Favor favor) {
     String url = favor.getPictureUrl();
@@ -406,7 +403,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private boolean isPotentialHelper() {
-    return currentFavor.getUserIds().contains(currentUser.getId()) && (!isRequestedByCurrentUser);
+    return currentFavor.getUserIds().contains(currentUserId) && (!isRequestedByCurrentUser);
   }
 
   private void showBottomBar(boolean visible) {
@@ -416,9 +413,9 @@ public class FavorPublishedView extends Fragment {
   // Verifies favor hasn't already been accepted
   private FavorStatus verifyFavorHasBeenAccepted(Favor favor) {
     FavorStatus favorStatus = FavorStatus.toEnum(favor.getStatusId());
-    if (favor.getAccepterId() != null && !favor.getRequesterId().equals(currentUser.getId())) {
+    if (favor.getAccepterId() != null && !favor.getRequesterId().equals(currentUserId)) {
       if (favorStatus.equals(FavorStatus.ACCEPTED)
-          && !favor.getAccepterId().equals(currentUser.getId())) {
+          && !favor.getAccepterId().equals(currentUserId)) {
         favorStatus = FavorStatus.ACCEPTED_BY_OTHER;
       }
     }

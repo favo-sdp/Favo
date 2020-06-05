@@ -108,7 +108,13 @@ public interface IFavorViewModel {
    */
   LiveData<Map<String, Favor>> getFavorsAroundMe(); // used in nearbylistview
 
-  void updateAllUserActiveFavors();
+
+  /**
+   * Listen for current User and all his active favors, this is used for
+   * get user information from db, and calculate active accepted favor and requested favors locally
+   *
+   */
+  void ObserveAllUserActiveFavorsAndCurrentUser();
 
   int getActiveAcceptedFavors();
 

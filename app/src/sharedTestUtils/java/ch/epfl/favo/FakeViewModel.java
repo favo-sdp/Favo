@@ -140,7 +140,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void updateAllUserActiveFavors() {
+  public void ObserveAllUserActiveFavorsAndCurrentUser() {
   }
 
   @Override

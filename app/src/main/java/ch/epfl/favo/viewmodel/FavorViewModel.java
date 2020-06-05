@@ -176,7 +176,16 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public void updateAllUserActiveFavors() {
+  public void ObserveAllUserActiveFavorsAndCurrentUser() {
+    getUserRepository()
+            .getUserReference(currentUserId)
+            .addSnapshotListener(
+                    MetadataChanges.INCLUDE,
+                    (documentSnapshot, e) -> {
+                      handleException(e);
+                      observedUser.setValue(documentSnapshot.toObject(User.class));
+                    });
+
     getFavorRepository()
         .getAllUserFavors(currentUserId)
         .whereEqualTo(Favor.IS_ARCHIVED, false)
@@ -276,14 +285,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
 
   @Override
   public LiveData<User> getObservedUser() {
-    getUserRepository()
-        .getUserReference(currentUserId)
-        .addSnapshotListener(
-            MetadataChanges.INCLUDE,
-            (documentSnapshot, e) -> {
-              handleException(e);
-              observedUser.setValue(documentSnapshot.toObject(User.class));
-            });
     return observedUser;
   }
 

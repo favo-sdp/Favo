@@ -1,5 +1,6 @@
 package ch.epfl.favo.favorList;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -9,8 +10,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.uiautomator.UiDevice;
-
-import com.firebase.ui.auth.util.data.EmailLinkPersistenceManager;
 
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -24,15 +23,12 @@ import java.util.concurrent.ExecutionException;
 import ch.epfl.favo.FakeFirebaseUser;
 import ch.epfl.favo.FakeItemFactory;
 import ch.epfl.favo.FakeUserUtil;
-import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
 import ch.epfl.favo.TestUtils;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorUtil;
-import ch.epfl.favo.user.User;
-import ch.epfl.favo.user.UserUtil;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.MockGpsTracker;
 
@@ -66,31 +62,31 @@ public class MyFavorsPageTest {
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
-      new ActivityTestRule<MainActivity>(MainActivity.class) {
-        @Override
-        protected void beforeActivityLaunched() {
-          DependencyFactory.setCurrentFirebaseUser(
-              new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
-          DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
-          DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
-          FavorUtil.getSingleInstance()
-              .updateCollectionWrapper(
-                  DependencyFactory.getCurrentCollectionWrapper(
-                      TestConstants.TEST_COLLECTION, Favor.class));
-        }
-      };
+          new ActivityTestRule<MainActivity>(MainActivity.class) {
+            @Override
+            protected void beforeActivityLaunched() {
+              DependencyFactory.setCurrentFirebaseUser(
+                      new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
+              DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+              DependencyFactory.setCurrentFavorCollection(TestConstants.TEST_COLLECTION);
+              FavorUtil.getSingleInstance()
+                      .updateCollectionWrapper(
+                              DependencyFactory.getCurrentCollectionWrapper(
+                                      TestConstants.TEST_COLLECTION, Favor.class));
+            }
+          };
 
   @Rule
   public GrantPermissionRule permissionRule =
-      GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
+          GrantPermissionRule.grant(android.Manifest.permission.ACCESS_FINE_LOCATION);
 
   @Before
   public void setUp() {
     DependencyFactory.setCurrentUserRepository(new FakeUserUtil());
-    DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
+    DependencyFactory.setCurrentViewModelClass(null);
     FavorUtil.getSingleInstance()
-        .updateCollectionWrapper(
-            DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class));
+            .updateCollectionWrapper(
+                    DependencyFactory.getCurrentCollectionWrapper("favors", Favor.class));
     fakeFavor = FakeItemFactory.getFavor();
     fakeFavor.setTitle(TestUtils.generateRandomString(8));
   }
@@ -104,7 +100,7 @@ public class MyFavorsPageTest {
   }
 
   public static ViewAction withCustomConstraints(
-      final ViewAction action, final Matcher<View> constraints) {
+          final ViewAction action, final Matcher<View> constraints) {
     return new ViewAction() {
       @Override
       public Matcher<View> getConstraints() {
@@ -132,7 +128,7 @@ public class MyFavorsPageTest {
 
     // check that tab 2 is indeed opened
     onView(allOf(withId(R.id.fragment_favors), withParent(withId(R.id.nav_host_fragment))))
-        .check(matches(isDisplayed()));
+            .check(matches(isDisplayed()));
 
     onView(withId(R.id.floatingActionButton)).check(matches(isDisplayed()));
 
@@ -141,7 +137,7 @@ public class MyFavorsPageTest {
     onView(withText(R.string.favor_no_active_favor)).check(matches(isDisplayed()));
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.archived_toggle)).check(matches(isDisplayed())).perform(click());
 
@@ -150,7 +146,7 @@ public class MyFavorsPageTest {
     onView(withText(R.string.favor_no_archived_favor)).check(matches(isDisplayed()));
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     onView(withId(R.id.active_toggle)).perform(click());
   }
@@ -172,9 +168,9 @@ public class MyFavorsPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
@@ -182,7 +178,7 @@ public class MyFavorsPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     // wait to refresh
     Thread.sleep(2000);
@@ -203,9 +199,9 @@ public class MyFavorsPageTest {
     onView(withId(R.id.title_request_view)).perform(typeText(fakeFavor.getTitle()));
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
 
@@ -213,9 +209,9 @@ public class MyFavorsPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
-    Thread.sleep(15000);
+    Thread.sleep(1500);
     // Check the following elements are displayed
     onView(withId(R.id.item_title)).check(matches(isDisplayed()));
     onView(withId(R.id.item_requester)).check(matches(isDisplayed()));
@@ -238,9 +234,9 @@ public class MyFavorsPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     Thread.sleep(4000); // wait for snackbar to hide
 
     // Click on cancel button
@@ -253,7 +249,7 @@ public class MyFavorsPageTest {
     pressBack();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(2000);
 
@@ -265,7 +261,7 @@ public class MyFavorsPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(3000);
 
@@ -289,9 +285,9 @@ public class MyFavorsPageTest {
     // Click on request button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000); // wait for snackbar to hide
 
@@ -306,13 +302,13 @@ public class MyFavorsPageTest {
     Thread.sleep(1000);
 
     onView(withText(R.string.delete_favor))
-        .check(matches(withText(R.string.delete_favor)))
-        .perform(click());
+            .check(matches(withText(R.string.delete_favor)))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(1000);
 
@@ -324,7 +320,7 @@ public class MyFavorsPageTest {
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
 
     Thread.sleep(1000);
 
@@ -336,14 +332,14 @@ public class MyFavorsPageTest {
   public void testSearchViewFound() throws InterruptedException {
 
     requestFavorAndSearch();
-
+    Log.d("fuck", fakeFavor.getTitle() + "  " + fakeFavor.getDescription());
     onView(isAssignableFrom(EditText.class)).perform(typeText(fakeFavor.getTitle()));
     Thread.sleep(3000);
 
     getInstrumentation().waitForIdleSync();
 
     onView(withId(R.id.swipe_refresh_layout))
-        .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
+            .perform(withCustomConstraints(swipeDown(), isDisplayingAtLeast(85)));
     getInstrumentation().waitForIdleSync();
     Thread.sleep(2000);
     // check query is successful and click on found item
@@ -363,14 +359,14 @@ public class MyFavorsPageTest {
 
     // type the title of fake favor
     onView(isAssignableFrom(EditText.class))
-        .perform(typeText("random words"), pressImeActionButton());
+            .perform(typeText("random words"), pressImeActionButton());
 
     Thread.sleep(2000);
 
     // check the tip text is displayed when query failed
     onView(withId(R.id.tip))
-        .check(matches(isDisplayed()))
-        .check(matches(withText(R.string.query_failed)));
+            .check(matches(isDisplayed()))
+            .check(matches(withText(R.string.query_failed)));
   }
 
   @Test
@@ -408,9 +404,9 @@ public class MyFavorsPageTest {
     // Click on fragment_favor_published_view button
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
-        .inRoot(isDialog())
-        .check(matches(isDisplayed()))
-        .perform(click());
+            .inRoot(isDialog())
+            .check(matches(isDisplayed()))
+            .perform(click());
     getInstrumentation().waitForIdleSync();
     Thread.sleep(1000);
     // Click on back button
