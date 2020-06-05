@@ -158,7 +158,7 @@ public class SignInActivity extends AppCompatActivity {
                     user.setDeviceId(deviceId);
                     updateNotificationToken(user);
                   } else {
-                    User user = new User(currentUser, deviceId, null);
+                    User user = new User(currentUser, deviceId);
                     if (user.getName() == null || user.getName().equals(""))
                       user.setName(CommonTools.emailToName(user.getEmail()));
                     FirebaseFirestore.getInstance()

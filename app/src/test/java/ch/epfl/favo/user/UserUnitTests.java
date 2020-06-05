@@ -120,7 +120,7 @@ public class UserUnitTests {
     FirebaseUser fbUser = FakeItemFactory.getFirebaseUser();
     String deviceId = TestConstants.DEVICE_ID;
     Location loc = TestConstants.LOCATION;
-    new User(fbUser, deviceId, loc);
+    new User(fbUser, deviceId);
   }
 
   @Test

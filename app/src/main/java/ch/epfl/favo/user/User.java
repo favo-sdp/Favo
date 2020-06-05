@@ -126,14 +126,14 @@ public class User implements Document {
     this.chatNotifications = true;
   }
 
-  public User(FirebaseUser firebaseUser, String deviceId, Location location) {
+  public User(FirebaseUser firebaseUser, String deviceId) {
     this(
         firebaseUser.getUid(),
         firebaseUser.getDisplayName(),
         firebaseUser.getEmail(),
         deviceId,
         null,
-        new FavoLocation());
+        null);
 
     profilePictureUrl =
         (firebaseUser.getPhotoUrl() != null) ? firebaseUser.getPhotoUrl().toString() : null;

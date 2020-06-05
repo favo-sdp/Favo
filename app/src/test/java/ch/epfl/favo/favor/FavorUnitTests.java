@@ -139,7 +139,7 @@ public class FavorUnitTests {
     Favor favor = FakeItemFactory.getFavorWithUrl();
     favor.setAccepterId("accepter1");
     favor.setAccepterId("accepter2");
-    assertEquals(3, favor.getUserIds().size());
+    assertEquals(2, favor.getUserIds().size());
     favor.clearAccepterIds();
     assertEquals(1, favor.getUserIds().size());
     favor.setAccepterId("accepter3");
