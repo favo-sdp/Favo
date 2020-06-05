@@ -14,6 +14,10 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
 import java.util.List;
@@ -121,16 +125,6 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-    checkPlayServices();
-
-    if (DependencyFactory.getCurrentFirebaseUser() != null && getIntent().getExtras() == null) {
-      startMainActivity();
-    }
-  }
-
   private void startMainActivity() {
     startActivity(new Intent(this, MainActivity.class));
     finish();
@@ -151,59 +145,39 @@ public class SignInActivity extends AppCompatActivity {
       FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
       String userId = DependencyFactory.getCurrentFirebaseUser().getUid();
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
+      FavoLocation location = new FavoLocation(mGpsTracker.getLocation());
 
-      DependencyFactory.getCurrentUserRepository()
-          .findUser(userId)
-          .whenComplete(
-              (user, throwable) -> {
-                // if user is present in the database, update fields
-                if (user != null) {
-                  user.setDeviceId(deviceId);
-                  user.setLocation(new FavoLocation(mGpsTracker.getLocation()));
-
-                  // always update the notification id and finally update user in the database
-                  DependencyFactory.getCurrentUserRepository()
-                      .postUserRegistrationToken(user)
-                      .thenAccept(bVoid -> startMainActivity())
-                      .exceptionally(
-                          ex -> {
-                            onSignInFailed(ex);
-                            return null;
-                          });
+      DocumentReference docRef =
+          FirebaseFirestore.getInstance().collection("users").document(userId);
+      docRef
+          .get()
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  DocumentSnapshot document = task.getResult();
+                  if (document.exists()) {
+                    User user = document.toObject(User.class);
+                    user.setDeviceId(deviceId);
+                    user.setLocation(location);
+                    updateNotificationToken(user);
+                  } else {
+                    User user = new User(currentUser, deviceId, location);
+                    if (user.getName() == null || user.getName().equals(""))
+                      user.setName(CommonTools.emailToName(user.getEmail()));
+                    FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(userId)
+                        .set(user.toMap())
+                        .addOnSuccessListener(
+                            aVoid -> {
+                              Log.d(TAG, "DocumentSnapshot successfully written!");
+                              updateNotificationToken(user);
+                            })
+                        .addOnFailureListener(e -> onSignInFailed(Objects.requireNonNull(e)));
+                  }
                 } else {
-
-                  // if user is not present in the database, create a new one
-                  user = new User(currentUser, deviceId, mGpsTracker.getLocation());
-                  if (user.getName() == null || user.getName().equals(""))
-                    user.setName(CommonTools.emailToName(user.getEmail()));
-
-                  // save the user in the database
-                  User finalUser = user;
-                  DependencyFactory.getCurrentUserRepository()
-                      .postUser(user)
-                      .thenAccept(
-                          aVoid -> {
-                            // always update the notification id
-                            DependencyFactory.getCurrentUserRepository()
-                                .postUserRegistrationToken(finalUser)
-                                .thenAccept(bVoid -> startMainActivity())
-                                .exceptionally(
-                                    ex -> {
-                                      onSignInFailed(ex);
-                                      return null;
-                                    });
-                          })
-                      .exceptionally(
-                          ex -> {
-                            onSignInFailed(ex);
-                            return null;
-                          });
+                  onSignInFailed(Objects.requireNonNull(task.getException()));
                 }
-              })
-          .exceptionally(
-              ex -> {
-                onSignInFailed(ex);
-                return null;
               });
     } else {
       // if sign-in was cancelled, return back to home page
@@ -213,6 +187,33 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
+  private void updateNotificationToken(User user) {
+    FirebaseInstanceId.getInstance()
+        .getInstanceId()
+        .addOnCompleteListener(
+            task -> {
+              if (!task.isSuccessful()) {
+                onSignInFailed(Objects.requireNonNull(task.getException()));
+                return;
+              }
+
+              // Get new Instance ID token
+              String token = task.getResult().getToken();
+              user.setNotificationId(token);
+
+              FirebaseFirestore.getInstance()
+                  .collection("users")
+                  .document(user.getId())
+                  .update(user.toMap())
+                  .addOnSuccessListener(
+                      aVoid -> {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                        startMainActivity();
+                      })
+                  .addOnFailureListener(e -> onSignInFailed(Objects.requireNonNull(e)));
+            });
+  }
+
   private void onSignInFailed(Throwable ex) {
     Log.e(TAG, "Sign-in failed: " + ex.getMessage());
     CommonTools.showSnackbar(
@@ -220,5 +221,6 @@ public class SignInActivity extends AppCompatActivity {
 
     // log out user on fail
     FirebaseAuth.getInstance().signOut();
+    this.recreate();
   }
 }
