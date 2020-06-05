@@ -117,8 +117,7 @@ public class DatabaseWrapper {
    * It is a temporary, simpler version to retrieve favors in a **square area** on sphere surface.
    * This function retrieve longitude bounded documents because firebase only supports one range
    * query field For some reason, reading from db is very slow when adding one more whereEqualTo
-   * query field TODO: use firebase functions or other server code to perform customized filtering
-   * and fetch the result
+   * query field
    */
   static <T extends Document> CompletableFuture<List<T>> getAllDocumentsLongitudeBounded(
       Location loc, double radius, Class<T> cls, String collection) {
