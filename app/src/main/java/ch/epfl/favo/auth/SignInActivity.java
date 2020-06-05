@@ -12,6 +12,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.auth.ActionCodeSettings;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
@@ -174,23 +175,40 @@ public class SignInActivity extends AppCompatActivity {
                   User newUser = new User(currentUser, deviceId, mGpsTracker.getLocation());
                   if (newUser.getName() == null || newUser.getName().equals(""))
                     newUser.setName(CommonTools.emailToName(newUser.getEmail()));
-                  DependencyFactory.getCurrentUserRepository().postUser(newUser);
+                  DependencyFactory.getCurrentUserRepository()
+                      .postUser(newUser)
+                      .exceptionally(
+                          ex -> {
+                            onSignInFailed(ex);
+                            return null;
+                          });
                   user = newUser;
                 }
 
                 // always update the notification id
                 DependencyFactory.getCurrentUserRepository()
                     .postUserRegistrationToken(user)
-                    .whenComplete((u, t) -> startMainActivity())
+                    .thenAccept(aVoid -> startMainActivity())
                     .exceptionally(
                         ex -> {
-                          Log.d(TAG, "failed to post user");
-                          CommonTools.showSnackbar(
-                              getWindow().getDecorView().getRootView(),
-                              getString(R.string.sign_in_failed));
+                          onSignInFailed(ex);
                           return null;
                         });
+              })
+          .exceptionally(
+              ex -> {
+                onSignInFailed(ex);
+                return null;
               });
     }
+  }
+
+  private void onSignInFailed(Throwable ex) {
+    Log.e(TAG, "Sign-in failed: " + ex.getMessage());
+    CommonTools.showSnackbar(
+        getWindow().getDecorView().getRootView(), getString(R.string.sign_in_failed));
+
+    // log out user on fail
+    FirebaseAuth.getInstance().signOut();
   }
 }
