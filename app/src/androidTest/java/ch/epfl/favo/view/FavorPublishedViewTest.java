@@ -62,7 +62,7 @@ import static org.hamcrest.core.AllOf.allOf;
 public class FavorPublishedViewTest {
   private Favor fakeFavor;
   private FakeViewModel fakeViewModel;
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -165,7 +165,7 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testOnShareFavorClicked() throws Throwable {
+  public void testOnShareFavorClicked() {
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
 

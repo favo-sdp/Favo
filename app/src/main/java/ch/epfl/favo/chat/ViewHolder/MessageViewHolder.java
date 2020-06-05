@@ -26,10 +26,10 @@ import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
 public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
-  private TextView mNameField;
-  private TextView mTimeField;
-  private RelativeLayout mMessageContainer;
-  private LinearLayout mMessage;
+  private final TextView mNameField;
+  private final TextView mTimeField;
+  private final RelativeLayout mMessageContainer;
+  private final LinearLayout mMessage;
   private final int mGreen300;
   private final int mGray300;
   private String userId;

@@ -64,8 +64,8 @@ import static org.hamcrest.core.AllOf.allOf;
 public class FavorEditingTest {
   private Favor fakeFavor;
   private FakeViewModel fakeViewModel;
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
-  private User testUser =
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final User testUser =
       new User(
           TestConstants.USER_ID,
           "commit",

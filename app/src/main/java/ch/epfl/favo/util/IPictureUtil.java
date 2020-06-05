@@ -43,7 +43,7 @@ public interface IPictureUtil {
     CHAT(chatFolder),
     PROFILE_PICTURE(profilePictureFolder);
 
-    private String folder;
+    private final String folder;
 
     Folder(String folder) {
       this.folder = folder;

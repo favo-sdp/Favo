@@ -89,7 +89,7 @@ public class FavorUnitTests {
               private int count = 0;
 
               @Override
-              public Object answer(InvocationOnMock invocation) throws Throwable {
+              public Object answer(InvocationOnMock invocation) {
                 if (count++ == 0) return TestConstants.TITLE;
                 else return TestConstants.DESCRIPTION;
               }

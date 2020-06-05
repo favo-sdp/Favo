@@ -46,6 +46,7 @@ import static androidx.navigation.Navigation.findNavController;
 
 @SuppressLint("NewApi")
 public class FavorPublishedView extends Fragment {
+
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
   private static final String FAVO_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
@@ -66,7 +67,7 @@ public class FavorPublishedView extends Fragment {
   private String currentUserId;
   private CircleImageView userProfilePicture;
 
-  private Map<String, User> commitUsers = new HashMap<>();
+  private final Map<String, User> commitUsers = new HashMap<>();
 
   public FavorPublishedView() {
     // create favor detail from a favor

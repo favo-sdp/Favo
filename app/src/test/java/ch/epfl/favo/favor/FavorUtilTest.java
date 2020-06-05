@@ -33,7 +33,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 public class FavorUtilTest {
   private CollectionWrapper mockDatabaseWrapper;
   private UserUtil mockUserUtil;
-  private CompletableFuture<Void> successfulFuture =
+  private final CompletableFuture<Void> successfulFuture =
       new CompletableFuture<Void>() {
         {
           complete(null);

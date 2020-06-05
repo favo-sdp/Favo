@@ -7,7 +7,7 @@ import ch.epfl.favo.chat.Model.Message;
 
 public class FakeChatUtil implements IChatUtil {
   boolean throwsError = false;
-  CompletableFuture failedResult = new CompletableFuture();
+  final CompletableFuture failedResult = new CompletableFuture();
 
   public void setThrowsError(Throwable e) {
     throwsError = true;
