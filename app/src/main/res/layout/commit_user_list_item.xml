@@ -14,19 +14,25 @@
         app:layout_constraintTop_toTopOf="parent"
         android:orientation="horizontal">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_profile_picture_commit"
             android:gravity="start"
             android:padding="2dp"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            app:srcCompat="@drawable/ic_anon_user_48dp" />
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="0dp"
+            android:src="@drawable/ic_anon_user_48dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/fui_transparent"/>
+
 
         <TextView
             android:id="@+id/user_name_commit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             android:maxLines="1"
             android:padding="5dp"
             android:textColor="@android:color/holo_green_dark"

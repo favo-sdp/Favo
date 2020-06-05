@@ -40,6 +40,7 @@ public class SignInActivityInstrumentedTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
           DependencyFactory.setCurrentUserRepository(fakeUserUtil);
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }

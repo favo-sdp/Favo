@@ -44,8 +44,9 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:padding="10dp"
+
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
             android:text="@string/optional_text"
             android:textSize="20sp" />
 
@@ -56,26 +57,14 @@
             android:layout_margin="10dp"
             android:autofillHints=""
             android:drawableStart="@drawable/ic_info_green_24dp"
-            android:drawablePadding="20dp"
+            android:drawablePadding="10dp"
             android:hint="@string/favor_details_hint"
             android:inputType="textMultiLine"
-            android:lines="5"
             android:maxLines="3"
             android:minLines="2"
-            android:padding="15dp"
+            android:paddingStart ="10dp"
+            android:paddingEnd="10dp"
             android:scrollbars="vertical" />
-
-        <!--        <EditText-->
-        <!--            android:id="@+id/location_request_view_btn"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_margin="10dp"-->
-        <!--            android:autofillHints=""-->
-        <!--            android:drawableStart="@drawable/ic_place_green_24dp"-->
-        <!--            android:drawablePadding="20dp"-->
-        <!--            android:hint="@string/favor_location_hint"-->
-        <!--            android:inputType="none"-->
-        <!--            android:padding="15dp" />-->
 
         <EditText
             android:id="@+id/favor_reward"
@@ -84,25 +73,17 @@
             android:layout_margin="10dp"
             android:autofillHints=""
             android:drawableStart="@drawable/favo_coin_icon"
-            android:drawablePadding="20dp"
+            android:drawablePadding="10dp"
             android:hint="@string/favor_payment_hint"
             android:inputType="number"
-            android:padding="15dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:padding="10dp"
-            android:text="@string/picture_description_text"
-            android:textSize="20sp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
 
         <LinearLayout
             android:id="@+id/picture_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
             android:orientation="horizontal">
 
             <ImageButton
@@ -111,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:background="@android:color/transparent"
-                android:contentDescription="picture button"
+                android:contentDescription="@string/upload_pic_btn"
                 android:src="@drawable/ic_image_green_48dp" />
 
             <ImageButton
@@ -120,57 +101,57 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:background="@android:color/transparent"
-                android:contentDescription="camera button"
+                android:contentDescription="@string/camera_btn"
                 android:src="@drawable/ic_camera_green_48dp" />
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/image_view_request_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:contentDescription="@string/favor_img_content_desc" />
 
-        <ProgressBar
-            android:id="@+id/loading_panel"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone" />
+            <LinearLayout
+                android:id="@+id/pictures_grid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/errorText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#FF0000"
-            android:textSize="20sp" />
+                <ProgressBar
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/loading_panel"
+                    style="?android:attr/progressBarStyle"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="125dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/pictures_grid"
+                    app:layout_constraintEnd_toEndOf="@id/pictures_grid"
+                    app:layout_constraintHorizontal_bias="0.4"
+                    app:layout_constraintStart_toStartOf="@id/pictures_grid"
+                    app:layout_constraintTop_toTopOf="@id/pictures_grid" />
+
+                <TextView
+                    android:id="@+id/errorText"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#FF0000"
+                    android:textSize="20sp" />
+                <!--
+                <ImageView
+                    android:id="@+id/image_view_request_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:scaleType="centerCrop" />
+                    -->
+                <ImageView
+                    android:id="@+id/image_view_request_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:adjustViewBounds="true" />
+            </LinearLayout>
+
+
+
     </LinearLayout>
 </ScrollView>
-
-
-    <!--        &lt;!&ndash; add above: android:background="@color/material_green_50"&ndash;&gt;-->
-    <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-    <!--        android:id="@+id/constraint_layout_req_view"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:clickable="true"-->
-    <!--        android:focusable="true"-->
-    <!--        android:focusableInTouchMode="true"-->
-    <!--        android:padding="20dp">-->
-
-    <!--        <Button-->
-    <!--            android:id="@+id/request_button"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="@string/favor_confirm_button"-->
-    <!--            app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--            app:layout_constraintRight_toRightOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent" />-->
-
-
-    <!--        -->
-    <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-    <!--</FrameLayout>-->

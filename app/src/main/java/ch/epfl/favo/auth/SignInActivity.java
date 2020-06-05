@@ -49,14 +49,6 @@ public class SignInActivity extends AppCompatActivity {
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
-      // update user name if firebase user has no name
-      if (user.getDisplayName() == null || user.getDisplayName().equals("")) {
-        UserProfileChangeRequest profileUpdates =
-            new UserProfileChangeRequest.Builder()
-                .setDisplayName(CommonTools.emailToName(Objects.requireNonNull(user.getEmail())))
-                .build();
-        user.updateProfile(profileUpdates);
-      }
       // Already signed-in
       startMainActivity();
       return;

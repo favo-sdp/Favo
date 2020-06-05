@@ -40,7 +40,7 @@
                         android:layout_margin="10dp"
                         android:orientation="horizontal">
 
-                        <ImageView
+                        <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/user_profile_picture"
                             android:layout_width="50dp"
                             android:layout_height="50dp"
@@ -105,18 +105,26 @@
 
                         <ImageView
                             android:id="@+id/picture"
-                            android:layout_width="150dp"
-                            android:layout_height="150dp"
-                            android:scaleType="centerCrop" />
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:adjustViewBounds="true" />
+
+                        <!-- This is wide screen display of image,
+                              more modern but risky
+                          <ImageView
+                            android:id="@+id/picture"
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            android:scaleType="centerCrop"/>
+                        -->
 
                     </LinearLayout>
 
                     <ProgressBar
                         android:id="@+id/loading_panel"
                         style="?android:attr/progressBarStyle"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_margin="125dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="@id/pictures_grid"
                         app:layout_constraintEnd_toEndOf="@id/pictures_grid"

@@ -44,7 +44,7 @@ public class UserInfoPage extends Fragment {
     displayUserData(new User(null, "", "", null, null, null));
 
     if (currentUser == null && getArguments() != null) {
-      String userId = getArguments().getString("USER_ARGS");
+      String userId = getArguments().getString(CommonTools.USER_ARGS);
       DependencyFactory.getCurrentUserRepository()
           .findUser(userId)
           .thenAccept(
@@ -67,10 +67,7 @@ public class UserInfoPage extends Fragment {
   private void displayUserData(User user) {
 
     ((TextView) view.findViewById(R.id.display_name))
-        .setText(
-            TextUtils.isEmpty(user.getName())
-                ? Objects.requireNonNull(user.getEmail()).split("@")[0]
-                : user.getName());
+        .setText(CommonTools.getUserName(user));
 
     ((TextView) view.findViewById(R.id.display_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "Email" : user.getEmail());

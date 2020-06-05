@@ -46,25 +46,6 @@ public class UserUtil implements IUserUtil {
     return collection.addDocument(user);
   }
 
-  /**
-   * @param isRequested : if true favor is requested. If false favor is accepted
-   * @return
-   */
-  @Override
-  public CompletableFuture<Void> changeActiveFavorCount(
-      String userId, boolean isRequested, int change) {
-    return findUser(userId)
-        .thenCompose(
-            (user) -> {
-              if (isRequested) {
-                user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              } else {
-                user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
-              }
-              return updateUser(user);
-            });
-  }
-
   @Override
   public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());
@@ -91,6 +72,7 @@ public class UserUtil implements IUserUtil {
   public DocumentReference getUserReference(String userId) {
     return collection.getDocumentQuery(userId);
   }
+
 
   public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
