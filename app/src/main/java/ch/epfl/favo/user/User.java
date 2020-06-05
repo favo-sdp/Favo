@@ -18,29 +18,29 @@ import ch.epfl.favo.gps.FavoLocation;
  */
 public class User implements Document {
 
-  static final int MAX_ACCEPTING_FAVORS = 1;
-  static final int MAX_REQUESTING_FAVORS = 5;
+  public static final int MAX_ACCEPTING_FAVORS = 1;
+  public static final int MAX_REQUESTING_FAVORS = 5;
 
   // String constants for Map conversion
-  static final String ID = "id";
+  public static final String ID = "id";
   public static final String NAME = "name";
   public static final String EMAIL = "email";
-  private static final String DEVICE_ID = "deviceId";
-  static final String NOTIFICATION_ID = "notificationId";
-  static final String BIRTH_DATE = "birthDate";
-  static final String LOCATION = "location";
-  static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
-  static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
+  public static final String DEVICE_ID = "deviceId";
+  public static final String NOTIFICATION_ID = "notificationId";
+  public static final String BIRTH_DATE = "birthDate";
+  public static final String LOCATION = "location";
+  public static final String ACTIVE_REQUESTING_FAVORS = "activeRequestingFavors";
+  public static final String ACTIVE_ACCEPTING_FAVORS = "activeAcceptingFavors";
   public static final String REQUESTED_FAVORS = "requestedFavors";
   public static final String ACCEPTED_FAVORS = "acceptedFavors";
   public static final String COMPLETED_FAVORS = "completedFavors";
   public static final String LIKES = "likes";
   public static final String DISLIKES = "dislikes";
-  private static final String BALANCE = "balance";
+  public static final String BALANCE = "balance";
   public static final String PROFILE_PICTURE_URL = "profilePictureUrl";
-  private static final String NOTIFICATION_RADIUS = "notificationRadius";
-  private static final String CHAT_NOTIFICATIONS = "chatNotifications";
-  private static final String UPDATE_NOTIFICATIONS = "updateNotifications";
+  public static final String NOTIFICATION_RADIUS = "notificationRadius";
+  public static final String CHAT_NOTIFICATIONS = "chatNotifications";
+  public static final String UPDATE_NOTIFICATIONS = "updateNotifications";
   private static final String PICTURE_URL = "pictureUrl";
 
   private String id;

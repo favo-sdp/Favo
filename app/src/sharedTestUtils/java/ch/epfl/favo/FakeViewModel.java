@@ -23,6 +23,8 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   private CompletableFuture failedResult;
   private boolean isThrowingError = false;
   private boolean showFavor = false;
+  public int numActiveRequestedFavor;
+  public int numActiveAcceptedFavor;
 
   public void setThrowError(Exception throwableObject) {
     isThrowingError = true;
@@ -40,6 +42,14 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
         complete(null);
       }
     };
+  }
+
+  @Override
+  public CompletableFuture<Void> requestFavor(Favor favor, int change, boolean editMode) {
+
+    if (isThrowingError) return failedResult;
+    observedFavorResult.setValue(favor);
+    return getSuccessfulCompletableFuture();
   }
 
   @Override
@@ -107,7 +117,7 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     };
   }
 
-  private MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
+  private final MutableLiveData<Map<String, Favor>> favorsAroundMeResult = getMapLiveData();
   private MutableLiveData<User> observedUser = getUserMutableLiveData();
 
   private MutableLiveData<User> getUserMutableLiveData() {
@@ -137,7 +147,21 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return favorsAroundMeResult;
   }
 
-  private MutableLiveData<Favor> observedFavorResult =
+  @Override
+  public void ObserveAllUserActiveFavorsAndCurrentUser() {
+  }
+
+  @Override
+  public int getActiveAcceptedFavors() {
+    return numActiveAcceptedFavor;
+  }
+
+  @Override
+  public int getActiveRequestedFavors() {
+    return numActiveRequestedFavor;
+  }
+
+  private final MutableLiveData<Favor> observedFavorResult =
       new MutableLiveData<Favor>() {
         {
           setValue(FakeItemFactory.getFavor());
@@ -161,6 +185,11 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
+  }
+
+  @Override
+  public User getOwnUser() {
+    return FakeItemFactory.getUser();
   }
 
   @Override

@@ -51,28 +51,6 @@ public class UserUtil implements IUserUtil {
   }
 
   /**
-   * This method updates the active favor count for a given user when a favors
-   * status is updated.
-   *
-   * @param isRequested : if true favor is requested. If false favor is accepted
-   * @return
-   */
-  @Override
-  public CompletableFuture<Void> changeActiveFavorCount(
-      String userId, boolean isRequested, int change) {
-    return findUser(userId)
-        .thenCompose(
-            (user) -> {
-              if (isRequested) {
-                user.setActiveRequestingFavors(user.getActiveRequestingFavors() + change);
-              } else {
-                user.setActiveAcceptingFavors(user.getActiveAcceptingFavors() + change);
-              }
-              return updateUser(user);
-            });
-  }
-
-  /**
    * This method updates the fields for a user in the database.
    *
    * @param user A user object.
@@ -114,6 +92,7 @@ public class UserUtil implements IUserUtil {
   public DocumentReference getUserReference(String userId) {
     return collection.getDocumentQuery(userId);
   }
+
 
   public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();

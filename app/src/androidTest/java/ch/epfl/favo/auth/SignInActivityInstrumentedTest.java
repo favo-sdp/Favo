@@ -30,7 +30,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 
 @RunWith(AndroidJUnit4.class)
 public class SignInActivityInstrumentedTest {
-  private FakeUserUtil fakeUserUtil = new FakeUserUtil();
+  private final FakeUserUtil fakeUserUtil = new FakeUserUtil();
 
   @Rule
   public final ActivityTestRule<SignInActivity> activityTestRule =
@@ -40,6 +40,7 @@ public class SignInActivityInstrumentedTest {
           DependencyFactory.setCurrentFirebaseUser(
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
           DependencyFactory.setCurrentUserRepository(fakeUserUtil);
           DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
         }

@@ -28,6 +28,17 @@ public interface IFavorViewModel {
   CompletableFuture<Void> requestFavor(Favor favor, int change);
 
   /**
+   * Posts favor in the favor collection. Updates user requested favor count Updates user active
+   * requested favors Could be called when favor is edited .
+   *
+   * @param favor favor that is requested
+   * @param change Will update the count depending on this value
+   * @param editMode true if favor already existed and is being edited
+   * @return future that can be completed
+   */
+  CompletableFuture<Void> requestFavor(final Favor favor, int change, boolean editMode);
+
+  /**
    * Uploads picture to firebase storage Assigns url to favor object
    *
    * @param favor
@@ -108,6 +119,18 @@ public interface IFavorViewModel {
    */
   LiveData<Map<String, Favor>> getFavorsAroundMe(); // used in nearbylistview
 
+
+  /**
+   * Listen for current User and all his active favors, this is used for
+   * get user information from db, and calculate active accepted favor and requested favors locally
+   *
+   */
+  void ObserveAllUserActiveFavorsAndCurrentUser();
+
+  int getActiveAcceptedFavors();
+
+  int getActiveRequestedFavors();
+
   /**
    * Queries firestore for favor object with id. S
    *
@@ -122,6 +145,8 @@ public interface IFavorViewModel {
    * @return observed favor
    */
   LiveData<Favor> getObservedFavor();
+
+  User getOwnUser();
 
   /**
    * Set observed favor value on UI thread

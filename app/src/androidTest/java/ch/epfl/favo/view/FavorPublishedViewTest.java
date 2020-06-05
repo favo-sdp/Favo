@@ -63,7 +63,7 @@ import static org.hamcrest.core.AllOf.allOf;
 public class FavorPublishedViewTest {
   private Favor fakeFavor;
   private FakeViewModel fakeViewModel;
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
@@ -166,7 +166,7 @@ public class FavorPublishedViewTest {
   }
 
   @Test
-  public void testOnShareFavorClicked() throws Throwable {
+  public void testOnShareFavorClicked() {
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
 
@@ -289,8 +289,7 @@ public class FavorPublishedViewTest {
 
   @Test
   public void testFavorIsNotAcceptedIfSurpassedLimit() throws Throwable {
-    runOnUiThread(
-        () -> fakeViewModel.setThrowError(new IllegalAcceptException("illegal operation!")));
+    fakeViewModel.numActiveAcceptedFavor = 1;
     onView(withId(R.id.commit_complete_button)).perform(click());
     getInstrumentation().waitForIdleSync();
     onView(withId(com.google.android.material.R.id.snackbar_text))

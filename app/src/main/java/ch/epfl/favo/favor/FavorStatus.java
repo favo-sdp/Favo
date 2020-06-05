@@ -25,7 +25,7 @@ public enum FavorStatus {
     SUCCESSFULLY_COMPLETED.toInt()
   };
 
-  public static HashMap<FavorStatus, Integer> statusColor =
+  public static final HashMap<FavorStatus, Integer> statusColor =
       new HashMap<FavorStatus, Integer>() {
         {
           put(FavorStatus.REQUESTED, R.color.requested_status_bg);
@@ -41,8 +41,8 @@ public enum FavorStatus {
         }
       };
 
-  private String status;
-  private int code;
+  private final String status;
+  private final int code;
 
   FavorStatus(String status, int code) {
     this.status = status;

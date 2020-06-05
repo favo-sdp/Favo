@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -23,9 +22,9 @@ import java.util.Objects;
 import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.exception.IllegalRequestException;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.view.NonClickableToolbar;
 
 @SuppressLint("NewApi")
@@ -33,6 +32,8 @@ public class CommonTools {
   public static final String FAVOR_ARGS = "FAVOR_ARGS";
   public static final String FAVOR_VALUE_ARGS = "FAVOR_VALUE_ARGS";
   public static final String USER_ARGS = "USER_ARGS";
+  public static final String DEFAULT_NAME = "anonymous";
+  public static final String TIME_PATTERN = "yyyy/MM/dd HH:mm";
   public static final int TEXT_MESSAGE_TYPE = 0;
   public static final int IMAGE_MESSAGE_TYPE = 1;
   public static final int LOCATION_MESSAGE_TYPE = 2;
@@ -51,7 +52,7 @@ public class CommonTools {
 
   public static String convertTime(Date time) {
     @SuppressLint("SimpleDateFormat")
-    Format format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    Format format = new SimpleDateFormat(TIME_PATTERN);
     return format.format(time);
   }
 
@@ -64,13 +65,13 @@ public class CommonTools {
     int r = (int) radius;
     switch (r) {
       case 1:
-        level = 16;
+        level = 15;
         break;
       case 5:
-        level = 14;
+        level = 13;
         break;
       case 10:
-        level = 13;
+        level = 12;
         break;
       default: // 25
         level = 11;
@@ -128,20 +129,13 @@ public class CommonTools {
     else return R.string.update_favor_error;
   }
 
-  public static void handleException(
-      Throwable throwable, View parentView, Context context, String TAG) {
-    Throwable cause =
-        (throwable.getCause() == null) ? new Exception(throwable) : throwable.getCause();
-    if (cause instanceof IllegalRequestException) {
-      CommonTools.showSnackbar(
-          parentView, context.getResources().getString(R.string.illegal_request_error));
-    } else if (cause instanceof IllegalAcceptException) {
-      CommonTools.showSnackbar(
-          parentView, context.getResources().getString(R.string.illegal_accept_error));
-    } else {
-      CommonTools.showSnackbar(
-          parentView, context.getResources().getString(R.string.update_favor_error));
-    }
-    if (throwable.getMessage() != null) Log.e(TAG, throwable.getMessage());
+
+  public static String getUserName(User user) {
+    String name = user.getName();
+    if (name == null || name.equals(""))
+      if(user.getEmail() != null && user.getEmail().equals(""))
+        name = user.getEmail().split("@")[0].replace(".", " ");
+      else name = DEFAULT_NAME;
+    return name;
   }
 }

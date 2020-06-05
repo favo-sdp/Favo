@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs.favorList;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -58,7 +59,7 @@ public class MyFavorsPage extends Fragment {
   private static final int PAGE_SIZE = 20;
   private static final char END_CODE = '\uf8ff';
 
-  private PagedList.Config pagingConfig =
+  private final PagedList.Config pagingConfig =
       new PagedList.Config.Builder()
           .setEnablePlaceholders(false)
           .setPrefetchDistance(PREFETCH_DISTANCE)

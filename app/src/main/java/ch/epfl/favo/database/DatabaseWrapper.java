@@ -24,7 +24,7 @@ import ch.epfl.favo.util.TaskToFutureAdapter;
 public class DatabaseWrapper {
 
   private static DatabaseWrapper INSTANCE = null;
-  private FirebaseFirestore firestore;
+  private final FirebaseFirestore firestore;
 
   // final fields regarding ID generation
   private static final String ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

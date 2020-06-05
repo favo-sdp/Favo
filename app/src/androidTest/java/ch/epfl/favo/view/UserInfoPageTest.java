@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import ch.epfl.favo.FakeFirebaseUser;
+import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
@@ -37,8 +38,8 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 @RunWith(AndroidJUnit4.class)
 public class UserInfoPageTest {
 
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
-  private User testUser =
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final User testUser =
       new User(
           TestConstants.USER_ID,
           TestConstants.NAME,
@@ -56,6 +57,7 @@ public class UserInfoPageTest {
               new FakeFirebaseUser(NAME, EMAIL, PHOTO_URI, PROVIDER));
           DependencyFactory.setCurrentGpsTracker(new MockGpsTracker());
           DependencyFactory.setCurrentCollectionWrapper(mockDatabaseWrapper);
+          DependencyFactory.setCurrentViewModelClass(FakeViewModel.class);
           mockDatabaseWrapper.setMockDocument(testUser);
           mockDatabaseWrapper.setMockResult(testUser);
         }

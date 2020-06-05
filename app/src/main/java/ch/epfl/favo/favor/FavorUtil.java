@@ -19,7 +19,6 @@ import ch.epfl.favo.util.DependencyFactory;
  */
 @SuppressLint("NewApi")
 public class FavorUtil implements IFavorUtil {
-
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();
 
   private static ICollectionWrapper<Favor> collection =
@@ -95,11 +94,12 @@ public class FavorUtil implements IFavorUtil {
     double longDif =
         Math.toDegrees(
             radiusInKm / (FavoLocation.EARTH_RADIUS * Math.cos(Math.toRadians(loc.getLatitude()))));
+    String longitudeField = "location.longitude";
     return collection
         .getReference()
-        .whereEqualTo("isArchived", false)
-        .whereGreaterThan("location.longitude", loc.getLongitude() - longDif)
-        .whereLessThan("location.longitude", loc.getLongitude() + longDif)
+        .whereEqualTo(Favor.IS_ARCHIVED, false)
+        .whereGreaterThan(longitudeField, loc.getLongitude() - longDif)
+        .whereLessThan(longitudeField, loc.getLongitude() + longDif)
         .limit(50);
   }
 
@@ -123,9 +123,9 @@ public class FavorUtil implements IFavorUtil {
   }
 
   /**
-   * Gets all favors for a given user
+   * Returns all the favors for a given user (accepted/committed + requested)
    *
-   * @param userId the users Id
+   * @param userId Id of the user
    */
   @Override
   public Query getAllUserFavors(String userId) {

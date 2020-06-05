@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -78,19 +77,20 @@ public class MapPage extends Fragment
   private String latitudeFromChat;
   private String longitudeFromChat;
   private Button doneButton;
+  private FloatingActionButton lookThroughBtn;
 
   private IFavorViewModel favorViewModel;
   private View view;
   private GoogleMap mMap;
   private Location mLocation;
 
-  private Map<String, Marker> favorsAroundMe = new HashMap<>();
+  private final Map<String, Marker> favorsAroundMe = new HashMap<>();
   private Favor focusedFavor;
   private double radiusThreshold;
 
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private int defaultZoomLevel;
-  private ArrayList<Integer> mapStyles =
+  private final ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
           add(R.raw.google_map_style_standard);
@@ -103,8 +103,7 @@ public class MapPage extends Fragment
   private boolean firstOpenApp = true;
   private RadioButton nearbyFavorListToggle;
   private FloatingActionButton offlineBtn;
-  FloatingActionButton lookThroughBtn;
-  private ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
+  private final ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
     // Required empty public constructor
@@ -125,6 +124,8 @@ public class MapPage extends Fragment
         (IFavorViewModel)
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
+    // CRITICAL to prevent later calling from getting null value, DO NOT DELETE IT.
+    favorViewModel.ObserveAllUserActiveFavorsAndCurrentUser();
     // setup toggle between map and nearby list
     nearbyFavorListToggle = view.findViewById(R.id.list_switch);
     nearbyFavorListToggle.setOnClickListener(this::onToggleClick);
@@ -139,10 +140,10 @@ public class MapPage extends Fragment
   @Override
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
-
     String radiusSetting =
         CacheUtil.getInstance()
-            .getValueFromCacheStr(requireContext(), getString(R.string.radius_map_setting_key));
+            .getValueFromCacheStr(
+                requireContext(), getString(R.string.radius_map_setting_key));
     radiusThreshold =
         (!radiusSetting.isEmpty())
             ? Integer.parseInt(radiusSetting)
@@ -233,6 +234,7 @@ public class MapPage extends Fragment
 
     doneButton = requireView().findViewById(R.id.button_location_from_request_view);
     doneButton.setVisibility(View.VISIBLE);
+    lookThroughBtn.setVisibility(View.INVISIBLE);
     setupToolbar(intentType);
   }
 
@@ -361,6 +363,23 @@ public class MapPage extends Fragment
             });
   }
 
+  private void setupNearbyFavorsListener() {
+    favorViewModel
+        .getFavorsAroundMe(mLocation, radiusThreshold)
+        .observe(
+            getViewLifecycleOwner(),
+            stringFavorMap -> {
+              try {
+                for (Marker marker : favorsAroundMe.values()) marker.remove();
+                favorsAroundMe.clear();
+                drawFavorMarkers(new ArrayList<>(stringFavorMap.values()));
+              } catch (Exception e) {
+                CommonTools.showSnackbar(
+                    requireView(), getString(R.string.nearby_favors_exception));
+              }
+            });
+  }
+
   private void sendLocationToChat(Marker marker) {
 
     Bundle chatBundle = new Bundle();
@@ -378,11 +397,7 @@ public class MapPage extends Fragment
     postFavorFuture.whenComplete(
         (aVoid, throwable) -> {
           if (throwable != null)
-            CommonTools.showSnackbar(
-                requireView(),
-                getString(
-                    CommonTools.getSnackbarMessageForFailedRequest(
-                        (CompletionException) throwable)));
+            CommonTools.showSnackbar(requireView(), getString(R.string.update_favor_error));
           else {
             CommonTools.showSnackbar(
                 requireView(),
@@ -424,6 +439,7 @@ public class MapPage extends Fragment
             add(favor.getId());
             add(isRequested);
             add(false);
+            add(favor.getRequesterId());
           }
         });
     if (!isRequested) {
@@ -500,21 +516,6 @@ public class MapPage extends Fragment
     }
     Toast.makeText(requireContext(), getString(R.string.finish_visit_marker), Toast.LENGTH_SHORT)
         .show();
-  }
-
-  private void setupNearbyFavorsListener() {
-    favorViewModel
-        .getFavorsAroundMe(mLocation, radiusThreshold)
-        .observe(
-            getViewLifecycleOwner(),
-            stringFavorMap -> {
-              try {
-                drawFavorMarkers(new ArrayList<>(stringFavorMap.values()));
-              } catch (Exception e) {
-                CommonTools.showSnackbar(
-                    requireView(), getString(R.string.nearby_favors_exception));
-              }
-            });
   }
 
   private void drawFavorMarkers(List<Favor> favors) {

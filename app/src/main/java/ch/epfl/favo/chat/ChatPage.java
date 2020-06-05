@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,10 +47,12 @@ import ch.epfl.favo.chat.ViewHolder.ImageMessageViewHolder;
 import ch.epfl.favo.chat.ViewHolder.MessageViewHolder;
 import ch.epfl.favo.chat.ViewHolder.TextMessageViewHolder;
 import ch.epfl.favo.favor.Favor;
+import ch.epfl.favo.util.BitmapConversionUtil;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.util.IPictureUtil;
 import ch.epfl.favo.util.IPictureUtil.Folder;
+import ch.epfl.favo.util.PictureUtil;
 import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 
@@ -237,7 +241,7 @@ public class ChatPage extends Fragment {
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     return new Message(
-        DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
+        viewModel.getOwnUser().getName(),
         responderUserId,
         messageType,
         mMessageEdit.getText().toString(),
@@ -285,7 +289,6 @@ public class ChatPage extends Fragment {
 
         if (viewType == LOCATION_MESSAGE_TYPE)
           messageView.setOnClickListener(this::navigateToMapPage);
-        else messageView.setOnClickListener(this::navigateToUserPage);
 
         return viewHolder;
       }

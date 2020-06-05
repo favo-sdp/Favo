@@ -17,17 +17,6 @@ public interface IUserUtil {
   CompletableFuture<Void> postUser(User user);
 
   /**
-   * Updates the current count of requested or accepted active favors of the user. It handles the
-   * case where the update is invalid or not.
-   *
-   * @param userId id of user to update
-   * @param isRequested the favor can either be requested or accepted
-   * @param change integer value (+1, or -1) when a single favor is updated
-   * @return future
-   */
-  CompletableFuture<Void> changeActiveFavorCount(String userId, boolean isRequested, int change);
-
-  /**
    * Updates the whole user document
    *
    * @param user user to be updated

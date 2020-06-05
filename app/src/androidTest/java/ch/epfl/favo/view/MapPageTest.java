@@ -40,7 +40,7 @@ import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentat
 
 @RunWith(AndroidJUnit4.class)
 public class MapPageTest {
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<Favor>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =

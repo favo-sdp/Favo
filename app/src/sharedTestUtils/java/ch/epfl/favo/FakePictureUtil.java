@@ -11,7 +11,7 @@ import ch.epfl.favo.util.IPictureUtil;
 
 public class FakePictureUtil implements IPictureUtil {
   CompletableFuture failedResult;
-  boolean throwsError = false;
+  final boolean throwsError = false;
 
   public void setThrowError(Throwable error) {
     failedResult =

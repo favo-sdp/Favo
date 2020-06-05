@@ -45,8 +45,7 @@ public class SignInActivityTest {
   }
 
   @Test
-  public void testOnActivityResult_resultOk()
-      throws InterruptedException, ExecutionException, TimeoutException {
+  public void testOnActivityResult_resultOk() {
 
     Mockito.doNothing().when(spy).handleSignInResponse(anyInt());
     DependencyFactory.setCurrentCollectionWrapper(new MockDatabaseWrapper());
