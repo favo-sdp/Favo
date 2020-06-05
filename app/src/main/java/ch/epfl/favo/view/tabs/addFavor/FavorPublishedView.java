@@ -3,6 +3,7 @@ package ch.epfl.favo.view.tabs.addFavor;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -352,6 +353,7 @@ public class FavorPublishedView extends Fragment {
             .thenAccept(
                 user -> {
                   commitUsers.put(userId, user);
+                  Log.d("buggg", commitUsers.size() + " size");
                   listView.setAdapter(
                       new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
                 });
