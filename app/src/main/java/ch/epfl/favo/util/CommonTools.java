@@ -69,16 +69,16 @@ public class CommonTools {
     int r = (int) radius;
     switch (r) {
       case 1:
-        level = 15;
+        level = 17;
         break;
       case 5:
-        level = 13;
+        level = 15;
         break;
       case 10:
-        level = 12;
+        level = 14;
         break;
       default: // 25
-        level = 11;
+        level = 13;
     }
     return level;
   }

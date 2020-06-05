@@ -46,7 +46,7 @@
                             android:layout_height="50dp"
                             android:gravity="start"
                             android:padding="8dp"
-                            app:srcCompat="@drawable/ic_anon_user_48dp" />
+                            android:src="@drawable/ic_anon_user_48dp" />
 
                         <TextView
                             android:id="@+id/user_name_published_view"
@@ -216,10 +216,11 @@
                             android:id="@+id/commit_user"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:autofillHints="commit users shown here"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:ignore="NestedScrolling" />
+                            app:layout_constraintTop_toTopOf="parent" />
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>

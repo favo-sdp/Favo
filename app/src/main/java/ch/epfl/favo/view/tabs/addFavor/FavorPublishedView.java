@@ -39,6 +39,7 @@ import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.NonClickableToolbar;
+import ch.epfl.favo.view.tabs.MapPage;
 import ch.epfl.favo.viewmodel.IFavorViewModel;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,6 +51,7 @@ public class FavorPublishedView extends Fragment {
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
   private static final String FAVO_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
+  private static final int LIST_ITEM_HEIGHT = 200;
   private FavorStatus favorStatus;
   private Favor currentFavor;
   private Button commitAndCompleteBtn;
@@ -244,9 +246,16 @@ public class FavorPublishedView extends Fragment {
           tryMoveToUserInfoPage(currentFavor.getRequesterId());
           break;
         case R.id.location:
-          favorViewModel.setShowObservedFavor(true);
+          Bundle arguments = new Bundle();
+          arguments.putInt(MapPage.LOCATION_ARGUMENT_KEY, MapPage.OBSERVE_FAVOR);
+          arguments.putString(
+              MapPage.LATITUDE_ARGUMENT_KEY,
+              String.valueOf(currentFavor.getLocation().getLatitude()));
+          arguments.putString(
+              MapPage.LONGITUDE_ARGUMENT_KEY,
+              String.valueOf(currentFavor.getLocation().getLongitude()));
           findNavController(requireActivity(), R.id.nav_host_fragment)
-              .popBackStack(R.id.nav_map, false);
+              .navigate(R.id.action_global_nav_map, arguments);
           break;
       }
     }
@@ -289,7 +298,7 @@ public class FavorPublishedView extends Fragment {
     favorStatus = verifyFavorHasBeenAccepted(favor);
 
     // display committed user list
-    if (isRequestedByCurrentUser && favor.getUserIds().size() > 1) setupUserListView();
+    if (isRequestedByCurrentUser) setupUserListView();
     else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
     displayUserInfo(favor.getRequesterId());
@@ -346,6 +355,9 @@ public class FavorPublishedView extends Fragment {
                   commitUsers.put(userId, user);
                   listView.setAdapter(
                       new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
+                  ViewGroup.LayoutParams params = listView.getLayoutParams();
+                  params.height = (LIST_ITEM_HEIGHT) * (commitUsers.size());
+                  listView.setLayoutParams(params);
                 });
     }
     listView.setOnItemClickListener(
@@ -424,7 +436,7 @@ public class FavorPublishedView extends Fragment {
     Bundle favorBundle = new Bundle();
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
     favorBundle.putString(
-        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED_EDIT);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }
@@ -442,7 +454,7 @@ public class FavorPublishedView extends Fragment {
             currentFavor.getPictureUrl());
     favorBundle.putParcelable(CommonTools.FAVOR_VALUE_ARGS, newFavor);
     favorBundle.putString(
-        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED);
+        FavorEditingView.FAVOR_SOURCE_KEY, FavorEditingView.FAVOR_SOURCE_PUBLISHED_REUSE);
     findNavController(requireActivity(), R.id.nav_host_fragment)
         .navigate(R.id.action_global_favorEditingView, favorBundle);
   }

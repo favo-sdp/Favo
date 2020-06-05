@@ -64,9 +64,10 @@ public class FavorEditingView extends Fragment {
   private static final int DESCRIPTION_MAX_LENGTH = 100;
 
   public static final String FAVOR_SOURCE_KEY = "FAVOR_SOURCE";
-  public static final String FAVOR_SOURCE_MAP = "map";
-  public static final String FAVOR_SOURCE_GLOBAL = "global";
-  public static final String FAVOR_SOURCE_PUBLISHED = "published";
+  public static final String FAVOR_SOURCE_MAP = "MAP_MARKER";
+  public static final String FAVOR_SOURCE_GLOBAL = "FLOAT_BTN";
+  public static final String FAVOR_SOURCE_PUBLISHED_EDIT = "PUBLISHED_EDIT";
+  public static final String FAVOR_SOURCE_PUBLISHED_REUSE = "PUBLISHED_REUSE";
   public static final String CAMERA_DATA_KEY = "data";
 
   private IFavorViewModel favorViewModel;
@@ -135,7 +136,7 @@ public class FavorEditingView extends Fragment {
       favorSource = getArguments().getString(FAVOR_SOURCE_KEY);
       currentFavor.setStatusIdToInt(FavorStatus.EDIT);
       displayFavorInfo(rootView);
-      if (favorSource.equals(FAVOR_SOURCE_PUBLISHED)) {
+      if (favorSource.equals(FAVOR_SOURCE_PUBLISHED_EDIT)) {
         setupFavorListener(rootView, currentFavor.getId());
       }
     } else favorSource = FAVOR_SOURCE_GLOBAL;
@@ -228,43 +229,47 @@ public class FavorEditingView extends Fragment {
       CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
       return;
     }
+    if (favorSource.equals(FAVOR_SOURCE_MAP)) {
+      toPostFavor(1);
+    } else {
+      new AlertDialog.Builder(requireActivity())
+          .setMessage(getText(R.string.set_location_message))
+          .setPositiveButton(
+              getText(R.string.set_location_yes),
+              (dialogInterface, i) -> toMapPage(isEditingOldFavor))
+          .setNegativeButton(
+              getText(R.string.set_location_no), (dialogInterface, i) -> toPostFavor(change))
+          .show();
+    }
+  }
 
-    new AlertDialog.Builder(requireActivity())
-        .setMessage(getText(R.string.set_location_message))
-        .setPositiveButton(
-            getText(R.string.set_location_yes),
-            (dialogInterface, i) -> {
-              getFavorFromView();
-              CommonTools.hideSoftKeyboard(requireActivity());
-              favorViewModel.setShowObservedFavor(true);
-              favorViewModel.setFavorValue(currentFavor);
-              // signal the destination is map view
-              Bundle arguments = new Bundle();
-              arguments.putInt(
-                  MapPage.LOCATION_ARGUMENT_KEY,
-                  (isEditingOldFavor ? MapPage.EDIT_EXISTING_LOCATION : MapPage.NEW_REQUEST));
-              findNavController(requireActivity(), R.id.nav_host_fragment)
-                  .navigate(R.id.action_global_nav_map, arguments);
-            })
-        .setNegativeButton(
-            getText(R.string.set_location_no),
-            (dialogInterface, i) -> {
-              favorStatus = FavorStatus.REQUESTED;
-              currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
-              // post to DB
-              CompletableFuture<Void> postFavorFuture =
-                  getViewModel().requestFavor(currentFavor, change, isEditingOldFavor);
-              postFavorFuture.whenComplete(
-                  (aVoid, throwable) -> {
-                    if (throwable != null) onFailedResult(requireView(), throwable);
-                    else onSuccessfulRequest(requireView());
-                  });
-              // Show confirmation and minimize keyboard
-              if (DependencyFactory.isOfflineMode(requireContext())) {
-                CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
-              }
-            })
-        .show();
+  private void toMapPage(boolean isEditingOldFavor) {
+    getFavorFromView();
+    CommonTools.hideSoftKeyboard(requireActivity());
+    // signal the destination is map view
+    Bundle arguments = new Bundle();
+    arguments.putInt(
+        MapPage.LOCATION_ARGUMENT_KEY,
+        (isEditingOldFavor ? MapPage.EDIT_EXISTING_LOCATION : MapPage.NEW_REQUEST));
+    arguments.putParcelable(CommonTools.FAVOR_VALUE_ARGS, currentFavor);
+    findNavController(requireActivity(), R.id.nav_host_fragment)
+        .navigate(R.id.action_global_nav_map, arguments);
+  }
+
+  private void toPostFavor(int change) {
+    favorStatus = FavorStatus.REQUESTED;
+    currentFavor.setStatusIdToInt(FavorStatus.REQUESTED);
+    // post to DB
+    CompletableFuture<Void> postFavorFuture = getViewModel().requestFavor(currentFavor, change);
+    postFavorFuture.whenComplete(
+        (aVoid, throwable) -> {
+          if (throwable != null) onFailedResult(requireView(), throwable);
+          else onSuccessfulRequest(requireView());
+        });
+    // Show confirmation and minimize keyboard
+    if (DependencyFactory.isOfflineMode(requireContext())) {
+      CommonTools.showSnackbar(requireView(), getString(R.string.save_draft_message));
+    }
   }
 
   private boolean isInputValid() {
@@ -428,7 +433,7 @@ public class FavorEditingView extends Fragment {
     int action;
     // if this favor restarts from an archived one, then prevent pressback from jumping to
     // archived favor view.
-    if (favorSource.equals(FAVOR_SOURCE_PUBLISHED))
+    if (favorSource.equals(FAVOR_SOURCE_PUBLISHED_REUSE))
       action = R.id.action_nav_favorEditingViewAfterReEnable_to_favorPublishedView;
     else action = R.id.action_nav_favorEditingView_to_favorPublishedView;
     Navigation.findNavController(currentView).navigate(action, favorBundle);

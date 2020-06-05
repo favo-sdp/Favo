@@ -301,17 +301,6 @@ public class ChatPage extends Fragment {
         Navigation.findNavController(requireView()).navigate(R.id.action_global_nav_map, mapBundle);
       }
 
-      private void navigateToUserPage(View v) {
-        int itemPosition = recyclerView.getChildLayoutPosition(v);
-        Message model = getItem(itemPosition);
-
-        Bundle userBundle = new Bundle();
-        userBundle.putString(CommonTools.USER_ARGS, model.getUid());
-        CommonTools.hideSoftKeyboard(requireActivity());
-        Navigation.findNavController(requireView())
-            .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
-      }
-
       @Override
       public void onDataChanged() {
         view.findViewById(R.id.emptyTextView)
