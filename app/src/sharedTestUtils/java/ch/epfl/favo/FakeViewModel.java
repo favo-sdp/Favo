@@ -23,6 +23,8 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   private CompletableFuture failedResult;
   private boolean isThrowingError = false;
   private boolean showFavor = false;
+  public int numActiveRequestedFavor;
+  public int numActiveAcceptedFavor;
 
   public void setThrowError(Exception throwableObject) {
     isThrowingError = true;
@@ -137,6 +139,20 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
     return favorsAroundMeResult;
   }
 
+  @Override
+  public void ObserveAllUserActiveFavorsAndCurrentUser() {
+  }
+
+  @Override
+  public int getActiveAcceptedFavors() {
+    return numActiveAcceptedFavor;
+  }
+
+  @Override
+  public int getActiveRequestedFavors() {
+    return numActiveRequestedFavor;
+  }
+
   private MutableLiveData<Favor> observedFavorResult =
       new MutableLiveData<Favor>() {
         {
@@ -161,6 +177,11 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavorResult;
+  }
+
+  @Override
+  public User getOwnUser() {
+    return FakeItemFactory.getUser();
   }
 
   @Override

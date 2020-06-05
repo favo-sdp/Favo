@@ -1,6 +1,11 @@
 package ch.epfl.favo.chat.ViewHolder;
 
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -9,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseUser;
@@ -17,7 +23,9 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import ch.epfl.favo.R;
+import ch.epfl.favo.chat.ChatPage;
 import ch.epfl.favo.chat.Model.Message;
+import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 
 public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -27,6 +35,7 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
   private LinearLayout mMessage;
   private final int mGreen300;
   private final int mGray300;
+  private String userId;
 
   MessageViewHolder(@NonNull View itemView) {
     super(itemView);
@@ -46,10 +55,22 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
   public void bind(@NonNull Message textMessage) {
     FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
     setIsSender(currentUser != null && textMessage.getUid().equals(currentUser.getUid()));
+    userId = textMessage.getUid();
+    SpannableString name = new SpannableString(textMessage.getName());;
+    name.setSpan(new UnderlineSpan(), 0, name.length(), 0);
+    mNameField.setText( name.subSequence(0, Math.min(name.length(), 10)));
     mNameField.setText(textMessage.getName());
+    mNameField.setOnClickListener(this::navigateToUserPage);
     mTimeField.setText(
         DateFormat.getTimeInstance(DateFormat.SHORT)
             .format(textMessage.getTimestamp() != null ? textMessage.getTimestamp() : new Date()));
+  }
+
+  private void navigateToUserPage(View v) {
+    Bundle userBundle = new Bundle();
+    userBundle.putString(CommonTools.USER_ARGS, userId);
+    Navigation.findNavController(v)
+            .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
   }
 
   private void setIsSender(boolean isSender) {
@@ -61,7 +82,6 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
       color = mGray300;
       mMessageContainer.setGravity(Gravity.START);
     }
-
     ((GradientDrawable) mMessage.getBackground()).setColor(color);
   }
 }

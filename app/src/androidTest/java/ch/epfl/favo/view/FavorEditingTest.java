@@ -311,6 +311,7 @@ public class FavorEditingTest {
     // onView(withId(R.id.user_info_fragment)).check(matches(isDisplayed()));
   }
 
+  /* I thought reuse and restart is duplicated, so merge two into one.
   @Test
   public void testCanReuseFavor() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
@@ -328,7 +329,7 @@ public class FavorEditingTest {
     onView(withId(R.id.favor_reward))
         .check(matches(withText(String.valueOf((int) fakeFavor.getReward()))));
   }
-
+*/
   @Test
   public void testCannotCreateFavorWithoutTitle() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
@@ -383,7 +384,7 @@ public class FavorEditingTest {
   }
 
   @Test
-  public void testRestartFavorFlow() throws Throwable {
+  public void testReuseFavorFlow() throws Throwable {
     launchFragment(null);
     requestFavor();
     // cancel favor
@@ -394,7 +395,7 @@ public class FavorEditingTest {
     // restart favor
     openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
     getInstrumentation().waitForIdleSync();
-    onView(withText(R.string.restart_request)).check(matches(isDisplayed())).perform(click());
+    onView(withText(R.string.reuse_favor)).check(matches(isDisplayed())).perform(click());
     onView(withId(R.id.request_button)).check(matches(isDisplayed())).perform(click());
     onView(withText(R.string.set_location_no))
         .inRoot(isDialog())

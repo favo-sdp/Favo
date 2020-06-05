@@ -108,6 +108,18 @@ public interface IFavorViewModel {
    */
   LiveData<Map<String, Favor>> getFavorsAroundMe(); // used in nearbylistview
 
+
+  /**
+   * Listen for current User and all his active favors, this is used for
+   * get user information from db, and calculate active accepted favor and requested favors locally
+   *
+   */
+  void ObserveAllUserActiveFavorsAndCurrentUser();
+
+  int getActiveAcceptedFavors();
+
+  int getActiveRequestedFavors();
+
   /**
    * Queries firestore for favor object with id. S
    *
@@ -122,6 +134,8 @@ public interface IFavorViewModel {
    * @return observed favor
    */
   LiveData<Favor> getObservedFavor();
+
+  User getOwnUser();
 
   /**
    * Set observed favor value on UI thread

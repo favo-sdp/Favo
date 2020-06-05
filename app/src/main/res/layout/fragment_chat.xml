@@ -92,4 +92,10 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/UrlToBit"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true" />
+
 </RelativeLayout>
