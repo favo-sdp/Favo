@@ -16,7 +16,6 @@ public class BitmapConversionUtil {
   public static InputStream bitmapToJpegInputStream(Bitmap bitmap) {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    return bais;
+    return new ByteArrayInputStream(baos.toByteArray());
   }
 }

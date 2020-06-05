@@ -84,13 +84,13 @@ public class MapPage extends Fragment
   private GoogleMap mMap;
   private Location mLocation;
 
-  private Map<String, Marker> favorsAroundMe = new HashMap<>();
+  private final Map<String, Marker> favorsAroundMe = new HashMap<>();
   private Favor focusedFavor;
   private double radiusThreshold;
 
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
   private int defaultZoomLevel;
-  private ArrayList<Integer> mapStyles =
+  private final ArrayList<Integer> mapStyles =
       new ArrayList<Integer>() {
         {
           add(R.raw.google_map_style_standard);
@@ -103,7 +103,7 @@ public class MapPage extends Fragment
   private boolean firstOpenApp = true;
   private RadioButton nearbyFavorListToggle;
   private FloatingActionButton offlineBtn;
-  private ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
+  private final ArrayList<Marker> existAddedNewMarkers = new ArrayList<>();
 
   public MapPage() {
     // Required empty public constructor

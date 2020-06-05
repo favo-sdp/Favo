@@ -10,7 +10,7 @@ import static org.junit.Assert.assertThrows;
 
 public class BitmapConversionUtilTest {
 
-  private byte[] val = "test".getBytes();
+  private final byte[] val = "test".getBytes();
 
   @Test
   public void byteArrayToBitmapTest() {

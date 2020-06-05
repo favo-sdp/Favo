@@ -31,7 +31,7 @@ import static ch.epfl.favo.TestConstants.PROVIDER;
 public class MainActivityWithBundleTest {
 
   @Rule
-  public ActivityTestRule<MainActivity> mActivityRule =
+  public final ActivityTestRule<MainActivity> mActivityRule =
       new ActivityTestRule<>(MainActivity.class, false, false);
 
   @Before

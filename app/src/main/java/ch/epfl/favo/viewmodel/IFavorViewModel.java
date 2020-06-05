@@ -28,6 +28,17 @@ public interface IFavorViewModel {
   CompletableFuture<Void> requestFavor(Favor favor, int change);
 
   /**
+   * Posts favor in the favor collection. Updates user requested favor count Updates user active
+   * requested favors Could be called when favor is edited .
+   *
+   * @param favor favor that is requested
+   * @param change Will update the count depending on this value
+   * @param editMode true if favor already existed and is being edited
+   * @return future that can be completed
+   */
+  CompletableFuture<Void> requestFavor(final Favor favor, int change, boolean editMode);
+
+  /**
    * Uploads picture to firebase storage Assigns url to favor object
    *
    * @param favor

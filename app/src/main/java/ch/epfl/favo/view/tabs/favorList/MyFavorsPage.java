@@ -59,7 +59,7 @@ public class MyFavorsPage extends Fragment {
   private static final int PAGE_SIZE = 20;
   private static final char END_CODE = '\uf8ff';
 
-  private PagedList.Config pagingConfig =
+  private final PagedList.Config pagingConfig =
       new PagedList.Config.Builder()
           .setEnablePlaceholders(false)
           .setPrefetchDistance(PREFETCH_DISTANCE)

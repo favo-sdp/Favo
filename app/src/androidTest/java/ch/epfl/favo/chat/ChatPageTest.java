@@ -65,10 +65,8 @@ import static org.mockito.ArgumentMatchers.anyDouble;
 
 public class ChatPageTest {
 
-  private String className = "android.widget.RelativeLayout";
   private String testFavorId = "testImage";
-
-  private MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
+  private final MockDatabaseWrapper mockDatabaseWrapper = new MockDatabaseWrapper<User>();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =

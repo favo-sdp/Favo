@@ -19,12 +19,12 @@ import ch.epfl.favo.util.DependencyFactory;
 @SuppressLint("NewApi")
 class FavorViewHolder extends RecyclerView.ViewHolder {
 
-  private TextView mTitleView;
-  private TextView mRequesterView;
-  private TextView mRewardView;
-  private ImageView mRequesterIconView;
+  private final TextView mTitleView;
+  private final TextView mRequesterView;
+  private final TextView mRewardView;
+  private final ImageView mRequesterIconView;
 
-  private FirebaseUser currentUser;
+  private final FirebaseUser currentUser;
 
   FavorViewHolder(@NonNull View itemView) {
     super(itemView);

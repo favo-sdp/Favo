@@ -13,19 +13,19 @@ import ch.epfl.favo.user.User;
 
 public class FakeUserUtil implements IUserUtil {
   private DocumentReference currentUserReference;
-  private CompletableFuture successfulCompletableFuture =
+  private final CompletableFuture successfulCompletableFuture =
       new CompletableFuture<Void>() {
         {
           complete(null);
         }
       };
-  private CompletableFuture failedCompletableFuture =
+  private final CompletableFuture failedCompletableFuture =
       new CompletableFuture() {
         {
           completeExceptionally(new RuntimeException());
         }
       };
-  private CompletableFuture<User> successfulUserFuture =
+  private final CompletableFuture<User> successfulUserFuture =
       new CompletableFuture<User>() {
         {
           complete(FakeItemFactory.getUser());

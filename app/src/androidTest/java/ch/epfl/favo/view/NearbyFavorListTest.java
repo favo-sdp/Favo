@@ -44,7 +44,7 @@ import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class NearbyFavorListTest {
-  private Favor favor = FakeItemFactory.getFavor();
+  private final Favor favor = FakeItemFactory.getFavor();
 
   @Rule
   public final ActivityTestRule<MainActivity> mainActivityTestRule =
