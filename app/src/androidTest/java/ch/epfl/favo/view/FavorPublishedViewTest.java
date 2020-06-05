@@ -28,7 +28,6 @@ import ch.epfl.favo.FakeViewModel;
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.TestConstants;
-import ch.epfl.favo.exception.IllegalAcceptException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.user.User;

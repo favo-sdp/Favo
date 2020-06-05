@@ -223,7 +223,8 @@ public class FavorEditingView extends Fragment {
             && remoteFavor.getId().equals(currentFavor.getId())
             && remoteFavor.getStatusId() == FavorStatus.REQUESTED.toInt();
     int change = isEditingOldFavor ? 0 : 1;
-    if(!isEditingOldFavor && getViewModel().getActiveRequestedFavors() >= User.MAX_REQUESTING_FAVORS){
+    if (!isEditingOldFavor
+        && getViewModel().getActiveRequestedFavors() >= User.MAX_REQUESTING_FAVORS) {
       CommonTools.showSnackbar(requireView(), getString(R.string.illegal_request_error));
       return;
     }

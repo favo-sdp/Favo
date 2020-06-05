@@ -223,7 +223,7 @@ public class Favor implements Parcelable, Document, Cloneable {
    */
   public void setAccepterId(String id) {
     clearAccepterIds();
-    if (userIds != null && !userIds.isEmpty() && id!=null) {
+    if (userIds != null && !userIds.isEmpty() && id != null) {
       userIds.add(id);
     }
   }

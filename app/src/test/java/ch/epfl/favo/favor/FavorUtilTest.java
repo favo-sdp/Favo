@@ -53,9 +53,7 @@ public class FavorUtilTest {
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
 
     mockUserUtil = Mockito.mock(UserUtil.class);
-    Mockito.doReturn(successfulFuture)
-        .when(mockUserUtil)
-        .updateCoinBalance(anyString(), anyInt());
+    Mockito.doReturn(successfulFuture).when(mockUserUtil).updateCoinBalance(anyString(), anyInt());
   }
 
   @After
@@ -69,9 +67,7 @@ public class FavorUtilTest {
     FavorUtil.getSingleInstance().updateCollectionWrapper(mockDatabaseWrapper);
 
     mockUserUtil = Mockito.mock(UserUtil.class);
-    Mockito.doReturn(successfulFuture)
-        .when(mockUserUtil)
-        .updateCoinBalance(anyString(), anyInt());
+    Mockito.doReturn(successfulFuture).when(mockUserUtil).updateCoinBalance(anyString(), anyInt());
 
     Favor favor = FakeItemFactory.getFavor();
     FavorUtil.getSingleInstance().requestFavor(favor);

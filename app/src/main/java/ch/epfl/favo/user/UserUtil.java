@@ -73,7 +73,6 @@ public class UserUtil implements IUserUtil {
     return collection.getDocumentQuery(userId);
   }
 
-
   public CompletableFuture<Void> postUserRegistrationToken(User user) {
     FirebaseInstanceId instance = DependencyFactory.getCurrentFirebaseNotificationInstanceId();
     Task<InstanceIdResult> task = instance.getInstanceId();

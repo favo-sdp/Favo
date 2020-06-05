@@ -1,10 +1,8 @@
 package ch.epfl.favo.chat.ViewHolder;
 
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.view.View;
@@ -23,7 +21,6 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import ch.epfl.favo.R;
-import ch.epfl.favo.chat.ChatPage;
 import ch.epfl.favo.chat.Model.Message;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
@@ -56,9 +53,9 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
     FirebaseUser currentUser = DependencyFactory.getCurrentFirebaseUser();
     setIsSender(currentUser != null && textMessage.getUid().equals(currentUser.getUid()));
     userId = textMessage.getUid();
-    SpannableString name = new SpannableString(textMessage.getName());;
-    name.setSpan(new UnderlineSpan(), 0, name.length(), 0);
-    mNameField.setText( name.subSequence(0, Math.min(name.length(), 10)));
+    SpannableString name = new SpannableString(textMessage.getName());
+      name.setSpan(new UnderlineSpan(), 0, name.length(), 0);
+    mNameField.setText(name.subSequence(0, Math.min(name.length(), 10)));
     mNameField.setText(textMessage.getName());
     mNameField.setOnClickListener(this::navigateToUserPage);
     mTimeField.setText(
@@ -69,8 +66,7 @@ public abstract class MessageViewHolder extends RecyclerView.ViewHolder {
   private void navigateToUserPage(View v) {
     Bundle userBundle = new Bundle();
     userBundle.putString(CommonTools.USER_ARGS, userId);
-    Navigation.findNavController(v)
-            .navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
+    Navigation.findNavController(v).navigate(R.id.action_nav_chatView_to_UserInfoPage, userBundle);
   }
 
   private void setIsSender(boolean isSender) {

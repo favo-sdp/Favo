@@ -119,7 +119,7 @@
     <string name="notification_title">Enable nearby favor notifications</string>
     <string name="notification_summary">Be notified when new favors are posted in the area within a certain radius</string>
     <string name="notification_radius_title">Notifications radius in kilometers</string>
-    <string name="map_radius_title">Default map zoom level radius in kilometers</string>
+    <string name="map_radius_title">Map radius in kilometers</string>
 
 
     <string name="notification_update_title">Enable updates notifications</string>

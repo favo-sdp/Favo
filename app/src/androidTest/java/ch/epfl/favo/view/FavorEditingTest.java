@@ -312,24 +312,24 @@ public class FavorEditingTest {
   }
 
   /* I thought reuse and restart is duplicated, so merge two into one.
-  @Test
-  public void testCanReuseFavor() throws Throwable {
-    fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
-    requestFavor();
+    @Test
+    public void testCanReuseFavor() throws Throwable {
+      fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();
+      requestFavor();
 
-    // click reuse
-    openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
-    getInstrumentation().waitForIdleSync();
-    onView(withText(R.string.reuse_favor)).check(matches(isDisplayed())).perform(click());
-    onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
+      // click reuse
+      openActionBarOverflowOrOptionsMenu(getInstrumentation().getTargetContext());
+      getInstrumentation().waitForIdleSync();
+      onView(withText(R.string.reuse_favor)).check(matches(isDisplayed())).perform(click());
+      onView(withId(R.id.fragment_favor)).check(matches(isDisplayed()));
 
-    // check fields on request view
-    onView(withId(R.id.title_request_view)).check(matches(withText(fakeFavor.getTitle())));
-    onView(withId(R.id.details)).check(matches(withText(fakeFavor.getDescription())));
-    onView(withId(R.id.favor_reward))
-        .check(matches(withText(String.valueOf((int) fakeFavor.getReward()))));
-  }
-*/
+      // check fields on request view
+      onView(withId(R.id.title_request_view)).check(matches(withText(fakeFavor.getTitle())));
+      onView(withId(R.id.details)).check(matches(withText(fakeFavor.getDescription())));
+      onView(withId(R.id.favor_reward))
+          .check(matches(withText(String.valueOf((int) fakeFavor.getReward()))));
+    }
+  */
   @Test
   public void testCannotCreateFavorWithoutTitle() throws Throwable {
     fakeViewModel = (FakeViewModel) launchFragment(null).getViewModel();

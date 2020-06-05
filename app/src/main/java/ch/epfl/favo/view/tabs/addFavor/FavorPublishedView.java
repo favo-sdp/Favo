@@ -308,15 +308,14 @@ public class FavorPublishedView extends Fragment {
 
   private void displayUserInfo(User user) {
     String name =
-            (user.getName() == null || user.getName().equals(""))
-                    ? CommonTools.emailToName(user.getEmail())
-                    : user.getName();
+        (user.getName() == null || user.getName().equals(""))
+            ? CommonTools.emailToName(user.getEmail())
+            : user.getName();
     ((TextView) requireView().findViewById(R.id.user_name_published_view)).setText(name);
     if (user.getProfilePictureUrl() != null) {
       Glide.with(this).load(user.getProfilePictureUrl()).fitCenter().into(userProfilePicture);
     }
   }
-
 
   private void setupImageView(View rootView, Favor favor) {
     String url = favor.getPictureUrl();

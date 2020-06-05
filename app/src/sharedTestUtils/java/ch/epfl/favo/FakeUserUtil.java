@@ -43,7 +43,6 @@ public class FakeUserUtil implements IUserUtil {
     return defaultResult();
   }
 
-
   public CompletableFuture defaultResult() {
     if (isThrowingError) return failedCompletableFuture;
     return successfulCompletableFuture;

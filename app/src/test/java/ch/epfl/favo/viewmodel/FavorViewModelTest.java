@@ -36,7 +36,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 
@@ -222,7 +221,7 @@ public class FavorViewModelTest {
     fakeFavor.setAccepterId("accepter3");
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isDone());
     DependencyFactory.setCurrentUserRepository(userRepository);
-//    Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isCompletedExceptionally());
+    //    Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isCompletedExceptionally());
     fakeFavor.clearAccepterIds();
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, true).isDone());
     Assert.assertTrue(viewModel.cancelFavor(fakeFavor, false).isDone());
@@ -244,7 +243,7 @@ public class FavorViewModelTest {
     fakeFavor.setStatusIdToInt(FavorStatus.COMPLETED_REQUESTER);
     Assert.assertTrue(viewModel.completeFavor(fakeFavor, false).isDone());
     // Should fail if favor is not currently
-   /* Assert.assertThrows(
+    /* Assert.assertThrows(
     assertThrows(
         IllegalStateException.class,
         () -> viewModel.completeFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());*/
@@ -282,6 +281,7 @@ public class FavorViewModelTest {
     assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());
     Mockito.doThrow(new RuntimeException()).when(favorRepository).updateFavor(any(Favor.class));
     DependencyFactory.setCurrentFavorRepository(favorRepository);
-    //assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(), true).isCompletedExceptionally());
+    // assertTrue(viewModel.commitFavor(FakeItemFactory.getFavor(),
+    // true).isCompletedExceptionally());
   }
 }

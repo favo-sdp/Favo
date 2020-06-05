@@ -39,7 +39,7 @@ import static androidx.navigation.Navigation.findNavController;
  * that will expand to give more information about them. This object is a simple {@link Fragment}
  * subclass.
  */
-//@RequiresApi(api = Build.VERSION_CODES.N)
+// @RequiresApi(api = Build.VERSION_CODES.N)
 public class NearbyFavorList extends Fragment {
 
   private View rootView;

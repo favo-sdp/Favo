@@ -14,9 +14,7 @@ import ch.epfl.favo.database.ICollectionWrapper;
 import ch.epfl.favo.gps.FavoLocation;
 import ch.epfl.favo.util.DependencyFactory;
 
-/**
- * This models the favor fragment_favor_published_view.
- */
+/** This models the favor fragment_favor_published_view. */
 @SuppressLint("NewApi")
 public class FavorUtil implements IFavorUtil {
   private static final FavorUtil SINGLE_INSTANCE = new FavorUtil();

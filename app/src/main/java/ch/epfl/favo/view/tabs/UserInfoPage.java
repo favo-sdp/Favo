@@ -14,8 +14,6 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 
-import java.util.Objects;
-
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.user.User;
@@ -66,8 +64,7 @@ public class UserInfoPage extends Fragment {
 
   private void displayUserData(User user) {
 
-    ((TextView) view.findViewById(R.id.display_name))
-        .setText(CommonTools.getUserName(user));
+    ((TextView) view.findViewById(R.id.display_name)).setText(CommonTools.getUserName(user));
 
     ((TextView) view.findViewById(R.id.display_email))
         .setText(TextUtils.isEmpty(user.getEmail()) ? "Email" : user.getEmail());
