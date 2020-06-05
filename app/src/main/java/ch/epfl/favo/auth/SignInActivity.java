@@ -133,7 +133,6 @@ public class SignInActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-
     checkPlayServices();
 
     if (DependencyFactory.getCurrentFirebaseUser() != null && getIntent().getExtras() == null) {
@@ -200,6 +199,11 @@ public class SignInActivity extends AppCompatActivity {
                 onSignInFailed(ex);
                 return null;
               });
+    } else {
+      // if sign-in was cancelled, return back to home page
+      if (resultCode == RESULT_CANCELED) {
+        onBackPressed();
+      }
     }
   }
 

@@ -2,6 +2,7 @@ package ch.epfl.favo.view.tabs;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -27,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
 
+import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
@@ -279,6 +281,7 @@ public class UserAccountPage extends Fragment {
         // remove user preferences from cache
         getDefaultSharedPreferences(requireContext()).edit().clear().apply();
       }
+      requireActivity().finish();
       startActivity(new Intent(getActivity(), SignInActivity.class));
     } else {
       CommonTools.showSnackbar(getView(), getString(errorMessage));
