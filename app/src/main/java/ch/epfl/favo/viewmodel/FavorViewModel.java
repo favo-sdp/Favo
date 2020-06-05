@@ -104,12 +104,13 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
                 getUserRepository()
                     .incrementFieldForUser(currentUserId, User.REQUESTED_FAVORS, change))
         .thenCompose(
-            (aVoid) -> { if (!editMode) {
-              return getUserRepository()
+            (aVoid) -> {
+              if (!editMode) {
+                return getUserRepository()
                     .updateCoinBalance(tempFavor.getUserIds().get(0), -tempFavor.getReward());
-                } else {
-              return null;
-            }
+              } else {
+                return null;
+              }
             });
   }
 
