@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+
 import ch.epfl.favo.R;
 import ch.epfl.favo.auth.SignInActivity;
 import ch.epfl.favo.user.User;
@@ -44,6 +47,7 @@ public class UserAccountPage extends Fragment {
 
   private static final int PICK_IMAGE_REQUEST = 1;
   private static final int USE_CAMERA_REQUEST = 2;
+  public static final String FCM_SCOPE = "FCM";
 
   private View view;
   private ImageView mImageView;
@@ -279,6 +283,12 @@ public class UserAccountPage extends Fragment {
         DependencyFactory.getCurrentUserRepository().deleteUser(currentUser);
         // remove user preferences from cache
         getDefaultSharedPreferences(requireContext()).edit().clear().apply();
+      }
+      try {
+        DependencyFactory.getCurrentFirebaseNotificationInstanceId()
+            .deleteToken(currentUser.getNotificationId(), FCM_SCOPE);
+      } catch (IOException e) {
+        Log.w("Sign-out flow: ", e.toString());
       }
       requireActivity().finish();
       startActivity(new Intent(getActivity(), SignInActivity.class));
