@@ -25,17 +25,17 @@ import java.util.Objects;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.gps.IGpsTracker;
 import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
+
+import static ch.epfl.favo.user.UserUtil.USER_COLLECTION;
 
 @SuppressLint("NewApi")
 public class SignInActivity extends AppCompatActivity {
   public static final String TAG = "SignInActivity";
   public static final int RC_SIGN_IN = 123;
   private static final String URL_APP_NOT_FOUND = "https://google.com";
-  private IGpsTracker mGpsTracker;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +44,6 @@ public class SignInActivity extends AppCompatActivity {
 
     // check for google play services and make request if not present
     checkPlayServices();
-
-    // initialize location library
-    mGpsTracker =
-        DependencyFactory.getCurrentGpsTracker(Objects.requireNonNull(getApplicationContext()));
 
     FirebaseUser user = DependencyFactory.getCurrentFirebaseUser();
     if (user != null) {
@@ -146,23 +142,25 @@ public class SignInActivity extends AppCompatActivity {
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
 
       DocumentReference docRef =
-          FirebaseFirestore.getInstance().collection("users").document(userId);
+          FirebaseFirestore.getInstance().collection(USER_COLLECTION).document(userId);
       docRef
           .get()
           .addOnCompleteListener(
               task -> {
                 if (task.isSuccessful()) {
                   DocumentSnapshot document = task.getResult();
-                  if (document.exists()) {
+                  if (document != null && document.exists()) {
                     User user = document.toObject(User.class);
-                    user.setDeviceId(deviceId);
-                    updateNotificationToken(user);
+                    if (user != null) {
+                      user.setDeviceId(deviceId);
+                      updateNotificationToken(user);
+                    }
                   } else {
                     User user = new User(currentUser, deviceId);
                     if (user.getName() == null || user.getName().equals(""))
                       user.setName(CommonTools.emailToName(user.getEmail()));
                     FirebaseFirestore.getInstance()
-                        .collection("users")
+                        .collection(USER_COLLECTION)
                         .document(userId)
                         .set(user.toMap())
                         .addOnSuccessListener(
@@ -195,11 +193,11 @@ public class SignInActivity extends AppCompatActivity {
               }
 
               // Get new Instance ID token
-              String token = task.getResult().getToken();
+              String token = Objects.requireNonNull(task.getResult()).getToken();
               user.setNotificationId(token);
 
               FirebaseFirestore.getInstance()
-                  .collection("users")
+                  .collection(USER_COLLECTION)
                   .document(user.getId())
                   .update(user.toMap())
                   .addOnSuccessListener(

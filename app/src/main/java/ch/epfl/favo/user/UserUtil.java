@@ -20,7 +20,7 @@ import ch.epfl.favo.util.TaskToFutureAdapter;
 @SuppressLint("NewApi")
 public class UserUtil implements IUserUtil {
 
-  private static final String USER_COLLECTION = "users";
+  public static final String USER_COLLECTION = "users";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
 
   private static ICollectionWrapper<User> collection =
