@@ -11,6 +11,7 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -132,11 +133,10 @@ public class CommonTools {
     else return R.string.update_favor_error;
   }
 
-
   public static String getUserName(User user) {
     String name = user.getName();
     if (name == null || name.equals(""))
-      if(user.getEmail() != null && user.getEmail().equals(""))
+      if (user.getEmail() != null && user.getEmail().equals(""))
         name = user.getEmail().split("@")[0].replace(".", " ");
       else name = DEFAULT_NAME;
     return name;
@@ -150,15 +150,14 @@ public class CommonTools {
    */
   public static boolean isCameraAvailable(Activity activity) {
     boolean hasCamera =
-            activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
+        activity.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     int numberOfCameras = 0;
     try {
       numberOfCameras =
-              ((CameraManager)
-                      Objects.requireNonNull(
-                              activity.getSystemService(Context.CAMERA_SERVICE)))
-                      .getCameraIdList()
-                      .length;
+          ((CameraManager)
+                  Objects.requireNonNull(activity.getSystemService(Context.CAMERA_SERVICE)))
+              .getCameraIdList()
+              .length;
     } catch (CameraAccessException e) {
       Log.e("CameraAvailability", e.toString());
     }
