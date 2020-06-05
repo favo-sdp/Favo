@@ -1,8 +1,0 @@
-[?1000h[?1049h[>4;2m[?1h=[?2004h[27m[29m[m[H[2J[?25l[23;1H"-stdin-" [RO] 26L, 945C
-[97m[41mError detected while processing /usr/local/Cellar/macvim/8.1-161/MacVim.app/Con[m
-[23;80H[97m[41mt[24;1Hents/Resources/vim/runtime/scripts.vim:[m
-[93mline    1:[m
-[97m[41mInterrupted[?2004h[?2004h[?25h[?1000l[m
-Interrupt: [38;5;121mPress ENTER or type command to continue[m[?2004l[?1l>[>4;m[?1049lVim: Caught deadly signal HUP
-Vim: Finished.
-[24;1H[23;2t[23;1t

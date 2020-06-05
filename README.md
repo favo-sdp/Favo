@@ -50,6 +50,10 @@ What will a user be able to do? Are there advantages to being logged in? Will th
 
 Users will be able to login with a common third-party service (facebook, google, twitter) and access their account to manage their posts and settings. After logging in, users will be notified if there is a request that matches their abilities or if there's a new event for any of the user's currently active posts. At the same time, users are allowed to change their settings and preferences (minus a couple constant fields) at any time, and personalize their experience in the way they most prefer. Only after logging in can a user ask for a favor, otherwise we can not distinguish trusted users with malicious users.  
 
+The application also features a chat functionality that the users can leverage to communicate with others regarding certain favors they have requested/accepted. There is also a virtual currency in the application known as FavoCoins. These
+coins can be traded and offered as a reward for completing certain favors and more coins can also be purchased in-app. We also support uploading of images related to favors which can then be seen by other users to better describe the favor
+that is requested.
+
 
 ### Local cache:
 
@@ -62,5 +66,4 @@ User's settings and location, drafted posts, and relevant post information that 
 
 Which basic functionalities will your offline mode support?
 
-The most important offline functionality will occur if the user loses connection after engaging in a favor. The local database will be synced with the remote database (if out-of-date) as soon as there’s an active internet connection to confirm that the favor was carried out successfully. Users will also be able to create posts as drafts and change their settings.
-In some cases, users might be able to do some operations (e.g. write a message, do a transaction) that will be cached locally and executed as soon as the app regains
+The most important offline functionality will occur if the user loses connection after engaging in a favor. The local database will be synced with the remote database (if out-of-date) as soon as there’s an active internet connection to confirm that the favor was carried out successfully. Users will also be able to create favors as drafts and change their settings which will be synchronized with the database upon successful internet connection.

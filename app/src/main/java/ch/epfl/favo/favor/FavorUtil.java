@@ -37,7 +37,7 @@ public class FavorUtil implements IFavorUtil {
   }
 
   /**
-   * Allows user to post a favor with a title, description and location.
+   * Adds a new favor object in the database.
    *
    * @param favor A favor object.
    * @throws RuntimeException Unable to post to DB.
@@ -47,12 +47,20 @@ public class FavorUtil implements IFavorUtil {
     return collection.addDocument(favor);
   }
 
+  /**
+   * Updates a given favor object in the database.
+   *
+   * @param favor A favor object.
+   * @throws RuntimeException Unable to post to DB.
+   */
   @Override
   public CompletableFuture<Void> updateFavor(Favor favor) {
     return collection.updateDocument(favor.getId(), favor.toMap());
   }
 
   /**
+   * Looks up a favor with the given id in the database.
+   *
    * @param favorId the id of the favor to retrieve from DB.
    * @return CompletableFuture<Favor>
    */
@@ -61,11 +69,23 @@ public class FavorUtil implements IFavorUtil {
     return collection.getDocument(favorId);
   }
 
+  /**
+   * Removes a favor with the given id from the database.
+   *
+   * @param favorId the id of the favor to retrieve from DB.
+   * @return CompletableFuture<Favor>
+   */
   @Override
   public CompletableFuture<Void> removeFavor(String favorId) {
     return collection.removeDocument(favorId);
   }
 
+  /**
+   * Returns all favors in a given area/radius
+   *
+   * @param loc a given android Location
+   * @param radiusInKm the radius in which to search for favors
+   */
   @Override
   public Query getLongitudeBoundedFavorsAroundMe(Location loc, Double radiusInKm) {
     double longDif =
