@@ -40,6 +40,8 @@ public class UserUtil implements IUserUtil {
   }
 
   /**
+   * This method adds a new user object to the database
+   *
    * @param user A user object.
    * @throws RuntimeException Unable to post to DB.
    */
@@ -48,11 +50,23 @@ public class UserUtil implements IUserUtil {
     return collection.addDocument(user);
   }
 
+  /**
+   * This method updates the fields for a user in the database.
+   *
+   * @param user A user object.
+   * @throws RuntimeException Unable to post to DB.
+   */
   @Override
   public CompletableFuture<Void> updateUser(User user) {
     return collection.updateDocument(user.getId(), user.toMap());
   }
 
+  /**
+   * This method removes a user object from the database.
+   *
+   * @param user A user object.
+   * @throws RuntimeException Unable to post to DB.
+   */
   @Override
   public CompletableFuture<Void> incrementFieldForUser(String userId, String field, int change) {
     Task<Void> updateTask = getUserReference(userId).update(field, FieldValue.increment(change));
@@ -64,10 +78,14 @@ public class UserUtil implements IUserUtil {
     return collection.removeDocument(user.getId());
   }
 
-  /** @param id A FireBase Uid to search for in Users table. */
+  /**
+   * This method looks up a user with the given id in the database.
+   *
+   * @param userId A FireBase Uid to search for in Users table.
+   */
   @Override
-  public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
-    return collection.getDocument(id);
+  public CompletableFuture<User> findUser(String userId) throws Resources.NotFoundException {
+    return collection.getDocument(userId);
   }
 
   @Override
@@ -95,6 +113,13 @@ public class UserUtil implements IUserUtil {
     collection = collectionWrapper;
   }
 
+  /**
+   * This method updates the FavoCoin balance for the user with
+   * given userId.
+   *
+   * @param userId The userId of the user receiving/giving FavoCoins.
+   * @param reward The FavoCoins reward for the favor
+   */
   @Override
   public CompletableFuture<Void> updateCoinBalance(String userId, double reward) {
     return findUser(userId)
