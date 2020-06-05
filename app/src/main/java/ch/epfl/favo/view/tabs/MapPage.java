@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
@@ -52,7 +50,6 @@ import ch.epfl.favo.exception.NoPositionFoundException;
 import ch.epfl.favo.favor.Favor;
 import ch.epfl.favo.favor.FavorStatus;
 import ch.epfl.favo.gps.FavoLocation;
-import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.CommonTools;
 import ch.epfl.favo.util.DependencyFactory;
 import ch.epfl.favo.view.tabs.addFavor.FavorEditingView;
@@ -144,9 +141,9 @@ public class MapPage extends Fragment
   public void onMapReady(GoogleMap googleMap) {
     // set zoomLevel from user preference
     String radiusSetting =
-            CacheUtil.getInstance()
-                    .getValueFromCacheStr(
-                            requireContext(), getString(R.string.radius_notifications_setting_key));
+        CacheUtil.getInstance()
+            .getValueFromCacheStr(
+                requireContext(), getString(R.string.radius_notifications_setting_key));
     radiusThreshold =
         (!radiusSetting.isEmpty())
             ? Integer.parseInt(radiusSetting)
@@ -442,6 +439,7 @@ public class MapPage extends Fragment
             add(favor.getId());
             add(isRequested);
             add(false);
+            add(favor.getRequesterId());
           }
         });
     if (!isRequested) {

@@ -136,13 +136,6 @@ public interface IFavorViewModel {
   LiveData<Favor> getObservedFavor();
 
   /**
-   * Gets currently observed user requested in the setter
-   *
-   * @return observed favor
-   */
-  LiveData<User> getObservedUser();
-
-  /**
    * Set observed favor value on UI thread
    *
    * @param favor object to be set.

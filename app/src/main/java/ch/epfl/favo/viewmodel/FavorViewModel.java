@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.location.Location;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -283,11 +282,6 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
-  }
-
-  @Override
-  public LiveData<User> getObservedUser() {
-    return observedUser;
   }
 
   @Override

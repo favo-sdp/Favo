@@ -180,15 +180,6 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
-  public LiveData<User> getObservedUser() {
-    return new MutableLiveData<User>() {
-      {
-        setValue(FakeItemFactory.getUser());
-      }
-    };
-  }
-
-  @Override
   public void setShowObservedFavor(Boolean show) {
     showFavor = show;
   }
