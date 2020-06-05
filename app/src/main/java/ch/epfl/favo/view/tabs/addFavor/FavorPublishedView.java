@@ -3,7 +3,6 @@ package ch.epfl.favo.view.tabs.addFavor;
 import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +51,7 @@ public class FavorPublishedView extends Fragment {
   private static final String APP_URL_PREFIX = "https://www.favoapp.com/?favorId=</string>";
   private static final String FAVO_DOMAIN = "https://favoapp.page.link</string>";
   private static final String PACKAGE_NAME = "ch.epfl.favo";
+  private static final int LIST_ITEM_HEIGHT = 200;
   private FavorStatus favorStatus;
   private Favor currentFavor;
   private Button commitAndCompleteBtn;
@@ -298,7 +298,7 @@ public class FavorPublishedView extends Fragment {
     favorStatus = verifyFavorHasBeenAccepted(favor);
 
     // display committed user list
-    if (isRequestedByCurrentUser && favor.getUserIds().size() > 1) setupUserListView();
+    if (isRequestedByCurrentUser) setupUserListView();
     else rootView.findViewById(R.id.commit_user_group).setVisibility(View.INVISIBLE);
     setupImageView(rootView, favor);
     displayUserInfo(favor.getRequesterId());
@@ -353,9 +353,11 @@ public class FavorPublishedView extends Fragment {
             .thenAccept(
                 user -> {
                   commitUsers.put(userId, user);
-                  Log.d("buggg", commitUsers.size() + " size");
                   listView.setAdapter(
                       new UserAdapter(getContext(), new ArrayList<>(commitUsers.values())));
+                  ViewGroup.LayoutParams params = listView.getLayoutParams();
+                  params.height = (LIST_ITEM_HEIGHT) * (commitUsers.size());
+                  listView.setLayoutParams(params);
                 });
     }
     listView.setOnItemClickListener(

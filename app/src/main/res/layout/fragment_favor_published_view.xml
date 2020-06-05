@@ -216,10 +216,11 @@
                             android:id="@+id/commit_user"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:autofillHints="commit users shown here"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            tools:ignore="NestedScrolling" />
+                            app:layout_constraintTop_toTopOf="parent" />
                     </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
