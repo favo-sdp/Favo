@@ -8,12 +8,16 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Objects;
@@ -21,14 +25,17 @@ import java.util.Random;
 
 import ch.epfl.favo.MainActivity;
 import ch.epfl.favo.R;
-import ch.epfl.favo.user.UserUtil;
+import ch.epfl.favo.user.User;
 import ch.epfl.favo.util.DependencyFactory;
+
+import static ch.epfl.favo.user.UserUtil.USER_COLLECTION;
 
 public class FirebaseMessagingService
     extends com.google.firebase.messaging.FirebaseMessagingService {
 
   public static final String CHANNEL_NAME = "Default channel name";
   public static final String FAVOR_NOTIFICATION_KEY = "FavorId";
+  public static final String TAG = "FirebaseMessaging";
 
   /**
    * Create and show notification to the user with the specified parameters
@@ -86,14 +93,36 @@ public class FirebaseMessagingService
   @Override
   public void onNewToken(@NonNull String token) {
     // update user notification id
+
     if (DependencyFactory.getCurrentFirebaseUser() != null) {
-      DependencyFactory.getCurrentUserRepository()
-          .findUser(DependencyFactory.getCurrentFirebaseUser().getUid())
-          .thenAccept(
-              user -> {
-                if (user.getNotificationId() == null || !user.getNotificationId().equals(token)) {
-                  user.setNotificationId(token);
-                  UserUtil.getSingleInstance().updateUser(user);
+
+      DocumentReference docRef =
+          DependencyFactory.getCurrentFirestore()
+              .collection(USER_COLLECTION)
+              .document(DependencyFactory.getCurrentFirebaseUser().getUid());
+      docRef
+          .get()
+          .addOnCompleteListener(
+              task -> {
+                if (task.isSuccessful()) {
+                  DocumentSnapshot document = task.getResult();
+                  if (document != null && document.exists()) {
+                    User user = document.toObject(User.class);
+                    if (user != null
+                        && (user.getNotificationId() == null
+                            || !user.getNotificationId().equals(token))) {
+                      user.setNotificationId(token);
+                      docRef
+                          .update(user.toMap())
+                          .addOnSuccessListener(
+                              aVoid -> Log.d(TAG, "DocumentSnapshot successfully written!"))
+                          .addOnFailureListener(e -> Log.e(TAG, "Failing updating notificationID"));
+                    }
+                  } else {
+                    Log.e(TAG, "Document not found when updating notificationID");
+                  }
+                } else {
+                  Log.e(TAG, "Error when updating notificationID");
                 }
               });
     }

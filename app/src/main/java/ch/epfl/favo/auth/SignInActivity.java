@@ -16,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Arrays;
@@ -142,7 +141,7 @@ public class SignInActivity extends AppCompatActivity {
       String deviceId = DependencyFactory.getDeviceId(getApplicationContext().getContentResolver());
 
       DocumentReference docRef =
-          FirebaseFirestore.getInstance().collection(USER_COLLECTION).document(userId);
+          DependencyFactory.getCurrentFirestore().collection(USER_COLLECTION).document(userId);
       docRef
           .get()
           .addOnCompleteListener(
@@ -153,20 +152,18 @@ public class SignInActivity extends AppCompatActivity {
                     User user = document.toObject(User.class);
                     if (user != null) {
                       user.setDeviceId(deviceId);
-                      updateNotificationToken(user);
+                      updateNotificationToken(user, false);
                     }
                   } else {
                     User user = new User(currentUser, deviceId);
                     if (user.getName() == null || user.getName().equals(""))
                       user.setName(CommonTools.emailToName(user.getEmail()));
-                    FirebaseFirestore.getInstance()
-                        .collection(USER_COLLECTION)
-                        .document(userId)
+                    docRef
                         .set(user.toMap())
                         .addOnSuccessListener(
                             aVoid -> {
                               Log.d(TAG, "DocumentSnapshot successfully written!");
-                              updateNotificationToken(user);
+                              updateNotificationToken(user, true);
                             })
                         .addOnFailureListener(e -> onSignInFailed(Objects.requireNonNull(e)));
                   }
@@ -182,12 +179,18 @@ public class SignInActivity extends AppCompatActivity {
     }
   }
 
-  private void updateNotificationToken(User user) {
+  private void updateNotificationToken(User user, boolean isNewUser) {
     FirebaseInstanceId.getInstance()
         .getInstanceId()
         .addOnCompleteListener(
             task -> {
               if (!task.isSuccessful()) {
+                if (isNewUser) {
+                  DependencyFactory.getCurrentFirestore()
+                      .collection(USER_COLLECTION)
+                      .document(user.getId())
+                      .delete();
+                }
                 onSignInFailed(Objects.requireNonNull(task.getException()));
                 return;
               }
@@ -196,7 +199,7 @@ public class SignInActivity extends AppCompatActivity {
               String token = Objects.requireNonNull(task.getResult()).getToken();
               user.setNotificationId(token);
 
-              FirebaseFirestore.getInstance()
+              DependencyFactory.getCurrentFirestore()
                   .collection(USER_COLLECTION)
                   .document(user.getId())
                   .update(user.toMap())
@@ -205,7 +208,16 @@ public class SignInActivity extends AppCompatActivity {
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                         startMainActivity();
                       })
-                  .addOnFailureListener(e -> onSignInFailed(Objects.requireNonNull(e)));
+                  .addOnFailureListener(
+                      e -> {
+                        if (isNewUser) {
+                          DependencyFactory.getCurrentFirestore()
+                              .collection(USER_COLLECTION)
+                              .document(user.getId())
+                              .delete();
+                        }
+                        onSignInFailed(Objects.requireNonNull(e));
+                      });
             });
   }
 

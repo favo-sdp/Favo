@@ -57,9 +57,4 @@ public class FirebaseMessagingServiceUnitTest {
 
     fms.onMessageReceived(new RemoteMessage(bundle));
   }
-
-  @Test
-  public void testOnNewToken() {
-    fms.onNewToken("New token");
-  }
 }

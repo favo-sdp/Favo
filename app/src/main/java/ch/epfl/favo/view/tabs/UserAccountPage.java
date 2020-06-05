@@ -288,7 +288,7 @@ public class UserAccountPage extends Fragment {
         DependencyFactory.getCurrentFirebaseNotificationInstanceId()
             .deleteToken(currentUser.getNotificationId(), FCM_SCOPE);
       } catch (IOException e) {
-        Log.w("Sign-out flow: ", e.toString());
+        Log.d("Sign-out flow: ", e.toString());
       }
       requireActivity().finish();
       startActivity(new Intent(getActivity(), SignInActivity.class));
