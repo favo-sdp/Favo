@@ -76,7 +76,7 @@ public class FakeUserUtil implements IUserUtil {
   }
 
   @Override
-  public CompletableFuture<User> findUser(String id) throws Resources.NotFoundException {
+  public CompletableFuture<User> findUser(String userId) throws Resources.NotFoundException {
     if (isThrowingError || isFailedFindUser) return failedCompletableFuture;
     return successfulUserFuture;
   }

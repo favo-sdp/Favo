@@ -47,11 +47,11 @@ public interface IUserUtil {
   /**
    * Retrieves user document from firestore
    *
-   * @param id user id
+   * @param userId user id
    * @return future with user object fetched from firestore
    * @throws Resources.NotFoundException if user not found
    */
-  CompletableFuture<User> findUser(String id) throws Resources.NotFoundException;
+  CompletableFuture<User> findUser(String userId) throws Resources.NotFoundException;
 
   /**
    * Retrieves the registration token of a FirebaseUser for notifications. This value needs to be
