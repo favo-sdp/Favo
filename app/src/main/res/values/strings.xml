@@ -133,6 +133,7 @@
 
     <string name="nearbyFavors_notifications_setting_key">nearbyFavors_notifications_setting_key</string>
     <string name="radius_notifications_setting_key">radius_notifications_setting_key</string>
+    <string name="radius_map_setting_key">radius_map_setting_key</string>
     <string name="update_notifications_setting_key">update_notifications_setting_key</string>
     <string name="chat_notifications_setting_key">chat_notifications_setting_key</string>
     <string name="map_style_key">map_style</string>

@@ -180,6 +180,11 @@ public class FakeViewModel extends ViewModel implements IFavorViewModel {
   }
 
   @Override
+  public User getOwnUser() {
+    return FakeItemFactory.getUser();
+  }
+
+  @Override
   public void setShowObservedFavor(Boolean show) {
     showFavor = show;
   }

@@ -41,7 +41,6 @@ public class UserAdapter extends ArrayAdapter<User> {
     // Lookup view for data population
     TextView UserNameView = convertView.findViewById(R.id.user_name_commit);
     ImageView UserProfilePic = convertView.findViewById(R.id.user_profile_picture_commit);
-
     // Populate the data into the template view using the data object
     if (user.getProfilePictureUrl() != null) {
       Glide.with(context)
@@ -49,7 +48,6 @@ public class UserAdapter extends ArrayAdapter<User> {
               .into(UserProfilePic);
     }
     UserNameView.setText(CommonTools.getUserName(user));
-    // UserProfilePic.setImageBitmap();
     // Return the completed view to render on screen
     return convertView;
   }

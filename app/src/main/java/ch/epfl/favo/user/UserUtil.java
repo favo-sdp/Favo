@@ -21,13 +21,12 @@ import ch.epfl.favo.util.TaskToFutureAdapter;
 
 @SuppressLint("NewApi")
 public class UserUtil implements IUserUtil {
-  /*
-  TODO: Design singleton constructor and logic
-   */
-  // Single private instance
+
+  private static final String USER_COLLECTION = "users";
   private static final UserUtil SINGLE_INSTANCE = new UserUtil();
+
   private static ICollectionWrapper<User> collection =
-      DependencyFactory.getCurrentCollectionWrapper("users", User.class);
+      DependencyFactory.getCurrentCollectionWrapper(USER_COLLECTION, User.class);
 
   public void updateCollectionWrapper(ICollectionWrapper<User> newWrapper) {
     collection = newWrapper;

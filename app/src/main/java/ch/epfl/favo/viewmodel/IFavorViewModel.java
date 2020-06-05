@@ -135,6 +135,8 @@ public interface IFavorViewModel {
    */
   LiveData<Favor> getObservedFavor();
 
+  User getOwnUser();
+
   /**
    * Set observed favor value on UI thread
    *

@@ -168,7 +168,7 @@ public class FavorPublishedView extends Fragment {
   }
 
   private void reportFavor() {
-    // should decide what to do with reported favors
+    // TODO: decide what to do with reported favors
     CommonTools.showSnackbar(getView(), getString(R.string.report_favor_message));
   }
 

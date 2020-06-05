@@ -52,7 +52,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   private MutableLiveData<Map<String, Favor>> activeFavorsAroundMe = new MutableLiveData<>();
 
   private MutableLiveData<Favor> observedFavor = new MutableLiveData<>();
-  private MutableLiveData<User> observedUser = new MutableLiveData<>();
+  private MutableLiveData<User> ownUser = new MutableLiveData<>();
 
   private IFavorUtil getFavorRepository() {
     return DependencyFactory.getCurrentFavorRepository();
@@ -184,7 +184,7 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
           MetadataChanges.INCLUDE,
           (documentSnapshot, e) -> {
             handleException(e);
-            observedUser.setValue(documentSnapshot.toObject(User.class));
+            ownUser.setValue(documentSnapshot.toObject(User.class));
           });
 
     getFavorRepository()
@@ -282,6 +282,11 @@ public class FavorViewModel extends ViewModel implements IFavorViewModel {
   @Override
   public LiveData<Favor> getObservedFavor() {
     return observedFavor;
+  }
+
+  @Override
+  public User getOwnUser() {
+    return ownUser.getValue();
   }
 
   @Override

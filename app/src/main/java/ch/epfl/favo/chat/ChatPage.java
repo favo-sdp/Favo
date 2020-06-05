@@ -91,7 +91,6 @@ public class ChatPage extends Fragment {
             new ViewModelProvider(requireActivity())
                 .get(DependencyFactory.getCurrentViewModelClass());
 
-    //    currentFavor = viewModel.getObservedFavor().getValue();
     viewModel
         .getObservedFavor()
         .observe(
@@ -211,10 +210,7 @@ public class ChatPage extends Fragment {
   }
 
   @Override
-  public void onStart() {
-    super.onStart();
-    //    attachRecyclerViewAdapter();
-  }
+  public void onStart() { super.onStart(); }
 
   private void attachRecyclerViewAdapter() {
     FirestoreRecyclerOptions<Message> options = getFirestoreRecyclerOptions();
@@ -245,7 +241,7 @@ public class ChatPage extends Fragment {
     String responderUserId = DependencyFactory.getCurrentFirebaseUser().getUid();
     EditText mMessageEdit = view.findViewById(R.id.messageEdit);
     return new Message(
-        DependencyFactory.getCurrentFirebaseUser().getDisplayName(),
+        viewModel.getOwnUser().getName(),
         responderUserId,
         messageType,
         mMessageEdit.getText().toString(),

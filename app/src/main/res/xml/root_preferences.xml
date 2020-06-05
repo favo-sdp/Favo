@@ -7,7 +7,7 @@
             app:defaultValue="@string/default_radius"
             app:entries="@array/notification_radius"
             app:entryValues="@array/notification_radius"
-            app:key="@string/radius_notifications_setting_key"
+            app:key="@string/radius_map_setting_key"
             app:title="@string/map_radius_title"
             app:useSimpleSummaryProvider="true" />
 
