@@ -76,7 +76,6 @@ public class MapPage extends Fragment
   public static final int OBSERVE_LOCATION = 4;
   public static final int OBSERVE_FAVOR = 5;
   private Button doneButton;
-  private FloatingActionButton markerNavigationBtn;
 
   private IFavorViewModel favorViewModel;
   private View view;
@@ -84,7 +83,6 @@ public class MapPage extends Fragment
   private Location mLocation;
 
   private final Map<String, Marker> favorsAroundMe = new HashMap<>();
-  private Favor focusedFavor;
   private double radiusThreshold;
 
   private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -197,7 +195,7 @@ public class MapPage extends Fragment
           });
     } else {
       setupNearbyFavorsListener();
-      markerNavigationBtn = view.findViewById(R.id.look_through_btn);
+      FloatingActionButton markerNavigationBtn = view.findViewById(R.id.look_through_btn);
       markerNavigationBtn.setOnClickListener(this::onNavgBtnClick);
       // only when the app is firstly opened, center on my location,
       if (firstOpenApp) {
@@ -546,12 +544,13 @@ public class MapPage extends Fragment
   @Override
   public void onInfoWindowClick(Marker marker) {
     if (intentType != 0) return;
-    List<Object> markerInfo = (List<Object>) marker.getTag();
-    String favorId = markerInfo.get(0).toString();
     Bundle favorBundle = new Bundle();
-    if (marker.getTitle().equals(getString(R.string.hint_drag_marker))) {
+    if (marker.getTitle().equals(getString(R.string.hint_drag_marker))
+        && marker.getSnippet().equals(getString(R.string.hint_click_window))) {
       navigateToEditPage(marker, favorBundle);
     } else {
+      List<Object> markerInfo = (List<Object>) marker.getTag();
+      String favorId = markerInfo.get(0).toString();
       favorBundle.putString(CommonTools.FAVOR_ARGS, favorId);
       Navigation.findNavController(view)
           .navigate(R.id.action_nav_map_to_favorPublishedView, favorBundle);
